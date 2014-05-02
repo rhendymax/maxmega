@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="po_value_list" model="ir.ui.view">
+			<field name="name">po.value.list</field>
+			<field name="model">po.value</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Purchase Order Value">
+					<field name="partner_child_id" readonly="1"/>
+					<field name="partner_id" readonly="1"/>
+					<field name="pricelist_id" readonly="1"/>
+					<field name="product_id" readonly="1"/>
+					<field name="real_quantity" invisible="1"/>
+					<field name="quantity" readonly="1"/>
+					<field name="product_uom" readonly="1"/>
+					<field name="price_unit" readonly="1"/>
+					<field name="original_request_date" readonly="1"/>
+					<field name="quantity_order" readonly="1"/>
+					<field name="location_dest_id" readonly="1"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="po_value_form" model="ir.ui.view">
+			<field name="name">po.value.form</field>
+			<field name="model">po.value</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<separator colspan="4" string="Purchase Order"/>
+					<group colspan="4">
+						<field name="partner_child_id" readonly="1" colspan="2"/>
+						<field name="partner_id" readonly="1" colspan="2"/>
+						<newline/>
+						<group colspan="2">
+							<field name="pricelist_id" readonly="1" width="50"/>
+						</group>
+					</group>
+					<separator colspan="4" string="Purchase Order Line"/>
+					<field name="original_request_date"
+						readonly="1"/>
+					<field name="product_id" colspan="4" readonly="1"/>
+					<field name="real_quantity" invisible="1"/>
+					<field name="quantity" readonly="1"/>
+					<field name="product_uom" readonly="1"/>
+					<field name="price_unit" readonly="1"/>
+					<field name="quantity_order"
+					readonly="1"/>
+					<field name="location_dest_id" readonly="1"/>
+				 </form>
+			</field>
+		</record>
+	</data>
+</openerp>

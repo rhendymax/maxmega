@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="product_location_wizard_form" model="ir.ui.view">
+			<field name="name">product.location.wizard.form</field>
+			<field name="model">product.location.wizard</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+			<form string="Product Location Wizard">
+				<field colspan="4" name="location_ids" nolabel="1"/>
+			</form>
+			</field>
+		</record>
+
+		<record id="product_location_wizard_action" model="ir.actions.act_window">
+			<field name="name">Product Location Wizard</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">product.location.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="product_location_wizard_form"/>
+			<field name="target">new</field>
+			<field name="multi">True</field>
+		</record>
+
+		<record id="product_location_lines_tree" model="ir.ui.view">
+			<field name="name">product.location.lines.tree</field>
+			<field name="model">product.location.lines</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Delivery Lines">
+					<field name="location_id"/>
+					<field name="qty_available"/>
+					<field name="qty_incoming_booked"/>
+					<field name="qty_incoming_non_booked"/>
+					<field name="qty_booked"/>
+					<field name="qty_free"/>
+					<field name="qty_allocated"/>
+					<field name="qty_free_balance"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="product_location_lines_form" model="ir.ui.view">
+			<field name="name">product.location.lines.form</field>
+			<field name="model">product.location.lines</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<field name="location_id" colspan="4"/>
+					<field name="qty_available"/>
+					<field name="qty_incoming_booked"/>
+					<field name="qty_incoming_non_booked"/>
+					<field name="qty_booked"/>
+					<field name="qty_free"/>
+					<field name="qty_allocated"/>
+					<field name="qty_free_balance"/>
+				</form>
+			</field>
+		</record>
+	</data>
+</openerp>
