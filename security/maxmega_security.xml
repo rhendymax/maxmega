@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record model="ir.module.category" id="module_category_sale">
+			<field name="name">Sales</field>
+			<field name="description"></field>
+			<field name="sequence">16</field>
+		</record>
+
+		<record model="ir.module.category" id="module_max_category_purchase">
+			<field name="name">Purchase</field>
+			<field name="description"></field>
+			<field name="sequence">17</field>
+		</record>
+
+		<record model="ir.module.category" id="module_max_category_stock">
+			<field name="name">Warehouse</field>
+			<field name="description"></field>
+			<field name="sequence">18</field>
+		</record>
+
+		<record model="ir.module.category" id="module_max_category_accounting">
+			<field name="name">Accounting</field>
+			<field name="description"></field>
+			<field name="sequence">19</field>
+		</record>
+	</data>
+
+	<data noupdate="0">
+
+<!-- Sale User -->
+		<record id="group_sale_user" model="res.groups">
+			<field name="name">User</field>
+			<field name="category_id" ref="module_category_sale"/>
+		</record>
+
+	<!-- Menu -->
+		<!-- Sales -->
+		<record model='ir.ui.menu' id='menu_sale_root'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_user')])]"/>
+		</record>
+	
+		<!-- Sales -->
+		<record model='ir.ui.menu' id='menu_sale_sales_sales_order'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_user')])]"/>
+		</record>
+
+<!-- Sale Manager -->
+		<record id="group_sale_manager" model="res.groups">
+			<field name="name">Manager</field>
+			<field name="category_id" ref="module_category_sale"/>
+			<field name="implied_ids" eval="[(4, ref('group_sale_user'))]"/>
+		</record>
+
+	
+	<!-- Address Book -->
+		<record model='ir.ui.menu' id='menu_sale_address_cust'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_address_cont'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_product_product'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_sales_shop'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_add_partner'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_add_contact'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_prod_prod_brand'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_prod_prod_cats'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_prod_prod_cat'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_prod_packaging'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_mis_email'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_price_price'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_price_price_version'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_price_price_type'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_add_loc_country'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_add_loc_fed'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_prod_uom_categ'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_sale_config_prod_uom_uom'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+		</record>
+
+<!-- Purchase User -->
+		<record id="group_max_purchase_user" model="res.groups">
+			<field name="name">User</field>
+			<field name="category_id" ref="module_max_category_purchase"/>
+		</record>
+
+	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_purchase_root'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_purchase_rfq'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_purchase_pur'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
+		</record>
+
+<!-- Purchase Manager -->
+		<record id="group_max_purchase_manager" model="res.groups">
+			<field name="name">Manager</field>
+			<field name="category_id" ref="module_max_category_purchase"/>
+			<field name="implied_ids" eval="[(4, ref('group_max_purchase_user'))]"/>
+		</record>
+
+	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_purchase_add_supp'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_prod_prod'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_contact'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_pur_seq'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_po_req'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_ship'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_add_part_cat'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_prod_prod_cat'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_miss_email'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_pricelist_pricelist'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_pricelist_price_vers'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_prod_uom_uom_cat'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_purchase_config_prod_uom_uom'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record>
+
+
+<!-- Stock User -->
+		<record id="group_max_stock_user" model="res.groups">
+			<field name="name">User</field>
+			<field name="category_id" ref="module_max_category_stock"/>
+		</record>
+
+	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_warehouse_root'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_warehouse_management_incoming'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_warehouse_management_internal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_warehouse_management_do'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_inventory_control_pi'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
+		</record>
+
+<!-- Stock Manager -->
+		<record id="group_max_stock_manager" model="res.groups">
+			<field name="name">Manager</field>
+			<field name="category_id" ref="module_max_category_stock"/>
+			<field name="implied_ids" eval="[(4, ref('group_max_stock_user'))]"/>
+		</record>
+
+	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_warehouse_product_product'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_pi_type'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_warehouse_incoterms'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_warehouse_loc'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_warehouse_warehouses'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_warehouse_stock_journal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_prod_prod_categories'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_prod_packaging'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_auto_min'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_prod_uom_categ'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_config_prod_uom_uom'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+!-- Account User -->
+		<record id="group_max_account_user" model="res.groups">
+			<field name="name">User</field>
+			<field name="category_id" ref="module_max_category_accounting"/>
+		</record>
+
+	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_account_max_root'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_customer_ci'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_customer_cust_ref'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_customer_cust_pay'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_supplier_si'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_supplier_supp_ref'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_supplier_supp_pay'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_journal_entries_sales_receipt'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_journal_entries_purchase_payment'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_user')])]"/>
+		</record>
+
+<!-- Account Manager -->
+		<record id="group_max_account_manager" model="res.groups">
+			<field name="name">Manager</field>
+			<field name="category_id" ref="module_max_category_accounting"/>
+			<field name="implied_ids" eval="[(4, ref('group_max_account_user'))]"/>
+		</record>
+
+	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_account_max_customer_journal_items'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_supplier_journal_items'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_journal_entries_journal_items'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_journal_entries_journal_entries'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_charts_coa'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_charts_cot'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_draft_entries_post_journal_entries'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_reconciliation_manual'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_reconciliation_auto'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_statements_statement'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_recurring_define'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_recurring_generate'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_recurring_manual'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_eop_close'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_eop_generate'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_eop_cancel'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_periodical_eop_close_fiscal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_dashboard_dashboard'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_statistic_report_invoices'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_statistic_report_entries'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_statistic_report_treasure'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_statistic_report_sales'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_company'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_spt'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_recurring_models'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_shipping_method'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_fob_point_key'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_payment_term'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_currency'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_email_templates'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_miscellaneous_email_templates'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_accounting_general'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_accounting_trial'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_accounting_balance'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_accounting_pl'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_accounting_financial'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_journal_sale_purchase_journal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_journal_journals'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_journal_general_journals'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_legal_report_journal_centralizing_journal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_generic_reporting_partner_partner'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_generic_reporting_partner_aged'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_generic_reporting_partner_ledger'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_generic_reporting_taxes_taxes'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_reporting_generic_reporting_multi_gain_or_loss'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_periods_fiscal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_periods_periods'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_journals_journal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_journals_journal_view'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_accounts_setup'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_accounts_accounts'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_accounts_account_type'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_taxes_taxes'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_taxes_tax_code'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_taxes_fiscal'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_financial_report'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_config_financial_accounting_financial_hierachy'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_customer_customer'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_account_max_supplier_supplier'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_account_manager')])]"/>
+		</record>
+
+	</data>
+</openerp>
