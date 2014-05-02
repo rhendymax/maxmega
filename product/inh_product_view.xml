@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="product_normal_form_view" model="ir.ui.view">
+			<field name="name">product.normal.form.inheritp</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="account.product_normal_form_view"/>
+			<field name="arch" type="xml">
+				<field name="default_code" position="replace"/>
+				<field name="name" position="after">
+					<field name="default_code"/>
+				</field>
+				<page string="Accounting" position="after">
+					<page string="Price Methodology">
+						<separator colspan="4" string="Supplier Price Methodology"/>
+						<field colspan="4" name="supplierm_ids" nolabel="1">
+							<tree string="Supplier Price Methodology Detail">
+								<field name="partner_child_id"/>
+								<field name="default_key"/>
+								<field name="currency_id"/>
+							</tree>
+						</field>
+						<separator colspan="4" string="Customer Price Methodology"/>
+						<field colspan="4" name="customerm_ids" nolabel="1">
+							<tree string="Customer Price Methodology Detail">
+								<field name="name"/>
+								<field name="partner_id"/>
+								<field name="supplier_key_id"/>
+								<field name="currency_id"/>
+							</tree>
+						</field>
+					</page>
+					<page string="Price Methodology (View Only)">
+						<separator colspan="4" string="Supplier Price Methodology"/>
+					</page>
+				</page>
+			</field>
+		</record>
+	</data>
+</openerp>
