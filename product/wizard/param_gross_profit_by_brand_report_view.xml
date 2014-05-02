@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_gross_profit_by_brand_report" model="ir.ui.view">
+			<field name="name">view.param.gross.profit.by.brand.report</field>
+			<field name="model">param.gross.profit.by.brand.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Gross Profit By Inventory Brand Report">
+					<separator string="Gross Profit By Inventory Brand Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Gross Profit By Inventory Brand Report"/>
+					<newline/>
+					<separator string="Date"  colspan="4"/>
+					<field name="date_from" attrs="{'required':1}"/>
+					<field name="date_to" attrs="{'required':1}"/>
+					<separator string="Inventory Brand" colspan="4"/>
+					<field name="brand_from"/>
+					<field name="brand_to"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_gross_profit_by_brand_report" model="ir.actions.act_window">
+			<field name="name">Gross Profit By Brand Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.gross.profit.by.brand.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="help">This menu print Gross Profit By Inventory Brand Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_param_gross_profit_by_brand_report"
+			name="Gross Profit By Brand Report"
+			action="action_param_gross_profit_by_brand_report"
+			parent="menu_custom_stock" sequence="3"/>
+	</data>
+</openerp>

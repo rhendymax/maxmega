@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_sales_journal_by_customer_report" model="ir.ui.view">
+			<field name="name">view.param.sales.journal.by.customer.report</field>
+			<field name="model">param.sales.journal.by.customer.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Sales Journal By Customer Report">
+					<separator string="Sales Journal By Customer Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Sales Journal By Customer Report"/>
+					<newline/>
+					<separator string="Date"  colspan="4"/>
+					<field name="date_from" attrs="{'required':1}"/>
+					<field name="date_to" attrs="{'required':1}"/>
+					<separator string="Customer" colspan="4"/>
+					<field name="partner_code_from" options='{"quick_create": false}'
+						domain="[('customer','=',True)]" context="{'search_default_customer':1}"/>
+					<field name="partner_code_to" options='{"quick_create": false}'
+						domain="[('customer','=',True)]" context="{'search_default_customer':1}"/>
+					<separator string="Invoice No" colspan="4"/>
+					<field name="inv_from" domain="[('type','in',['out_invoice','out_refund']), ('state','in',['open','paid'])]"/>
+					<field name="inv_to" domain="[('type','in',['out_invoice','out_refund']), ('state','in',['open','paid'])]"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_sales_journal_by_customer_report" model="ir.actions.act_window">
+			<field name="name">Sales Journal By Customer Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.sales.journal.by.customer.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="help">This menu print Sales Journal By Customer Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_param_sales_journal_by_customer_report"
+			name="Sales Journal By Customer Report"
+			action="action_param_sales_journal_by_customer_report"
+			parent="menu_custom_account" sequence="1"/>
+	</data>
+</openerp>

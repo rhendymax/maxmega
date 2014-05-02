@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_po_oustanding_report" model="ir.ui.view">
+			<field name="name">PO Oustanding Report</field>
+			<field name="model">param.po.oustanding.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="PO Oustanding Report">
+					<separator string="PO Oustanding Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints PO Oustanding Report"/>
+					<newline/>
+					<separator string="Date"  colspan="4"/>
+					<field name="date_from" attrs="{'required':1}"/>
+					<field name="date_to" attrs="{'required':1}"/>
+					<separator string="Supplier" colspan="4"/>
+					<field name="partner_code_from"/>
+					<field name="partner_code_to"/>
+					<separator string="Purchase Order" colspan="4"/>
+					<field name="po_from"/>
+					<field name="po_to"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_po_oustanding_report" model="ir.actions.act_window">
+			<field name="name">PO Oustanding Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.po.oustanding.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="help">This menu print PO Oustanding Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_po_oustanding_report"
+			name="PO Oustanding Report"
+			action="action_param_po_oustanding_report"
+			parent="menu_custom_purchase" sequence="1"/>
+	</data>
+</openerp>

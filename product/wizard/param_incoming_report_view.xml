@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_incoming_report" model="ir.ui.view">
+			<field name="name">view.param.incoming.report</field>
+			<field name="model">param.incoming.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Incoming Report">
+					<separator string="Incoming Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Incoming Report"/>
+					<newline/>
+					<separator string="Date"  colspan="4"/>
+					<field name="date_from" attrs="{'required':1}"/>
+					<field name="date_to" attrs="{'required':1}"/>
+					<separator string="Product" colspan="4"/>
+					<field name="product_from"/>
+					<field name="product_to"/>
+					<separator string="Location" colspan="4"/>
+					<field name="location_from"/>
+					<field name="location_to"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_incoming_report" model="ir.actions.act_window">
+			<field name="name">Incoming Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.incoming.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="help">This menu print Incoming Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_Incoming_report"
+			name="Incoming Report"
+			action="action_param_incoming_report"
+			parent="menu_custom_stock" sequence="3"/>
+	</data>
+</openerp>

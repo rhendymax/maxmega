@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_allocated_sale_order_checklist_report" model="ir.ui.view">
+			<field name="name">view.param.allocated.sale.order.checklist.report</field>
+			<field name="model">param.allocated.sale.order.checklist.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Onhand Allocated Sale Order Checklist Report">
+					<separator string="Onhand Allocated Sale Order Checklist Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Onhand Allocated Sale Order Checklist Report"/>
+					<newline/>
+					<separator string="Supplier Part No" colspan="4"/>
+					<field name="product_id_from"/>
+					<field name="product_id_to"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_allocated_sale_order_checklist_report" model="ir.actions.act_window">
+			<field name="name">Allocated Sale Order Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.allocated.sale.order.checklist.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="help">This menu print Onhand Sale Order Checklist Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_param_allocated_sale_order_checklist_report"
+			name="Allocated Sale Order Report"
+			action="action_param_allocated_sale_order_checklist_report"
+			parent="menu_custom_sale" sequence="1"/>
+	</data>
+</openerp>
