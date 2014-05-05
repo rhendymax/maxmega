@@ -324,6 +324,13 @@
 			parent="menu_account_max_report_ap"
 			action="max_custom_report.action_purchase_tax_report"
 			sequence="40"/>
+
+		<menuitem
+			name="Purchase Journal Report"
+			id="menu_account_max_report_ap_purchase_journal"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_purchase_journal_by_supplier_report"
+			sequence="50"/>
 <!-- -->
 
 <!-- -->
@@ -354,6 +361,13 @@
 			parent="menu_account_max_report_ar"
 			action="max_custom_report.action_sales_tax_report"
 			sequence="40"/>
+			
+		<menuitem
+			name="Sales Journal Report"
+			id="menu_account_max_report_ar_sales_journal"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_sales_journal_by_customer_report"
+			sequence="50"/>
 <!-- -->
 
 
