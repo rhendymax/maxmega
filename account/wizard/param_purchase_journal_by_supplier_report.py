@@ -25,20 +25,74 @@ import time
 class param_purchase_journal_by_supplier_report(osv.osv_memory):
     _name = 'param.purchase.journal.by.supplier.report'
     _description = 'Param Purchase Journal By Supplier Report'
+
+######
     _columns = {
-        'date_from': fields.date("From Date", required=True),
-        'date_to': fields.date("To Date", required=True),
-        'partner_code_from':fields.many2one('res.partner', 'Supplier Code From', required=False),
-        'partner_code_to':fields.many2one('res.partner', 'Supplier Code To', required=False),
-        'inv_from':fields.many2one('account.invoice', 'Invoice From', required=False),
-        'inv_to':fields.many2one('account.invoice', 'Invoice To', required=False),
-        # 'product_id': fields.many2one('product.product', 'Item Code', domain=[('sale_ok','=',True)], change_default=True),
+        #'report_type': fields.char('Report Type', size=128, invisible=True,required=True),#
+        'supp_selection': fields.selection([('all','Supplier & Sundry'),('supplier', 'Supplier Only'),('sundry','Sundry Only')],'Supplier Selection', required=True),
+        'supplier_search_vals': fields.selection([('code','Supplier Code'),('name', 'Supplier Name')],'Supplier Search Values', required=True),
+        'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supp Filter Selection', required=True),
+        'partner_default_from':fields.many2one('res.partner', 'Supplier From', domain=[('supplier','=',True)], required=False),
+        'partner_default_to':fields.many2one('res.partner', 'Supplier To', domain=[('supplier','=',True)], required=False),
+        'partner_input_from': fields.char('Supplier From', size=128),
+        'partner_input_to': fields.char('Supplier To', size=128),
+        'partner_ids' :fields.many2many('res.partner', 'report_purchase_partner_rel', 'report_id', 'partner_id', 'Supplier', domain=[('supplier','=',True)]),
+        'date_selection': fields.selection([('none_sel','None'),('period_sel','Period'),('date_sel', 'Date')],'Type Selection', required=True),
+        'period_filter_selection': fields.selection([('def','Default'),('input', 'Input')],'Period Filter Selection'),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+        'period_default_from':fields.many2one('account.period', 'Period From'),
+        'period_default_to':fields.many2one('account.period', 'Period To'),
+        'period_input_from': fields.char('Period From', size=128),
+        'period_input_to': fields.char('Period To', size=128),
     }
 
     _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d')
+        #'report_type' : 'payable',#
+        'date_selection': 'none_sel',
+        'supp_selection': 'all',
+        'supplier_search_vals': 'code',
+        'filter_selection': 'all_vall',
     }
+
+    def onchange_date_selection(self, cr, uid, ids, date_selection, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        if date_selection:
+            if date_selection == 'period_sel':
+                res['value'] = {'period_filter_selection': 'def',
+                                 }
+            else:
+                res['value'] = {'period_filter_selection': False,
+                                 }
+        return res
+
+    def onchange_supp_selection(self, cr, uid, ids, supp_selection, context=None):
+        if context is None:
+            context = {}
+        
+        res = {'value': {'partner_code_from': False, 'partner_code_to':False, 'partner_ids':False}}
+
+        if supp_selection:
+            if supp_selection == 'all':
+                res['domain'] = {'partner_code_from': [('supplier','=',True)],
+                                 'partner_code_to': [('supplier','=',True)],
+                                 'partner_ids': [('supplier','=',True)],
+                                 }
+            elif supp_selection == 'supplier':
+                res['domain'] = {'partner_code_from': [('supplier','=',True),('sundry', '=', False)],
+                                 'partner_code_to': [('supplier','=',True),('sundry', '=', False)],
+                                 'partner_ids': [('supplier','=',True),('sundry', '=', False)],
+                                 }
+            elif supp_selection == 'sundry':
+                res['domain'] = {'partner_code_from': [('sundry','=',True),('supplier', '=', True)],
+                                 'partner_code_to': [('sundry','=',True),('supplier', '=', True)],
+                                 'partner_ids': [('sundry','=',True),('supplier', '=', True)],
+                                 }
+        return res
+###################
+
 
     def create_vat(self, cr, uid, ids, context=None):
         if context is None:

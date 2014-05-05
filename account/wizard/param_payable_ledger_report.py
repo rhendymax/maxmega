@@ -25,6 +25,8 @@ import time
 class param_payable_report(osv.osv_memory):
     _name = 'param.payable.ledger.report'
     _description = 'Param Payable Ledger Report'
+
+######
     _columns = {
         'report_type': fields.char('Report Type', size=128, invisible=True,required=True),
         'supp_selection': fields.selection([('all','Supplier & Sundry'),('supplier', 'Supplier Only'),('sundry','Sundry Only')],'Supplier Selection', required=True),
@@ -90,6 +92,7 @@ class param_payable_report(osv.osv_memory):
                                  'partner_ids': [('sundry','=',True),('supplier', '=', True)],
                                  }
         return res
+###################
 
     def generate(self, cr, uid, ids, context=None):
         if context is None:

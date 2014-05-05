@@ -39,10 +39,5 @@
 			<field name="help">This menu print Sales Journal By Customer Report.</field>
 		</record>
 
-		<menuitem
-			id="menu_param_sales_journal_by_customer_report"
-			name="Sales Journal By Customer Report"
-			action="action_param_sales_journal_by_customer_report"
-			parent="menu_custom_account" sequence="1"/>
 	</data>
 </openerp>

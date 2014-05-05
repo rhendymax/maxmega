@@ -11,9 +11,9 @@
 					<label colspan="4" nolabel="1" string="This menu prints AP Ledger Report"/>
 					<field name="fiscal_year" colspan="4"/>
 					<newline/>
+					<!-- -->
 					<notebook colspan="4">
 						<page string="Supplier">
-							<field name="report_type"/>
 							<field name="supp_selection"
 								on_change="onchange_supp_selection(supp_selection)"
 								colspan="4"/>
@@ -62,6 +62,7 @@
 				</form>
 			</field>
 		</record>
+<!-- -->
 
 		<record id="action_param_payable_ledger_report" model="ir.actions.act_window">
 			<field name="name">Payable Ledger Report</field>
