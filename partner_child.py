@@ -25,6 +25,7 @@ from osv import fields,osv
 class res_partner(osv.osv):
     _inherit = "res.partner"
     _description = "Partner"
+
     _columns = {
         'pchild_ids': fields.one2many('res.partner.child', 'partner_id', 'Partner Child'),
     }
@@ -34,6 +35,7 @@ res_partner()
 class res_partner_child(osv.osv):
     _name = "res.partner.child"
     _description = "Partner Child"
+
 
     def _default_customer(self, cr, uid, context=None):
         customer = context.get('customer')
