@@ -83,10 +83,5 @@
 			<field name="help">This menu print Sales Tax Report.</field>
 		</record>
 
-		<menuitem
-			id="menu_sales_tax_report"
-			name="Sales Tax Report"
-			action="action_sales_tax_report"
-			parent="menu_custom_account" sequence="6"/>
 	</data>
 </openerp>
