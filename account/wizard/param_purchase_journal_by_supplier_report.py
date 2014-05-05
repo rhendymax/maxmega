@@ -28,7 +28,7 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
 
 ######
     _columns = {
-        #'report_type': fields.char('Report Type', size=128, invisible=True,required=True),#
+        'report_type': fields.char('Report Type', size=128, invisible=True,required=True),
         'supp_selection': fields.selection([('all','Supplier & Sundry'),('supplier', 'Supplier Only'),('sundry','Sundry Only')],'Supplier Selection', required=True),
         'supplier_search_vals': fields.selection([('code','Supplier Code'),('name', 'Supplier Name')],'Supplier Search Values', required=True),
         'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supp Filter Selection', required=True),
@@ -48,7 +48,7 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
     }
 
     _defaults = {
-        #'report_type' : 'payable',#
+        'report_type' : 'payable',
         'date_selection': 'none_sel',
         'supp_selection': 'all',
         'supplier_search_vals': 'code',
@@ -102,7 +102,7 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
         datas['form'] = self.read(cr, uid, ids)[0]
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': 'purchase.journal.by.supplier.report_landscape',
+            'report_name': 'max.journal.report_landscape',
             'datas': datas,
         }
 

@@ -12,3 +12,4 @@ import max_ledger_report
 import max_aging_report
 import purchase_tax_report
 import sales_tax_report
+import max_journal_report

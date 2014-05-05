@@ -12,6 +12,7 @@
 					<newline/>
 					<notebook colspan="4">
 						<page string="Supplier">
+							<field name="report_type"/>
 							<field name="supp_selection"
 								on_change="onchange_supp_selection(supp_selection)"
 								colspan="4"/>
