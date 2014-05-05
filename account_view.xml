@@ -317,6 +317,13 @@
 			parent="menu_account_max_report_ap"
 			action="max_custom_report.action_param_payable_aging_report"
 			sequence="30"/>
+
+		<menuitem
+			name="Purchase Tax Report"
+			id="menu_account_max_report_ap_purchase_tax_report"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_purchase_tax_report"
+			sequence="40"/>
 <!-- -->
 
 <!-- -->
@@ -340,6 +347,13 @@
 			parent="menu_account_max_report_ar"
 			action="max_custom_report.action_param_receivable_aging_report"
 			sequence="30"/>
+
+		<menuitem
+			name="Sales Tax Report"
+			id="menu_account_max_report_ar_sale_tax"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_sales_tax_report"
+			sequence="40"/>
 <!-- -->
 
 

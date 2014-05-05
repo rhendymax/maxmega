@@ -45,6 +45,7 @@
                 "price_methodology",
                 "so_workflowchange",
                 "stock",
+                "max_custom_report",
                 "upgrade_all"],
     'init_xml': [],
     'update_xml': [
