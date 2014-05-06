@@ -187,3 +187,4 @@
 "access_email_template_max_account_manager","email.template max_account_manager","email_template.model_email_template","group_max_account_manager",1,1,1,1
 "access_ir_property_max_account_manager","ir.property max_account_manager","base.model_ir_property","group_max_account_manager",1,1,1,1
 "access_res_partner_sales_zone_max_account_manager","res.partner.sales.zone max_account_manager","so_workflowchange.model_res_partner_sales_zone","group_max_account_manager",1,1,1,1
+"access_res_currency_rate2_max_account_manager","res.currency.rate2 max_account_manager","so_workflowchange.model_res_currency_rate2","group_max_account_manager",1,1,1,1
