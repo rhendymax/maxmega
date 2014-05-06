@@ -335,6 +335,8 @@ class max_journal_report(report_sxw.rml_parse):
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
 
         return results1
+    
+    
 #    def _total_pre_tax_home(self):
 #        return self.pre_tax_home
 #
