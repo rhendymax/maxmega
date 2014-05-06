@@ -421,7 +421,7 @@ class max_payment_report(report_sxw.rml_parse):
             val_period.append(('date_start', '>=', date_start_min_period))
         if date_start_max_period:
             val_period.append(('date_start', '<=', date_start_max_period))
-        qry_period_ids = date_start_max_period and period_obj.search(cr, uid, val_period) or False
+        qry_period_ids = period_obj.search(cr, uid, val_period)
         period_qry = (qry_period_ids and ((len(qry_period_ids) == 1 and "AND l.period_id = " + str(qry_period_ids[0]) + " ") or "AND l.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND l.period_id IN (0) "
         journal_ids = self.journal_ids or False
         journal_qry = (journal_ids and ((len(journal_ids) == 1 and "AND l.journal_id = " + str(journal_ids[0]) + " ") or "AND l.journal_id IN " + str(tuple(journal_ids)) + " ")) or "AND l.journal_id IN (0) "
