@@ -1,10 +1,6 @@
-import purchase_journal_by_supplier_report
-import sales_journal_by_customer_report
 import max_profit_and_lost_report
 import balance_sheet_report
 
-import posted_payment_check_list
-import posted_receipt_check_list
 import monthly_pos_report
 import monthly_pos_with_sale_order_report
 import margin_sales_report
@@ -13,3 +9,4 @@ import max_aging_report
 import purchase_tax_report
 import sales_tax_report
 import max_journal_report
+import max_payment_report

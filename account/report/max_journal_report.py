@@ -318,10 +318,16 @@ class max_journal_report(report_sxw.rml_parse):
         if not max_period:
             max_period = period_obj.search(cr, uid, [], order='date_start Desc', limit=1)
         max_period = period_obj.browse(cr, uid, max_period[0])
+        date_start_min_period = min_period and min_period.date_start or False
         date_start_max_period = max_period and period_obj.browse(cr, uid, max_period.id).date_start or False
-        qry_period_ids = date_start_max_period and period_obj.search(cr, uid, [('date_start', '<=', date_start_max_period)]) or False
-        partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND l.partner_id = " + str(partner_ids[0]) + " ") or "AND l.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND l.partner_id IN (0) "
+        val_period = []
+        if date_start_min_period:
+            val_period.append(('date_start', '<=', date_start_min_period))
+        if date_start_max_period:
+            val_period.append(('date_start', '<=', date_start_max_period))
+        qry_period_ids = date_start_max_period and period_obj.search(cr, uid, val_period) or False
         period_qry = (qry_period_ids and ((len(qry_period_ids) == 1 and "AND l.period_id = " + str(qry_period_ids[0]) + " ") or "AND l.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND l.period_id IN (0) "
+        partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND l.partner_id = " + str(partner_ids[0]) + " ") or "AND l.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND l.partner_id IN (0) "
 
         date_from_qry = date_from and "And l.date_invoice >= '" + str(date_from) + "' " or " "
         date_to_qry = date_to and "And l.date_invoice <= '" + str(date_to) + "' " or " "
@@ -352,12 +358,11 @@ class max_journal_report(report_sxw.rml_parse):
         if qry:
             for s in qry:
                 cr.execute(
-                        "SELECT  l.id as inv_id " \
+                        "SELECT l.id as inv_id " \
                         "FROM account_invoice AS l " \
                         "WHERE l.partner_id IS NOT NULL " \
                         "AND l.state IN ('open', 'paid') " \
                         + qry_type \
-                        + partner_qry \
                         + date_from_qry \
                         + date_to_qry \
                         + period_qry + \

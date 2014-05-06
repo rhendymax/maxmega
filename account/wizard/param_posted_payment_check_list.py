@@ -26,20 +26,52 @@ class param_posted_payment_check_list(osv.osv_memory):
     _name = 'param.posted.payment.check.list'
     _description = 'Param Posted Payment Check List'
     _columns = {
-        'date_from': fields.date("From Date", required=True),
-        'date_to': fields.date("To Date", required=True),
+        'report_type': fields.char('Report Type', size=128, invisible=True,required=True),
         'supp_selection': fields.selection([('all','Supplier & Sundry'),('supplier', 'Supplier Only'),('sundry','Sundry Only')],'Supplier Selection', required=True),
-        'filter_selection': fields.selection([('supp_code','Supplier Code'),('supp_code_input', 'Supplier Input Code'),('selection_code','Supplier Selection Code')],'Supp Filter Selection', required=True),
-        'partner_code_from':fields.many2one('res.partner', 'Supplier Code From', domain=[('supplier','=',True)], required=False),
-        'partner_code_to':fields.many2one('res.partner', 'Supplier Code To', domain=[('supplier','=',True)], required=False),
-        'supplier_code_from': fields.char('Supplier Code From', size=128),
-        'supplier_code_to': fields.char('Supplier Code To', size=128),
-        'partner_ids' :fields.many2many('res.partner', 'report_partner_rel', 'report_id', 'partner_id', 'Supplier', domain=[('supplier','=',True)]),
-        'journal_ids' :fields.many2many('account.journal', 'report_journal_rel', 'report_id', 'journal_id', 'Journals'),
-#        'payment_from':fields.many2one('account.voucher', 'Payment From', domain=[('type','=','payment')], required=False),
-#        'payment_to':fields.many2one('account.voucher', 'Payment To', domain=[('type','=','payment')], required=False),
-#         'product_id': fields.many2one('product.product', 'Item Code', domain=[('sale_ok','=',True)], change_default=True),
+        'supplier_search_vals': fields.selection([('code','Supplier Code'),('name', 'Supplier Name')],'Supplier Search Values', required=True),
+        'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supp Filter Selection', required=True),
+        'partner_default_from':fields.many2one('res.partner', 'Supplier From', domain=[('supplier','=',True)], required=False),
+        'partner_default_to':fields.many2one('res.partner', 'Supplier To', domain=[('supplier','=',True)], required=False),
+        'partner_input_from': fields.char('Supplier From', size=128),
+        'partner_input_to': fields.char('Supplier To', size=128),
+        'partner_ids' :fields.many2many('res.partner', 'report_payment_supplier_rel', 'report_id', 'partner_id', 'Supplier', domain=[('supplier','=',True)]),
+        'date_selection': fields.selection([('none_sel','None'),('period_sel','Period'),('date_sel', 'Date')],'Type Selection', required=True),
+        'period_filter_selection': fields.selection([('def','Default'),('input', 'Input')],'Period Filter Selection'),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+        'period_default_from':fields.many2one('account.period', 'Period From'),
+        'period_default_to':fields.many2one('account.period', 'Period To'),
+        'period_input_from': fields.char('Period From', size=128),
+        'period_input_to': fields.char('Period To', size=128),
+        'journal_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Journal Filter Selection', required=True),
+        'journal_default_from':fields.many2one('account.journal', 'Journal From', domain=[('type','in',('bank','cash'))], required=False),
+        'journal_default_to':fields.many2one('account.journal', 'Journal To', domain=[('type','in',('bank','cash'))], required=False),
+        'journal_input_from': fields.char('Journal From', size=128),
+        'journal_input_to': fields.char('Journal To', size=128),
+        'journal_ids' :fields.many2many('account.journal', 'report_payment_journal_rel', 'report_id', 'journal_id', 'Journal', domain=[('type','in',('bank', 'cash'))]),
     }
+
+    _defaults = {
+        'report_type' : 'payable',
+        'date_selection': 'none_sel',
+        'supp_selection': 'all',
+        'supplier_search_vals': 'code',
+        'filter_selection': 'all_vall',
+        'journal_selection': 'all_vall',
+    }
+
+    def onchange_date_selection(self, cr, uid, ids, date_selection, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        if date_selection:
+            if date_selection == 'period_sel':
+                res['value'] = {'period_filter_selection': 'def',
+                                 }
+            else:
+                res['value'] = {'period_filter_selection': False,
+                                 }
+        return res
 
     def onchange_supp_selection(self, cr, uid, ids, supp_selection, context=None):
         if context is None:
@@ -63,16 +95,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                                  'partner_code_to': [('sundry','=',True),('supplier', '=', True)],
                                  'partner_ids': [('sundry','=',True),('supplier', '=', True)],
                                  }
-#            pricelist_id = self.pool.get('res.partner').browse(cr, uid, partner_id, context=None).property_product_pricelist_purchase.id
-#            return {'value':{'pricelist_id': pricelist_id}}
         return res
-
-    _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d'),
-        'supp_selection': 'all',
-        'filter_selection': 'supp_code',
-    }
 
     def create_vat(self, cr, uid, ids, context=None):
         if context is None:
@@ -82,7 +105,7 @@ class param_posted_payment_check_list(osv.osv_memory):
         datas['form'] = self.read(cr, uid, ids)[0]
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': 'posted.payment.check.list_landscape',
+            'report_name': 'max.payment.report_landscape',
             'datas': datas,
             'nodestroy':True,
         }

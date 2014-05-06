@@ -26,22 +26,50 @@ class param_posted_receipt_check_list(osv.osv_memory):
     _name = 'param.posted.receipt.check.list'
     _description = 'Param Posted Receipt Check List'
     _columns = {
-        'date_from': fields.date("From Date", required=True),
-        'date_to': fields.date("To Date", required=True),
-        'partner_code_from':fields.many2one('res.partner', 'Customer Code From', domain=[('customer','=',True)], required=False),
-        'partner_code_to':fields.many2one('res.partner', 'Customer Code To', domain=[('customer','=',True)], required=False),
-        'filter_selection': fields.selection([('cust_code','Customer Code'),('cust_code_input', 'Customer Input Code'),('selection_code','Customer Selection Code')],'Cust Filter Selection', required=True),
-        'customer_code_from': fields.char('Customer Code From', size=128),
-        'customer_code_to': fields.char('Customer Code To', size=128),
-        'partner_ids' :fields.many2many('res.partner', 'report_receipt_partner_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
-        'journal_ids' :fields.many2many('account.journal', 'report_receipt_journal_rel', 'report_id', 'journal_id', 'Journals'),
+        'report_type': fields.char('Report Type', size=128, invisible=True,required=True),
+        'cust_search_vals': fields.selection([('code','Customer Code'),('name', 'Customer Name')],'Customer Search Values', required=True),
+        'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Customer Filter Selection', required=True),
+        'partner_default_from':fields.many2one('res.partner', 'Customer From', domain=[('customer','=',True)], required=False),
+        'partner_default_to':fields.many2one('res.partner', 'Customer To', domain=[('customer','=',True)], required=False),
+        'partner_input_from': fields.char('Customer From', size=128),
+        'partner_input_to': fields.char('Customer To', size=128),
+        'partner_ids' :fields.many2many('res.partner', 'report_receivable_customer_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
+        'date_selection': fields.selection([('none_sel','None'),('period_sel','Period'),('date_sel', 'Date')],'Type Selection', required=True),
+        'period_filter_selection': fields.selection([('def','Default'),('input', 'Input')],'Period Filter Selection'),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+        'period_default_from':fields.many2one('account.period', 'Period From'),
+        'period_default_to':fields.many2one('account.period', 'Period To'),
+        'period_input_from': fields.char('Period From', size=128),
+        'period_input_to': fields.char('Period To', size=128),
+        'journal_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Journal Filter Selection', required=True),
+        'journal_default_from':fields.many2one('account.journal', 'Journal From', domain=[('type','in',('bank','cash'))], required=False),
+        'journal_default_to':fields.many2one('account.journal', 'Journal To', domain=[('type','in',('bank','cash'))], required=False),
+        'journal_input_from': fields.char('Journal From', size=128),
+        'journal_input_to': fields.char('Journal To', size=128),
+        'journal_ids' :fields.many2many('account.journal', 'report_receivable_journal_rel', 'report_id', 'journal_id', 'Journal', domain=[('type','in',('bank','cash'))]),
     }
 
     _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d'),
-        'filter_selection': 'cust_code',
+        'report_type' : 'receivable',
+        'date_selection': 'none_sel',
+        'cust_search_vals': 'code',
+        'filter_selection': 'all_vall',
+        'journal_selection': 'all_vall',
     }
+
+    def onchange_date_selection(self, cr, uid, ids, date_selection, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        if date_selection:
+            if date_selection == 'period_sel':
+                res['value'] = {'period_filter_selection': 'def',
+                                 }
+            else:
+                res['value'] = {'period_filter_selection': False,
+                                 }
+        return res
 
     def create_vat(self, cr, uid, ids, context=None):
         if context is None:
@@ -51,7 +79,7 @@ class param_posted_receipt_check_list(osv.osv_memory):
         datas['form'] = self.read(cr, uid, ids)[0]
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': 'posted.receipt.check.list_landscape',
+            'report_name': 'max.payment.report_landscape',
             'datas': datas,
             'nodestroy':True,
         }
