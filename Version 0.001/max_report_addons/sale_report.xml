@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="sale.report_sale_order" model="sale.order"
+                name="max.sale.order"
+                usage="default" string="Quotation / Order" header="False"/>
+    </data>
+</openerp>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_sale_order_make_delivery" model="ir.ui.view">
+			<field name="name">Create deliveries</field>
+			<field name="model">sale.make.delivery</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+			<form string="Create deliveries">
+				<field name="delivery_date" string="Prepared Date" invisible="1"/>
+				<field name="do_date"/>
+				<separator colspan="4" string="Description"/>
+				<field name="desc" colspan = "4" nolabel="1"/>
+				<separator colspan="4" string="Country"/>
+				<field name="country_org_id"/>
+				<field name="country_des_id"/>
+				<separator colspan="4"/>
+				<field colspan="4" name="delivery_lines_ids" nolabel="1"/>
+				<separator colspan="4"/>
+				<group colspan="4" col="4">
+					<button special="cancel" string="Cancel" icon="gtk-cancel" colspan="1"/>
+					<button name="generated_do" string="_Validate" type="object" icon="gtk-go-forward" colspan="1"/>
+					<label colspan="2"/>
+				</group>
+			</form>
+			</field>
+		</record>
+
+		<record id="action_sale_order_make_delivery" model="ir.actions.act_window">
+			<field name="name">Make deliveries</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">sale.make.delivery</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_sale_order_make_delivery"/>
+			<field name="target">new</field>
+			<field name="multi">True</field>
+		</record>
+
+		<record model="ir.values" id="sale_order_make_delivery">
+			<field name="model_id" ref="sale.model_sale_order"/>
+			<field name="name">Make deliveries</field>
+			<field name="key2">client_action_multi</field>
+			<field name="value" eval="'ir.actions.act_window,' + str(ref('action_sale_order_make_delivery'))" />
+			<field name="key">action</field>
+			<field name="model">sale.order</field>
+		</record>
+
+		<record id="delivery_lines_tree" model="ir.ui.view">
+			<field name="name">delivery.lines.tree</field>
+			<field name="model">delivery.lines</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Delivery Lines" editable="bottom">
+					<field name="order_id"/>
+					<field name="location_id"/>
+					<field name="product_id"/>
+					<field name="product_uom_qty"/>
+					<field name="product_uom" widget="selection"/>
+					<field name="qty_delivery"/>
+					<field name="product_uom2" widget="selection"/>
+					<field name="qty_onhand_count"/>
+					<field name="product_uom3" widget="selection"/>
+					<field name="spq"/>
+					<field name="qty_order" on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_onhand_count,product_uom3,qty_order,uom_id, spq, order_id)"/>
+					<field name="uom_id" widget="selection"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="delivery_lines_form" model="ir.ui.view">
+			<field name="name">delivery.lines.form</field>
+			<field name="model">delivery.lines</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<group colspan="4" col="4">
+						<group colspan="3" col="3">
+							<field name="order_line_id" invisible="1"/>
+							<field name="order_id" readonly="1" colspan="2"/>
+							<newline/>
+							<field name="product_id" readonly="1" colspan="3"/>
+						<field name="location_id" domain="[('usage','=','internal')]"
+							colspan="3"/>
+						</group>
+						<label string="" colspan="1"/>
+					</group>
+					<newline/>
+					<group colspan="2" col="4">
+						<field name="product_uom_qty" colspan="3"/>
+						<field name="product_uom" nolabel="1" colspan="1"/>
+						<field name="qty_delivery" colspan="3"/>
+						<field name="product_uom2" nolabel="1" colspan="1"/>
+						<field name="qty_onhand_count" colspan="3"/>
+						<field name="product_uom3" nolabel="1" colspan="1"/>
+						<field name="spq"/>
+						<field name="qty_order"
+							on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_onhand_count,product_uom3,qty_order,uom_id,spq, order_id)"
+							colspan="3"/>
+						<field name="uom_id"
+							nolabel="1" colspan="1"/>
+					</group>
+				 </form>
+			</field>
+		</record>
+	</data>
+</openerp>

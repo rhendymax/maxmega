@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<document filename="Margin Sales Report.pdf">
+	<template pageSize="(842.0,595.0)" title="Margin Sales Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+	<stylesheet>
+		<blockTableStyle id="TableBottom">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,0"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableMiddle">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="10,0"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableEnd">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+		</blockTableStyle>
+
+		<initialize>
+			<paraStyle name="all" alignment="justify"/>
+		</initialize>
+		<paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Italic_8" fontName="Helvetica-Oblique" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Italic_Right_8" fontName="Helvetica-Oblique" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<images/>
+	</stylesheet>
+
+
+	<story>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="800.0" >
+			<tr>
+				<td>
+					<para style="terp_default_Bold_8">Margin Sales Report</para>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<blockTable colWidths="100.0,10.0,100.0,50.0,135.0,10.0,100.0,50.0,135.0,10.0,100.0">
+						<tr>
+							<td>
+								<para style="terp_default_ItalicBold_7">Invoice Date From</para>
+								<para style="terp_default_ItalicBold_7">Invoice Date To</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">:</para>
+								<para style="terp_default_ItalicBold_7">:</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['date_from'] or '',date=True) ]]</para>
+								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['date_to'] or '',date=True) ]]</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7"></para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">Invoice From</para>
+								<para style="terp_default_ItalicBold_7">Invoice To</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">:</para>
+								<para style="terp_default_ItalicBold_7">:</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">[[get_inv_from() or '']]</para>
+								<para style="terp_default_ItalicBold_7">[[get_inv_to() or '']]</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7"></para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7"></para>
+								<para style="terp_default_ItalicBold_7"></para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7"></para>
+								<para style="terp_default_ItalicBold_7"></para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7"></para>
+								<para style="terp_default_ItalicBold_7"></para>
+							</td>
+						</tr>
+					</blockTable>
+				</td>
+			</tr>
+		</blockTable>
+
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="160.0,60.0,100.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_Italic_8">Inventory Key</para></td>
+				<td><para style="terp_default_Italic_8">Inv Date</para></td>
+				<td><para style="terp_default_Italic_8">Inv No</para></td>
+				<td><para style="terp_default_Italic_Right_8">Qty</para></td>
+				<td><para style="terp_default_Italic_Right_8">Sell Price</para></td>
+				<td><para style="terp_default_Italic_Right_8">Sales Total</para></td>
+				<td><para style="terp_default_Italic_Right_8">Qty Cost</para></td>
+				<td><para style="terp_default_Italic_Right_8">Cost Price</para></td>
+				<td><para style="terp_default_Italic_Right_8">Cost Total</para></td>
+				<td><para style="terp_default_Italic_Right_8">Margin</para></td>
+				<td><para style="terp_default_Italic_Right_8">GM %</para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'cn') ]]</font></para>
+			<blockTable colWidths="800.0">
+				<tr><td><para style="terp_default_Bold_8">[[cn['cust_name'] ]]</para></td></tr>
+			</blockTable>
+			<section>
+				<para style="terp_default_7"><font>[[repeatIn(cn['lines'],'ln') ]]</font></para>
+				<blockTable colWidths="160.0,60.0,100.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0">
+					<tr>
+						<td><para style="terp_default_7">[[ln['inventory_key'] ]]</para></td>
+						<td><para style="terp_default_7">[[ formatLang(ln['inv_date'] or '',date=True) ]]</para></td>
+						<td><para style="terp_default_7">[[ln['invoice_no'] ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['quantity'], digits=2) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['selling_price'], digits=5) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['total'], digits=2) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['qty_cost'], digits=2) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['cost_price'], digits=5) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['total_cost'], digits=2) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ formatLang(ln['margin'], digits=2) ]]</para></td>
+						<td><para style="terp_default_Right_7">[[ln['margin_percent'] ]]</para></td>
+					</tr>
+				</blockTable>
+			</section>
+		</section>
+		<blockTable colWidths="720.0, 80.0" style="TableEnd">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">End of Report</para>
+				</td>
+				<td>
+					<para style="terp_default_ItalicBold_7"> </para>
+				</td>
+				
+			</tr>
+		</blockTable>
+	</story>
+</document>

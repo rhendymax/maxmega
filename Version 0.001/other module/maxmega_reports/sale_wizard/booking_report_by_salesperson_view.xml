@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+    <data>
+        <record id="booking_report_by_salesperson_view" model="ir.ui.view">
+            <field name="name">Booking Report By Salesperson</field>
+            <field name="model">booking.report.by.salesperson</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+		    <form string="Report Options">
+			<separator string="Date"  colspan="4"/>
+			<field name="date_from" attrs="{'required':1}"/>
+			<field name="date_to" attrs="{'required':1}"/>
+			<!--<separator string="Customer" colspan="4"/>
+			<field name="partner_code_from"/>
+			<field name="partner_code_to"/>-->
+			<newline/>
+			<field name="user_ids" colspan="4"/>
+			<group col="4" colspan="4">
+				<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+				<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
+			</group>
+		    </form>
+            </field>
+        </record>
+
+        <record id="action_booking_report_by_salesperson_menu" model="ir.actions.act_window">
+            <field name="name">Booking Report By Sales Person</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">booking.report.by.salesperson</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="booking_report_by_salesperson_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem icon="STOCK_PRINT" name="Booking Report By Sales Person" parent="maxmega_reports.menu_maxmega_sale_reports"
+                action="action_booking_report_by_salesperson_menu" id="menu_booking_report_by_salesperson" />
+
+        <record id="booking_report_by_salesperson_result_data_view" model="ir.ui.view">
+            <field name="name">Booking Report By Sales Person</field>
+            <field name="model">booking.report.by.salesperson</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+		    <form string="Report Options">
+			<field name="data" filename="filename" colspan="4" readonly="1"/>
+			<field name="filename" invisible="1"/>
+			<separator colspan="4"/>
+			<group col="4" colspan="4">
+				<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+			</group>
+		    </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>

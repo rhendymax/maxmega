@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+    <data>
+        <record id="maxmega_ap_posted_checklist_report_view" model="ir.ui.view">
+            <field name="name">Posted Payment Voucher Checklist Report</field>
+            <field name="model">maxmega.ap.posted.checklist.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Report Options">
+		<newline/>
+		<field name="fiscalyear_id"/>
+		<field name="journal_id"/>
+		<newline/>
+		<field name="from_period_id" required="True"/>
+		<field name="to_period_id" required="True"/>
+		<separator colspan="4"/>
+		<field name="supplier_ids" colspan="4"/>
+		<group col="4" colspan="4">
+			<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+			<button icon="gtk-print" name="check_report" string="Print As CSV" type="object" colspan="2" default_focus="1" />
+		</group>
+            </form>
+            </field>
+        </record>
+
+        <record id="action_maxmega_ap_posted_checklist_report_menu" model="ir.actions.act_window">
+            <field name="name">Posted Payment Voucher Checklist Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">maxmega.ap.posted.checklist.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="maxmega_ap_posted_checklist_report_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem icon="STOCK_PRINT" name="Posted Payment Voucher Checklist Report"
+                parent="maxmega_reports.menu_maxmega_ap_control_report" action="action_maxmega_ap_posted_checklist_report_menu" id="menu_maxmega_ap_posted_checklist_report" />
+
+        <record id="maxmega_ap_posted_checklist_result_data_view" model="ir.ui.view">
+            <field name="name">Posted Payment Voucher Checklist Report</field>
+            <field name="model">maxmega.ap.posted.checklist.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Report Options">
+		<field name="data" filename="filename" colspan="4" readonly="1"/>
+		<field name="filename" invisible="1"/>
+		<separator colspan="4"/>
+		<group col="4" colspan="4">
+			<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+		</group>
+            </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>

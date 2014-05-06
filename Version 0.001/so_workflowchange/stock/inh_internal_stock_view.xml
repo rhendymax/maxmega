@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="view_internal_picking_inherit" model="ir.ui.view">
+			<field name="name">view.internal.picking.inherit</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='location_id']" position="replace">
+					<field name="location_id" on_change="onchange_internal_product_id(product_id,location_id,location_dest_id, parent.address_id, product_uom)" domain="[('usage','=','internal')]"/>
+					<newline/>
+					<group colspan="2" col="6">
+						<field name="qty_onhand_r" on_change="on_change_qty(product_id,location_id)" colspan="2"/>
+						<field name="qty_onhand_free_r" on_change="on_change_qty(product_id,location_id)" colspan="2"/>
+						<field name="qty_onhand_allocated_r" on_change="on_change_qty(product_id,location_id)" colspan="2"/>
+					</group>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/field[@name='state']" position="after">
+					<separator colspan="4" string="Note"/>
+					<field colspan="4" nolabel="1" name="note"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='location_dest_id']" position="replace">
+					<field name="location_dest_id" on_change="onchange_internal_dest_id(location_id,location_dest_id)" domain="[('usage','=','internal')]" />
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_id']" position="replace">
+					<field name="product_id" on_change="onchange_internal_product_id(product_id,location_id,location_dest_id, parent.address_id, product_uom)" colspan="4"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_qty']" position="replace">
+					<field name="product_qty" on_change="onchange_internal_quantity(product_id, product_qty, qty_onhand_free_r, product_uom, product_uos)" colspan="3"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_uom']" position="replace">
+					<field name="product_uom" on_change="onchange_internal_quantity(product_id, product_qty, qty_onhand_free_r, product_uom, product_uos)" string="Unit Of Measure" colspan="4"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_uos_qty']" position="replace">
+					<field name="product_uos_qty" groups="product.group_uos" colspan="4"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_uos']" position="replace">
+					<field groups="product.group_uos" name="product_uos" colspan="4"/>
+				</xpath>
+				<button name="draft_validate" position="replace">
+					<button name="draft_validate3" states="draft" string="Confirm" type="object" icon="gtk-media-play"/>
+				</button>
+
+				<button name="action_process" position="replace">
+					<button name="action_process2" states="assigned" string="Process" type="object" icon="gtk-go-forward"/>
+				</button>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='location_dest_id']" position="before">
+					<field name="location_id"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='date_done']" position="replace">
+					<field name="date_done" readonly="1" groups="base.group_extended"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/group/field[@name='state']" position="replace">
+					<field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,done" statusbar_colors='{"auto":"blue", "confirmed":"blue"}'/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>

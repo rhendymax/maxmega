@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="res_consigning_tree" model="ir.ui.view">
+			<field name="name">res.consigning.tree</field>
+			<field name="model">res.consigning</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Po Requirement">
+					<field name="name"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="res_consigning_form" model="ir.ui.view">
+			<field name="name">res.consigning.form</field>
+			<field name="model">res.consigning</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Po Requirement">
+					<field name="name"/>
+					<field name="note" colspan="4"/>
+				</form>
+			</field>
+		</record>
+
+		<record id="res_consigning_search" model="ir.ui.view">
+			<field name="name">res.consigning.search</field>
+			<field name="model">res.consigning</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Po Requirement">
+					<field name="name"/>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_res_consigning" model="ir.actions.act_window">
+			<field name="name">PO Requirement</field>
+			<field name="res_model">res.consigning</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="res_consigning_search"/>
+		</record>
+
+		<menuitem action="action_res_consigning" string="Po Requirement"
+			id="menu_action_res_consigning" parent="purchase.menu_purchase_config_purchase" sequence="70"/>
+
+		<record id="res_note_user_tree" model="ir.ui.view">
+			<field name="name">res.note.user.tree</field>
+			<field name="model">res.note.user</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Shipping Instruction">
+					<field name="name"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="res_note_user_form" model="ir.ui.view">
+			<field name="name">res.note.user.form</field>
+			<field name="model">res.note.user</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Shipping Instruction">
+					<field name="name"/>
+					<field name="note" colspan="4"/>
+				</form>
+			</field>
+		</record>
+
+		<record id="res_note_user_search" model="ir.ui.view">
+			<field name="name">res.note.user.search</field>
+			<field name="model">res.note.user</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Shipping Instruction">
+					<field name="name"/>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_res_note_user" model="ir.actions.act_window">
+			<field name="name">Shipping Instruction</field>
+			<field name="res_model">res.note.user</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="res_note_user_search"/>
+		</record>
+
+		<menuitem action="action_res_note_user"
+			id="menu_action_res_note_user" parent="purchase.menu_purchase_config_purchase" sequence="80"/>
+	</data>
+</openerp>

@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<document filename="Purchase Tax Report.pdf">
+	<template pageSize="(842.0,595.0)" title="Purchase Tax Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+  <stylesheet>
+      <blockTableStyle id="TableTop">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,0"/>
+    </blockTableStyle>
+     <blockTableStyle id="TableBottom">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,0"/>
+    </blockTableStyle>
+    <blockTableStyle id="TableMiddle">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="10,0"/>
+    </blockTableStyle>
+    <blockTableStyle id="TableEnd">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+    </blockTableStyle>
+    
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+	<paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+    <images/>
+  </stylesheet>
+	<story>
+		<pto>
+
+			<pto_header>
+				<para><font color="white"> </font></para>
+				<para style="terp_header_Centre">Purchase Tax Report</para>
+				<para><font color="white"> </font></para>
+				<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0" style="TableMiddle">
+					<tr>
+						<td><para style="terp_default_Bold_8">Voucher No</para></td>
+						<td><para style="terp_default_Right_Bold_8">Taxable Amt</para></td>
+						<td><para style="terp_default_Right_Bold_8">Tax Amt</para></td>
+						<td><para style="terp_default_Right_Bold_8">Exchange Rate</para></td>
+						<td><para style="terp_default_Right_Bold_8">Tax Home Amt</para></td>
+						<td><para style="terp_default_Right_Bold_8">Suppliers ExRate</para></td>
+						<td><para style="terp_default_Right_Bold_8">Suppliers</para></td>
+						<td><para style="terp_default_Right_Bold_8">Difference</para></td>
+					</tr>
+					<tr>
+						<td><para style="terp_default_Bold_8">Date</para></td>
+						<td><para style="terp_default_Right_8"></para></td>
+						<td><para style="terp_default_Right_8"></para></td>
+						<td><para style="terp_default_Right_8"></para></td>
+						<td><para style="terp_default_Right_8"></para></td>
+						<td><para style="terp_default_Right_8"></para></td>
+						<td><para style="terp_default_Right_Bold_8">Sales tax Amt</para></td>
+						<td><para style="terp_default_Right_8"></para></td>
+					</tr>
+				</blockTable>
+			</pto_header>
+			<para><font color="white"> </font></para>
+			<para style="terp_header_Centre">Purchase Tax Report</para>
+			<para><font color="white"> </font></para>
+	
+			<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0" style="TableMiddle">
+				<tr>
+					<td><para style="terp_default_Bold_8">Voucher No</para></td>
+					<td><para style="terp_default_Right_Bold_8">Taxable Amt</para></td>
+					<td><para style="terp_default_Right_Bold_8">Tax Amt</para></td>
+					<td><para style="terp_default_Right_Bold_8">Exchange Rate</para></td>
+					<td><para style="terp_default_Right_Bold_8">Tax Home Amt</para></td>
+					<td><para style="terp_default_Right_Bold_8">Suppliers ExRate</para></td>
+					<td><para style="terp_default_Right_Bold_8">Suppliers</para></td>
+					<td><para style="terp_default_Right_Bold_8">Difference</para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_Bold_8">Date</para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+					<td><para style="terp_default_Right_Bold_8">Sales tax Amt</para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+				</tr>
+			</blockTable>
+			<section>
+				<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
+				<blockTable colWidths="90.0, 10.0, 700.0">
+					<tr>
+						<td><para style="terp_default_7"><font>[[ln['part_ref'] ]]</font></para></td>
+						<td>
+							<para style="terp_default_7">:</para>
+						</td>
+						<td><para style="terp_default_7"><font>[[ln['part_name'] ]]</font></para></td>
+					</tr>
+					<tr>
+						<td><para style="terp_default_7"><font>Currency Key</font></para></td>
+						<td>
+							<para style="terp_default_7">:</para>
+						</td>
+						<td><para style="terp_default_7"><font>[[ln['cur_name'] ]]</font></para></td>
+					</tr>
+				</blockTable>
+				<blockTable colWidths="800.0">
+					<tr>
+						<td>
+							<para style="terp_default_ItalicBold_7">[[ (ln['invoice_vals'] and 'Invoice Note') or removeParentNode('blockTable') ]]</para>
+						</td>
+					</tr>
+				</blockTable>
+				<section>
+					<para style="terp_default_8"><font>[[ repeatIn(ln['invoice_vals'], 'il') ]]</font></para>
+					<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
+						<tr>
+							<td><para style="terp_default_7"><font>[[il['number'] ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['total'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['tax'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['rate'] or 0, digits=6) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['tax_home'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['supp_exrate'] or 0, digits=6) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['supp_tax'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(il['difference'] or 0, digits=2) ]]</font></para></td>
+						</tr>
+						<tr>
+							<td><para style="terp_default_7"><font>[[ formatLang(il['date'] or '',date=True) ]]</font></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+						</tr>
+					</blockTable>
+				</section>
+				<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
+					<tr>
+						<td><para style="terp_default_ItalicBold_7">[[ (ln['invoice_vals'] and 'Total For Invoice Note:') or removeParentNode('blockTable') ]]</para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['inv_taxable_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['inv_tax_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['inv_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['inv_sup_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['inv_difference'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+				<blockTable colWidths="800.0">
+					<tr>
+						<td>
+							<para style="terp_default_ItalicBold_7">[[ (ln['credit_vals'] and 'Credit Note') or removeParentNode('blockTable') ]]</para>
+						</td>
+					</tr>
+				</blockTable>
+				<section>
+					<para style="terp_default_8"><font>[[ repeatIn(ln['credit_vals'], 'cl') ]]</font></para>
+					<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
+						<tr>
+							<td><para style="terp_default_7"><font>[[il['number'] ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['total'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['tax'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['rate'] or 0, digits=6) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['tax_home'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['supp_exrate'] or 0, digits=6) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['supp_tax'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['difference'] or 0, digits=2) ]]</font></para></td>
+						</tr>
+						<tr>
+							<td><para style="terp_default_7"><font>[[ formatLang(cl['date'] or '',date=True) ]]</font></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+							<td><para style="terp_default_Right_8"></para></td>
+						</tr>
+					</blockTable>
+				</section>
+				<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
+					<tr>
+						<td><para style="terp_default_ItalicBold_7">[[ (ln['credit_vals'] and 'Total For Credit Note:') or removeParentNode('blockTable') ]]</para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cred_taxable_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cred_tax_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cred_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cred_sup_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cred_difference'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+				<blockTable colWidths="20.0,150.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0" style="TableBottom">
+					<tr>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_ItalicBold_7"><font>Total for : [[ln['part_ref'] ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_taxable_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_tax_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_sup_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_difference'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+				<para><font color="white"> </font></para>
+			</section>
+			<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
+				<tr>
+					<td><para style="terp_default_ItalicBold_7"><font>Report Total</font></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(get_tax_home() or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(total_difference() or 0, digits=2) ]]</font></para></td>
+				</tr>
+			</blockTable>
+			<section>
+				<para style="terp_default_7"><font>[[ repeatIn(get_balance_by_cur(), 'bal') ]]</font></para>
+				<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
+					<tr>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ bal['cur_name'] ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['taxable_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['tax_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['sup_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+					</tr>
+				</blockTable>
+			</section>
+			<blockTable colWidths="720.0, 80.0" style="TableEnd">
+				<tr>
+					<td>
+						<para style="terp_default_ItalicBold_7">End of Report</para>
+					</td>
+					<td>
+						<para style="terp_default_ItalicBold_7"> </para>
+					</td>
+				</tr>
+			</blockTable>
+		</pto>
+	</story>
+</document>

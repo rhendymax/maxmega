@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="stock.report_picking_list" model="stock.picking"
+        		name="max.stock.picking.list" string="Packing list" usage="default" header="False"/>
+        <report auto="False" id="report_picking_do" model="stock.picking"
+        		name="max.stock.picking.do" string="Delivery Order" usage="default" header="False"/>
+
+    </data>
+</openerp>

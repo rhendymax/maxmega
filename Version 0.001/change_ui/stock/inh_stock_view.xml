@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="view_inherit_form_max" model="ir.ui.view">
+			<field name="name">view.inherit.form.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="purchase.stock_picking_in_inherit_purchase"/>
+			<field name="arch" type="xml">
+
+				<field name="address_id" position="replace">
+					<field name="address_id" on_change="onchange_partner_in(address_id)" context="{'contact_display':'partner'}" colspan="4" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<field name="min_date" position="replace">
+					<field name="min_date" readonly="1" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+				<field name="backorder_id" position="replace">
+<!--	Original
+<field name="backorder_id" readonly="1" groups="base.group_extended"/>
+-->
+					<field name="backorder_id" readonly="1" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<field name="purchase_id" position="replace">
+					<field name="purchase_id" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+				<xpath expr="/form/notebook/page/field[@name='company_id']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='type']" position="replace"/>
+				<xpath expr="/form/notebook/page[@string='Additional Info']" position="replace">
+<!--	Original
+			<page string="Additional Info" groups="base.group_extended,base.group_multi_company">
+				<field name="type" groups="base.group_extended"/>
+				<field name="company_id" groups="base.group_multi_company" widget="selection"/>
+			</page>
+-->
+					<page string="Additional Info" groups="so_workflowchange.group_non_user">
+						<field name="type" groups="so_workflowchange.group_non_user"/>
+						<field name="company_id" groups="so_workflowchange.group_non_user" widget="selection"/>
+					</page>
+				</xpath>
+
+<!--	Original
+		<button name="%(stock.move_scrap)d"
+		    string="Scrap Products" type="action"
+		    icon="gtk-convert" context="{'scrap': True}"
+		    states="draft,waiting,confirmed,assigned"
+		    groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.move_scrap)d']" position="replace">
+					<button name="%(stock.move_scrap)d"
+						string="Scrap" type="action" groups="so_workflowchange.group_non_user"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned" colspan="1"/>
+				</xpath>
+<!--	Original
+					<button name="%(stock.split_into)d" string="Put in a new pack" type="action"
+						groups="base.group_extended"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed" colspan="1"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.split_into)d']" position="replace">
+					<button name="%(stock.split_into)d" string="Put in a new pack" type="action"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed" colspan="1"/>
+				</xpath>
+<!--	Original
+					<button name="%(stock.track_line)d"
+						groups="base.group_extended"
+						states="draft,waiting,confirmed,assigned"
+						string="Split" type="action" icon="terp-stock_effects-object-colorize" colspan="1" />
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.track_line)d']" position="replace">
+					<button name="%(stock.track_line)d"
+						groups="so_workflowchange.group_non_user"
+						states="draft,waiting,confirmed,assigned"
+						string="Split" type="action" icon="terp-stock_effects-object-colorize" colspan="1" />
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='action_cancel']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='action_confirm']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='force_assign']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='cancel_assign']" position="replace">
+					<button name="action_cancel" states="assigned" string="_Cancel" type="object" icon="gtk-cancel" groups="so_workflowchange.group_non_user"/>
+					<button name="action_confirm" states="draft" string="Confirm" type="object" icon="gtk-apply" groups="so_workflowchange.group_non_user"/>
+					<button name="force_assign" states="confirmed" string="Force Availability" type="object" icon="gtk-jump-to" groups="so_workflowchange.group_non_user"/>
+					<button name="cancel_assign" states="assigned" string="Cancel Availability" type="object" icon="gtk-find" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+<!--	Original
+					<button name="%(stock.move_scrap)d"
+						string="Scrap Products" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned"
+						groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.move_scrap)d']" position="replace">
+					<button name="%(stock.move_scrap)d"
+						string="Scrap Products" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned"
+						groups="so_workflowchange.group_non_user"/>
+				</xpath>
+<!--	Original
+					<button name="%(stock.move_scrap)d"
+						string="Scrap Products" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned"
+						groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.track_line)d']" position="replace">
+					<button
+						name="%(stock.track_line)d"
+						string="Split in production lots"
+						groups="so_workflowchange.group_non_user"
+						type="action" icon="terp-stock_effects-object-colorize"
+						states="draft,waiting,confirmed,assigned" />
+				</xpath>
+<!--	Original
+					<button name="setlast_tracking" string="Put in current pack" type="object"
+						groups="base.group_extended"
+						icon="terp-stock_effects-object-colorize" attrs="{'invisible': [('tracking_id','&lt;&gt;',False)]}"
+						states="draft,assigned,confirmed"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='setlast_tracking']" position="replace">
+					<button name="setlast_tracking" string="Put in current pack" type="object"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize" attrs="{'invisible': [('tracking_id','&lt;&gt;',False)]}"
+						states="draft,assigned,confirmed"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.split_into)d']" position="replace"/>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='state']" position="replace">
+					<field name="state" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='tracking_id']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="tracking_id"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_packaging']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="product_packaging"  domain="[('product_id','=',product_id)]" colspan="4"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/separator[@string='Traceability']" position="replace">
+					<separator string="Traceability" colspan="4" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='tracking_id']" position="replace">
+					<field name="tracking_id" groups="so_workflowchange.group_non_user" colspan="3"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"
+						context="{'location_id':location_id, 'product_id':product_id}"
+						domain="[('product_id','=?',product_id)]"
+						on_change="onchange_lot_id(prodlot_id,product_qty, location_id, product_id, product_uom)"  colspan="3"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/field[@name='state']" position="replace">
+					<field name="state" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_picking_in_tree_max" model="ir.ui.view">
+			<field name="name">view.in.tree.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_in_tree"/>
+			<field name="arch" type="xml">
+				<field name="backorder_id" position="replace">
+					<field name="backorder_id" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<field name="origin" position="replace">
+					<field name="origin" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<field name="min_date" position="replace">
+					<field name="min_date" groups="so_workflowchange.group_non_user"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="view_picking_in_search_max" model="ir.ui.view">
+			<field name="name">view.picking.in.search.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_in_search"/>
+			<field name="arch" type="xml">
+				<filter string="Back Orders" position="replace">
+					<filter icon="terp-accessories-archiver-minus" string="Back Orders" domain="[('backorder_id', '!=', False)]" help="Is a Back Order" groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<field name="origin" position="replace">
+					<field name="origin" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<filter string="Expected Date" position="replace">
+					<separator orientation="vertical" />
+					<filter string="Expected Date" icon="terp-go-month" domain="[]"  context="{'group_by':'min_date'}" groups="so_workflowchange.group_non_user"/>
+				</filter>
+			</field>
+		</record>
+
+
+<!--picking out-->
+		<record id="view_picking_out_search_max" model="ir.ui.view">
+			<field name="name">view.picking.out.search.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_out_search"/>
+			<field name="arch" type="xml">
+				<filter name="confirmed" position="replace">
+					<filter icon="terp-camera_test" name="confirmed" string="Waiting" domain="[('state','=','confirmed')]" help="Confirmed Delivery Orders" groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<filter string="Back Orders" position="replace">
+					<filter icon="terp-accessories-archiver-minus" string="Back Orders" domain="[('backorder_id', '!=', False)]" help="Is a Back Order" groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<field name="origin" position="replace">
+					<field name="origin" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<filter string="Expected Date" position="replace">
+					<separator orientation="vertical" />
+					<filter string="Expected Date" icon="terp-go-month" domain="[]"  context="{'group_by':'min_date'}" groups="so_workflowchange.group_non_user"/>
+				</filter>
+			</field>
+		</record>
+
+
+		<record id="view_picking_out_tree_max" model="ir.ui.view">
+			<field name="name">view.picking.out.tree.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_out_tree"/>
+			<field name="arch" type="xml">
+				<field name="origin" position="replace">
+					<field name="origin" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<field name="min_date" position="replace">
+					<field name="min_date" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<field name="backorder_id" position="replace">
+					<field name="backorder_id" groups="so_workflowchange.group_non_user"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="view_picking_out_form_max" model="ir.ui.view">
+			<field name="name">view.picking.out.form.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="sale.stock_picking_out_inherit_sale"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/notebook/page/group/button[@name='draft_force_assign']" position="replace">
+					<button name="draft_force_assign" groups="so_workflowchange.group_non_user" string="Process Later" type="object" icon="gtk-ok"/>
+				</xpath>
+				<field name="min_date" position="replace">
+					<field name="min_date" readonly="1" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+				<field name="address_id" position="replace">
+					<field name="address_id" groups="so_workflowchange.group_non_user" on_change="onchange_partner_in(address_id)" context="{'contact_display':'partner'}" colspan="4"/>
+				</field>
+<!--	Original
+				<field name="backorder_id" readonly="1" groups="base.group_extended"/>
+-->
+				<field name="backorder_id" position="replace">
+					<field name="backorder_id" readonly="1" groups="so_workflowchange.group_non_user"/>
+				</field>
+<!--	Original
+					<field name="auto_picking" groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='auto_picking']" position="replace">
+					<field name="auto_picking" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+<!--	Original
+					<field name="move_type" groups="base.group_extended"/>
+					<field name="type" groups="base.group_extended"/>
+					<field name="company_id" groups="base.group_multi_company" widget="selection"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_type']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='type']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='company_id']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='sale_id']" position="replace">
+					<field name="move_type" groups="so_workflowchange.group_non_user"/>
+					<field name="type" groups="so_workflowchange.group_non_user"/>
+					<field name="company_id" widget="selection" groups="so_workflowchange.group_non_user"/>
+					<field name="sale_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+<!--	Original
+					<button name="%(stock.move_scrap)d"
+						string="Scrap" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned" colspan="1" groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.move_scrap)d']" position="replace">
+					<button name="%(stock.move_scrap)d"
+						string="Scrap" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned" colspan="1" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+<!--	Original
+				<button name="%(stock.split_into)d" string="New pack" type="action"
+					groups="base.group_extended"
+					icon="terp-stock_effects-object-colorize"
+					states="draft,assigned,confirmed" colspan="1"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.split_into)d']" position="replace">
+					<button name="%(stock.split_into)d" string="New pack" type="action"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed" colspan="1"/>
+				</xpath>
+<!--	Original
+				<button name="%(stock.track_line)d"
+					groups="base.group_extended"
+					states="draft,waiting,confirmed,assigned"
+					string="Split" type="action" icon="terp-stock_effects-object-colorize" colspan="1" />
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.track_line)d']" position="replace">
+					<button name="%(stock.track_line)d"
+						groups="so_workflowchange.group_non_user"
+						states="draft,waiting,confirmed,assigned"
+						string="Split" type="action" icon="terp-stock_effects-object-colorize" colspan="1"/>
+				</xpath>
+<!--	Original
+					<button name="action_cancel" states="assigned" string="Cancel" type="object" icon="gtk-cancel"/>
+					<button name="action_confirm" states="draft" string="Confirm" type="object" icon="gtk-apply"/>
+					<button name="force_assign" states="confirmed" string="Force Availability" type="object" icon="gtk-jump-to"/>
+					<button name="cancel_assign" states="assigned" string="Cancel Availability" type="object" icon="gtk-find"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='action_cancel']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='action_confirm']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='force_assign']" position="replace"/>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='cancel_assign']" position="replace">
+					<button name="action_cancel" states="assigned" string="Cancel" type="object" icon="gtk-cancel" groups="so_workflowchange.group_non_user"/>
+					<button name="action_confirm" states="draft" string="Confirm" type="object" icon="gtk-apply" groups="so_workflowchange.group_non_user"/>
+					<button name="force_assign" states="confirmed" string="Force Availability" type="object" icon="gtk-jump-to" groups="so_workflowchange.group_non_user"/>
+					<button name="cancel_assign" states="assigned" string="Cancel Availability" type="object" icon="gtk-find" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.move_scrap)d']" position="replace">
+					<button name="%(stock.move_scrap)d"
+						string="Scrap Products" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+
+<!--	Original
+				<button name="%(stock.track_line)d" string="Split in production lots" type="action"
+					icon="terp-stock_effects-object-colorize" attrs="{'invisible': [('prodlot_id','&lt;&gt;',False)]}"
+					states="draft,assigned,confirmed"
+					groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.track_line)d']" position="replace">
+					<button name="%(stock.track_line)d" string="Split in production lots" type="action"
+						icon="terp-stock_effects-object-colorize" attrs="{'invisible': [('prodlot_id','&lt;&gt;',False)]}"
+						states="draft,assigned,confirmed"
+						groups="so_workflowchange.group_non_user"/>
+				</xpath>
+<!--	Original
+					<button name="setlast_tracking" string="Put in current pack" type="object"
+						attrs="{'invisible': [('tracking_id','&lt;&gt;',False)]}"
+						groups="base.group_extended"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='setlast_tracking']" position="replace">
+					<button name="setlast_tracking" string="Put in current pack" type="object"
+						attrs="{'invisible': [('tracking_id','&lt;&gt;',False)]}"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed"/>
+				</xpath>
+<!--	Original
+					<button name="%(stock.split_into)d" string="Put in a new pack" type="action"
+						icon="terp-stock_effects-object-colorize"
+						groups="base.group_extended"
+						states="draft,assigned,confirmed"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.split_into)d']" position="replace">
+					<button name="%(stock.split_into)d" string="Put in a new pack" type="action"
+						icon="terp-stock_effects-object-colorize"
+						groups="so_workflowchange.group_non_user"
+						states="draft,assigned,confirmed"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.action_partial_move_server)d']" position="replace">
+					<button name="%(stock.action_partial_move_server)d" string="Process" type="action" states="confirmed,assigned" icon="gtk-go-forward" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+<!--	Original
+				<field name="prodlot_id" groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+<!--	Original
+				<field name="tracking_id" groups="base.group_extended"/>
+-->
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='tracking_id']" position="replace">
+					<field name="tracking_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_packaging']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="product_packaging"  domain="[('product_id','=',product_id)]" colspan="4" />
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/separator[@string='Traceability']" position="replace">
+					<separator string="Traceability" colspan="4" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='tracking_id']" position="replace">
+					<field name="tracking_id" groups="so_workflowchange.group_non_user" colspan="3" />
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"
+						context="{'location_id':location_id, 'product_id':product_id}"
+						domain="[('product_id','=?',product_id)]"
+						on_change="onchange_lot_id(prodlot_id,product_qty, location_id, product_id, product_uom)" colspan="3"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/field[@name='state']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="state" readonly="1" widget="statusbar" statusbar_visible="draft,confirmed,assigned,done" statusbar_colors='{"auto":"blue", "confirmed":"blue"}'/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='date']" position="replace">
+					<field name="date" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='state']" position="replace">
+					<field name="state" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+			</field>
+		</record>
+
+
+<!--internal move-->
+		<record id="view_picking_form_max" model="ir.ui.view">
+			<field name="name">view.picking.form.max</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.move_scrap)d']" position="replace">
+					<button name="%(stock.move_scrap)d"
+						string="Scrap" type="action" groups="so_workflowchange.group_non_user"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned" colspan="1"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='product_packaging']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="product_packaging"  domain="[('product_id','=',product_id)]" colspan="4"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/separator[@string='Traceability']" position="replace">
+					<separator string="Traceability" colspan="4" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='tracking_id']" position="replace">
+					<field name="tracking_id" groups="so_workflowchange.group_non_user"  colspan="3"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.split_into)d']" position="replace">
+					<button name="%(stock.split_into)d" string="New pack" type="action"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed"  colspan="1"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"
+						context="{'location_id':location_id, 'product_id':product_id}"
+						domain="[('product_id','=?',product_id)]"
+						on_change="onchange_lot_id(prodlot_id,product_qty, location_id, product_id, product_uom)"  colspan="3"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='%(stock.track_line)d']" position="replace">
+					<button name="%(stock.track_line)d"
+						groups="so_workflowchange.group_non_user"
+						states="draft,waiting,confirmed,assigned"
+						string="Split" type="action" icon="terp-stock_effects-object-colorize" colspan="1" />
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/field[@name='state']" position="replace">
+					<field name="state" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/button[@name='action_confirm']" position="replace">
+					<button name="action_confirm" states="draft" string="Confirm" type="object" icon="gtk-apply" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/separator[@string='Dates']" position="replace">
+					<separator string="Dates" colspan="2" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='date']" position="replace">
+					<field name="date" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/form/group/field[@name='date_expected']" position="replace">
+					<field name="date_expected" on_change="onchange_date(date,date_expected)" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+<!--	Original
+					<field name="backorder_id" readonly="1" groups="base.group_extended"/>
+-->
+				<field name="backorder_id" position="replace">
+					<field name="backorder_id" readonly="1" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+
+<!--	Original
+					<field name="invoice_state" string="Invoice Control" groups="base.group_extended"/>
+-->
+				<field name="invoice_state" position="replace">
+					<field name="invoice_state" string="Invoice Control" groups="so_workflowchange.group_non_user"/>
+				</field>
+<!--	Original
+					<field name="auto_picking" groups="base.group_extended"/>
+-->
+				<field name="auto_picking" position="replace">
+					<field name="auto_picking" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+				<field name="move_type" position="replace">
+					<field name="move_type" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+				<field name="type" position="replace">
+					<field name="type" groups="so_workflowchange.group_non_user"/>
+				</field>
+
+				<field name="company_id" position="replace">
+					<field name="company_id" groups="so_workflowchange.group_non_user" widget="selection"/>
+				</field>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.move_scrap)d']" position="replace">
+					<button name="%(stock.move_scrap)d"
+						string="Scrap Products" type="action"
+						icon="gtk-convert" context="{'scrap': True}"
+						states="draft,waiting,confirmed,assigned"
+						groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.split_into)d']" position="replace">
+					<button name="%(stock.split_into)d" string="Put in a new pack" type="action"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize"
+						states="draft,assigned,confirmed"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='%(stock.track_line)d']" position="replace">
+					<button
+						name="%(stock.track_line)d"
+						string="Split in production lots"
+						groups="so_workflowchange.group_non_user"
+						type="action" icon="terp-stock_effects-object-colorize"
+						states="draft,waiting,confirmed,assigned" />
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='tracking_id']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="tracking_id"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/button[@name='setlast_tracking']" position="replace">
+					<button name="setlast_tracking" string="Put in current pack" type="object"
+						attrs="{'invisible': [('tracking_id','&lt;&gt;',False)]}"
+						icon="terp-stock_effects-object-colorize"
+						groups="so_workflowchange.group_non_user"
+						states="draft,assigned,confirmed"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='date_expected']" position="replace">
+					<field name="date_expected" groups="so_workflowchange.group_non_user" string="Date Expected"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='state']" position="replace">
+					<field name="state" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/group/button[@name='button_cancel']" position="replace">
+					<button name="button_cancel" groups="so_workflowchange.group_non_user" states="assigned,confirmed,draft" string="_Cancel" icon="gtk-cancel"/>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/group/button[@name='draft_force_assign']" position="replace">
+					<button name="draft_force_assign" groups="so_workflowchange.group_non_user" states="draft" string="Process Later" type="object" icon="gtk-apply"/>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_inherit_form_internal" model="ir.ui.view">
+			<field name="name">view.inherit.form.internal</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="purchase.stock_picking_inherit_purchase"/>
+			<field name="arch" type="xml">
+				<field name="purchase_id" position="replace">
+					<field name="purchase_id" groups="so_workflowchange.group_non_user"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="view_inherit_form_internal2" model="ir.ui.view">
+			<field name="name">view.inherit.form.internal2</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="sale.stock_picking_inherit_sale"/>
+			<field name="arch" type="xml">
+				<field name="sale_id" position="replace">
+						<field name="sale_id" groups="so_workflowchange.group_non_user"/>
+				</field>
+			</field>
+		</record>
+
+<!-- Physical Inventory-->
+		<record id="view_inventory_form_max" model="ir.ui.view">
+			<field name="name">view.inventory.form.max</field>
+			<field name="model">stock.inventory</field>
+			<field name="inherit_id" ref="so_workflowchange.view_inventory_form_inh"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/tree/field[@name='prod_lot_id']" position="replace">
+					<field name="prod_lot_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/tree/button[@name='%(stock.action_view_stock_inventory_line_split)d']" position="replace">
+					<button name="%(stock.action_view_stock_inventory_line_split)d"
+						string="Split inventory lines" groups="so_workflowchange.group_non_user"
+						type="action" icon="terp-stock_effects-object-colorize" states="draft,confirm"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/form/group/field[@name='prod_lot_id']" position="replace">
+					<field name="prod_lot_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/form/group/button[@name='%(stock.action_view_stock_inventory_line_split)d']" position="replace">
+					<button name="%(stock.action_view_stock_inventory_line_split)d"
+						string="Split inventory lines" groups="so_workflowchange.group_non_user"
+						type="action" icon="terp-stock_effects-object-colorize"/>
+				</xpath>
+				<button name="action_cancel_inventory" position="replace">
+					<button name="action_cancel_inventory" states="draft,confirm,done" string="Cancel Inventory" type="object" icon="gtk-cancel" groups="so_workflowchange.group_non_user"/>
+				</button>
+
+				<xpath expr="/form/notebook/page/field[@name='move_ids']/tree/field[@name='prodlot_id']" position="replace">
+					<field name="prodlot_id" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_ids']/tree/button[@name='%(stock.track_line)d']" position="replace">
+					<button name="%(stock.track_line)d" string="Split in production lots" type="action"
+						icon="terp-stock_effects-object-colorize"
+						attrs="{'invisible': [('prodlot_id','&lt;&gt;',False)]}"
+						states="draft,done,cancel"
+						context="{'inventory_id':parent.id}"
+						groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_ids']/tree/field[@name='tracking_id']" position="replace">
+					<field groups="so_workflowchange.group_non_user" name="tracking_id"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_ids']/tree/button[@name='%(stock.split_into)d']" position="replace">
+					<button name="%(stock.split_into)d" string="Put in a new pack" type="action"
+						groups="so_workflowchange.group_non_user"
+						icon="terp-stock_effects-object-colorize"
+						context="{'inventory_id':parent.id}"
+						states="draft,done,cancel"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='move_ids']/tree/field[@name='date']" position="replace">
+					<field name="date" groups="so_workflowchange.group_non_user" string="Date"/>
+				</xpath>
+			</field>
+		</record>
+
+		<menuitem name="Products by Category" id="stock.menu_product_by_category_stock_form" action="product.product_category_action" groups="so_workflowchange.group_non_user"
+			parent="stock.menu_stock_product" sequence="0"/>
+
+		<record id="stock.menu_stock_products_moves" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="stock.menu_traceability" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="stock.menu_action_location_tree" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="procurement.menu_stock_sched" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="stock.next_id_61" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+	</data>
+</openerp>

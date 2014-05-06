@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="inh_invoice_form_r" model="ir.ui.view">
+			<field name="name">inh.invoice.form.r</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_form"/>
+			<field name="arch" type="xml">
+				<button name="%(account.account_invoices)d" position="replace">
+					<button name="%(account_invoices2)d" string="Print Invoice y" type="action" icon="gtk-print" states="open,paid,proforma,sale,proforma2"/>
+				</button>
+			</field>
+		</record>
+
+	</data>
+</openerp>
