@@ -10,15 +10,53 @@
 					<separator string="PO Oustanding Report" colspan="4"/>
 					<label colspan="4" nolabel="1" string="This menu prints PO Oustanding Report"/>
 					<newline/>
-					<separator string="Date"  colspan="4"/>
-					<field name="date_from" attrs="{'required':1}"/>
-					<field name="date_to" attrs="{'required':1}"/>
-					<separator string="Supplier" colspan="4"/>
-					<field name="partner_code_from"/>
-					<field name="partner_code_to"/>
-					<separator string="Purchase Order" colspan="4"/>
-					<field name="po_from"/>
-					<field name="po_to"/>
+					<notebook colspan="4">
+						<page string="Supplier">
+							<field name="supp_selection"
+								on_change="onchange_supp_selection(supp_selection)"
+								colspan="4"/>
+							<field name="supplier_search_vals"
+								colspan="4"/>
+							<field name="filter_selection" colspan="4"/>
+							<field name="partner_default_from" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'
+								domain="[('supplier','=',True)]" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"/>
+							<field name="partner_default_to" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'
+								domain="[('supplier','=',True)]" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"/>
+							<field name="partner_input_from"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="partner_input_to"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="partner_ids" domain="[('supplier','=',True)]"
+								attrs="{'invisible': [('filter_selection','!=','selection')], 'required': [('filter_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+									<field name="ref"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+						</page>
+						<page string="Purchase Order">
+							<field name="po_selection" colspan="4"/>
+							<field name="po_default_from" attrs="{'invisible': [('po_selection','!=','def')], 'required': [('po_selection','=','def')]}"/>
+							<field name="po_default_to" attrs="{'invisible': [('po_selection','!=','def')], 'required': [('po_selection','=','def')]}"/>
+							<field name="po_input_from"
+								attrs="{'invisible': [('po_selection','!=','input')], 'required': [('po_selection','=','input')]}"/>
+							<field name="po_input_to"
+								attrs="{'invisible': [('po_selection','!=','input')], 'required': [('po_selection','=','input')]}"/>
+							<field name="po_ids"
+								attrs="{'invisible': [('po_selection','!=','selection')], 'required': [('po_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
