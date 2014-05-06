@@ -210,38 +210,65 @@ class max_journal_report(report_sxw.rml_parse):
         
         return super(max_journal_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
-
-
-#    def __init__(self, cr, uid, name, context=None):
-#        super(purchase_journal_by_supplier_report, self).__init__(cr, uid, name, context=context)
-#        
-#        self.pre_tax_home = 0.00
-#        self.sales_tax_home = 0.00
-#        self.after_tax_home = 0.00
-#        self.localcontext.update({
-#            'time': time,
-#            'locale': locale,
-#            'get_lines': self._get_lines,
-#            'get_total_invoice': self._get_total_invoice,
-#            'get_total_refund': self._get_total_refund,
-#            'get_code_from': self._get_code_from,
-#            'get_code_to': self._get_code_to,
-#            'get_inv_from': self._get_inv_from,
-#            'get_inv_to': self._get_inv_to,
-#            'total_pre_tax_home' : self._total_pre_tax_home,
-#            'total_sales_tax_home' : self._total_sales_tax_home,
-#            'total_after_tax_home' : self._total_after_tax_home,
-#            })
-
     def __init__(self, cr, uid, name, context=None):
         super(max_journal_report, self).__init__(cr, uid, name, context=context)
-
+        self.inv_balance_by_cur = {}
+        self.ref_balance_by_cur = {}
+        self.pre_tax_home = 0.00
+        self.sales_tax_home = 0.00
+        self.after_tax_home = 0.00
         self.localcontext.update({
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
             'get_header_title': self._get_header,
+            'get_inv_balance_by_cur': self._get_inv_balance_by_cur,
+            'get_ref_balance_by_cur': self._get_ref_balance_by_cur,
+            'total_pre_tax_home' : self._total_pre_tax_home,
+            'total_sales_tax_home' : self._total_sales_tax_home,
+            'total_after_tax_home' : self._total_after_tax_home,
             })
+
+    def _total_pre_tax_home(self):
+        return self.pre_tax_home
+
+    def _total_sales_tax_home(self):
+        return self.sales_tax_home
+
+    def _total_after_tax_home(self):
+        return self.after_tax_home
+
+    def _get_inv_balance_by_cur(self):
+        result = []
+        currency_obj    = self.pool.get('res.currency')
+        for item in self.inv_balance_by_cur.items():
+            result.append({
+                'cur_name' : currency_obj.browse(self.cr, self.uid, item[0]).name,
+                'pre_tax' : item[1]['pre_tax'],
+                'sale_tax' : item[1]['sale_tax'],
+                'after_tax' : item[1]['after_tax'],
+                'pre_tax_home' : item[1]['pre_tax_home'],
+                'sale_tax_home' : item[1]['sale_tax_home'],
+                'after_tax_home' : item[1]['after_tax_home'],
+            })
+        result = result and sorted(result, key=lambda val_res: val_res['cur_name']) or []
+        return result
+
+    def _get_ref_balance_by_cur(self):
+        result = []
+        currency_obj    = self.pool.get('res.currency')
+        for item in self.ref_balance_by_cur.items():
+            result.append({
+                'cur_name' : currency_obj.browse(self.cr, self.uid, item[0]).name,
+                'pre_tax' : item[1]['pre_tax'],
+                'sale_tax' : item[1]['sale_tax'],
+                'after_tax' : item[1]['after_tax'],
+                'pre_tax_home' : item[1]['pre_tax_home'],
+                'sale_tax_home' : item[1]['sale_tax_home'],
+                'after_tax_home' : item[1]['after_tax_home'],
+            })
+        result = result and sorted(result, key=lambda val_res: val_res['cur_name']) or []
+        return result
 
     def _get_header(self):
         if self.report_type == 'payable':
@@ -316,10 +343,6 @@ class max_journal_report(report_sxw.rml_parse):
                 partner_ids_vals.append(r['partner_id'])
         
         partner_ids_vals_qry = (len(partner_ids_vals) > 0 and ((len(partner_ids_vals) == 1 and "where id = " +  str(partner_ids_vals[0]) + " ") or "where id IN " +  str(tuple(partner_ids_vals)) + " ")) or "where id IN (0) "
-        period_qry2 = (qry_period_ids and ((len(qry_period_ids) == 1 and "and aml.period_id = " + str(qry_period_ids[0]) + " ") or "and aml.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND and aml.period_id IN (0) "
-        date_from_qry2 = date_from and "And aml.date >= '" + str(date_from) + "' " or " "
-        date_to_qry2 = date_to and "And aml.date <= '" + str(date_to) + "' " or " "
-
         cr.execute(
                 "SELECT id, name, ref " \
                 "FROM res_partner " \
@@ -328,232 +351,109 @@ class max_journal_report(report_sxw.rml_parse):
         qry = cr.dictfetchall()
         if qry:
             for s in qry:
+                cr.execute(
+                        "SELECT  l.id as inv_id " \
+                        "FROM account_invoice AS l " \
+                        "WHERE l.partner_id IS NOT NULL " \
+                        "AND l.state IN ('open', 'paid') " \
+                        + qry_type \
+                        + partner_qry \
+                        + date_from_qry \
+                        + date_to_qry \
+                        + period_qry + \
+                        "and l.partner_id = " + str(s['id']) + " "\
+                        "order by l.date_invoice")
+                qry3 = cr.dictfetchall()
+                val = []
+                period_id_vals = {}
+                total_pre_tax = total_sale_tax = total_after_tax = total_pre_tax_home = total_sale_tax_home = total_after_tax_home = 0
+                sign = 1
+                if qry3:
+                    for t in qry3:
+                        sign = 1
+                        inv = invoice_obj.browse(self.cr, self.uid, t['inv_id'])
+                        if inv.type in ('in_refund', 'out_refund'):
+                            sign = -1
+                        
+                        if inv.type in ('in_invoice', 'out_invoice'):
+                            if inv.currency_id.id not in self.inv_balance_by_cur:
+                                self.inv_balance_by_cur.update({inv.currency_id.id : {
+                                         'pre_tax' : ((inv.amount_untaxed or 0) * sign),
+                                         'sale_tax' : ((inv.amount_tax or 0) * sign),
+                                         'after_tax' : ((inv.amount_total or 0) * sign),
+                                         'pre_tax_home' : ((inv.amount_untaxed_home or 0) * sign),
+                                         'sale_tax_home' : ((inv.amount_tax_home or 0) * sign),
+                                         'after_tax_home' : ((inv.amount_total_home or 0) * sign),
+                                         }
+                                    })
+                            else:
+                                inv_grouping = self.inv_balance_by_cur[inv.currency_id.id].copy()
+                                inv_grouping['pre_tax'] += ((inv.amount_untaxed or 0) * sign)
+                                inv_grouping['sale_tax'] += ((inv.amount_tax or 0) * sign)
+                                inv_grouping['after_tax'] += ((inv.amount_total or 0) * sign)
+                                inv_grouping['pre_tax_home'] += ((inv.amount_untaxed_home or 0) * sign)
+                                inv_grouping['sale_tax_home'] += ((inv.amount_tax_home or 0) * sign)
+                                inv_grouping['after_tax_home'] += ((inv.amount_total_home or 0) * sign)
+                                self.inv_balance_by_cur[inv.currency_id.id] = inv_grouping
+                        elif inv.type in ('in_refund', 'out_refund'):
+                            if inv.currency_id.id not in self.ref_balance_by_cur:
+                                self.ref_balance_by_cur.update({inv.currency_id.id : {
+                                         'pre_tax' : ((inv.amount_untaxed or 0) * sign),
+                                         'sale_tax' : ((inv.amount_tax or 0) * sign),
+                                         'after_tax' : ((inv.amount_total or 0) * sign),
+                                         'pre_tax_home' : ((inv.amount_untaxed_home or 0) * sign),
+                                         'sale_tax_home' : ((inv.amount_tax_home or 0) * sign),
+                                         'after_tax_home' : ((inv.amount_total_home or 0) * sign),
+                                         }
+                                    })
+                            else:
+                                ref_grouping = self.ref_balance_by_cur[inv.currency_id.id].copy()
+                                ref_grouping['pre_tax'] += ((inv.amount_untaxed or 0) * sign)
+                                ref_grouping['sale_tax'] += ((inv.amount_tax or 0) * sign)
+                                ref_grouping['after_tax'] += ((inv.amount_total or 0) * sign)
+                                ref_grouping['pre_tax_home'] += ((inv.amount_untaxed_home or 0) * sign)
+                                ref_grouping['sale_tax_home'] += ((inv.amount_tax_home or 0) * sign)
+                                ref_grouping['after_tax_home'] += ((inv.amount_total_home or 0) * sign)
+                                self.ref_balance_by_cur[inv.currency_id.id] = ref_grouping
+                        self.pre_tax_home += ((inv.amount_untaxed_home or 0) * sign)
+                        self.sales_tax_home += ((inv.amount_tax_home or 0) * sign)
+                        self.after_tax_home += ((inv.amount_total_home or 0) * sign)
+
+                        total_pre_tax += ((inv.amount_untaxed or 0) * sign)
+                        total_sale_tax += ((inv.amount_tax or 0) * sign)
+                        total_after_tax += ((inv.amount_total or 0) * sign)
+                        total_pre_tax_home += ((inv.amount_untaxed_home or 0) * sign)
+                        total_sale_tax_home += ((inv.amount_tax_home or 0) * sign)
+                        total_after_tax_home += ((inv.amount_total_home or 0) * sign)
+                        val.append({
+                               'voucher_no' : inv.number or '',
+                               'date' : inv.date_invoice or False,
+                               'voucher_type' : (inv.type == 'in_invoice' and 'IN') or (inv.type == 'in_refund' and 'RET') or (inv.type == 'out_invoice' and 'IN') or (inv.type == 'out_refund' and 'RET') or '',
+                               'curr' : inv.currency_id and inv.currency_id.name or '',
+                               'sale_person' : inv.user_id and inv.user_id.name or '',
+                               'pre_tax': (inv.amount_untaxed or 0) * sign,
+                               'sale_tax': (inv.amount_tax or 0) * sign,
+                               'after_tax': (inv.amount_total or 0) * sign,
+                               'pre_tax_home': (inv.amount_untaxed_home or 0) * sign,
+                               'sale_tax_home': (inv.amount_tax_home or 0) * sign,
+                               'after_tax_home': (inv.amount_total_home or 0) * sign,
+                               })
+                val = val and sorted(val, key=lambda val_res: val_res['date']) or []
                 results1.append({
                     'part_name' : s['name'],
                     'part_ref' : s['ref'],
+                    'val_ids' : val,
+                    'total_pre_tax' : total_pre_tax,
+                    'total_sale_tax' : total_sale_tax,
+                    'total_after_tax' : total_after_tax,
+                    'total_pre_tax_home' : total_pre_tax_home,
+                    'total_sale_tax_home' : total_sale_tax_home,
+                    'total_after_tax_home' : total_after_tax_home,
                     })
+
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
 
         return results1
-    
-    
-#    def _total_pre_tax_home(self):
-#        return self.pre_tax_home
-#
-#    def _total_sales_tax_home(self):
-#        return self.sales_tax_home
-#
-#    def _total_after_tax_home(self):
-#        return self.after_tax_home
-#
-#    def _get_code_from(self):
-#        return self.partner_code_from and self.pool.get('res.partner').browse(self.cr, self.uid,self.partner_code_from).ref or False
-#    
-#    def _get_code_to(self):
-#        return self.partner_code_to and self.pool.get('res.partner').browse(self.cr, self.uid, self.partner_code_to).ref or False
-#    
-#    def _get_inv_from(self):
-#        return self.inv_from and self.pool.get('account.invoice').browse(self.cr, self.uid, self.inv_from).number or False
-#    
-#    def _get_inv_to(self):
-#        return self.inv_to and self.pool.get('account.invoice').browse(self.cr, self.uid, self.inv_to).number or False
-#
-#    def _get_total_invoice(self):
-#        results = []
-#        val_part = []
-#        val_inv = []
-#        date_from = self.date_from
-#        date_to =  self.date_to + ' ' + '23:59:59'
-#        code_from = self.partner_code_from
-#        code_to = self.partner_code_to
-#        inv_from = self.inv_from
-#        inv_to = self.inv_to
-#        account_invoice_obj = self.pool.get('account.invoice')
-#        res_partner_obj = self.pool.get('res.partner')
-#        if code_from and res_partner_obj.browse(self.cr, self.uid, code_from) and res_partner_obj.browse(self.cr, self.uid, code_from).ref:
-#            val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, code_from).ref))
-#        if code_to and res_partner_obj.browse(self.cr, self.uid, code_to) and res_partner_obj.browse(self.cr, self.uid, code_to).ref:
-#            val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, code_to).ref))
-#        if inv_from and account_invoice_obj.browse(self.cr, self.uid, inv_from) and account_invoice_obj.browse(self.cr, self.uid, inv_from).number:
-#            val_inv.append(('number', '>=', account_invoice_obj.browse(self.cr, self.uid, inv_from).number))
-#        if inv_to and account_invoice_obj.browse(self.cr, self.uid, inv_to) and account_invoice_obj.browse(self.cr, self.uid, inv_to).number:
-#            val_inv.append(('number', '<=', account_invoice_obj.browse(self.cr, self.uid, inv_to).number))
-#
-#        curr_ids = []
-#        curr_ids_name = {}
-#        curr_ids_amount_untaxed = {}
-#        curr_ids_amount_amount_taxed = {}
-#        curr_ids_amount_amount_total = {}
-#        curr_ids_amount_untaxed_home = {}
-#        curr_ids_amount_amount_taxed_home = {}
-#        curr_ids_amount_amount_total_home = {}
-#        val_part.append(('supplier', '=', True))
-#        part_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
-#        if part_ids:
-#            partner_ids = res_partner_obj.browse(self.cr, self.uid, part_ids)
-#            val_inv.append(('date_invoice', '>=', date_from))
-#            val_inv.append(('date_invoice', '<=', date_to))
-#            val_inv.append(('type', 'in', ['in_invoice']))
-#            val_inv.append(('state', 'in', ['open','paid']))
-#            for part in partner_ids:
-#                val_inv2 = list(val_inv)
-#                val_inv2.append(('partner_id', '=', part.id))
-#                inv_ids = account_invoice_obj.search(self.cr, self.uid, val_inv2, order='date_invoice ASC')
-#                if inv_ids:
-#                    line_ids = []
-#                    for inv_id in account_invoice_obj.browse(self.cr, self.uid, inv_ids):
-#                        if inv_id.currency_id.id not in curr_ids:
-#                            curr_ids.append(inv_id.currency_id.id)
-#                            curr_ids_name[inv_id.currency_id.id] = inv_id.currency_id.name
-#                            curr_ids_amount_untaxed[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_taxed[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_total[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_untaxed_home[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_taxed_home[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_total_home[inv_id.currency_id.id] = 0
-#                        #raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(inv_id.currency_id.id,curr_ids_amount_untaxed[inv_id.currency_id.id]))
-#                        curr_ids_amount_untaxed[inv_id.currency_id.id] += inv_id.amount_untaxed
-#                        curr_ids_amount_amount_taxed[inv_id.currency_id.id] += inv_id.amount_tax
-#                        curr_ids_amount_amount_total[inv_id.currency_id.id] += inv_id.amount_total
-#                        curr_ids_amount_untaxed_home[inv_id.currency_id.id] += inv_id.amount_untaxed_home
-#                        curr_ids_amount_amount_taxed_home[inv_id.currency_id.id] += inv_id.amount_tax_home
-#                        curr_ids_amount_amount_total_home[inv_id.currency_id.id] += inv_id.amount_total_home
-#            if curr_ids:
-#                for curr in curr_ids:
-#                    res = {}
-#                    res['cur_name'] = curr_ids_name[curr]
-#                    res['amount_untaxed'] = curr_ids_amount_untaxed[curr]
-#                    res['amount_taxed'] = curr_ids_amount_amount_taxed[curr]
-#                    res['amount_total'] = curr_ids_amount_amount_total[curr]
-#                    res['amount_untaxed_home'] = curr_ids_amount_untaxed_home[curr]
-#                    res['amount_taxed_home'] = curr_ids_amount_amount_taxed_home[curr]
-#                    res['amount_total_home'] = curr_ids_amount_amount_total_home[curr]
-#                    self.pre_tax_home += (curr_ids_amount_untaxed_home[curr] or 0)
-#                    self.sales_tax_home += (curr_ids_amount_amount_taxed_home[curr] or 0)
-#                    self.after_tax_home += (curr_ids_amount_amount_total_home[curr] or 0)
-#                    results.append(res)
-#        return results
-#
-#    def _get_total_refund(self):
-#        results = []
-#        val_part = []
-#        val_inv = []
-#        date_from = self.date_from
-#        date_to =  self.date_to + ' ' + '23:59:59'
-#        code_from = self.partner_code_from
-#        code_to = self.partner_code_to
-#        inv_from = self.inv_from
-#        inv_to = self.inv_to
-#        account_invoice_obj = self.pool.get('account.invoice')
-#        res_partner_obj = self.pool.get('res.partner')
-#        if code_from and res_partner_obj.browse(self.cr, self.uid, code_from) and res_partner_obj.browse(self.cr, self.uid, code_from).ref:
-#            val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, code_from).ref))
-#        if code_to and res_partner_obj.browse(self.cr, self.uid, code_to) and res_partner_obj.browse(self.cr, self.uid, code_to).ref:
-#            val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, code_to).ref))
-#        if inv_from and account_invoice_obj.browse(self.cr, self.uid, inv_from) and account_invoice_obj.browse(self.cr, self.uid, inv_from).number:
-#            val_inv.append(('number', '>=', account_invoice_obj.browse(self.cr, self.uid, inv_from).number))
-#        if inv_to and account_invoice_obj.browse(self.cr, self.uid, inv_to) and account_invoice_obj.browse(self.cr, self.uid, inv_to).number:
-#            val_inv.append(('number', '<=', account_invoice_obj.browse(self.cr, self.uid, inv_to).number))
-#
-#        curr_ids = []
-#        curr_ids_name = {}
-#        curr_ids_amount_untaxed = {}
-#        curr_ids_amount_amount_taxed = {}
-#        curr_ids_amount_amount_total = {}
-#        curr_ids_amount_untaxed_home = {}
-#        curr_ids_amount_amount_taxed_home = {}
-#        curr_ids_amount_amount_total_home = {}
-#        val_part.append(('supplier', '=', True))
-#        part_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
-#        if part_ids:
-#            partner_ids = res_partner_obj.browse(self.cr, self.uid, part_ids)
-#            val_inv.append(('date_invoice', '>=', date_from))
-#            val_inv.append(('date_invoice', '<=', date_to))
-#            val_inv.append(('type', 'in', ['in_refund']))
-#            val_inv.append(('state', 'in', ['open','paid']))
-#            for part in partner_ids:
-#                val_inv2 = list(val_inv)
-#                val_inv2.append(('partner_id', '=', part.id))
-#                inv_ids = account_invoice_obj.search(self.cr, self.uid, val_inv2, order='date_invoice ASC')
-#                if inv_ids:
-#                    line_ids = []
-#                    for inv_id in account_invoice_obj.browse(self.cr, self.uid, inv_ids):
-#                        if inv_id.currency_id.id not in curr_ids:
-#                            curr_ids.append(inv_id.currency_id.id)
-#                            curr_ids_name[inv_id.currency_id.id] = inv_id.currency_id.name
-#                            curr_ids_amount_untaxed[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_taxed[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_total[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_untaxed_home[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_taxed_home[inv_id.currency_id.id] = 0
-#                            curr_ids_amount_amount_total_home[inv_id.currency_id.id] = 0
-#                        #raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(inv_id.currency_id.id,curr_ids_amount_untaxed[inv_id.currency_id.id]))
-#                        curr_ids_amount_untaxed[inv_id.currency_id.id] += inv_id.amount_untaxed
-#                        curr_ids_amount_amount_taxed[inv_id.currency_id.id] += inv_id.amount_tax
-#                        curr_ids_amount_amount_total[inv_id.currency_id.id] += inv_id.amount_total
-#                        curr_ids_amount_untaxed_home[inv_id.currency_id.id] += inv_id.amount_untaxed_home
-#                        curr_ids_amount_amount_taxed_home[inv_id.currency_id.id] += inv_id.amount_tax_home
-#                        curr_ids_amount_amount_total_home[inv_id.currency_id.id] += inv_id.amount_total_home
-#            if curr_ids:
-#                for curr in curr_ids:
-#                    res = {}
-#                    res['cur_name'] = curr_ids_name[curr]
-#                    res['amount_untaxed'] = curr_ids_amount_untaxed[curr]
-#                    res['amount_taxed'] = curr_ids_amount_amount_taxed[curr]
-#                    res['amount_total'] = curr_ids_amount_amount_total[curr]
-#                    res['amount_untaxed_home'] = curr_ids_amount_untaxed_home[curr]
-#                    res['amount_taxed_home'] = curr_ids_amount_amount_taxed_home[curr]
-#                    res['amount_total_home'] = curr_ids_amount_amount_total_home[curr]
-#                    self.pre_tax_home -= (curr_ids_amount_untaxed_home[curr] or 0)
-#                    self.sales_tax_home -= (curr_ids_amount_amount_taxed_home[curr] or 0)
-#                    self.after_tax_home -= (curr_ids_amount_amount_total_home[curr] or 0)
-#                    results.append(res)
-#         #raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(inv_id.currency_id.id,curr_ids_amount_untaxed[inv_id.currency_id.id]))
-#        return results
-#
-#    def _get_lines(self):
-#        results = []
-#        val_part = []
-#        val_inv = []
-#        date_from = self.date_from
-#        date_to =  self.date_to + ' ' + '23:59:59'
-#        code_from = self.partner_code_from
-#        code_to = self.partner_code_to
-#        inv_from = self.inv_from
-#        inv_to = self.inv_to
-#        account_invoice_obj = self.pool.get('account.invoice')
-#        res_partner_obj = self.pool.get('res.partner')
-#
-#        if code_from and res_partner_obj.browse(self.cr, self.uid, code_from) and res_partner_obj.browse(self.cr, self.uid, code_from).ref:
-#            val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, code_from).ref))
-#        if code_to and res_partner_obj.browse(self.cr, self.uid, code_to) and res_partner_obj.browse(self.cr, self.uid, code_to).ref:
-#            val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, code_to).ref))
-#        if inv_from and account_invoice_obj.browse(self.cr, self.uid, inv_from) and account_invoice_obj.browse(self.cr, self.uid, inv_from).number:
-#            val_inv.append(('number', '>=', account_invoice_obj.browse(self.cr, self.uid, inv_from).number))
-#        if inv_to and account_invoice_obj.browse(self.cr, self.uid, inv_to) and account_invoice_obj.browse(self.cr, self.uid, inv_to).number:
-#            val_inv.append(('number', '<=', account_invoice_obj.browse(self.cr, self.uid, inv_to).number))
-#        val_part.append(('supplier', '=', True))
-#        part_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
-#        if part_ids:
-#            partner_ids = res_partner_obj.browse(self.cr, self.uid, part_ids)
-#            val_inv.append(('date_invoice', '>=', date_from))
-#            val_inv.append(('date_invoice', '<=', date_to))
-#            val_inv.append(('type', 'in', ['in_invoice','in_refund']))
-#            val_inv.append(('state', 'in', ['open','paid']))
-#            for part in partner_ids:
-#                val_inv2 = list(val_inv)
-#                val_inv2.append(('partner_id', '=', part.id))
-#                inv_ids = account_invoice_obj.search(self.cr, self.uid, val_inv2, order='date_invoice ASC')
-#                if inv_ids:
-#                    line_ids = []
-#                    res = {}
-#                    for inv_id in account_invoice_obj.browse(self.cr, self.uid, inv_ids):
-#                        line_ids.append(inv_id)
-#                    res['ref'] = part.ref
-#                    res['name'] = part.name
-#                    res['lines'] = line_ids
-#                    results.append(res)
-#        return results
 
 report_sxw.report_sxw('report.max.journal.report_landscape', 'account.invoice',
     'addons/max_custom_report/account/report/max_journal_report.rml', parser=max_journal_report, header="internal landscape")
