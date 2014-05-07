@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+		<record id="param_payment_deposit_bank_form_view" model="ir.ui.view">
+			<field name="name">Payment Deposit Bank Report</field>
+			<field name="model">param.payment.deposit.bank.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Payment Deposit Bank Report">
+					<separator string="Payment Deposit Bank Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Payment Deposit Bank Report"/>
+					<newline/>
+					<notebook colspan="4">
+						<page string="Supplier">
+							<field name="report_type"/>
+							<field name="supp_selection"
+								on_change="onchange_supp_selection(supp_selection)"
+								colspan="4"/>
+							<field name="supplier_search_vals"
+								colspan="4"/>
+							<field name="filter_selection" colspan="4"/>
+							<field name="partner_default_from" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'
+								domain="[('supplier','=',True)]" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"/>
+							<field name="partner_default_to" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'
+								domain="[('supplier','=',True)]" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"/>
+							<field name="partner_input_from"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="partner_input_to"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="partner_ids" domain="[('supplier','=',True)]"
+								attrs="{'invisible': [('filter_selection','!=','selection')], 'required': [('filter_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+									<field name="ref"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" on_change="onchange_date_selection(date_selection)" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="period_filter_selection" colspan="4" attrs="{'invisible': [('date_selection','!=','period_sel')], 'required': [('date_selection','=','period_sel')]}"/>
+							<field name="period_default_from"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'), ('period_filter_selection','!=','def')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','def')]}"/>
+							<field name="period_default_to"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'),('period_filter_selection','!=','def')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','def')]}"/>
+							<field name="period_input_from"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
+							<field name="period_input_to"
+								attrs="{'invisible': ['|',('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
+						</page>
+						<page string="Bank">
+							<field name="journal_selection" colspan="4"/>
+							<field name="journal_default_from" attrs="{'invisible': [('journal_selection','!=','def')], 'required': [('journal_selection','=','def')]}"/>
+							<field name="journal_default_to" attrs="{'invisible': [('journal_selection','!=','def')], 'required': [('journal_selection','=','def')]}"/>
+							<field name="journal_input_from"
+								attrs="{'invisible': [('journal_selection','!=','input')], 'required': [('journal_selection','=','input')]}"/>
+							<field name="journal_input_to"
+								attrs="{'invisible': [('journal_selection','!=','input')], 'required': [('journal_selection','=','input')]}"/>
+							<field name="journal_ids"
+								attrs="{'invisible': [('journal_selection','!=','selection')], 'required': [('journal_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="code"/>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="print_report" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_payment_deposit_bank" model="ir.actions.act_window">
+			<field name="name">Payment Deposit Bank Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.payment.deposit.bank.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="param_payment_deposit_bank_form_view"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+			id="menu_param_payment_deposit_bank"
+			action="action_param_payment_deposit_bank"
+			parent="max_custom_report.menu_custom_account"/>
+
+	</data>
+</openerp>
