@@ -52,11 +52,11 @@
 			<para><font color="white"> </font></para>
 			<para style="terp_header_Centre">SALES JOURNAL BY SALES ZONE</para>
 			<para><font color="white"> </font></para>
-			<blockTable style="TableMiddle" colWidths="75,202,110,85,80,113">
+			<blockTable style="TableMiddle" colWidths="75,367,85,80,80,113">
 				<tr>
 					<td><para style="terp_default_Bold_8">SALES ZONE</para></td>
 					<td><para style="terp_default_Bold_8">CUSTOMER</para></td>
-					<td><para style="terp_default_Right_Bold_8">SALES AMOUNT USD</para></td>
+					<td><para style="terp_default_Right_Bold_8">AMOUNT TOTAL</para></td>
 					<td><para style="terp_default_Bold_8">INVOICE DATE</para></td>
 					<td><para style="terp_default_Bold_8">INVOICE NO</para></td>
 					<td><para style="terp_default_Bold_8">SALES PERSON NAME</para></td>
@@ -64,7 +64,7 @@
 			</blockTable>
 			<section>
 				<para style="terp_default_8">[[repeatIn(get_lines(),'ln') ]]</para>
-				<blockTable colWidths="75,202,110,85,80,113">
+				<blockTable colWidths="75,367,85,80,80,113">
 					<tr>
 						<td><para style="terp_default_7"><font>[[ ln['sz_name'] or '' ]]</font></para></td>
 						<td><para style="terp_default_7"><font>[[ ln['cust_name'] or '' ]]</font></para></td>

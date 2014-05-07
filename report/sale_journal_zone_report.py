@@ -344,7 +344,7 @@ class report(report_sxw.rml_parse):
                 results.append({
                                 'sz_name' : (inv.sales_zone_id and inv.sales_zone_id.name) or '',
                                 'cust_name' : (inv.partner_id and inv.partner_id.name) or '',
-                                'amount_total' : ((inv.amount_total or 0) * sign),
+                                'amount_total' : ((inv.amount_total_home or 0) * sign),
                                 'inv_date' : inv.date_invoice or False,
                                 'inv_no' : inv.number or '',
                                 'sales_name' : (inv.user_id and inv.user_id.name) or '',
@@ -372,7 +372,7 @@ class report(report_sxw.rml_parse):
                 results.append({
                                 'sz_name' : (inv2.sales_zone_id and inv2.sales_zone_id.name) or '',
                                 'cust_name' : (inv2.partner_id and inv2.partner_id.name) or '',
-                                'amount_total' : ((inv2.amount_total or 0) * sign),
+                                'amount_total' : ((inv2.amount_total_home or 0) * sign),
                                 'inv_date' : inv2.date_invoice or False,
                                 'inv_no' : inv2.number or '',
                                 'sales_name' : (inv2.user_id and inv2.user_id.name) or '',
