@@ -28,15 +28,36 @@ class account_statement_report(osv.osv_memory):
     _description = "Param Sale Journal Zone Report"
 
     _columns = {
-        'zone_from'         : fields.char('Zone From', size=128),
-        'zone_to'           : fields.char('Zone To', size=128),
-        'date_from'         : fields.date("From Date"),
-        'date_to'           : fields.date("To Date"),
+        'report_type': fields.char('Report Type', size=128, invisible=True,required=True),
+        'cust_search_vals': fields.selection([('code','Customer Code'),('name', 'Customer Name')],'Customer Search Values', required=True),
+        'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Customer Filter Selection', required=True),
+        'partner_default_from':fields.many2one('res.partner', 'Customer From', domain=[('customer','=',True)], required=False),
+        'partner_default_to':fields.many2one('res.partner', 'Customer To', domain=[('customer','=',True)], required=False),
+        'partner_input_from': fields.char('Customer From', size=128),
+        'partner_input_to': fields.char('Customer To', size=128),
+        'partner_ids' :fields.many2many('res.partner', 'report_sale_journal_z_customer_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
+        'date_selection': fields.selection([('none_sel','None'),('period_sel','Period'),('date_sel', 'Date')],'Type Selection', required=True),
+        'period_filter_selection': fields.selection([('def','Default'),('input', 'Input')],'Period Filter Selection'),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+        'period_default_from':fields.many2one('account.period', 'Period From'),
+        'period_default_to':fields.many2one('account.period', 'Period To'),
+        'period_input_from': fields.char('Period From', size=128),
+        'period_input_to': fields.char('Period To', size=128),
+        'sale_zone_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Zone Filter Selection', required=True),
+        'sale_zone_default_from':fields.many2one('res.partner.sales.zone', 'Zone From', required=False),
+        'sale_zone_default_to':fields.many2one('res.partner.sales.zone', 'Zone To', required=False),
+        'sale_zone_input_from': fields.char('Zone From', size=128),
+        'sale_zone_input_to': fields.char('Zone To', size=128),
+        'sale_zone_ids' :fields.many2many('res.partner.sales.zone', 'report_sale_journal_z_zone_rel', 'report_id', 'zone_id', 'Zone'),
     }
 
     _defaults = {
-        'date_from'         : lambda *a: time.strftime('%Y-01-01'),
-        'date_to'           : lambda *a: time.strftime('%Y-%m-%d'),
+        'report_type' : 'receivable',
+        'date_selection': 'none_sel',
+        'cust_search_vals': 'code',
+        'filter_selection': 'all_vall',
+        'sale_zone_selection': 'all_vall'
     }
 
     def print_report(self, cr, uid, ids, context=None):

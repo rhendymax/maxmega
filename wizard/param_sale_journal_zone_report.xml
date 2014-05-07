@@ -29,10 +29,10 @@
             <field name="target">new</field>
         </record>
 
-        <!--<menuitem
+        <!--menuitem
             id="menu_param_sale_journal_zone"
             action="action_param_sale_journal_zone"
-            parent="max_custom_report.menu_custom_sale"/>-->
+            parent="max_custom_report.menu_custom_sale"/-->
 
     </data>
 </openerp>
