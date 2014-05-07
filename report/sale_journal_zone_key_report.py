@@ -36,18 +36,239 @@ import locale
 locale.setlocale(locale.LC_ALL, '')
 
 class report(report_sxw.rml_parse):
+
     def set_context(self, objects, data, ids, report_type=None):
-        self.zone_from          = data['form']['zone_from']
-        self.zone_to            = data['form']['zone_to']
-        self.partner_id_from    = data['form']['partner_code_from'] and data['form']['partner_code_from'][0] or False
-        self.partner_id_to      = data['form']['partner_code_to'] and data['form']['partner_code_to'][0] or False
-        self.date_from          = data['form']['date_from']
-        self.date_to            = data['form']['date_to']
-        self.invoice_ids        = []
-        self.untaxed_home       = 0
-        self.tax_home           = 0
-        self.total_home         = 0
-        return super(report, self).set_context(objects, data, ids, report_type=report_type)
+        new_ids = ids
+        res = {}
+        res_partner_obj = self.pool.get('res.partner')
+        period_obj = self.pool.get('account.period')
+        qry_supp = ''
+        number = 0
+        val_part = []
+
+        report_type = data['form']['report_type']
+        partner_ids = False
+
+        data_search = data['form']['supplier_search_vals']
+
+        if data['form']['supp_selection'] == 'all':
+            qry_supp = 'supplier = True'
+            val_part.append(('supplier', '=', True))
+        elif data['form']['supp_selection'] == 'supplier':
+            qry_supp = 'supplier = True and sundry = False'
+            val_part.append(('supplier', '=', True))
+            val_part.append(('sundry', '=', False))
+        elif data['form']['supp_selection'] == 'sundry':
+            qry_supp = 'supplier = True and sundry = True'
+            val_part.append(('supplier', '=', True))
+            val_part.append(('sundry', '=', True))
+        
+        partner_default_from = data['form']['partner_default_from'] and data['form']['partner_default_from'][0] or False
+        partner_default_to = data['form']['partner_default_to'] and data['form']['partner_default_to'][0] or False
+        partner_input_from = data['form']['partner_input_from'] or False
+        partner_input_to = data['form']['partner_input_to'] or False
+        
+        if data_search == 'code':
+            if data['form']['filter_selection'] == 'all_vall':
+                partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+            if data['form']['filter_selection'] == 'def':
+                data_found = False
+                if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref:
+                    data_found = True
+                    val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref))
+                if partner_default_to and res_partner_obj.browse(self.cr, self.uid, partner_default_to) and res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref:
+                    data_found = True
+                    val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref))
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+            elif data['form']['filter_selection'] == 'input':
+                data_found = False
+                if partner_input_from:
+                    self.cr.execute("select ref " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "ref ilike '" + str(partner_input_from) + "%' " \
+                                    "order by ref limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('ref', '>=', qry['ref']))
+                if partner_input_to:
+                    self.cr.execute("select ref " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "ref ilike '" + str(partner_input_to) + "%' " \
+                                    "order by ref desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('ref', '<=', qry['ref']))
+                #print val_part
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+            elif data['form']['filter_selection'] == 'selection':
+                if data['form']['partner_ids']:
+                    partner_ids = data['form']['partner_ids']
+        elif data_search == 'name':
+            if data['form']['filter_selection'] == 'all_vall':
+                self.partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+            if data['form']['filter_selection'] == 'def':
+                data_found = False
+                if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).name:
+                    data_found = True
+                    val_part.append(('name', '>=', res_partner_obj.browse(self.cr, self.uid, partner_default_from).name))
+                if partner_default_to and res_partner_obj.browse(self.cr, self.uid, partner_default_to) and res_partner_obj.browse(self.cr, self.uid, partner_default_to).name:
+                    data_found = True
+                    val_part.append(('name', '<=', res_partner_obj.browse(self.cr, self.uid, partner_default_to).name))
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+            elif data['form']['filter_selection'] == 'input':
+                data_found = False
+                if partner_input_from:
+                    self.cr.execute("select name " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "name ilike '" + str(partner_input_from) + "%' " \
+                                    "order by name limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('name', '>=', qry['name']))
+                if partner_input_to:
+                    self.cr.execute("select name " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "name ilike '" + str(partner_input_to) + "%' " \
+                                    "order by name desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('name', '<=', qry['name']))
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+            elif data['form']['filter_selection'] == 'selection':
+                if data['form']['partner_ids']:
+                    partner_ids = data['form']['partner_ids']
+
+        period_default_from = data['form']['period_default_from'] and data['form']['period_default_from'][0] or False
+        period_default_from = period_default_from and period_obj.browse(self.cr, self.uid, period_default_from) or False
+        period_default_to = data['form']['period_default_to'] and data['form']['period_default_to'][0] or False
+        period_default_to = period_default_to and period_obj.browse(self.cr, self.uid, period_default_to) or False
+
+        period_input_from = data['form']['period_input_from'] or False
+        period_input_to = data['form']['period_input_to'] or False
+
+        if data['form']['date_selection'] == 'none_sel':
+            self.period_ids = False
+            self.date_from = False
+            self.date_to = False
+        elif data['form']['date_selection'] == 'period_sel':
+            val_period = []
+            if data['form']['period_filter_selection'] == 'def':
+                if period_default_from and period_default_from.date_start:
+                    val_period.append(('date_start', '>=', period_default_from.date_start))
+                if period_default_to and period_default_to.date_start:
+                    val_period.append(('date_start', '<=', period_default_to.date_start))
+        #        period_criteria_search.append(('special', '=', False))
+                self.period_ids = period_obj.search(self.cr, self.uid, val_period)
+            elif data['form']['period_filter_selection'] == 'input':
+                if period_input_from:
+                    self.cr.execute("select code " \
+                                    "from account_period "\
+                                    "where " \
+                                    "code ilike '" + str(period_input_from) + "%' " \
+                                    "order by code limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        val_period.append(('code', '>=', qry['code']))
+                if period_input_to:
+                    self.cr.execute("select code " \
+                                    "from account_period "\
+                                    "where " \
+                                    "code ilike '" + str(period_input_to) + "%' " \
+                                    "order by code limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        val_period.append(('code', '<=', qry['code']))
+                self.period_ids = period_obj.search(self.cr, self.uid, val_period)
+            self.date_from = False
+            self.date_to = False
+        else:
+            self.period_ids = False
+            self.date_from = data['form']['date_from']
+            self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+
+        self.partner_ids = partner_ids
+
+#journal
+        val_zone = []
+        qry_zone = ""
+
+        journal_default_from = data['form']['journal_default_from'] and data['form']['journal_default_from'][0] or False
+        journal_default_to = data['form']['journal_default_to'] and data['form']['journal_default_to'][0] or False
+        journal_input_from = data['form']['journal_input_from'] or False
+        journal_input_to = data['form']['journal_input_to'] or False
+
+        if data['form']['journal_selection'] == 'all_vall':
+            journal_ids = account_journal_obj.search(self.cr, self.uid, val_jour, order='name ASC')
+            print 'journal_ids'
+            print journal_ids
+        if data['form']['journal_selection'] == 'name':
+            data_found = False
+            if journal_default_from and account_journal_obj.browse(self.cr, self.uid, journal_default_from) and account_journal_obj.browse(self.cr, self.uid, journal_default_from).name:
+                data_found = True
+                val_jour.append(('name', '>=', account_journal_obj.browse(self.cr, self.uid, journal_default_from).name))
+            if journal_default_to and account_journal_obj.browse(self.cr, self.uid, journal_default_to) and account_journal_obj.browse(self.cr, self.uid, journal_default_to).name:
+                data_found = True
+                val_jour.append(('name', '<=', account_journal_obj.browse(self.cr, self.uid, journal_default_to).name))
+            if data_found:
+                journal_ids = account_journal_obj.search(self.cr, self.uid, val_jour, order='name ASC')
+        elif data['form']['journal_selection'] == 'input':
+            data_found = False
+            if journal_input_from:
+                self.cr.execute("select name " \
+                                "from account_journal "\
+                                "where " + qry_jour + " and " \
+                                "name ilike '" + str(journal_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_jour.append(('name', '>=', qry['name']))
+            if journal_input_to:
+                self.cr.execute("select name " \
+                                "from account_journal "\
+                                "where " + qry_jour + " and " \
+                                "name ilike '" + str(journal_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_jour.append(('name', '<=', qry['name']))
+            #print val_part
+            if data_found:
+                journal_ids = account_journal_obj.search(self.cr, self.uid, val_jour, order='name ASC')
+        elif data['form']['journal_selection'] == 'selection':
+            if data['form']['journal_ids']:
+                journal_ids = data['form']['journal_ids']
+        self.journal_ids = journal_ids
+        #print self.period_ids
+        
+        return super(report, self).set_context(objects, data, new_ids, report_type=report_type)
+
+
+#    def set_context(self, objects, data, ids, report_type=None):
+#        self.zone_from          = data['form']['zone_from']
+#        self.zone_to            = data['form']['zone_to']
+#        self.partner_id_from    = data['form']['partner_code_from'] and data['form']['partner_code_from'][0] or False
+#        self.partner_id_to      = data['form']['partner_code_to'] and data['form']['partner_code_to'][0] or False
+#        self.date_from          = data['form']['date_from']
+#        self.date_to            = data['form']['date_to']
+#        self.invoice_ids        = []
+#        self.untaxed_home       = 0
+#        self.tax_home           = 0
+#        self.total_home         = 0
+#        return super(report, self).set_context(objects, data, ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
         super(report, self).__init__(cr, uid, name, context=context)
