@@ -524,6 +524,7 @@ class max_payment_report(report_sxw.rml_parse):
                 self.footer_deposit_home += inv.writeoff_amount_home or 0.00
                 res['lines'] = lines_ids
                 results.append(res)
+        results = results and sorted(results, key=lambda val_res: val_res['cheque_date']) or []
 #        print results
 #        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %('', ''))
 #        voucher_ids = account_voucher_obj.search(self.cr, self.uid, val_voucher, order='date ASC')
