@@ -217,11 +217,10 @@ class max_payment_report(report_sxw.rml_parse):
         journal_default_to = data['form']['journal_default_to'] and data['form']['journal_default_to'][0] or False
         journal_input_from = data['form']['journal_input_from'] or False
         journal_input_to = data['form']['journal_input_to'] or False
-        print data['form']['journal_selection']
+
         if data['form']['journal_selection'] == 'all_vall':
             journal_ids = account_journal_obj.search(self.cr, self.uid, val_jour, order='name ASC')
-            print 'journal_ids'
-            print journal_ids
+
         if data['form']['journal_selection'] == 'name':
             data_found = False
             if journal_default_from and account_journal_obj.browse(self.cr, self.uid, journal_default_from) and account_journal_obj.browse(self.cr, self.uid, journal_default_from).name:
