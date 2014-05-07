@@ -43,7 +43,7 @@
 		<para><font color="white"> </font></para>
 		<para style="terp_header_Centre"><font>Sales Journal by Sales Zone</font></para>
 		<para><font color="white"> </font></para>
-		<blockTable colWidths="70,175,45,80,80,80,80,80,80" style="TableMiddle">
+		<blockTable colWidths="70.0,355.0,45.0,55.0,55.0,55.0,55.0,55.0,55.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_8"><i>Customer Key</i></para></td>
 				<td><para style="terp_default_8"><i>Customer Name</i></para></td>
@@ -57,14 +57,39 @@
 			</tr>
 		</blockTable>
 		<section>
-			<para style="std8">[[ repeatIn(get_lines(), 'o') ]]</para>
+			<para>[[ repeatIn(get_lines(), 'o') ]]</para>
 			<blockTable colWidths="770">
 				<tr>
-					<td><para style="std8_bold">[[ o['zone_name'] or 'No City Defined' ]]</para></td>
+					<td><para style="terp_default_Bold_8">[[ o['zone_name'] or 'No City Defined' ]]</para></td>
 				</tr>
 			</blockTable>
 			<section>
-			
+				<para style="terp_default_7"><font>[[repeatIn( o['val'], 'inv') ]]</font></para>
+				<blockTable colWidths="70.0,355.0,45.0,55.0,55.0,55.0,55.0,55.0,55.0">
+					<tr>
+						<td><para style="terp_default_7"><font>[[ inv['cust_key'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['cust_name'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['curr'] ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['pre_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['sale_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['after_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['after_tax_home'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+			</section>
 		</section>
+		<blockTable colWidths="720.0, 80.0" style="TableEnd">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">End of Report</para>
+				</td>
+				<td>
+					<para style="terp_default_ItalicBold_7"> </para>
+				</td>
+				
+			</tr>
+		</blockTable>
 	</story>
 </document>
