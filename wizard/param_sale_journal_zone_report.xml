@@ -12,7 +12,6 @@
 					<newline/>
 					<notebook colspan="4">
 						<page string="Customer">
-							<field name="report_type"/>
 							<field name="cust_search_vals"
 								colspan="4"/>
 							<field name="filter_selection" colspan="4"/>
@@ -50,15 +49,15 @@
 								attrs="{'invisible': ['|',('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
 						</page>
 						<page string="Sales Zone">
-							<field name="sale_zone_selection" colspan="4"/>
-							<field name="sale_zone_default_from" attrs="{'invisible': [('sale_zone_selection','!=','def')], 'required': [('sale_zone_selection','=','def')]}"/>
-							<field name="sale_zone_default_to" attrs="{'invisible': [('sale_zone_selection','!=','def')], 'required': [('sale_zone_selection','=','def')]}"/>
-							<field name="sale_zone_input_from"
-								attrs="{'invisible': [('sale_zone_selection','!=','input')], 'required': [('sale_zone_selection','=','input')]}"/>
-							<field name="sale_zone_input_to"
-								attrs="{'invisible': [('sale_zone_selection','!=','input')], 'required': [('sale_zone_selection','=','input')]}"/>
-							<field name="sale_zone_ids"
-								attrs="{'invisible': [('sale_zone_selection','!=','selection')], 'required': [('sale_zone_selection','=','selection')]}" nolabel="1" colspan="4">
+							<field name="sales_zone_selection" colspan="4"/>
+							<field name="sales_zone_default_from" attrs="{'invisible': [('sales_zone_selection','!=','def')], 'required': [('sales_zone_selection','=','def')]}"/>
+							<field name="sales_zone_default_to" attrs="{'invisible': [('sales_zone_selection','!=','def')], 'required': [('sales_zone_selection','=','def')]}"/>
+							<field name="sales_zone_input_from"
+								attrs="{'invisible': [('sales_zone_selection','!=','input')], 'required': [('sales_zone_selection','=','input')]}"/>
+							<field name="sales_zone_input_to"
+								attrs="{'invisible': [('sales_zone_selection','!=','input')], 'required': [('sales_zone_selection','=','input')]}"/>
+							<field name="sales_zone_ids"
+								attrs="{'invisible': [('sales_zone_selection','!=','selection')], 'required': [('sales_zone_selection','=','selection')]}" nolabel="1" colspan="4">
 								<tree>
 									<field name="name"/>
 								</tree>
