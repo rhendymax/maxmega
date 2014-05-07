@@ -38,307 +38,279 @@
 		<images/>
 	</stylesheet>
 	<story>
-		<pto>
-			<pto_header>
-				<para><font color="white"> </font></para>
-				<para style="terp_header_Centre">[[ get_header_title() ]]</para>
-				<para><font color="white"> </font></para>
-				<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0" style="TableMiddle" >
-					<tr>
-						<td><para style="terp_default_7">Voucher No</para></td>
-						<td><para style="terp_default_7">Credit Note No</para></td>
-						<td><para style="terp_default_7">Date</para></td>
-						<td><para style="terp_default_Right_7"></para></td>
-						<td><para style="terp_default_Right_7">Credit Note Amt</para></td>
-						<td><para style="terp_default_Right_7">Alloc Inv Amt</para></td>
-						<td><para style="terp_default_Right_7">Alloc Realized Ex</para></td>
-					</tr>
-					<tr>
-						<td><para style="terp_default_7">Doc No.</para></td>
-						<td><para style="terp_default_7"></para></td>
-						<td><para style="terp_default_7">Currency Date</para></td>
-						<td><para style="terp_default_Right_7">Cheque Home</para></td>
-						<td><para style="terp_default_Right_7">Credit Note Home</para></td>
-						<td><para style="terp_default_Right_7">Alloc Inv Home</para></td>
-						<td><para style="terp_default_Right_7"></para></td>
-					</tr>
-				</blockTable>
-			</pto_header>
-
-			<para><font color="white"> </font></para>
-			<para style="terp_header_Centre">[[ get_header_title() ]]</para>
-			<para><font color="white"> </font></para>
-			<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0" style="TableMiddle" >
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">[[ get_header_title() ]]</para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0" style="TableMiddle" >
+			<tr>
+				<td><para style="terp_default_7">Voucher No</para></td>
+				<td><para style="terp_default_7">Credit Note No</para></td>
+				<td><para style="terp_default_7">Date</para></td>
+				<td><para style="terp_default_Right_7"></para></td>
+				<td><para style="terp_default_Right_7">Credit Note Amt</para></td>
+				<td><para style="terp_default_Right_7">Alloc Inv Amt</para></td>
+				<td><para style="terp_default_Right_7">Alloc Realized Ex</para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_7">Doc No.</para></td>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_7">Currency Date</para></td>
+				<td><para style="terp_default_Right_7">Cheque Home</para></td>
+				<td><para style="terp_default_Right_7">Credit Note Home</para></td>
+				<td><para style="terp_default_Right_7">Alloc Inv Home</para></td>
+				<td><para style="terp_default_Right_7"></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
+			<blockTable colWidths="250.0,150.0,200.0,200.0">
 				<tr>
-					<td><para style="terp_default_7">Voucher No</para></td>
-					<td><para style="terp_default_7">Credit Note No</para></td>
-					<td><para style="terp_default_7">Date</para></td>
-					<td><para style="terp_default_Right_7"></para></td>
-					<td><para style="terp_default_Right_7">Credit Note Amt</para></td>
-					<td><para style="terp_default_Right_7">Alloc Inv Amt</para></td>
-					<td><para style="terp_default_Right_7">Alloc Realized Ex</para></td>
-				</tr>
-				<tr>
-					<td><para style="terp_default_7">Doc No.</para></td>
-					<td><para style="terp_default_7"></para></td>
-					<td><para style="terp_default_7">Currency Date</para></td>
-					<td><para style="terp_default_Right_7">Cheque Home</para></td>
-					<td><para style="terp_default_Right_7">Credit Note Home</para></td>
-					<td><para style="terp_default_Right_7">Alloc Inv Home</para></td>
-					<td><para style="terp_default_Right_7"></para></td>
+					<td>
+						<blockTable colWidths="70.0,180.0">
+							<tr>
+								<td><para style="terp_default_7"><font>P/V No.</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['voucher_no'] ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Supplier</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['supp_ref'] ]]</font></para></td>
+							</tr>
+						</blockTable>
+						<blockTable colWidths="250.0">
+							<tr>
+								<td><para style="terp_default_7"><font>[[ln['supp_name'] ]]</font></para></td>
+							</tr>
+						</blockTable>
+						<blockTable colWidths="70.0,180.0">
+							<tr>
+								<td><para style="terp_default_7"><font>Deposit Amt</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['deposit_amt'], digits=2) ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Deposit Home</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['deposit_amt_home'], digits=2) ]]</font></para></td>
+							</tr>
+						</blockTable>
+					</td>
+					<td>
+						<blockTable colWidths="80.0,70.0">
+							<tr>
+								<td><para style="terp_default_7"><font>Realized Ex GLAN</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['ex_glan'] ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Currency</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['curr_name'] ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Ex Rate</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['cur_exrate'], digits=5) ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>  </font></para></td>
+								<td><para style="terp_default_7"><font>  </font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>  </font></para></td>
+								<td><para style="terp_default_7"><font>  </font></para></td>
+							</tr>
+						</blockTable>
+					</td>
+					<td>
+						<blockTable colWidths="70.0,130.0">
+							<tr>
+								<td><para style="terp_default_7"><font>Cheque No.</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['cheque_no'] ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Cheque Date</font></para></td>
+								<td><para style="terp_default_7"><font>[[ formatLang(ln['cheque_date'] or '',date=True) ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Cheque Amt</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['cheq_amount'], digits=2) ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Cheque Home</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['cheq_amount_home'], digits=2) ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>  </font></para></td>
+								<td><para style="terp_default_Right_7"><font>  </font></para></td>
+							</tr>
+						</blockTable>
+					</td>
+					<td>
+						<blockTable colWidths="100.0,100.0">
+							<tr>
+								<td><para style="terp_default_7"><font>Bank Currency Key</font></para></td>
+								<td><para style="terp_default_7"></para>[[ln['curr_name'] ]]</td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Bank Chrgs GLAN</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['bank_glan'] ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Bank Draft No.</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['bank_draft'] ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Bank chrgs Amt</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['bank_chrgs'], digits=2) ]]</font></para></td>
+							</tr>
+							<tr>
+								<td><para style="terp_default_7"><font>Bank chrgs Home</font></para></td>
+								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['bank_chrgs_home'], digits=2) ]]</font></para></td>
+							</tr>
+						</blockTable>
+					</td>
 				</tr>
 			</blockTable>
 			<section>
-				<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
-				<blockTable colWidths="250.0,150.0,200.0,200.0">
+				<para style="terp_default_8"><font>[[ repeatIn(ln['lines'], 'c') ]]</font></para>
+				<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0">
 					<tr>
-						<td>
-							<blockTable colWidths="70.0,180.0">
-								<tr>
-									<td><para style="terp_default_7"><font>P/V No.</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['voucher_no'] ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Supplier</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['supp_ref'] ]]</font></para></td>
-								</tr>
-							</blockTable>
-							<blockTable colWidths="250.0">
-								<tr>
-									<td><para style="terp_default_7"><font>[[ln['supp_name'] ]]</font></para></td>
-								</tr>
-							</blockTable>
-							<blockTable colWidths="70.0,180.0">
-								<tr>
-									<td><para style="terp_default_7"><font>Deposit Amt</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['deposit_amt'], digits=2) ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Deposit Home</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['deposit_amt_home'], digits=2) ]]</font></para></td>
-								</tr>
-							</blockTable>
-						</td>
-						<td>
-							<blockTable colWidths="80.0,70.0">
-								<tr>
-									<td><para style="terp_default_7"><font>Realized Ex GLAN</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['ex_glan'] ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Currency</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['curr_name'] ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Ex Rate</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['cur_exrate'], digits=5) ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>  </font></para></td>
-									<td><para style="terp_default_7"><font>  </font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>  </font></para></td>
-									<td><para style="terp_default_7"><font>  </font></para></td>
-								</tr>
-							</blockTable>
-						</td>
-						<td>
-							<blockTable colWidths="70.0,130.0">
-								<tr>
-									<td><para style="terp_default_7"><font>Cheque No.</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['cheque_no'] ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Cheque Date</font></para></td>
-									<td><para style="terp_default_7"><font>[[ formatLang(ln['cheque_date'] or '',date=True) ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Cheque Amt</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['cheq_amount'], digits=2) ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Cheque Home</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['cheq_amount_home'], digits=2) ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>  </font></para></td>
-									<td><para style="terp_default_Right_7"><font>  </font></para></td>
-								</tr>
-							</blockTable>
-						</td>
-						<td>
-							<blockTable colWidths="100.0,100.0">
-								<tr>
-									<td><para style="terp_default_7"><font>Bank Currency Key</font></para></td>
-									<td><para style="terp_default_7"></para>[[ln['curr_name'] ]]</td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Bank Chrgs GLAN</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['bank_glan'] ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Bank Draft No.</font></para></td>
-									<td><para style="terp_default_7"><font>[[ln['bank_draft'] ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Bank chrgs Amt</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['bank_chrgs'], digits=2) ]]</font></para></td>
-								</tr>
-								<tr>
-									<td><para style="terp_default_7"><font>Bank chrgs Home</font></para></td>
-									<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['bank_chrgs_home'], digits=2) ]]</font></para></td>
-								</tr>
-							</blockTable>
-						</td>
-					</tr>
-				</blockTable>
-				<section>
-					<para style="terp_default_8"><font>[[ repeatIn(ln['lines'], 'c') ]]</font></para>
-					<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0">
-						<tr>
-							<td><para style="terp_default_7">[[c['voucher_no'] ]]</para></td>
-							<td><para style="terp_default_7">[[c['credit_no'] ]]</para></td>
-							<td><para style="terp_default_7"><font>[[ formatLang(c['date'] or '',date=True) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(c['credit_inv_amt'], digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(c['alloc_inv_amt'], digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"></para>[[ formatLang(c['gain_loss'], digits=2) ]]</td>
-						</tr>
-						<tr>
-							<td><para style="terp_default_7"></para></td>
-							<td><para style="terp_default_7"></para></td>
-							<td><para style="terp_default_7"><font>[[ formatLang(c['currency_date'] or '',date=True) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(c['cheque_home'], digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(c['credit_inv_home'], digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(c['alloc_inv_home'], digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"></para></td>
-						</tr>
-					</blockTable>
-				</section>
-				<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0" style="TableBelow">
-					<tr>
-						<td><para style="terp_default_7"></para></td>
-						<td><para style="terp_default_7"></para></td>
-						<td><para style="terp_default_7"></para></td>
+						<td><para style="terp_default_7">[[c['voucher_no'] ]]</para></td>
+						<td><para style="terp_default_7">[[c['credit_no'] ]]</para></td>
+						<td><para style="terp_default_7"><font>[[ formatLang(c['date'] or '',date=True) ]]</font></para></td>
 						<td><para style="terp_default_Right_7"></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['credit_inv_amt'], digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['alloc_inv_amt'], digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"></para>[[ formatLang(ln['gain_loss'], digits=2) ]]</td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(c['credit_inv_amt'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(c['alloc_inv_amt'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para>[[ formatLang(c['gain_loss'], digits=2) ]]</td>
 					</tr>
 					<tr>
 						<td><para style="terp_default_7"></para></td>
 						<td><para style="terp_default_7"></para></td>
-						<td><para style="terp_default_7"><font></font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cheq_amount_home'], digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['credit_inv_home'], digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['alloc_inv_home'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ formatLang(c['currency_date'] or '',date=True) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(c['cheque_home'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(c['credit_inv_home'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(c['alloc_inv_home'], digits=2) ]]</font></para></td>
 						<td><para style="terp_default_Right_7"></para></td>
 					</tr>
 				</blockTable>
 			</section>
-			<blockTable colWidths="400.0, 400.0">
+			<blockTable colWidths="150.0,150.0,140.0,90.0,90.0,90.0,90.0" style="TableBelow">
 				<tr>
-					<td>
-						<para style="terp_default_Bold_7"><font>Report Total</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Bold_7"><font> </font></para>
-					</td>
+					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['credit_inv_amt'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['alloc_inv_amt'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"></para>[[ formatLang(ln['gain_loss'], digits=2) ]]</td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['cheq_amount_home'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['credit_inv_home'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['alloc_inv_home'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
 				</tr>
 			</blockTable>
-			<blockTable colWidths="20.0,110.0,70.0,130.0,70.0,400.0">
-				<tr>
-					<td>
-						<para style="terp_default_7"><font>  </font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>No. of Payment Vouchers</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(payment_count(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>Credit Note Home</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(footer_credit_note_home(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font></font></para>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<para style="terp_default_7"><font>  </font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>Cheque Home</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(footer_cheque_home(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>Alloc Inv Home</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(footer_alloc_inv_home(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font></font></para>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<para style="terp_default_7"><font>  </font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>Bank Charges Home</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(footer_bank_charges_home(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>Alloc Realize Ex</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(footer_gain_loss_home(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font></font></para>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<para style="terp_default_7"><font>  </font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>Deposit Home</font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>[[ formatLang(footer_deposit_home(), digits=2) ]]</font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font>  </font></para>
-					</td>
-					<td>
-						<para style="terp_default_Right_7"><font>  </font></para>
-					</td>
-					<td>
-						<para style="terp_default_7"><font></font></para>
-					</td>
-				</tr>
-			</blockTable>
-			<blockTable colWidths="720.0, 80.0" style="TableEnd">
-				<tr>
-					<td>
-						<para style="terp_default_ItalicBold_7">End of Report</para>
-					</td>
-					<td>
-						<para style="terp_default_ItalicBold_7"> </para>
-					</td>
-				</tr>
-			</blockTable>
-		</pto>
+		</section>
+		<blockTable colWidths="400.0, 400.0">
+			<tr>
+				<td>
+					<para style="terp_default_Bold_7"><font>Report Total</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Bold_7"><font> </font></para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="20.0,110.0,70.0,130.0,70.0,400.0">
+			<tr>
+				<td>
+					<para style="terp_default_7"><font>  </font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>No. of Payment Vouchers</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(payment_count(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>Credit Note Home</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(footer_credit_note_home(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font></font></para>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<para style="terp_default_7"><font>  </font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>Cheque Home</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(footer_cheque_home(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>Alloc Inv Home</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(footer_alloc_inv_home(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font></font></para>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<para style="terp_default_7"><font>  </font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>Bank Charges Home</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(footer_bank_charges_home(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>Alloc Realize Ex</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(footer_gain_loss_home(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font></font></para>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<para style="terp_default_7"><font>  </font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>Deposit Home</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>[[ formatLang(footer_deposit_home(), digits=2) ]]</font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font>  </font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>  </font></para>
+				</td>
+				<td>
+					<para style="terp_default_7"><font></font></para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="720.0, 80.0" style="TableEnd">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">End of Report</para>
+				</td>
+				<td>
+					<para style="terp_default_ItalicBold_7"> </para>
+				</td>
+			</tr>
+		</blockTable>
 	</story>
 </document>

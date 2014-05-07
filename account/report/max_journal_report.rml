@@ -41,9 +41,9 @@
   </stylesheet>
 
 	<story>
-			<para><font color="white"> </font></para>
-			<para style="terp_header_Centre">[[ get_header_title() ]]</para>
-			<para><font color="white"> </font></para>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">[[ get_header_title() ]]</para>
+		<para><font color="white"> </font></para>
 			<blockTable colWidths="200.0,60.0,90.0,30.0,90.0,55.0,55.0,55.0,55.0,55.0,55.0" style="TableMiddle">
 				<tr>
 					<td><para style="terp_default_8">Vch No.</para></td>
@@ -72,8 +72,8 @@
 					<td><para style="terp_default_Right_8">Home</para></td>
 				</tr>
 			</blockTable>
-			<section>
-				<para style="terp_default_8">[[repeatIn(get_lines(),'ln') ]]</para>
+		<section>
+			<para style="terp_default_8">[[repeatIn(get_lines(),'ln') ]]</para>
 				<blockTable colWidths="80,420,50,250">
 					<tr>
 						<td><para style="terp_default_Bold_8"><font>[[ ln['part_ref'] ]]</font></para></td>
@@ -82,85 +82,85 @@
 						<td><para style="terp_default_Right_Bold_7"></para></td>
 					</tr>
 				</blockTable>
-				<section>
-					<para style="terp_default_7"><font>[[repeatIn(ln['val_ids'], 'inv') ]]</font></para>
-					<blockTable colWidths="200.0,60.0,90.0,30.0,90.0,55.0,55.0,55.0,55.0,55.0,55.0">
-						<tr>
-							<td><para style="terp_default_7"><font>[[ inv['voucher_no'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ formatLang(inv['date'] or '',date=True) ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ inv['voucher_type'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ inv['curr'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ inv['sale_person'] ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['pre_tax'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['sale_tax'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['after_tax'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['after_tax_home'] or 0, digits=2) ]]</font></para></td>
-						</tr>
-					</blockTable>
-				</section>
-				<blockTable colWidths="470.0,55.0,55.0,55.0,55.0,55.0,55.0" style="TableBottom">
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(ln['val_ids'], 'inv') ]]</font></para>
+				<blockTable colWidths="200.0,60.0,90.0,30.0,90.0,55.0,55.0,55.0,55.0,55.0,55.0">
 					<tr>
-						<td><para style="terp_default_ItalicBold_7"><font>Total for [[ ln['part_ref'] ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_pre_tax'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_sale_tax'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_after_tax'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_pre_tax_home'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_sale_tax_home'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_after_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['voucher_no'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ formatLang(inv['date'] or '',date=True) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['voucher_type'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['curr'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['sale_person'] ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['pre_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['sale_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['after_tax'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['after_tax_home'] or 0, digits=2) ]]</font></para></td>
 					</tr>
 				</blockTable>
-			</section>
-			<blockTable colWidths="800.0">
+		</section>
+			<blockTable colWidths="470.0,55.0,55.0,55.0,55.0,55.0,55.0" style="TableBottom">
 				<tr>
-					<td>
-						<para style="terp_default_Bold_8">Report Total By Currency</para>
-					</td>
-				</tr>
-			</blockTable>
-		<blockTable colWidths="270.0,530.0">
-			<tr>
-				<td><para></para></td>
-				<td><para style="terp_default_ItalicBold_7">Invoice</para></td>
-			</tr>
-		</blockTable>
-		<section>
-			<para><font>[[repeatIn(get_inv_balance_by_cur(),'gti') ]]</font></para>
-			<blockTable colWidths="300.0,170.00,55.0,55.0,55.0,55.0,55.0,55.0">
-				<tr>
-					<td><para></para></td>
-					<td><para style="terp_default_Bold_8"><font>[[gti['cur_name'] ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['pre_tax'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['sale_tax'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['after_tax'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['after_tax_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_ItalicBold_7"><font>Total for [[ ln['part_ref'] ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_pre_tax'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_sale_tax'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_after_tax'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_pre_tax_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_sale_tax_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_after_tax_home'] or 0, digits=2) ]]</font></para></td>
 				</tr>
 			</blockTable>
 		</section>
-		<blockTable colWidths="270.0,530.0">
+		<blockTable colWidths="800.0">
 			<tr>
-				<td><para></para></td>
-				<td><para style="terp_default_ItalicBold_7">Credit Note</para></td>
+				<td>
+					<para style="terp_default_Bold_8">Report Total By Currency</para>
+				</td>
 			</tr>
 		</blockTable>
-		<section>
-			<para><font>[[repeatIn(get_ref_balance_by_cur(),'gtr') ]]</font></para>
-			<blockTable colWidths="300.0,170.00,55.0,55.0,55.0,55.0,55.0,55.0">
-				<tr>
-					<td><para></para></td>
-					<td><para style="terp_default_Bold_8"><font>[[gtr['cur_name'] ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['pre_tax'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['sale_tax'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['after_tax'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['after_tax_home'] or 0, digits=2) ]]</font></para></td>
-				</tr>
-			</blockTable>
-		</section>
+	<blockTable colWidths="270.0,530.0">
+		<tr>
+			<td><para></para></td>
+			<td><para style="terp_default_ItalicBold_7">Invoice</para></td>
+		</tr>
+	</blockTable>
+	<section>
+		<para><font>[[repeatIn(get_inv_balance_by_cur(),'gti') ]]</font></para>
+		<blockTable colWidths="300.0,170.00,55.0,55.0,55.0,55.0,55.0,55.0">
+			<tr>
+				<td><para></para></td>
+				<td><para style="terp_default_Bold_8"><font>[[gti['cur_name'] ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['pre_tax'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['sale_tax'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['after_tax'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gti['after_tax_home'] or 0, digits=2) ]]</font></para></td>
+			</tr>
+		</blockTable>
+	</section>
+	<blockTable colWidths="270.0,530.0">
+		<tr>
+			<td><para></para></td>
+			<td><para style="terp_default_ItalicBold_7">Credit Note</para></td>
+		</tr>
+	</blockTable>
+	<section>
+		<para><font>[[repeatIn(get_ref_balance_by_cur(),'gtr') ]]</font></para>
+		<blockTable colWidths="300.0,170.00,55.0,55.0,55.0,55.0,55.0,55.0">
+			<tr>
+				<td><para></para></td>
+				<td><para style="terp_default_Bold_8"><font>[[gtr['cur_name'] ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['pre_tax'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['sale_tax'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['after_tax'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['pre_tax_home'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['sale_tax_home'] or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(gtr['after_tax_home'] or 0, digits=2) ]]</font></para></td>
+			</tr>
+		</blockTable>
+	</section>
 		<blockTable colWidths="635.0,55.0,55.0,55.0">
 			<tr>
 				<td><para></para></td>
@@ -177,7 +177,6 @@
 				<td>
 					<para style="terp_default_ItalicBold_7"> </para>
 				</td>
-				
 			</tr>
 		</blockTable>
 	</story>
