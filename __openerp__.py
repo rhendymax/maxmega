@@ -46,6 +46,7 @@
                 "so_workflowchange",
                 "stock",
                 "max_custom_report",
+                "max_report",
                 "upgrade_all"],
     'init_xml': [],
     'update_xml': [

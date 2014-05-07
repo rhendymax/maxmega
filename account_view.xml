@@ -370,7 +370,7 @@
 			sequence="50"/>
 
 		<menuitem
-			name="Sale Journal by Sales Zone, Customer Key"
+			name="Sale Journal by Sales Zone, Customer Key Report"
 			id="menu_account_max_report_ar_sales_journal_by_sales_zone_customer"
 			parent="menu_account_max_report_ar"
 			action="max_report.action_param_sale_journal_zone_key"
@@ -384,7 +384,6 @@
 			sequence="60"/>
 
 <!-- -->
-
 
 <!-- -->
 		<menuitem
