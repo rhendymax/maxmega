@@ -211,7 +211,7 @@ class max_journal_report(report_sxw.rml_parse):
         return super(max_journal_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
-        super(sale_journal_zone_report, self).__init__(cr, uid, name, context=context)
+        super(max_journal_report, self).__init__(cr, uid, name, context=context)
         self.inv_balance_by_cur = {}
         self.ref_balance_by_cur = {}
         self.pre_tax_home = 0.00

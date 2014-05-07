@@ -41,40 +41,6 @@
   </stylesheet>
 
 	<story>
-		<pto>
-			<pto_header>
-				<para><font color="white"> </font></para>
-				<para style="terp_header_Centre">[[ get_header_title() ]]</para>
-				<para><font color="white"> </font></para>
-				<blockTable colWidths="200.0,60.0,90.0,30.0,90.0,55.0,55.0,55.0,55.0,55.0,55.0" style="TableMiddle">
-					<tr>
-						<td><para style="terp_default_8">Vch No.</para></td>
-						<td><para style="terp_default_8">Date</para></td>
-						<td><para style="terp_default_8">Type</para></td>
-						<td><para style="terp_default_8">Ccy</para></td>
-						<td><para style="terp_default_8">Sales Person</para></td>
-						<td><para style="terp_default_Right_8">Pre tax</para></td>
-						<td><para style="terp_default_Right_8">Sales tax</para></td>
-						<td><para style="terp_default_Right_8">After tax</para></td>
-						<td><para style="terp_default_Right_8">Pre tax</para></td>
-						<td><para style="terp_default_Right_8">Sales tax</para></td>
-						<td><para style="terp_default_Right_8">After tax</para></td>
-					</tr>
-					<tr>
-						<td><para style="terp_default_8"><font></font></para></td>
-						<td><para style="terp_default_8"><font></font></para></td>
-						<td><para style="terp_default_8"><font></font></para></td>
-						<td><para style="terp_default_8"><font></font></para></td>
-						<td><para style="terp_default_8"><font></font></para></td>
-						<td><para style="terp_default_Right_8">Amt</para></td>
-						<td><para style="terp_default_Right_8">Amt</para></td>
-						<td><para style="terp_default_Right_8">Amt</para></td>
-						<td><para style="terp_default_Right_8">Home</para></td>
-						<td><para style="terp_default_Right_8">Home</para></td>
-						<td><para style="terp_default_Right_8">Home</para></td>
-					</tr>
-				</blockTable>
-			</pto_header>
 			<para><font color="white"> </font></para>
 			<para style="terp_header_Centre">[[ get_header_title() ]]</para>
 			<para><font color="white"> </font></para>
@@ -214,6 +180,5 @@
 				
 			</tr>
 		</blockTable>
-		</pto>
 	</story>
 </document>
