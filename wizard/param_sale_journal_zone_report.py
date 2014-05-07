@@ -35,7 +35,7 @@ class account_statement_report(osv.osv_memory):
         'partner_default_to':fields.many2one('res.partner', 'Customer To', domain=[('customer','=',True)], required=False),
         'partner_input_from': fields.char('Customer From', size=128),
         'partner_input_to': fields.char('Customer To', size=128),
-        'partner_ids' :fields.many2many('res.partner', 'report_sale_journal_z_customer_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
+        'partner_ids' :fields.many2many('res.partner', 'report_sale_journal_z_c_customer_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
         'date_selection': fields.selection([('none_sel','None'),('period_sel','Period'),('date_sel', 'Date')],'Type Selection', required=True),
         'period_filter_selection': fields.selection([('def','Default'),('input', 'Input')],'Period Filter Selection'),
         'date_from': fields.date("From Date"),
@@ -49,7 +49,7 @@ class account_statement_report(osv.osv_memory):
         'sale_zone_default_to':fields.many2one('res.partner.sales.zone', 'Zone To', required=False),
         'sale_zone_input_from': fields.char('Zone From', size=128),
         'sale_zone_input_to': fields.char('Zone To', size=128),
-        'sale_zone_ids' :fields.many2many('res.partner.sales.zone', 'report_sale_journal_z_zone_rel', 'report_id', 'zone_id', 'Zone'),
+        'sale_zone_ids' :fields.many2many('res.partner.sales.zone', 'report_sale_journal_z_c_zone_rel', 'report_id', 'zone_id', 'Zone'),
     }
 
     _defaults = {
@@ -60,6 +60,19 @@ class account_statement_report(osv.osv_memory):
         'sale_zone_selection': 'all_vall'
     }
 
+    def onchange_date_selection(self, cr, uid, ids, date_selection, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        if date_selection:
+            if date_selection == 'period_sel':
+                res['value'] = {'period_filter_selection': 'def',
+                                 }
+            else:
+                res['value'] = {'period_filter_selection': False,
+                                 }
+        return res
+    
     def print_report(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
