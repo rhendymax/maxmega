@@ -372,7 +372,7 @@ class max_journal_report(report_sxw.rml_parse):
                 val = []
                 period_id_vals = {}
                 total_pre_tax = total_sale_tax = total_after_tax = total_pre_tax_home = total_sale_tax_home = total_after_tax_home = 0
-                sign = 1
+                
                 if qry3:
                     for t in qry3:
                         sign = 1
