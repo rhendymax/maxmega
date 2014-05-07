@@ -51,7 +51,7 @@
 							<field name="period_input_to"
 								attrs="{'invisible': ['|',('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
 						</page>
-						<page string="Journal">
+						<page string="Bank">
 							<field name="journal_selection" colspan="4"/>
 							<field name="journal_default_from" attrs="{'invisible': [('journal_selection','!=','def')], 'required': [('journal_selection','=','def')]}"/>
 							<field name="journal_default_to" attrs="{'invisible': [('journal_selection','!=','def')], 'required': [('journal_selection','=','def')]}"/>
@@ -64,7 +64,6 @@
 								<tree>
 									<field name="code"/>
 									<field name="name"/>
-									<field name="type"/>
 								</tree>
 							</field>
 						</page>

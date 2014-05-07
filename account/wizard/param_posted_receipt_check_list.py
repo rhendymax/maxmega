@@ -42,12 +42,12 @@ class param_posted_receipt_check_list(osv.osv_memory):
         'period_default_to':fields.many2one('account.period', 'Period To'),
         'period_input_from': fields.char('Period From', size=128),
         'period_input_to': fields.char('Period To', size=128),
-        'journal_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Journal Filter Selection', required=True),
-        'journal_default_from':fields.many2one('account.journal', 'Journal From', domain=[('type','in',('bank','cash'))], required=False),
-        'journal_default_to':fields.many2one('account.journal', 'Journal To', domain=[('type','in',('bank','cash'))], required=False),
-        'journal_input_from': fields.char('Journal From', size=128),
-        'journal_input_to': fields.char('Journal To', size=128),
-        'journal_ids' :fields.many2many('account.journal', 'report_receivable_journal_rel', 'report_id', 'journal_id', 'Journal', domain=[('type','in',('bank','cash'))]),
+        'journal_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Bank Filter Selection', required=True),
+        'journal_default_from':fields.many2one('account.journal', 'Bank From', domain=[('type','in',('bank','cash'))], required=False),
+        'journal_default_to':fields.many2one('account.journal', 'Bank To', domain=[('type','in',('bank','cash'))], required=False),
+        'journal_input_from': fields.char('Bank From', size=128),
+        'journal_input_to': fields.char('Bank To', size=128),
+        'journal_ids' :fields.many2many('account.journal', 'report_receivable_journal_rel', 'report_id', 'journal_id', 'Bank', domain=[('type','in',('bank','cash'))]),
     }
 
     _defaults = {
