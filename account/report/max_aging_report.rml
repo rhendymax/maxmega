@@ -49,178 +49,146 @@
     <images/>
   </stylesheet>
 	<story>
-
-		<pto>
-			<pto_header>
-				<para><font color="white"> </font></para>
-				<para style="terp_header_Centre">[[ get_header_title() ]]</para>
-				<para><font color="white"> </font></para>
-				<blockTable colWidths="100.0,100.0,120.0,80.0,80.0,80.0,80.0,80.0,80.0" style="TableMiddle">
-					<tr>
-						<td><para style="terp_default_Bold_8">Vch No</para></td>
-						<td><para style="terp_default_Bold_8">TP Doc Date</para></td>
-						<td><para style="terp_default_Bold_8">Ref No</para></td>
-						<td><para style="terp_default_Right_Bold_8">Orig Amt</para></td>
-						<td><para style="terp_default_Right_Bold_8">Paid/CN</para></td>
-						<td><para style="terp_default_Right_Bold_8">&lt; 31</para></td>
-						<td><para style="terp_default_Right_Bold_8">31 To 60</para></td>
-						<td><para style="terp_default_Right_Bold_8">61 To 90</para></td>
-						<td><para style="terp_default_Right_Bold_8">Over 91</para></td>
-					</tr>
-					<tr>
-						<td><para style="terp_default_Bold_8">Sales Person</para></td>
-						<td><para style="terp_default_Bold_8">Due Date</para></td>
-						<td><para style="terp_default_Bold_8">Cust PO No</para></td>
-						<td><para style="terp_default_Right_Bold_8">Home</para></td>
-						<td><para style="terp_default_Right_Bold_8">Home</para></td>
-						<td><para style="terp_default_Right_Bold_8"></para></td>
-						<td><para style="terp_default_Right_Bold_8"></para></td>
-						<td><para style="terp_default_Right_Bold_8"></para></td>
-						<td><para style="terp_default_Right_Bold_8"></para></td>
-					</tr>
-				</blockTable>
-			</pto_header>
-			<para><font color="white"> </font></para>
-			<para style="terp_header_Centre">[[ get_header_title() ]]</para>
-			<para><font color="white"> </font></para>
-			<blockTable colWidths="100.0,100.0,120.0,80.0,80.0,80.0,80.0,80.0,80.0" style="TableMiddle">
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">[[ get_header_title() ]]</para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="100.0,100.0,120.0,80.0,80.0,80.0,80.0,80.0,80.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_Bold_8">Vch No</para></td>
+				<td><para style="terp_default_Bold_8">TP Doc Date</para></td>
+				<td><para style="terp_default_Bold_8">Ref No</para></td>
+				<td><para style="terp_default_Right_Bold_8">Orig Amt</para></td>
+				<td><para style="terp_default_Right_Bold_8">Paid/CN</para></td>
+				<td><para style="terp_default_Right_Bold_8">&lt; 31</para></td>
+				<td><para style="terp_default_Right_Bold_8">31 To 60</para></td>
+				<td><para style="terp_default_Right_Bold_8">61 To 90</para></td>
+				<td><para style="terp_default_Right_Bold_8">Over 91</para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_Bold_8">Sales Person</para></td>
+				<td><para style="terp_default_Bold_8">Due Date</para></td>
+				<td><para style="terp_default_Bold_8">Cust PO No</para></td>
+				<td><para style="terp_default_Right_Bold_8">Home</para></td>
+				<td><para style="terp_default_Right_Bold_8">Home</para></td>
+				<td><para style="terp_default_Right_Bold_8"></para></td>
+				<td><para style="terp_default_Right_Bold_8"></para></td>
+				<td><para style="terp_default_Right_Bold_8"></para></td>
+				<td><para style="terp_default_Right_Bold_8"></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
+			<blockTable colWidths="70.0,270.0,50.0,120.0,130.0,70.0,60.0">
 				<tr>
-					<td><para style="terp_default_Bold_8">Vch No</para></td>
-					<td><para style="terp_default_Bold_8">TP Doc Date</para></td>
-					<td><para style="terp_default_Bold_8">Ref No</para></td>
-					<td><para style="terp_default_Right_Bold_8">Orig Amt</para></td>
-					<td><para style="terp_default_Right_Bold_8">Paid/CN</para></td>
-					<td><para style="terp_default_Right_Bold_8">&lt; 31</para></td>
-					<td><para style="terp_default_Right_Bold_8">31 To 60</para></td>
-					<td><para style="terp_default_Right_Bold_8">61 To 90</para></td>
-					<td><para style="terp_default_Right_Bold_8">Over 91</para></td>
-				</tr>
-				<tr>
-					<td><para style="terp_default_Bold_8">Sales Person</para></td>
-					<td><para style="terp_default_Bold_8">Due Date</para></td>
-					<td><para style="terp_default_Bold_8">Cust PO No</para></td>
-					<td><para style="terp_default_Right_Bold_8">Home</para></td>
-					<td><para style="terp_default_Right_Bold_8">Home</para></td>
-					<td><para style="terp_default_Right_Bold_8"></para></td>
-					<td><para style="terp_default_Right_Bold_8"></para></td>
-					<td><para style="terp_default_Right_Bold_8"></para></td>
-					<td><para style="terp_default_Right_Bold_8"></para></td>
+					<td><para style="terp_default_Bold_6"><font>[[ ln['part_ref'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_6"><font>[[ ln['part_name'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_6"><font>[[ ln['cur_name'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_6"><font>Tel: [[ ln['contact_phone'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_6"><font>Contact: [[ ln['contact_person'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_6"><font>Credit Limit:</font></para></td>
+					<td><para style="terp_default_Right_Bold_6"><font>[[ formatLang(ln['credit_limit'] or 0, digits=2) ]]</font></para></td>
 				</tr>
 			</blockTable>
 			<section>
-				<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
-				<blockTable colWidths="70.0,270.0,50.0,120.0,130.0,70.0,60.0">
+				<para style="terp_default_7"><font>[[repeatIn(ln['val_ids'], 'inv') ]]</font></para>
+				<blockTable colWidths="100.0,100.0,120.0,80.0,80.0,80.0,80.0,80.0,80.0">
 					<tr>
-						<td><para style="terp_default_Bold_6"><font>[[ ln['part_ref'] ]]</font></para></td>
-						<td><para style="terp_default_Bold_6"><font>[[ ln['part_name'] ]]</font></para></td>
-						<td><para style="terp_default_Bold_6"><font>[[ ln['cur_name'] ]]</font></para></td>
-						<td><para style="terp_default_Bold_6"><font>Tel: [[ ln['contact_phone'] ]]</font></para></td>
-						<td><para style="terp_default_Bold_6"><font>Contact: [[ ln['contact_person'] ]]</font></para></td>
-						<td><para style="terp_default_Bold_6"><font>Credit Limit:</font></para></td>
-						<td><para style="terp_default_Right_Bold_6"><font>[[ formatLang(ln['credit_limit'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['invoice_name'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ formatLang(inv['invoice_date'] or '',date=True) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ inv['ref_no'] ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['orig_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['paid_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt1'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt2'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt3'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt4'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+					<tr>
+						<td><para style="terp_default_7"><font>[[ inv['sales_person'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ formatLang(inv['due_date'] or '',date=True) ]]</font></para></td>
+						<td><para style="terp_default_7"></para>[[ inv['cust_po_no'] ]]</td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_orig_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_paid_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt1'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt2'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt3'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt4'] or 0, digits=2) ]]</font></para></td>
 					</tr>
 				</blockTable>
-				<section>
-					<para style="terp_default_7"><font>[[repeatIn(ln['val_ids'], 'inv') ]]</font></para>
-					<blockTable colWidths="100.0,100.0,120.0,80.0,80.0,80.0,80.0,80.0,80.0">
-						<tr>
-							<td><para style="terp_default_7"><font>[[ inv['invoice_name'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ formatLang(inv['invoice_date'] or '',date=True) ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ inv['ref_no'] ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['orig_amt'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['paid_amt'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt1'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt2'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt3'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['amt4'] or 0, digits=2) ]]</font></para></td>
-						</tr>
-						<tr>
-							<td><para style="terp_default_7"><font>[[ inv['sales_person'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ formatLang(inv['due_date'] or '',date=True) ]]</font></para></td>
-							<td><para style="terp_default_7"></para>[[ inv['cust_po_no'] ]]</td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_orig_amt'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_paid_amt'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt1'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt2'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt3'] or 0, digits=2) ]]</font></para></td>
-							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['home_amt4'] or 0, digits=2) ]]</font></para></td>
-						</tr>
-					</blockTable>
-				</section>
-				<blockTable colWidths="240.0,80.0,120.0,120.0,80.0,80.0,80.0" style="TableBottom">
-					<tr>
-						<td><para style="terp_default_Bold_7"></para></td>
-						<td><para style="terp_default_Bold_7"><font>[[ ln['cur_name'] ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_inv'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt1'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt2'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt3'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt4'] or 0, digits=2) ]]</font></para></td>
-					</tr>
-					<tr>
-						<td><para style="terp_default_Bold_7"><font>Total for : [[ ln['part_ref'] ]]</font></para></td>
-						<td><para style="terp_default_Bold_7"><font>Home</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt1'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt2'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt3'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt4'] or 0, digits=2) ]]</font></para></td>
-					</tr>
-				</blockTable>
-				<para><font color="white"> </font></para>
 			</section>
-			<blockTable colWidths="300,300,200">
+			<blockTable colWidths="240.0,80.0,120.0,120.0,80.0,80.0,80.0" style="TableBottom">
 				<tr>
-					<td><para style="terp_default_ItalicBold_7"><font>Report Total By Currency</font></para></td>
-					<td><para style="terp_default_7"></para></td>
-					<td><para style="terp_default_Right_Bold_7"></para></td>
+					<td><para style="terp_default_Bold_7"></para></td>
+					<td><para style="terp_default_Bold_7"><font>[[ ln['cur_name'] ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_inv'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt1'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt2'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt3'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_amt4'] or 0, digits=2) ]]</font></para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_Bold_7"><font>Total for : [[ ln['part_ref'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_7"><font>Home</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt1'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt2'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt3'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['total_home_amt4'] or 0, digits=2) ]]</font></para></td>
 				</tr>
 			</blockTable>
-			<section>
-				<para style="terp_default_7"><font>[[ repeatIn(get_balance_by_cur(), 'bal') ]]</font></para>
-				<blockTable colWidths="240.0,80.0,120.0,120.0,80.0,80.0,80.0">
-					<tr>
-						<td><para style="terp_default_Bold_7"></para></td>
-						<td><para style="terp_default_Bold_7"><font>[[ bal['cur_name'] ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['total_inv'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt1'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt2'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt3'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt4'] or 0, digits=2) ]]</font></para></td>
-					</tr>
-					<tr>
-						<td><para style="terp_default_Bold_7"></para></td>
-						<td><para style="terp_default_Bold_7"><font>Home</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['total_home'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt1'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt2'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt3'] or 0, digits=2) ]]</font></para></td>
-						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt4'] or 0, digits=2) ]]</font></para></td>
-					</tr>
-				</blockTable>
-			</section>
+			<para><font color="white"> </font></para>
+		</section>
+		<blockTable colWidths="300,300,200">
+			<tr>
+				<td><para style="terp_default_ItalicBold_7"><font>Report Total By Currency</font></para></td>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_Right_Bold_7"></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[ repeatIn(get_balance_by_cur(), 'bal') ]]</font></para>
 			<blockTable colWidths="240.0,80.0,120.0,120.0,80.0,80.0,80.0">
 				<tr>
 					<td><para style="terp_default_Bold_7"></para></td>
-					<td><para style="terp_default_Bold_7"><font>Total Home</font></para></td>
-					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['total_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt1']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt2']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt3']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
-					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt4']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Bold_7"><font>[[ bal['cur_name'] ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['total_inv'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt1'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt2'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt3'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['amt4'] or 0, digits=2) ]]</font></para></td>
 				</tr>
-			</blockTable>
-			<blockTable colWidths="720.0, 80.0">
 				<tr>
-					<td>
-						<para style="terp_default_ItalicBold_7">End of Report</para>
-					</td>
-					<td>
-						<para style="terp_default_ItalicBold_7"></para>
-					</td>
-					
+					<td><para style="terp_default_Bold_7"></para></td>
+					<td><para style="terp_default_Bold_7"><font>Home</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['total_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt1'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt2'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt3'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['home_amt4'] or 0, digits=2) ]]</font></para></td>
 				</tr>
 			</blockTable>
-		</pto>
+		</section>
+		<blockTable colWidths="240.0,80.0,120.0,120.0,80.0,80.0,80.0">
+			<tr>
+				<td><para style="terp_default_Bold_7"></para></td>
+				<td><para style="terp_default_Bold_7"><font>Total Home</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['total_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt1']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt2']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt3']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['home_amt4']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="720.0, 80.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">End of Report</para>
+				</td>
+				<td>
+					<para style="terp_default_ItalicBold_7"></para>
+				</td>
+				
+			</tr>
+		</blockTable>
 	</story>
 </document>
