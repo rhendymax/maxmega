@@ -85,9 +85,9 @@
 			<field name="target">new</field>
 		</record>
 
-		<menuitem
+		<!--menuitem
 			id="menu_param_receipt_deposit_bank"
 			action="action_param_receipt_deposit_bank"
-			parent="max_custom_report.menu_custom_account"/>
+			parent="max_custom_report.menu_custom_account"/-->
 	</data>
 </openerp>
