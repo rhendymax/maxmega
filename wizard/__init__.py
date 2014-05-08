@@ -24,7 +24,6 @@
 import account_statement_report
 import param_sale_journal_zone_key_report
 import param_sale_journal_zone_report
-import param_deposit_bank_report
 import param_partner_enquiry
 import param_payment_deposit_bank_report
 import param_receipt_deposit_bank_report

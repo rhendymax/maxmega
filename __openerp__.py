@@ -36,7 +36,6 @@ Customise report
         'wizard/account_statement_report.xml',
         'wizard/param_sale_journal_zone_key_report.xml',
         'wizard/param_sale_journal_zone_report.xml',
-        'wizard/param_deposit_bank_report.xml',
         'wizard/param_payment_deposit_bank_report.xml',
         'wizard/param_receipt_deposit_bank_report.xml',
         'wizard/param_partner_enquiry.xml',
