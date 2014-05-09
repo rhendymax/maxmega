@@ -417,6 +417,7 @@ class report(report_sxw.rml_parse):
                 'zone_name' : 'No Sales Zone Defined !!',
                 'val': val2,
                 })
+        print "done"
         return results
 
 
