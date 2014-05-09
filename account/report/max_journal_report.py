@@ -457,7 +457,7 @@ class max_journal_report(report_sxw.rml_parse):
                     })
 
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
-
+        print "done"
         return results1
 
 report_sxw.report_sxw('report.max.journal.report_landscape', 'account.invoice',

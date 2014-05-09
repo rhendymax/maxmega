@@ -46,72 +46,16 @@
     <paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="Right" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+	<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+
     <images/>
   </stylesheet>
 	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">Supplier Delivery Outstanding Purchase Order</para>
+		<para><font color="white"> </font></para>
 		
-		<para><font color="white"> </font></para>
-
-		<blockTable colWidths="800.0" >
-			<tr>
-				<td>
-					<para style="terp_default_Bold_8">Supplier Delivery Outstanding Purchase Order</para>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<blockTable colWidths="100.0,10.0,100.0,50.0,135.0,10.0,100.0,50.0,135.0,10.0,100.0">
-						<tr>
-							<td>
-								<para style="terp_default_ItalicBold_7">PO Date From</para>
-								<para style="terp_default_ItalicBold_7">PO Date To</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">:</para>
-								<para style="terp_default_ItalicBold_7">:</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['date_from'] or '',date=True) ]]</para>
-								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['date_to'] or '',date=True) ]]</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">Supplier Code From</para>
-								<para style="terp_default_ItalicBold_7">Supplier Code To</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">:</para>
-								<para style="terp_default_ItalicBold_7">:</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">[[get_code_from() or '']]</para>
-								<para style="terp_default_ItalicBold_7">[[get_code_to() or '']]</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">PO From</para>
-								<para style="terp_default_ItalicBold_7">PO To</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">:</para>
-								<para style="terp_default_ItalicBold_7">:</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">[[get_po_from() or '']]</para>
-								<para style="terp_default_ItalicBold_7">[[get_po_to() or '']]</para>
-							</td>
-						</tr>
-					</blockTable>
-				</td>
-			</tr>
-		</blockTable>
-
-		<para><font color="white"> </font></para>
-	<blockTable colWidths="70.0,220.0,70.0,140.0,60.0,80.0,80.0,80.0" style="TableMiddle" >
+	<blockTable colWidths="70.0,220.0,70.0,140.0,60.0,80.0,80.0,80.0" style="TableMiddle">
 		<tr>
 			<td><para style="terp_default_8">Supplier Key</para></td>
 			<td><para style="terp_default_8">Supplier Name</para></td>
@@ -125,21 +69,12 @@
 	</blockTable>
 	<section>
 		<para style="terp_default_7">
-					<font>[[repeatIn(get_lines(),'ln') ]]</font>
+			<font>[[repeatIn(get_lines(),'ln') ]]</font>
 		</para>
 		<blockTable colWidths="70.0,220.0,70.0,140.0,60.0,80.0,80.0,80.0">
 			<tr>
-				<td>
-					<para style="terp_default_7">
-						<font>[[ln['s_ref'] ]] </font>
-					</para>
-				</td>
-				<td>
-					<para style="terp_default_7">
-						<font>[[ln['s_name'] ]] </font>
-					</para>
-					
-				</td>
+				<td><para style="terp_default_7"><font>[[ln['s_ref'] ]] </font></para></td>
+				<td><para style="terp_default_7"><font>[[ln['s_name'] ]] </font></para></td>
 				<td><para style="terp_default_7"><font>[[ln['order_name'] ]]</font></para></td>
 				<td><para style="terp_default_7"><font>[[ln['part_name'] ]]</font></para></td>
 				<td><para style="terp_default_7"><font>[[formatLang(ln['etd'],date=True) ]]</font></para></td>

@@ -26,15 +26,20 @@ class param_margin_sales_report(osv.osv_memory):
     _name = 'param.margin.sales.report'
     _description = 'Param Margin Sales Report'
     _columns = {
-        'date_from': fields.date("Voucher Date From", required=True),
-        'date_to': fields.date("Voucher Date To", required=True),
-        'inv_from':fields.many2one('account.invoice', 'Invoice From', required=False),
-        'inv_to':fields.many2one('account.invoice', 'Invoice To', required=False),
+        'date_selection': fields.selection([('none_sel','None'),('date_sel', 'Date')],'Type Selection', required=True),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+        'invoice_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Invoice Filter Selection', required=True),
+        'invoice_default_from':fields.many2one('account.invoice', 'Invoice From', domain=[('type','=','out_invoice'),('state','in',('open','paid'))], required=False),
+        'invoice_default_to':fields.many2one('account.invoice', 'Invoice To', domain=[('type','=','out_invoice'),('state','in',('open','paid'))], required=False),
+        'invoice_input_from': fields.char('Invoice From', size=128),
+        'invoice_input_to': fields.char('Invoice To', size=128),
+        'invoice_ids' :fields.many2many('account.invoice', 'report_monthly_sale_invoice_rel', 'report_id', 'invoice_id', 'Invoice No', domain=[('type','=','out_invoice'),('state','in',('open','paid'))]),
     }
 
     _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d')
+         'date_selection':'none_sel',
+         'invoice_selection':'all_vall',
     }
 
     def create_vat(self, cr, uid, ids, context=None):

@@ -10,12 +10,28 @@
 					<separator string="Monthly POS Report with Selected Brand" colspan="4"/>
 					<label colspan="4" nolabel="1" string="This menu prints Monthly POS Report with Selected Brand"/>
 					<newline/>
-					<separator string="Date"  colspan="4"/>
-					<field name="date_from" attrs="{'required':1}"/>
-					<field name="date_to" attrs="{'required':1}"/>
-					<separator string="Inventory Brand" colspan="4"/>
-					<field name="brand_from"/>
-					<field name="brand_to"/>
+					<notebook colspan="4">
+						<page string="Invoice No">
+							<field name="brand_selection" colspan="4"/>
+							<field name="brand_default_from" attrs="{'invisible': [('brand_selection','!=','def')], 'required': [('brand_selection','=','def')]}"/>
+							<field name="brand_default_to" attrs="{'invisible': [('brand_selection','!=','def')], 'required': [('brand_selection','=','def')]}"/>
+							<field name="brand_input_from"
+								attrs="{'invisible': [('brand_selection','!=','input')], 'required': [('brand_selection','=','input')]}"/>
+							<field name="brand_input_to"
+								attrs="{'invisible': [('brand_selection','!=','input')], 'required': [('brand_selection','=','input')]}"/>
+							<field name="brand_ids"
+								attrs="{'invisible': [('brand_selection','!=','selection')], 'required': [('brand_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+						</page>
+					</notebook>
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>

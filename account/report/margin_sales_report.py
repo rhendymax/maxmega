@@ -235,6 +235,7 @@ class margin_sales_report(report_sxw.rml_parse):
 #                    
             res['lines'] = lines_ids
             results.append(res)
+        print "done"
         return results
 
 report_sxw.report_sxw('report.margin.sales.report_landscape', 'account.invoice',

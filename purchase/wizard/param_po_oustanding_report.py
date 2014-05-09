@@ -93,29 +93,29 @@ class param_po_oustanding_report(osv.osv_memory):
 
 param_po_oustanding_report()
 
-#class purchase_order_line(osv.osv):
-#    _inherit = "purchase.order.line"
-#    _description = "Purchase Order Line"
-#
-#    def _qty_oustanding(self, cr, uid, ids, name, arg, context=None):
-#        if not ids: return {}
-#        res = {}
-#        stock_move_obj = self.pool.get("stock.move")
-#        product_uom_obj = self.pool.get("product.uom")
-#        qty_oustanding = 0.00
-#        for obj in self.browse(cr, uid, ids, context=context):
-#            qty_delivery = 0
-#            move_ids = stock_move_obj.search(cr, uid, [('purchase_line_id','=',obj.id),('state','=','done')])
-#            if move_ids:
-#                for mv in stock_move_obj.browse(cr, uid, move_ids, context=context):
-#                    qty_delivery = qty_delivery + product_uom_obj._compute_qty(cr, uid, mv.product_uom.id, mv.product_qty, mv.product_id.uom_id.id)
-#            res[obj.id] = obj.product_qty - qty_delivery
-#        return res
-#
-#    _columns = {
-#        'oustanding_qty': fields.function(_qty_oustanding, type='float', string='Total oustanding_qty'),
-#    }
-#
-#purchase_order_line()
+class purchase_order_line(osv.osv):
+    _inherit = "purchase.order.line"
+    _description = "Purchase Order Line"
+
+    def _qty_oustanding(self, cr, uid, ids, name, arg, context=None):
+        if not ids: return {}
+        res = {}
+        stock_move_obj = self.pool.get("stock.move")
+        product_uom_obj = self.pool.get("product.uom")
+        qty_oustanding = 0.00
+        for obj in self.browse(cr, uid, ids, context=context):
+            qty_delivery = 0
+            move_ids = stock_move_obj.search(cr, uid, [('purchase_line_id','=',obj.id),('state','=','done')])
+            if move_ids:
+                for mv in stock_move_obj.browse(cr, uid, move_ids, context=context):
+                    qty_delivery = qty_delivery + product_uom_obj._compute_qty(cr, uid, mv.product_uom.id, mv.product_qty, mv.product_id.uom_id.id)
+            res[obj.id] = obj.product_qty - qty_delivery
+        return res
+
+    _columns = {
+        'oustanding_qty': fields.function(_qty_oustanding, type='float', string='Total oustanding_qty'),
+    }
+
+purchase_order_line()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

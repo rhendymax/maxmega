@@ -26,15 +26,20 @@ class param_monthly_pos_report(osv.osv_memory):
     _name = 'param.monthly.pos.report'
     _description = 'Param Monthly POS Report with Selected Brand'
     _columns = {
-        'date_from': fields.date("Voucher Date From", required=True),
-        'date_to': fields.date("Voucher Date To", required=True),
-        'brand_from':fields.many2one('product.brand', 'Inventory Brand From', required=False),
-        'brand_to':fields.many2one('product.brand', 'Inventory Brand To', required=False),
+        'date_selection': fields.selection([('none_sel','None'),('date_sel', 'Date')],'Type Selection', required=True),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+        'brand_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Inventory Brand Filter Selection', required=True),
+        'brand_default_from':fields.many2one('product.brand', 'Inventory Brand From', domain=[], required=False),
+        'brand_default_to':fields.many2one('product.brand', 'Inventory Brand To', domain=[], required=False),
+        'brand_input_from': fields.char('Inventory Brand From', size=128),
+        'brand_input_to': fields.char('Inventory Brand To', size=128),
+        'brand_ids' :fields.many2many('product.brand', 'report_monthly_brand_rel', 'report_id', 'brand_id', 'Inventory Brand', domain=[]),
     }
 
     _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d')
+       'date_selection':'none-sel',
+       'brand_selection':'all_vall',
     }
 
     def create_vat(self, cr, uid, ids, context=None):
