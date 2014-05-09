@@ -38,71 +38,18 @@
 		<paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
 		<paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
 		<paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+
 		<images/>
 	</stylesheet>
 
 
 	<story>
 		<para><font color="white"> </font></para>
-		<blockTable colWidths="800.0" >
-			<tr>
-				<td>
-					<para style="terp_default_Bold_8">Margin Sales Report</para>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<blockTable colWidths="100.0,10.0,100.0,50.0,135.0,10.0,100.0,50.0,135.0,10.0,100.0">
-						<tr>
-							<td>
-								<para style="terp_default_ItalicBold_7">Invoice Date From</para>
-								<para style="terp_default_ItalicBold_7">Invoice Date To</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">:</para>
-								<para style="terp_default_ItalicBold_7">:</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['date_from'] or '',date=True) ]]</para>
-								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['date_to'] or '',date=True) ]]</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">Invoice From</para>
-								<para style="terp_default_ItalicBold_7">Invoice To</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">:</para>
-								<para style="terp_default_ItalicBold_7">:</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">[[get_inv_from() or '']]</para>
-								<para style="terp_default_ItalicBold_7">[[get_inv_to() or '']]</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-						</tr>
-					</blockTable>
-				</td>
-			</tr>
-		</blockTable>
-
+		<para style="terp_header_Centre">Margin Sales Report</para>
 		<para><font color="white"> </font></para>
+
+
 		<blockTable colWidths="160.0,60.0,100.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_Italic_8">Inventory Key</para></td>
@@ -120,8 +67,11 @@
 		</blockTable>
 		<section>
 			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'cn') ]]</font></para>
-			<blockTable colWidths="800.0">
-				<tr><td><para style="terp_default_Bold_8">[[cn['cust_name'] ]]</para></td></tr>
+			<blockTable colWidths="80,720">
+				<tr>
+					<td><para style="terp_default_Bold_8"><font>[[ cn['part_ref'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_8"><font>[[ cn['part_name'] ]]</font></para></td>
+				</tr>
 			</blockTable>
 			<section>
 				<para style="terp_default_7"><font>[[repeatIn(cn['lines'],'ln') ]]</font></para>
