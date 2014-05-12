@@ -40,15 +40,76 @@ class monthly_pos_with_sale_order_report(report_sxw.rml_parse):
     _name = 'monthly.pos.with.sale.order.report'
 
     def set_context(self, objects, data, ids, report_type=None):
-        new_ids = ids
-        res = {}
-        self.date_from = data['form']['date_from']
-        self.date_to = data['form']['date_to']
-        self.inv_from = data['form']['inv_from'] and data['form']['inv_from'][0] or False
-        self.inv_to = data['form']['inv_to'] and data['form']['inv_to'][0] or False
+            new_ids = ids
+            res = {}
+            account_invoice_obj = self.pool.get('account.invoice')
+            qry_supp = ''
+            val_part = []
+            qry_ai = ''
+            val_ai = []
+            
+            partner_ids = False
+            invoice_ids = False
 
-#        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
-        return super(monthly_pos_with_sale_order_report, self).set_context(objects, data, new_ids, report_type=report_type)
+            #Date
+            if data['form']['date_selection'] == 'none_sel':
+                self.date_from = False
+                self.date_to = False
+            else:
+                self.date_from = data['form']['date_from']
+                self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+
+            #invoice
+            qry_ai = 'type = "out_invoice" and state in ("open","paid") '
+            val_ai.append(('type','=', 'out_invoice'))
+            val_ai.append(('state','in', ('open','paid')))
+            ai_default_from = data['form']['invoice_default_from'] and data['form']['invoice_default_from'][0] or False
+            ai_default_to = data['form']['invoice_default_to'] and data['form']['invoice_default_to'][0] or False
+            ai_input_from = data['form']['invoice_input_from'] or False
+            ai_input_to = data['form']['invoice_input_to'] or False
+    
+            if data['form']['invoice_selection'] == 'all_vall':
+                invoice_ids = account_invoice_obj.search(self.cr, self.uid, val_ai, order='number ASC')
+            if data['form']['invoice_selection'] == 'name':
+                data_found = False
+                if ai_default_from and account_invoice_obj.browse(self.cr, self.uid, ai_default_from) and account_invoice_obj.browse(self.cr, self.uid, ai_default_from).number:
+                    data_found = True
+                    val_ai.append(('number', '>=', account_invoice_obj.browse(self.cr, self.uid, ai_default_from).number))
+                if ai_default_to and account_invoice_obj.browse(self.cr, self.uid, ai_default_to) and account_invoice_obj.browse(self.cr, self.uid, ai_default_to).number:
+                    data_found = True
+                    val_ai.append(('number', '<=', account_invoice_obj.browse(self.cr, self.uid, ai_default_to).number))
+                if data_found:
+                    invoice_ids = account_invoice_obj.search(self.cr, self.uid, val_ai, order='number ASC')
+            elif data['form']['invoice_selection'] == 'input':
+                data_found = False
+                if ai_input_from:
+                    self.cr.execute("select number " \
+                                    "from account_invoice "\
+                                    "where " + qry_ai + " and " \
+                                    "name ilike '" + str(ai_input_from) + "%' " \
+                                    "order by number limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_ai.append(('number', '>=', qry['number']))
+                if ai_input_to:
+                    self.cr.execute("select number " \
+                                    "from account_invoice "\
+                                    "where " + qry_ai + " and " \
+                                    "name ilike '" + str(ai_input_to) + "%' " \
+                                    "order by number desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_ai.append(('number', '<=', qry['number']))
+                #print val_part
+                if data_found:
+                    invoice_ids = account_invoice_obj.search(self.cr, self.uid, val_ai, order='number ASC')
+            elif data['form']['invoice_selection'] == 'selection':
+                if data['form']['invoice_ids']:
+                    invoice_ids = data['form']['invoice_ids']
+            self.invoice_ids = invoice_ids
+            return super(monthly_pos_with_sale_order_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
         super(monthly_pos_with_sale_order_report, self).__init__(cr, uid, name, context=context)
@@ -56,38 +117,22 @@ class monthly_pos_with_sale_order_report(report_sxw.rml_parse):
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
-            'get_inv_from': self._get_inv_from,
-            'get_inv_to': self._get_inv_to,
             })
-
-    def _get_inv_from(self):
-        return self.inv_from and self.pool.get('account.invoice').browse(self.cr, self.uid, self.inv_from).number or False
-    
-    def _get_inv_to(self):
-        return self.inv_to and self.pool.get('account.invoice').browse(self.cr, self.uid, self.inv_to).number or False
 
     def _get_lines(self):
         results = []
+        cr              = self.cr
+        uid             = self.uid
         date_from = self.date_from
-        date_to =  self.date_to + ' ' + '23:59:59'
-        inv_from = self.inv_from
-        inv_to = self.inv_to
-        val_inv = []
-        account_invoice_obj = self.pool.get('account.invoice')
-        if inv_from and account_invoice_obj.browse(self.cr, self.uid, inv_from) and account_invoice_obj.browse(self.cr, self.uid, inv_from).number:
-            val_inv.append(('number', '>=', account_invoice_obj.browse(self.cr, self.uid, inv_from).number))
-        if inv_to and account_invoice_obj.browse(self.cr, self.uid, inv_to) and account_invoice_obj.browse(self.cr, self.uid, inv_to).number:
-            val_inv.append(('name', '<=', account_invoice_obj.browse(self.cr, self.uid, inv_to).number))
-        inv_ids = account_invoice_obj.search(self.cr, self.uid, val_inv, order='number ASC')
-        val_ss = ''
-        if inv_ids:
-            for ss in inv_ids:
-                if val_ss == '':
-                    val_ss += str(ss)
-                else:
-                    val_ss += (', ' + str(ss))
+        date_to = self.date_to
+        date_from_qry = date_from and "And ai.date_invoice >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And ai.date_invoice <= '" + str(date_to) + "' " or " "
 
-        self.cr.execute("select ai.number as invoice_no, " \
+        invoice_ids = self.invoice_ids or False
+        invoice_qry = (invoice_ids and ((len(invoice_ids) == 1 and "AND ai.id = " + str(invoice_ids[0]) + " ") or "AND ai.id IN " + str(tuple(invoice_ids)) + " ")) or "AND ai.id IN (0) "
+        res_lines = []
+
+        cr.execute("select ai.number as invoice_no, " \
                         "ai.date_invoice as date_inv, " \
                         "so.name as so_no, " \
                         "so.client_order_ref as customer_po_no, " \
@@ -111,13 +156,13 @@ class monthly_pos_with_sale_order_report(report_sxw.rml_parse):
                         "left join stock_location sl on sol.location_id = sl.id " \
                         "left join product_customer pc on sol.product_customer_id = pc.id " \
                         "where ai.type = 'out_invoice' and ai.state in ('open','paid') and ail.product_id is not null " \
-                        "and ai.date_invoice >= '" + str(date_from) + "' AND ai.date_invoice <= '" + str(date_to) + "' " \
-                        "and ai.id in (" + val_ss + ") " \
+                        + date_from_qry \
+                        + date_to_qry \
+                        + invoice_qry + \
                         "order by ai.date_invoice, invoice_no, brand_name")
 
-        res_general = self.cr.dictfetchall()
-
-        return res_general
+        results = cr.dictfetchall()
+        return results
 
 report_sxw.report_sxw('report.monthly.pos.with.sale.order.report_landscape', 'account.invoice',
     'addons/max_custom_report/account/report/monthly_pos_with_sale_order_report.rml', parser=monthly_pos_with_sale_order_report, header="internal landscape")
