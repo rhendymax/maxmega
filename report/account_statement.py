@@ -86,13 +86,13 @@ class statement(report_sxw.rml_parse):
     def get_debit(self, invoice):
         res = 0
         if invoice.type in ['out_invoice', 'in_refund']:
-            res = invoice.residual * invoice.cur_rate
+            res = invoice.residual
         return res
 
     def get_credit(self, invoice):
         res = 0
         if invoice.type in ['in_invoice', 'out_refund']:
-            res = invoice.residual * invoice.cur_rate
+            res = invoice.residual
         return res
     
     def get_oth_invoice(self, partner, seq):
@@ -104,7 +104,7 @@ class statement(report_sxw.rml_parse):
         period_ids  = []
         
         oth_period_date = dt.strptime(self.period.date_start, '%Y-%m-%d') - rdt(months=seq)
-        period_ids = period_obj.search(cr, uid, [('date_start','<=',oth_period_date)], order='date_start DESC')
+        period_ids = period_obj.search(cr, uid, [('date_start','<=',oth_period_date),('special', '=', False)], order='date_start DESC')
         if period_ids and seq != 4:
             period_ids = [period_ids[0]]
         invoice_ids = invoice_obj.search(cr, uid, [
@@ -115,7 +115,10 @@ class statement(report_sxw.rml_parse):
         if invoice_ids:
             res = 0
             for inv in invoice_obj.browse(cr, uid, invoice_ids):
-                res += inv.residual * inv.cur_rate
+                if inv.type in ['out_invoice', 'in_refund']:
+                    res += inv.residual
+                elif inv.type in ['in_invoice', 'out_refund']:
+                    res -= inv.residual
         return res
 
 report_sxw.report_sxw('report.max.account.statement', 'res.partner', 'addons/max_report/report/account_statement.rml', parser=statement, header="external")
