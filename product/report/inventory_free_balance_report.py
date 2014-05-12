@@ -80,7 +80,6 @@ class inventory_free_balance_report(report_sxw.rml_parse):
         val_location = []
         product_product_obj = self.pool.get('product.product')
         plw_obj = self.pool.get('product.location.wizard')
-        
         stock_location_obj = self.pool.get('stock.location')
         product_from = self.product_from
         product_to = self.product_to
