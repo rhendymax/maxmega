@@ -268,7 +268,7 @@ class margin_sales_report(report_sxw.rml_parse):
                                     'margin' : '',
                                     'margin_percent' : '',
                                     })
-                results1.append({
+                results.append({
                     'part_name' : s['name'],
                     'part_ref' : s['ref'],
                     'lines': lines_ids,

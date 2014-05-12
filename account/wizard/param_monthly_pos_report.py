@@ -38,7 +38,7 @@ class param_monthly_pos_report(osv.osv_memory):
     }
 
     _defaults = {
-       'date_selection':'none-sel',
+       'date_selection':'none_sel',
        'brand_selection':'all_vall',
     }
 

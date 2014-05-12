@@ -40,15 +40,75 @@ class monthly_pos_report(report_sxw.rml_parse):
     _name = 'monthly.pos.report'
 
     def set_context(self, objects, data, ids, report_type=None):
-        new_ids = ids
-        res = {}
-        self.date_from = data['form']['date_from']
-        self.date_to = data['form']['date_to']
-        self.brand_from = data['form']['brand_from'] and data['form']['brand_from'][0] or False
-        self.brand_to = data['form']['brand_to'] and data['form']['brand_to'][0] or False
+                new_ids = ids
+                res = {}
+                product_brand_obj = self.pool.get('product.brand')
+                qry_supp = ''
+                val_part = []
+                qry_pb = ''
+                val_pb = []
+                
+                partner_ids = False
+                brand_ids = False
+                #Date
+                if data['form']['date_selection'] == 'none_sel':
+                    self.date_from = False
+                    self.date_to = False
+                else:
+                    self.date_from = data['form']['date_from']
+                    self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+        
+        #Inventory Brand
+                brand_default_from = data['form']['brand_default_from'] and data['form']['brand_default_from'][0] or False
+                brand_default_to = data['form']['brand_default_to'] and data['form']['brand_default_to'][0] or False
+                brand_input_from = data['form']['brand_input_from'] or False
+                brand_input_to = data['form']['brand_input_to'] or False
+        
+                if data['form']['brand_selection'] == 'all_vall':
+                    brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+                if data['form']['brand_selection'] == 'name':
+                    data_found = False
+                    if brand_default_from and product_brand_obj.browse(self.cr, self.uid, brand_default_from) and product_brand_obj.browse(self.cr, self.uid, brand_default_from).name:
+                        data_found = True
+                        val_pb.append(('name', '>=', product_brand_obj.browse(self.cr, self.uid, brand_default_from).name))
+                    if brand_default_to and product_brand_obj.browse(self.cr, self.uid, brand_default_to) and product_brand_obj.browse(self.cr, self.uid, brand_default_to).name:
+                        data_found = True
+                        val_pb.append(('name', '<=', product_brand_obj.browse(self.cr, self.uid, brand_default_to).name))
+                    if data_found:
+                        brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+                elif data['form']['brand_selection'] == 'input':
+                    data_found = False
+                    if brand_input_from:
+                        self.cr.execute("select name " \
+                                        "from product_brand "\
+                                        "where " + qry_pb + " and " \
+                                        "name ilike '" + str(brand_input_from) + "%' " \
+                                        "order by name limit 1")
+                        qry = self.cr.dictfetchone()
+                        if qry:
+                            data_found = True
+                            val_pb.append(('name', '>=', qry['name']))
+                    if brand_input_to:
+                        self.cr.execute("select name " \
+                                        "from product_brand "\
+                                        "where " + qry_pb + " and " \
+                                        "name ilike '" + str(brand_input_to) + "%' " \
+                                        "order by name desc limit 1")
+                        qry = self.cr.dictfetchone()
+                        if qry:
+                            data_found = True
+                            val_pb.append(('name', '<=', qry['name']))
+                    #print val_part
+                    if data_found:
+                        brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+                elif data['form']['brand_selection'] == 'selection':
+                    if data['form']['brand_ids']:
+                        brand_ids = data['form']['brand_ids']
+                self.brand_ids = brand_ids
+        
+                #print self.period_ids
+                return super(monthly_pos_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
-#        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
-        return super(monthly_pos_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
         super(monthly_pos_report, self).__init__(cr, uid, name, context=context)
@@ -56,150 +116,127 @@ class monthly_pos_report(report_sxw.rml_parse):
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
-            'get_brand_from': self._get_brand_from,
-            'get_brand_to': self._get_brand_to,
             })
-
-    def _get_brand_from(self):
-        return self.brand_from and self.pool.get('product.brand').browse(self.cr, self.uid, self.brand_from).name or False
-    
-    def _get_brand_to(self):
-        return self.brand_to and self.pool.get('product.brand').browse(self.cr, self.uid, self.brand_to).name or False
 
     def _get_lines(self):
         results = []
+        # partner
+        cr              = self.cr
+        uid             = self.uid
+        
+        
         date_from = self.date_from
-        date_to =  self.date_to + ' ' + '23:59:59'
-        brand_from = self.brand_from
-        brand_to = self.brand_to
-        val_brand = []
-        product_brand_obj = self.pool.get('product.brand')
-        if brand_from and product_brand_obj.browse(self.cr, self.uid, brand_from) and product_brand_obj.browse(self.cr, self.uid, brand_from).name:
-            val_brand.append(('name', '>=', product_brand_obj.browse(self.cr, self.uid, brand_from).name))
-        if brand_to and product_brand_obj.browse(self.cr, self.uid, brand_to) and product_brand_obj.browse(self.cr, self.uid, brand_to).name:
-            val_brand.append(('name', '<=', product_brand_obj.browse(self.cr, self.uid, brand_to).name))
-        brand_ids = product_brand_obj.search(self.cr, self.uid, val_brand, order='name ASC')
-        val_ss = ''
-        if brand_ids:
-            for ss in brand_ids:
-                if val_ss == '':
-                    val_ss += str(ss)
-                else:
-                    val_ss += (', ' + str(ss))
+        date_to = self.date_to
+        date_from_qry = date_from and "And l.date_invoice >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And l.date_invoice <= '" + str(date_to) + "' " or " "
 
-        self.cr.execute("select rp.id as cust_id, " \
-                        "rp.ref as cust_ref, " \
-                        "rp.name as cust_name " \
-                        "from account_invoice ai " \
-                        "inner join account_invoice_line ail on ai.id = ail.invoice_id  " \
-                        "left join res_partner rp on ai.partner_id = rp.id " \
-                        "left join product_template pt on ail.product_id = pt.id " \
-                        "left join product_product pp on ail.product_id = pp.id " \
-                        "left join product_brand pb on pp.brand_id = pb.id " \
-                        "left join stock_move sm on ail.stock_move_id = sm.id " \
-                        "left join sale_order_line sol on sm.sale_line_id = sol.id " \
-                        "left join product_customer pc on sol.product_customer_id = pc.id " \
-                        "where ai.type = 'out_invoice' and ai.state in ('open','paid') and ail.product_id is not null  " \
-                        "and ai.date_invoice >= '" + str(date_from) + "' AND ai.date_invoice <= '" + str(date_to) + "' " \
-                        "and pp.brand_id in (" + val_ss + ") " \
-                        "group by cust_name, cust_ref, cust_id " \
-                        "order by cust_name, cust_ref, cust_id")
-#
-#        self.cr.execute("select rp.ref as cust_ref, " \
-#                        "rp.name as cust_name, " \
-#                        "rp.id as cust_id, " \
-#                        "pb.id as brand_id, " \
-#                        "pb.name as brand_name, " \
-#                        "pc.name as product_customer_name, " \
-#                        "pt.name as inventory_key, " \
-#                        "ail.price_unit as selling_price, " \
-#                        "ail.quantity as quantity, " \
-#                        "ail.price_unit * ail.quantity as total, " \
-#                        "ai.date_invoice as date_inv " \
-#                        "from account_invoice ai " \
-#                        "inner join account_invoice_line ail on ai.id = ail.invoice_id " \
-#                        "left join res_partner rp on ai.partner_id = rp.id " \
-#                        "left join product_template pt on ail.product_id = pt.id " \
-#                        "left join product_product pp on ail.product_id = pp.id " \
-#                        "left join product_brand pb on pp.brand_id = pb.id " \
-#                        "left join stock_move sm on ail.stock_move_id = sm.id " \
-#                        "left join sale_order_line sol on sm.sale_line_id = sol.id " \
-#                        "left join product_customer pc on sol.product_customer_id = pc.id " \
-#                        "where ai.type = 'out_invoice' and ai.state in ('open','paid') and ail.product_id is not null " \
-#                        "and ai.date_invoice >= '" + str(date_from) + "' AND ai.date_invoice <= '" + str(date_to) + "' " \
-#                        "and pp.brand_id in (" + val_ss + ") "
-#                        "order by rp.name, rp.id, pb.name, pb.id, ai.date_invoice")
-        res_general = self.cr.dictfetchall()
-        for val in res_general:
-            res = {}
-            res['cust_name'] = '[' + val['cust_ref'] + '] ' + val['cust_name']
-            self.cr.execute("select pb.name as brand_name,  " \
-                        "pb.id as brand_id  " \
-                        "from account_invoice ai  " \
-                        "inner join account_invoice_line ail on ai.id = ail.invoice_id " \
-                        "left join res_partner rp on ai.partner_id = rp.id " \
-                        "left join product_template pt on ail.product_id = pt.id " \
+        brand_ids = self.brand_ids or False
+        brand_qry = (brand_ids and ((len(brand_ids) == 1 and "AND pp.brand_id = " + str(brand_ids[0]) + " ") or "AND pp.brand_id IN " + str(tuple(brand_ids)) + " ")) or "AND pp.brand_id IN (0) "
+
+        cr.execute("select  DISTINCT l.partner_id " \
+                        "from account_invoice l " \
+                        "inner join account_invoice_line ail on l.id = ail.invoice_id  " \
                         "left join product_product pp on ail.product_id = pp.id  " \
-                        "left join product_brand pb on pp.brand_id = pb.id " \
-                        "left join stock_move sm on ail.stock_move_id = sm.id " \
-                        "left join sale_order_line sol on sm.sale_line_id = sol.id " \
-                        "left join product_customer pc on sol.product_customer_id = pc.id " \
-                        "where ai.type = 'out_invoice' and ai.state in ('open','paid') and ail.product_id is not null " \
-                        "and ai.date_invoice >= '" + str(date_from) + "' AND ai.date_invoice <= '" + str(date_to) + "' " \
-                        "and pp.brand_id in (" + val_ss + ") " \
-                        "and ai.partner_id = " + str(val['cust_id']) + " " \
-                        "group by pb.name, pb.id " \
-                        "order by pb.name, pb.id")
-            res_brand = self.cr.dictfetchall()
-            brand_ids = []
-            for val_b in res_brand:
-                self.cr.execute("select pc.name as product_customer_name, " \
-                                "pt.name as inventory_key, " \
+                        "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
+                        + date_from_qry \
+                        + date_to_qry \
+                        + brand_qry)
+        partner_ids_vals = []
+        qry2 = cr.dictfetchall()
+        if qry2:
+            for r in qry2:
+                partner_ids_vals.append(r['partner_id'])
+        partner_ids_vals_qry = (len(partner_ids_vals) > 0 and ((len(partner_ids_vals) == 1 and "where id = " +  str(partner_ids_vals[0]) + " ") or "where id IN " +  str(tuple(partner_ids_vals)) + " ")) or "where id IN (0) "
+
+        cr.execute(
+                "SELECT id, name, ref " \
+                "FROM res_partner " \
+                + partner_ids_vals_qry \
+                + " order by name")
+        qry = cr.dictfetchall()
+        if qry:
+            for s in qry:
+                brand_ids = []
+                qty = total = 0
+                cr.execute("select DISTINCT pp.brand_id " \
+                                "from account_invoice l " \
+                                "inner join account_invoice_line ail on l.id = ail.invoice_id  " \
+                                "left join product_product pp on ail.product_id = pp.id  " \
+                                "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
+                                + date_from_qry \
+                                + date_to_qry \
+                                + brand_qry + \
+                                "and l.partner_id = " + str(s['id']) + " "\
+                                )
+                brand_ids_vals = []
+                qry_brand1 = cr.dictfetchall()
+                if qry_brand1:
+                    for brand_r in qry_brand1:
+                        brand_ids_vals.append(brand_r['brand_id'])
+                brand_ids_vals_qry = (len(brand_ids_vals) > 0 and ((len(brand_ids_vals) == 1 and "where id = " +  str(brand_ids_vals[0]) + " ") or "where id IN " +  str(tuple(brand_ids_vals)) + " ")) or "where id IN (0) "
+                cr.execute(
+                        "SELECT id, name " \
+                        "FROM product_brand " \
+                        + brand_ids_vals_qry \
+                        + " order by name")
+                qry_brand2 = cr.dictfetchall()
+                for brand_s in qry_brand2:
+
+                    cr.execute("select pc.name as cpn, " \
+                                "pt.name as inv_key, " \
                                 "ail.price_unit as selling_price, " \
                                 "ail.quantity as quantity, " \
                                 "ail.price_unit * ail.quantity as total, " \
-                                "ai.date_invoice as date_inv " \
-                                "from account_invoice ai " \
-                                "inner join account_invoice_line ail on ai.id = ail.invoice_id " \
-                                "left join res_partner rp on ai.partner_id = rp.id " \
-                                "left join product_template pt on ail.product_id = pt.id " \
-                                "left join product_product pp on ail.product_id = pp.id " \
-                                "left join product_brand pb on pp.brand_id = pb.id " \
+                                "l.date_invoice as date_inv " \
+                                "from account_invoice l " \
+                                "inner join account_invoice_line ail on l.id = ail.invoice_id  " \
+                                "left join product_product pp on ail.product_id = pp.id  " \
+                                "left join product_template pt on ail.product_id = pt.id  " \
                                 "left join stock_move sm on ail.stock_move_id = sm.id " \
                                 "left join sale_order_line sol on sm.sale_line_id = sol.id " \
                                 "left join product_customer pc on sol.product_customer_id = pc.id " \
-                                "where ai.type = 'out_invoice' and ai.state in ('open','paid') and ail.product_id is not null " \
-                                "and ai.date_invoice >= '" + str(date_from) + "' AND ai.date_invoice <= '" + str(date_to) + "' " \
-                                "and pp.brand_id in (" + val_ss + ") "
-                                "and ai.partner_id = " + str(val['cust_id']) + " " \
-                                "and pb.id = " + str(val_b['brand_id']) + " " \
-                                "order by rp.name, rp.id, pb.name, pb.id, ai.date_invoice")
-                res_lines = self.cr.dictfetchall()
-                lines = []
-                qty = 0
-                total = 0
-                for val_lines in res_lines:
-                    lines.append({
-                        'cust_name' : val['cust_name'],
-                        'cust_part_no' : val_lines['product_customer_name'],
-                        'inv_key': val_lines['inventory_key'],
-                        'selling_price': val_lines['selling_price'],
-                        'quantity': val_lines['quantity'],
-                        'total': val_lines['total'],
-                        'brand': val_b['brand_name'],
-                        'date_inv': val_lines['date_inv'],
-                        })
-                    qty += val_lines['quantity']
-                    total += val_lines['total']
-                brand_ids.append({
-                    'brand_name' : val_b['brand_name'],
-                    'brand_lines' : lines,
-                    'qty' : qty,
-                    'total': total,
-                    })
-                
-            res['lines'] = brand_ids
-            results.append(res)
+                                "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
+                                + date_from_qry \
+                                + date_to_qry + \
+                                "and l.partner_id = " + str(s['id']) + " "\
+                                "and pp.brand_id = " + str(brand_s['id']) + " "\
+                                "order by l.date_invoice"
+                                )
+                    qry3 = cr.dictfetchall()
+
+                    brand_lines = []
+                    brand_qty = brand_total = 0
+                    if qry3:
+                        for t in qry3:
+                            brand_lines.append({
+                                                'cpn' : t['cpn'],
+                                                'inv_key': t['inv_key'],
+                                                'selling_price': t['selling_price'],
+                                                'quantity': t['quantity'],
+                                                'total': t['total'],
+                                                'brand':brand_s['name'],
+                                                'date_inv': t['date_inv'],
+                                                })
+                            brand_qty += t['quantity']
+                            brand_total += t['total']
+                    brand_ids.append({
+                                      'brand_name' : brand_s['name'],
+                                      'qty' : brand_qty,
+                                      'total' : brand_total,
+                                      'lines': brand_lines,
+                                      })
+                    qty += brand_qty
+                    total += brand_total
+                results.append({
+                        'part_name' : s['name'],
+                        'part_ref' : s['ref'],
+                        'brand_ids': brand_ids,
+                        'qty' : qty,
+                        'total' : total,
+                                })
+
+        results = results and sorted(results, key=lambda val_res: val_res['part_name']) or []
+
         return results
 
 report_sxw.report_sxw('report.monthly.pos.report_landscape', 'account.invoice',
