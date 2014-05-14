@@ -40,12 +40,69 @@ class gross_profit_by_brand_report(report_sxw.rml_parse):
     _name = 'gross.profit.by.brand.report'
 
     def set_context(self, objects, data, ids, report_type=None):
+#        new_ids = ids
+#        res = {}
+#        self.date_from = data['form']['date_from']
+#        self.date_to = data['form']['date_to']
+#        self.brand_from = data['form']['brand_from'] and data['form']['brand_from'][0] or False
+#        self.brand_to = data['form']['brand_to'] and data['form']['brand_to'][0] or False
+
         new_ids = ids
         res = {}
-        self.date_from = data['form']['date_from']
-        self.date_to = data['form']['date_to']
-        self.brand_from = data['form']['brand_from'] and data['form']['brand_from'][0] or False
-        self.brand_to = data['form']['brand_to'] and data['form']['brand_to'][0] or False
+        product_brand_obj = self.pool.get('product.brand')
+        val_pb = []
+        
+        if data['form']['date_selection'] == 'none_sel':
+            self.date_from = False
+            self.date_to = False
+        else:
+            self.date_from = data['form']['date_from']
+            self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+
+        pb_default_from = data['form']['pb_default_from'] and data['form']['pb_default_from'][0] or False
+        pb_default_to = data['form']['pb_default_to'] and data['form']['pb_default_to'][0] or False
+        pb_input_from = data['form']['pb_input_from'] or False
+        pb_input_to = data['form']['pb_input_to'] or False
+        
+        if data['form']['pb_selection'] == 'all_vall':
+            pb_ids = product_brand_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+        if data['form']['pb_selection'] == 'def':
+            data_found = False
+            if pb_default_from and product_brand_obj.browse(self.cr, self.uid, pb_default_from) and product_brand_obj.browse(self.cr, self.uid, pb_default_from).name:
+                data_found = True
+                val_pb.append(('ref', '>=', product_brand_obj.browse(self.cr, self.uid, pb_default_from).name))
+            if pb_default_to and product_brand_obj.browse(self.cr, self.uid, pb_default_to) and product_brand_obj.browse(self.cr, self.uid, pb_default_to).name:
+                data_found = True
+                val_pb.append(('ref', '<=', product_brand_obj.browse(self.cr, self.uid, pb_default_to).name))
+            if data_found:
+                pb_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+        elif data['form']['pb_selection'] == 'input':
+            data_found = False
+            if pb_input_from:
+                self.cr.execute("select name " \
+                                "from product_brand "\
+                                "where name ilike '" + str(pb_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pb.append(('name', '>=', qry['name']))
+            if pb_input_to:
+                self.cr.execute("select name " \
+                                "from product_brand "\
+                                "where name ilike '" + str(pb_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pb.append(('name', '<=', qry['name']))
+            #print val_part
+            if data_found:
+                pb_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+        elif data['form']['pb_selection'] == 'selection':
+            if data['form']['pb_ids']:
+                pb_ids = data['form']['pb_ids']
+        self.pb_ids = pb_ids
 
 #        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
         return super(gross_profit_by_brand_report, self).set_context(objects, data, new_ids, report_type=report_type)

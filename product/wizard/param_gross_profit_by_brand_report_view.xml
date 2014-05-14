@@ -10,12 +10,28 @@
 					<separator string="Gross Profit By Inventory Brand Report" colspan="4"/>
 					<label colspan="4" nolabel="1" string="This menu prints Gross Profit By Inventory Brand Report"/>
 					<newline/>
-					<separator string="Date"  colspan="4"/>
-					<field name="date_from" attrs="{'required':1}"/>
-					<field name="date_to" attrs="{'required':1}"/>
-					<separator string="Inventory Brand" colspan="4"/>
-					<field name="brand_from"/>
-					<field name="brand_to"/>
+					<notebook colspan="4">
+						<page string="Inventory Brand">
+							<field name="pb_selection" colspan="4"/>
+							<field name="pb_default_from" attrs="{'invisible': [('pb_selection','!=','def')], 'required': [('pb_selection','=','def')]}"/>
+							<field name="pb_default_to" attrs="{'invisible': [('pb_selection','!=','def')], 'required': [('pb_selection','=','def')]}"/>
+							<field name="pb_input_from"
+								attrs="{'invisible': [('pb_selection','!=','input')], 'required': [('pb_selection','=','input')]}"/>
+							<field name="pb_input_to"
+								attrs="{'invisible': [('pb_selection','!=','input')], 'required': [('pb_selection','=','input')]}"/>
+							<field name="pb_ids"
+								attrs="{'invisible': [('pb_selection','!=','selection')], 'required': [('pb_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+						</page>
+						</notebook>
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>

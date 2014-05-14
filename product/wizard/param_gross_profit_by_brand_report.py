@@ -26,15 +26,26 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
     _name = 'param.gross.profit.by.brand.report'
     _description = 'Param Gross Profit By Inventory Brand Report'
     _columns = {
-        'date_from': fields.date("Voucher Date From", required=True),
-        'date_to': fields.date("Voucher Date To", required=True),
-        'brand_from':fields.many2one('product.brand', 'Inventory Brand From', required=False),
-        'brand_to':fields.many2one('product.brand', 'Inventory Brand To', required=False),
+#        'date_from': fields.date("Voucher Date From", required=True),
+#        'date_to': fields.date("Voucher Date To", required=True),
+#        'brand_from':fields.many2one('product.brand', 'Inventory Brand From', required=False),
+#        'brand_to':fields.many2one('product.brand', 'Inventory Brand To', required=False),
+        'date_selection': fields.selection([('none_sel','None'),('date_sel', 'Date')],'Type Selection', required=True),
+        'date_from': fields.date("Voucher Date From"),
+        'date_to': fields.date("Voucher Date To"),
+        #Product Brand Selection
+        'pb_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Inventory Brand Filter Selection', required=True),
+        'pb_default_from':fields.many2one('product.brand', 'Inventory Brand From', domain=[], required=False),
+        'pb_default_to':fields.many2one('product.brand', 'Inventory Brand To', domain=[], required=False),
+        'pb_input_from': fields.char('Inventory Brand From', size=128),
+        'pb_input_to': fields.char('Inventory Brand To', size=128),
+        'pb_ids' :fields.many2many('product.brand', 'report_gross_profit_pb_rel', 'report_id', 'pb_id', 'Inventory Brand', domain=[]),
+
     }
 
     _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d')
+        'pb_selection':'all_vall',
+        'date_selection':'none_sel',
     }
 
     def create_vat(self, cr, uid, ids, context=None):
