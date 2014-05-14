@@ -10,9 +10,23 @@
 					<separator string="Onhand Allocated Sale Order Checklist Report" colspan="4"/>
 					<label colspan="4" nolabel="1" string="This menu prints Onhand Allocated Sale Order Checklist Report"/>
 					<newline/>
-					<separator string="Supplier Part No" colspan="4"/>
-					<field name="product_id_from"/>
-					<field name="product_id_to"/>
+					<notebook colspan="4">
+						<page string="Supplier Part No">
+							<field name="pp_selection" colspan="4"/>
+							<field name="pp_default_from" attrs="{'invisible': [('pp_selection','!=','def')], 'required': [('pp_selection','=','def')]}"/>
+							<field name="pp_default_to" attrs="{'invisible': [('pp_selection','!=','def')], 'required': [('pp_selection','=','def')]}"/>
+							<field name="pp_input_from"
+								attrs="{'invisible': [('pp_selection','!=','input')], 'required': [('pp_selection','=','input')]}"/>
+							<field name="pp_input_to"
+								attrs="{'invisible': [('pp_selection','!=','input')], 'required': [('pp_selection','=','input')]}"/>
+							<field name="pp_ids"
+								attrs="{'invisible': [('pp_selection','!=','selection')], 'required': [('pp_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>

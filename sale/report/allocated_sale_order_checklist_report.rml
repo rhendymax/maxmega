@@ -7,6 +7,11 @@
 	</template>
 
 	<stylesheet>
+		<blockTableStyle id="TableTop">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000"/>
+		</blockTableStyle>
 		<blockTableStyle id="TableBottom">
 			<blockAlignment value="LEFT"/>
 			<blockValign value="TOP"/>
@@ -24,7 +29,6 @@
 			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
 			<lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
 		</blockTableStyle>
-
 		<initialize>
 			<paraStyle name="all" alignment="justify"/>
 		</initialize>
@@ -37,71 +41,13 @@
 		<paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
 		<paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
 		<paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
 		<images/>
 	</stylesheet>
 	<story>
-		
 		<para><font color="white"> </font></para>
-
-		<blockTable colWidths="800.0" >
-			<tr>
-				<td>
-					<para style="terp_default_Bold_8">Onhand Allocated Sale Order Checklist Report</para>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<blockTable colWidths="135.0,10.0,100.0,50.0,100.0,10.0,100.0,50.0,135.0,10.0,100.0">
-						<tr>
-							<td>
-								<para style="terp_default_ItalicBold_7">Supplier Part No From</para>
-								<para style="terp_default_ItalicBold_7">Supplier Part No To</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">:</para>
-								<para style="terp_default_ItalicBold_7">:</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7">[[get_product_id_from() or '']]</para>
-								<para style="terp_default_ItalicBold_7">[[get_product_id_to() or '']]</para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-							<td>
-								<para style="terp_default_ItalicBold_7"></para>
-								<para style="terp_default_ItalicBold_7"></para>
-							</td>
-						</tr>
-					</blockTable>
-				</td>
-			</tr>
-		</blockTable>
-
-		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">Onhand Allocated Sale Order Checklist Report</para>
+		<para><font color="white"></font></para>
 		<blockTable colWidths="120.0,320.0,120.0,120.0,60.0,60.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_8">Sale Order No.</para></td>
@@ -112,7 +58,6 @@
 				<td><para style="terp_default_8">UOM</para></td>
 			</tr>
 		</blockTable>
-
 		<section>
 			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
 			<blockTable colWidths="800.0">
@@ -121,7 +66,7 @@
 				</tr>
 			</blockTable>
 			<section>
-				<para style="terp_default_8"><font>[[ repeatIn(ln['lines'], 'l') ]]</font></para>
+				<para style="terp_default_8"><font>[[ repeatIn(ln['vals'], 'l') ]]</font></para>
 				<blockTable colWidths="120.0,320.0,120.0,120.0,60.0,60.0">
 				<tr>
 					<td><para style="terp_default_7"><font>[[l['so_name'] ]]</font></para></td>
@@ -133,10 +78,11 @@
 				</tr>
 				</blockTable>
 			</section>
-			<blockTable colWidths="680.0,60.0,60.0" style="TableBottom">
+			<blockTable colWidths="80, 600.0,60.0,60.0" style="TableBottom">
 				<tr>
-					<td><para style="terp_default_7">Total for [[ln['name'] ]]</para></td>
-					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['qty']), ln['lines'], 0 ), digits=0) ]]</font></para></td>
+					<td><para></para></td>
+					<td><para style="terp_default_Bold_7">Total for [[ln['name'] ]]</para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['qty']), ln['vals'], 0 ), digits=0) ]]</font></para></td>
 					<td><para></para></td>
 				</tr>
 			</blockTable>

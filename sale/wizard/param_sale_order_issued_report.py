@@ -26,15 +26,22 @@ class param_sale_order_issued_report(osv.osv_memory):
     _name = 'param.sale.order.issued.report'
     _description = 'Param Sale Order Issued Report'
     _columns = {
-        'date_from': fields.date("From Date", required=True),
-        'date_to': fields.date("To Date", required=True),
-        'partner_code_from':fields.many2one('res.partner', 'Customer Code From', required=False),
-        'partner_code_to':fields.many2one('res.partner', 'Customer Code To', required=False),
-    }
+        'cust_search_vals': fields.selection([('code','Customer Code'),('name', 'Customer Name')],'Customer Search Values', required=True),
+        'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Customer Filter Selection', required=True),
+        'partner_default_from':fields.many2one('res.partner', 'Customer From', domain=[('customer','=',True)], required=False),
+        'partner_default_to':fields.many2one('res.partner', 'Customer To', domain=[('customer','=',True)], required=False),
+        'partner_input_from': fields.char('Customer From', size=128),
+        'partner_input_to': fields.char('Customer To', size=128),
+        'partner_ids' :fields.many2many('res.partner', 'report_sale_issued_cust_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
+        'date_selection': fields.selection([('none_sel','None'),('date_sel', 'Date')],'Type Selection', required=True),
+        'date_from': fields.date("From Date"),
+        'date_to': fields.date("To Date"),
+}
 
     _defaults = {
-        'date_from': lambda *a: time.strftime('%Y-01-01'),
-        'date_to': lambda *a: time.strftime('%Y-%m-%d')
+        'date_selection': 'none_sel',
+        'cust_search_vals': 'code',
+        'filter_selection': 'all_vall',
     }
 
     def create_vat(self, cr, uid, ids, context=None):

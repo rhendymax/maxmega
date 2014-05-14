@@ -41,11 +41,109 @@ class sale_order_issued_report(report_sxw.rml_parse):
     def set_context(self, objects, data, ids, report_type=None):
         new_ids = ids
         res = {}
-        self.date_from = data['form']['date_from']
-        self.date_to = data['form']['date_to']
-        self.partner_code_from = data['form']['partner_code_from'] and data['form']['partner_code_from'][0] or False
-        self.partner_code_to = data['form']['partner_code_to'] and data['form']['partner_code_to'][0] or False
-#        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
+        res_partner_obj = self.pool.get('res.partner')
+        qry_supp = ''
+        number = 0
+        val_part = []
+        
+        data_search = data['form']['cust_search_vals']
+        qry_supp = 'customer = True'
+        val_part.append(('customer', '=', True))
+
+        if data['form']['date_selection'] == 'none_sel':
+            self.date_from = False
+            self.date_to = False
+        else:
+            self.date_from = data['form']['date_from']
+            self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+
+        partner_default_from = data['form']['partner_default_from'] and data['form']['partner_default_from'][0] or False
+        partner_default_to = data['form']['partner_default_to'] and data['form']['partner_default_to'][0] or False
+        partner_input_from = data['form']['partner_input_from'] or False
+        partner_input_to = data['form']['partner_input_to'] or False
+        
+        if data_search == 'code':
+            if data['form']['filter_selection'] == 'all_vall':
+                partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+            if data['form']['filter_selection'] == 'def':
+                data_found = False
+                if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref:
+                    data_found = True
+                    val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref))
+                if partner_default_to and res_partner_obj.browse(self.cr, self.uid, partner_default_to) and res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref:
+                    data_found = True
+                    val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref))
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+            elif data['form']['filter_selection'] == 'input':
+                data_found = False
+                if partner_input_from:
+                    self.cr.execute("select ref " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "ref ilike '" + str(partner_input_from) + "%' " \
+                                    "order by ref limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('ref', '>=', qry['ref']))
+                if partner_input_to:
+                    self.cr.execute("select ref " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "ref ilike '" + str(partner_input_to) + "%' " \
+                                    "order by ref desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('ref', '<=', qry['ref']))
+                #print val_part
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
+            elif data['form']['filter_selection'] == 'selection':
+                if data['form']['partner_ids']:
+                    partner_ids = data['form']['partner_ids']
+        elif data_search == 'name':
+            if data['form']['filter_selection'] == 'all_vall':
+                self.partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+            if data['form']['filter_selection'] == 'def':
+                data_found = False
+                if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).name:
+                    data_found = True
+                    val_part.append(('name', '>=', res_partner_obj.browse(self.cr, self.uid, partner_default_from).name))
+                if partner_default_to and res_partner_obj.browse(self.cr, self.uid, partner_default_to) and res_partner_obj.browse(self.cr, self.uid, partner_default_to).name:
+                    data_found = True
+                    val_part.append(('name', '<=', res_partner_obj.browse(self.cr, self.uid, partner_default_to).name))
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+            elif data['form']['filter_selection'] == 'input':
+                data_found = False
+                if partner_input_from:
+                    self.cr.execute("select name " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "name ilike '" + str(partner_input_from) + "%' " \
+                                    "order by name limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('name', '>=', qry['name']))
+                if partner_input_to:
+                    self.cr.execute("select name " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "name ilike '" + str(partner_input_to) + "%' " \
+                                    "order by name desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('name', '<=', qry['name']))
+                if data_found:
+                    partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+            elif data['form']['filter_selection'] == 'selection':
+                if data['form']['partner_ids']:
+                    partner_ids = data['form']['partner_ids']
+        self.partner_ids = partner_ids
         return super(sale_order_issued_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
@@ -54,39 +152,22 @@ class sale_order_issued_report(report_sxw.rml_parse):
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
-            'get_code_from': self._get_code_from,
-            'get_code_to': self._get_code_to,
             })
-
-    def _get_code_from(self):
-        return self.partner_code_from and self.pool.get('res.partner').browse(self.cr, self.uid,self.partner_code_from).ref or False
-    
-    def _get_code_to(self):
-        return self.partner_code_to and self.pool.get('res.partner').browse(self.cr, self.uid, self.partner_code_to).ref or False
 
     def _get_lines(self):
         results = []
-        val_part = []
+        cr              = self.cr
+        uid             = self.uid
         date_from = self.date_from
-        date_to =  self.date_to + ' ' + '23:59:59'
-        code_from = self.partner_code_from
-        code_to = self.partner_code_to
-        res_partner_obj = self.pool.get('res.partner')
-        if code_from and res_partner_obj.browse(self.cr, self.uid, code_from) and res_partner_obj.browse(self.cr, self.uid, code_from).ref:
-            val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, code_from).ref))
-        if code_to and res_partner_obj.browse(self.cr, self.uid, code_to) and res_partner_obj.browse(self.cr, self.uid, code_to).ref:
-            val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, code_to).ref))
-        val_part.append(('customer', '=', True))
-        part_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
-        val_ss = ''
-        if part_ids:
-            for ss in part_ids:
-                if val_ss == '':
-                    val_ss += str(ss)
-                else:
-                    val_ss += (', ' + str(ss))
+        date_to = self.date_to
+        date_from_qry = date_from and "And so.date_order >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And so.date_order <= '" + str(date_to) + "' " or " "
 
-        self.cr.execute("select so.name as so_no, " \
+        partner_ids = self.partner_ids or False
+        partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND rp.id = " + str(partner_ids[0]) + " ") or "AND rp.id IN " + str(tuple(partner_ids)) + " ")) or "AND rp.id IN (0) "
+        res_lines = []
+
+        cr.execute("select so.name as so_no, " \
                         "so.date_order as so_date, " \
                         "so.client_order_ref as customer_po_no, " \
                         "sol.price_unit as unit_price, " \
@@ -106,34 +187,13 @@ class sale_order_issued_report(report_sxw.rml_parse):
                         "left join product_template pt on sol.product_id2 = pt.id " \
                         "left join product_product pp on sol.product_id2 = pp.id " \
                         "left join product_brand pb on pp.brand_id = pb.id " \
-                        "WHERE so.date_order >= '" + str(date_from) + "' AND so.date_order <= '" + str(date_to) + "' " \
-                        "and so.partner_id in (" + val_ss + ") and so.state in ('progress','done') " \
-                        "order by so.name")
-        res_general = self.cr.dictfetchall()
-#        val_sale = []
-#        sale_order_obj = self.pool.get('sale.order')
-#        val_sale.append(('date_order', '>=', date_from))
-#        val_sale.append(('date_order', '<=', date_to))
-#        val_sale.append(('partner_id', 'in', part_ids))
-#        val_sale.append(('state', 'in', ('progress', 'done')))
-#        sale_order_ids = sale_order_obj.search(self.cr, self.uid, val_sale, order='name ASC')
-#        for sale_order_id in sale_order_obj.browse(self.cr, self.uid, sale_order_ids):
-#            for lines in sale_order_id.order_line:
-#                res = {}
-#                res['so_no'] = sale_order_id.name
-#                res['so_date'] = sale_order_id.date_order
-#                res['customer_po_no'] = sale_order_id.client_order_ref
-#                res['unit_price'] = lines.price_unit
-#                res['qty'] = lines.product_uom_qty
-#                res['total'] = lines.price_subtotal
-#                res['location'] = lines.location_id.name
-#                res['partner_ref'] = sale_order_id.partner_id.ref
-#                res['partner_name'] = sale_order_id.partner_id.name
-#                res['customer_part_no'] = lines.product_customer_id.name
-#                res['part_no'] = lines.product_id2.name
-#                res['brand'] = lines.product_id2.brand_id.name
-#                results.append(res)
-        return res_general
+                        "WHERE so.state in ('progress','done') " \
+                        + date_from_qry \
+                        + date_to_qry \
+                        + partner_qry + \
+                        " order by so.name")
+        result = self.cr.dictfetchall()
+        return result
 
 report_sxw.report_sxw('report.sale.order.issued.report_landscape', 'sale.order.line',
     'addons/max_custom_report/sale/report/sale_order_issued_report.rml', parser=sale_order_issued_report, header="internal landscape")

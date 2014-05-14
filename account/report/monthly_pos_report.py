@@ -66,7 +66,7 @@ class monthly_pos_report(report_sxw.rml_parse):
         
                 if data['form']['brand_selection'] == 'all_vall':
                     brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
-                if data['form']['brand_selection'] == 'name':
+                if data['form']['brand_selection'] == 'def':
                     data_found = False
                     if brand_default_from and product_brand_obj.browse(self.cr, self.uid, brand_default_from) and product_brand_obj.browse(self.cr, self.uid, brand_default_from).name:
                         data_found = True

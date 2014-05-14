@@ -70,7 +70,7 @@ class monthly_pos_with_sale_order_report(report_sxw.rml_parse):
     
             if data['form']['invoice_selection'] == 'all_vall':
                 invoice_ids = account_invoice_obj.search(self.cr, self.uid, val_ai, order='number ASC')
-            if data['form']['invoice_selection'] == 'name':
+            if data['form']['invoice_selection'] == 'def':
                 data_found = False
                 if ai_default_from and account_invoice_obj.browse(self.cr, self.uid, ai_default_from) and account_invoice_obj.browse(self.cr, self.uid, ai_default_from).number:
                     data_found = True

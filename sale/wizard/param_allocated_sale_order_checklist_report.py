@@ -26,15 +26,17 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
     _name = 'param.allocated.sale.order.checklist.report'
     _description = 'Param Allocated Sale Order Checklist Report'
     _columns = {
-        'product_id_from':fields.many2one('product.product', 'Supplier Part No From', required=False),
-        'product_id_to':fields.many2one('product.product', 'Supplier Part No To', required=False),
-        #\ 'product_id': fields.many2one('product.product', 'Item Code', domain=[('sale_ok','=',True)], change_default=True),
+        'pp_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supplier Part No Filter Selection', required=True),
+        'pp_default_from':fields.many2one('product.product', 'Supplier Part No From', domain=[], required=False),
+        'pp_default_to':fields.many2one('product.product', 'Supplier Part No To', domain=[], required=False),
+        'pp_input_from': fields.char('Supplier Part No From', size=128),
+        'pp_input_to': fields.char('Supplier Part No To', size=128),
+        'pp_ids' :fields.many2many('product.product', 'report_sale_checklist_supp_rel', 'report_id', 'pp_id', 'Supplier Part No', domain=[]),
     }
 
-#    _defaults = {
-#        'date_from': lambda *a: time.strftime('%Y-01-01'),
-#        'date_to': lambda *a: time.strftime('%Y-%m-%d')
-#    }
+    _defaults = {
+        'pp_selection': 'all_vall',
+    }
 
     def create_vat(self, cr, uid, ids, context=None):
         if context is None:

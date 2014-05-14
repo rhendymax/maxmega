@@ -41,10 +41,56 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
     def set_context(self, objects, data, ids, report_type=None):
         new_ids = ids
         res = {}
-        self.product_id_from = data['form']['product_id_from'] and data['form']['product_id_from'][0] or False
-        self.product_id_to = data['form']['product_id_to'] and data['form']['product_id_to'][0] or False
+        product_product_obj = self.pool.get('product.product')
+        qry_pp = ''
+        val_pp = []
+        pp_ids = False
 
-#        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
+        pp_default_from = data['form']['pp_default_from'] and data['form']['pp_default_from'][0] or False
+        pp_default_to = data['form']['pp_default_to'] and data['form']['pp_default_to'][0] or False
+        pp_input_from = data['form']['pp_input_from'] or False
+        pp_input_to = data['form']['pp_input_to'] or False
+
+        if data['form']['pp_selection'] == 'all_vall':
+            pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
+
+        if data['form']['pp_selection'] == 'def':
+            data_found = False
+            if pp_default_from and product_product_obj.browse(self.cr, self.uid, pp_default_from) and product_product_obj.browse(self.cr, self.uid, pp_default_from).name:
+                data_found = True
+                val_pp.append(('name', '>=', product_product_obj.browse(self.cr, self.uid, pp_default_from).name))
+            if pp_default_to and product_product_obj.browse(self.cr, self.uid, pp_default_to) and product_product_obj.browse(self.cr, self.uid, pp_default_to).name:
+                data_found = True
+                val_pp.append(('name', '<=', product_product_obj.browse(self.cr, self.uid, pp_default_to).name))
+            if data_found:
+                pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
+        elif data['form']['pp_selection'] == 'input':
+            data_found = False
+            if pp_input_from:
+                self.cr.execute("select name " \
+                                "from product_template "\
+                                "where name ilike '" + str(pp_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pp.append(('name', '>=', qry['name']))
+            if pp_input_to:
+                self.cr.execute("select name " \
+                                "from product_template "\
+                                "where name ilike '" + str(pp_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pp.append(('name', '<=', qry['name']))
+            if data_found:
+                pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
+        elif data['form']['pp_selection'] == 'selection':
+            if data['form']['pp_ids']:
+                pp_ids = data['form']['pp_ids']
+        self.pp_ids = pp_ids
+    #        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
         return super(allocated_sale_order_checklist_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
@@ -53,208 +99,97 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
-            'get_product_id_from': self._get_product_from,
-            'get_product_id_to': self._get_product_to,
             })
-
-    def _get_product_from(self):
-        return self.product_id_from and self.pool.get('product.product').browse(self.cr, self.uid,self.product_id_from).name or False
-    
-    def _get_product_to(self):
-        return self.product_id_to and self.pool.get('product.product').browse(self.cr, self.uid, self.product_id_to).name or False
 
     def _get_lines(self):
         results = []
-        val_prod = []
+        cr              = self.cr
+        uid             = self.uid
+        pp_obj = self.pool.get('product.product')
+        pp_ids = self.pp_ids or False
+        pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pp.id = " + str(pp_ids[0]) + " ") or "AND pp.id IN " + str(tuple(pp_ids)) + " ")) or "AND pp.id IN (0) "
         line_ids = []
-        prod_id = False
-        prod_ids = []
-        prod_ids_name = {}
-        prod_ids_lines = {}
-        product_product_obj = self.pool.get('product.product')
-        product_id_from = self.product_id_from
-        product_id_from_name = product_id_from and product_product_obj.browse(self.cr, self.uid, product_id_from) and product_product_obj.browse(self.cr, self.uid, product_id_from).name or False
-        product_id_to = self.product_id_to
-        product_id_to_name = product_id_to and product_product_obj.browse(self.cr, self.uid, product_id_to) and product_product_obj.browse(self.cr, self.uid, product_id_to).name or False
-        criteria = ""
-        if product_id_from_name:
-            criteria += " AND pt.name >= '" + str(product_id_from_name) + "'"
-        if product_id_to_name:
-            criteria += " AND pt.name <= '" + str(product_id_to_name) + "'"
-
-
-        self.cr.execute("select  sol.product_id, \
-        pb.name as brand_name, \
-        pt.name as product_name, \
-        so.name as so_name, \
-        rp.ref as customer_ref, \
-        rp.name as customer_name, \
-        pc.name as cpn, \
-        sl.name as location_name, \
-        COALESCE(sol.qty_onhand_allocated, 0) + (select COALESCE(sum(received_qty),0) \
-        from sale_allocated where sale_line_id = sol.id) \
-        - (select COALESCE(sum(sm2.product_qty), 0) from stock_move sm2 \
-        where sm2.sale_line_id = sol.id and sm2.state = 'done') as qty, \
-        pu.name as uom \
-        from sale_order_line sol \
-        left join product_uom pu on sol.product_uom = pu.id \
-        left join stock_location sl on sol.location_id = sl.id \
-        left join product_customer pc on sol.product_customer_id = pc.id \
-        left join product_template pt on sol.product_id = pt.id \
-        left join product_product pp on pt.id = pp.id \
-        left join product_brand pb on pp.brand_id = pb.id \
-        left join sale_order so on sol.order_id = so.id \
-        left join res_partner rp on so.partner_id = rp.id \
-        where sol.state not in ('draft','done','cancel') \
-        and COALESCE(sol.qty_onhand_allocated, 0) \
-        + (select COALESCE(sum(received_qty),0) from sale_allocated where sale_line_id = sol.id) \
-        - (select COALESCE(sum(sm2.product_qty), 0) from stock_move sm2 \
-        where sm2.sale_line_id = sol.id and sm2.state = 'done') > 0 " + str(criteria) + " \
-        order by pb.name, pt.name, pp.id")
-        res_general = self.cr.dictfetchall()
         
-        for r in res_general:
-            if r['product_id'] not in prod_ids:
-                prod_ids.append(r['product_id'])
-                prod_ids_name[r['product_id']] = '[' + str (r['brand_name']) + '] ' + str(r['product_name'])
-                if prod_id:
-                    prod_ids_lines[prod_id] = line_ids
-                    line_ids = []
-                prod_id = r['product_id']
+        cr.execute("select  DISTINCT sol.product_id \
+                from sale_order_line sol \
+                left join product_template pt on sol.product_id = pt.id \
+                left join product_product pp on pt.id = pp.id \
+                left join product_brand pb on pp.brand_id = pb.id \
+                where sol.state not in ('draft','done','cancel') \
+                and COALESCE(sol.qty_onhand_allocated, 0) \
+                + (select COALESCE(sum(received_qty),0) from sale_allocated where sale_line_id = sol.id) \
+                - (select COALESCE(sum(sm2.product_qty), 0) from stock_move sm2 \
+                where sm2.sale_line_id = sol.id and sm2.state = 'done') > 0 " \
+                + pp_qry )
+#                " order by pb.name, pt.name")
+        product_ids_vals = []
+        qry = cr.dictfetchall()
+        if qry:
+            for r in qry:
+                product_ids_vals.append(r['product_id'])
 
-            line_ids.append({
-                             'so_name' : r['so_name'],
-                             'customer_name' : '[' + str(r['customer_ref']) + '] ' + str(r['customer_name']),
-                             'cpn' : r['cpn'],
-                             'location' : r['location_name'],
-                             'qty' : r['qty'],
-                             'uom' : r['uom']
-                             })
+        product_ids_vals_qry = (len(product_ids_vals) > 0 and ((len(product_ids_vals) == 1 and "where pp.id = " +  str(product_ids_vals[0]) + " ") or "where pp.id IN " +  str(tuple(product_ids_vals)) + " ")) or "where pp.id IN (0) "
 
-        if prod_id:
-            prod_ids_lines[prod_id] = line_ids
-            line_ids = []
+        cr.execute(
+                "SELECT pp.id, pt.name, pb.name as brand_name " \
+                "FROM product_product pp inner join product_template pt on pp.id = pt.id " \
+                "left join product_brand pb on pp.brand_id = pb.id " \
+                + product_ids_vals_qry \
+                + " order by pt.name")
+        qry1 = cr.dictfetchall()
+        if qry1:
+            for s in qry1:
+                cr.execute("select sol.product_id, \
+                    pb.name as brand_name, \
+                    pt.name as product_name, \
+                    so.name as so_name, \
+                    rp.ref as customer_ref, \
+                    rp.name as customer_name, \
+                    pc.name as cpn, \
+                    sl.name as location_name, \
+                    COALESCE(sol.qty_onhand_allocated, 0) + (select COALESCE(sum(received_qty),0) \
+                    from sale_allocated where sale_line_id = sol.id) \
+                    - (select COALESCE(sum(sm2.product_qty), 0) from stock_move sm2 \
+                    where sm2.sale_line_id = sol.id and sm2.state = 'done') as qty, \
+                    pu.name as uom \
+                    from sale_order_line sol \
+                    left join product_uom pu on sol.product_uom = pu.id \
+                    left join stock_location sl on sol.location_id = sl.id \
+                    left join product_customer pc on sol.product_customer_id = pc.id \
+                    left join product_template pt on sol.product_id = pt.id \
+                    left join product_product pp on pt.id = pp.id \
+                    left join product_brand pb on pp.brand_id = pb.id \
+                    left join sale_order so on sol.order_id = so.id \
+                    left join res_partner rp on so.partner_id = rp.id \
+                    where sol.state not in ('draft','done','cancel') \
+                    and COALESCE(sol.qty_onhand_allocated, 0) \
+                    + (select COALESCE(sum(received_qty),0) from sale_allocated where sale_line_id = sol.id) \
+                    - (select COALESCE(sum(sm2.product_qty), 0) from stock_move sm2 \
+                    where sm2.sale_line_id = sol.id and sm2.state = 'done') > 0 " \
+                    "and sol.product_id = " + str(s['id']) + " "\
+                    " order by pb.name, pt.name")
 
-        if prod_ids:
+                qry3 = cr.dictfetchall()
+                val = []
+                if qry3:
+                    for t in qry3:
+                        val.append({
+                                 'so_name' : t['so_name'],
+                                 'customer_name' : '[' + str(t['customer_ref']) + '] ' + str(t['customer_name']),
+                                 'cpn' : t['cpn'],
+                                 'location' : t['location_name'],
+                                 'qty' : t['qty'],
+                                 'uom' : t['uom']
+                                    })
 
-            for product_id in prod_ids:
-                res = {}
-                res['name'] = prod_ids_name[product_id]
-                res['lines'] = prod_ids_lines[product_id]
-                results.append(res)
+                results.append({
+                    'name' : '[' + s['brand_name'] + ']' + s['name'],
+                    'vals' : val,
+                    })
 
-#
-#            if product_id = False:
-#                product_id = r['product_id']
-#                res['name'] = '[' + str (r['brand_name']) + '] ' + str(r['product_name'])
-#            else:
-#                if 
-#                res['lines'] = line_ids
-#
-#
-#
-#        product_id_from = self.product_id_from
-#        product_id_to = self.product_id_to
-#        
-#        sale_order_line_obj = self.pool.get('sale.order.line')
-#        product_uom_obj = self.pool.get('product.uom')
-#        stock_move_obj = self.pool.get('stock.move')
-#
-#        if product_id_from and product_product_obj.browse(self.cr, self.uid, product_id_from) and product_product_obj.browse(self.cr, self.uid, product_id_from).name:
-#            val_prod.append(('name', '>=', product_product_obj.browse(self.cr, self.uid, product_id_from).name))
-#        if product_id_to and product_product_obj.browse(self.cr, self.uid, product_id_to) and product_product_obj.browse(self.cr, self.uid, product_id_to).name:
-#            val_prod.append(('name', '<=', product_product_obj.browse(self.cr, self.uid, product_id_to).name))
-#
-#
-#        prod_ids = product_product_obj.search(self.cr, self.uid, val_prod, order='ref ASC')
-#        if prod_ids:
-#            product_ids = product_product_obj.browse(self.cr, self.uid, prod_ids)
-#            for product in product_ids:
-#                sale_order_line_ids = sale_order_line_obj.browse(self.cr, self.uid, sale_order_line_obj.search(self.cr, self.uid, [('product_id','=',product.id),('state','<>','draft'),('state','<>','done'),('state','<>','cancel')]), context=None)
-#                allocated_onhand = 0.00
-#                if sale_order_line_ids:
-#                    res = {}
-#                    line_ids = []
-#                    for val in sale_order_line_ids:
-#                        allocated_onhand = val.qty_onhand_count
-#                        stock_move_ids = stock_move_obj.search(self.cr, self.uid, [('sale_line_id','=',val.id),('state','=','done')])
-#                        do_qty = 0.00
-#                        if stock_move_ids:
-#                            for stock_move_id in stock_move_ids:
-#                                stock_move = stock_move_obj.browse(self.cr, self.uid, stock_move_id, context=None)
-#                                do_qty = do_qty + product_uom_obj._compute_qty(self.cr, self.uid, stock_move.product_uom.id, stock_move.product_qty, product.uom_id.id)
-#                        if (allocated_onhand - do_qty) > 0:
-#                            
-##                            raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(val, ''))
-#                            line_ids.append({
-#                                            'sale_order_name' : val.order_id.name,
-#                                            'customer_ref' : '',
-#                                            'cpn' : '',
-#                                            'qty' : 0,
-#                                            'uom' : ''
-#                                            })
-#                    if line_ids:
-#                        res['name'] = product.name
-#                        res['lines'] = line_ids
-#                        results.append(res)
-##        
-##        
-##        sale_order_line_ids = sale_order_line_obj.browse(self.cr, self.uid, sale_order_line_obj.search(cr, uid, [('product_id','=',product.id),('state','<>','draft'),('state','<>','done'),('state','<>','cancel')]), context=context)
-##        allocated_onhand = 0.00
-##        if sale_order_line_ids:
-##            loc_vals = []
-##            loc_qty = {}
-##            for val in sale_order_line_ids:
-##                allocated_onhand = val.qty_onhand_count
-##                stock_move_ids = stock_move_obj.search(cr, uid, [('sale_line_id','=',val.id),('state','=','done')])
-##                do_qty = 0.00
-##                if stock_move_ids:
-##                    for stock_move_id in stock_move_ids:
-##                        stock_move = stock_move_obj.browse(cr, uid, stock_move_id, context=context)
-##                        do_qty = do_qty + product_uom_obj._compute_qty(cr, uid, stock_move.product_uom.id, stock_move.product_qty, product.uom_id.id)
-##                if (allocated_onhand - do_qty) > 0:
-#                    
-#
-##        val_part = []
-##        val_inv = []
-##        date_from = self.date_from
-##        date_to =  self.date_to + ' ' + '23:59:59'
-##        code_from = self.partner_code_from
-##        code_to = self.partner_code_to
-##        inv_from = self.inv_from
-##        inv_to = self.inv_to
-##        account_invoice_obj = self.pool.get('account.invoice')
-##        res_partner_obj = self.pool.get('res.partner')
-##
-##        if code_from and res_partner_obj.browse(self.cr, self.uid, code_from) and res_partner_obj.browse(self.cr, self.uid, code_from).ref:
-##            val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, code_from).ref))
-##        if code_to and res_partner_obj.browse(self.cr, self.uid, code_to) and res_partner_obj.browse(self.cr, self.uid, code_to).ref:
-##            val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, code_to).ref))
-##        if inv_from and account_invoice_obj.browse(self.cr, self.uid, inv_from) and account_invoice_obj.browse(self.cr, self.uid, inv_from).number:
-##            val_inv.append(('number', '>=', account_invoice_obj.browse(self.cr, self.uid, inv_from).number))
-##        if inv_to and account_invoice_obj.browse(self.cr, self.uid, inv_to) and account_invoice_obj.browse(self.cr, self.uid, inv_to).number:
-##            val_inv.append(('number', '<=', account_invoice_obj.browse(self.cr, self.uid, inv_to).number))
-##        val_part.append(('customer', '=', True))
-##        part_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
-##        if part_ids:
-##            partner_ids = res_partner_obj.browse(self.cr, self.uid, part_ids)
-##            val_inv.append(('date_invoice', '>=', date_from))
-##            val_inv.append(('date_invoice', '<=', date_to))
-##            val_inv.append(('type', 'in', ['out_invoice','out_refund']))
-##            val_inv.append(('state', 'in', ['open','paid']))
-##            for part in partner_ids:
-##                val_inv2 = list(val_inv)
-##                val_inv2.append(('partner_id', '=', part.id))
-##                inv_ids = account_invoice_obj.search(self.cr, self.uid, val_inv2, order='date_invoice ASC')
-##                if inv_ids:
-##                    line_ids = []
-##                    res = {}
-##                    for inv_id in account_invoice_obj.browse(self.cr, self.uid, inv_ids):
-##                        line_ids.append(inv_id)
-##                    res['ref'] = part.ref
-##                    res['name'] = part.name
-##                    res['lines'] = line_ids
-##                    results.append(res)
+        results = results and sorted(results, key=lambda val_res: val_res['name']) or []
+        results = results
+                
         return results
 
 report_sxw.report_sxw('report.allocated.sale.order.checklist.report_landscape', 'sale.order',

@@ -175,7 +175,7 @@ class po_oustanding_report(report_sxw.rml_parse):
         if data['form']['po_selection'] == 'all_vall':
             po_ids = purchase_order_obj.search(self.cr, self.uid, val_po, order='name ASC')
 
-        if data['form']['po_selection'] == 'name':
+        if data['form']['po_selection'] == 'def':
             data_found = False
             if po_default_from and purchase_order_obj.browse(self.cr, self.uid, po_default_from) and purchase_order_obj.browse(self.cr, self.uid, po_default_from).name:
                 data_found = True
