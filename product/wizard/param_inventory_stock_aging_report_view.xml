@@ -10,15 +10,53 @@
 					<separator string="Inventory Stock Aging Report" colspan="4"/>
 					<label colspan="4" nolabel="1" string="This menu prints Inventory Stock Aging Report"/>
 					<newline/>
-					<separator string="Brand" colspan="4"/>
-					<field name="brand_from"/>
-					<field name="brand_to"/>
-					<separator string="Product" colspan="4"/>
-					<field name="product_from"/>
-					<field name="product_to"/>
-					<separator string="Location" colspan="4"/>
-					<field name="location_from" domain="[('usage','=','internal')]"/>
-					<field name="location_to" domain="[('usage','=','internal')]"/>
+					<notebook colspan="4">
+					<page string="Brand">
+							<field name="brand_selection" colspan="4"/>
+							<field name="brand_default_from" attrs="{'invisible': [('brand_selection','!=','def')], 'required': [('brand_selection','=','def')]}"/>
+							<field name="brand_default_to" attrs="{'invisible': [('brand_selection','!=','def')], 'required': [('brand_selection','=','def')]}"/>
+							<field name="brand_input_from"
+								attrs="{'invisible': [('brand_selection','!=','input')], 'required': [('brand_selection','=','input')]}"/>
+							<field name="brand_input_to"
+								attrs="{'invisible': [('brand_selection','!=','input')], 'required': [('brand_selection','=','input')]}"/>
+							<field name="brand_ids"
+								attrs="{'invisible': [('brand_selection','!=','selection')], 'required': [('brand_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Supplier Part No">
+							<field name="product_selection" colspan="4"/>
+							<field name="product_default_from" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_default_to" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_input_from"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_input_to"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_ids"
+								attrs="{'invisible': [('product_selection','!=','selection')], 'required': [('product_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Location">
+							<field name="sl_selection" colspan="4"/>
+							<field name="sl_default_from" attrs="{'invisible': [('sl_selection','!=','def')], 'required': [('sl_selection','=','def')]}"/>
+							<field name="sl_default_to" attrs="{'invisible': [('sl_selection','!=','def')], 'required': [('sl_selection','=','def')]}"/>
+							<field name="sl_input_from"
+								attrs="{'invisible': [('sl_selection','!=','input')], 'required': [('sl_selection','=','input')]}"/>
+							<field name="sl_input_to"
+								attrs="{'invisible': [('sl_selection','!=','input')], 'required': [('sl_selection','=','input')]}"/>
+							<field name="sl_ids"
+								attrs="{'invisible': [('sl_selection','!=','selection')], 'required': [('sl_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>

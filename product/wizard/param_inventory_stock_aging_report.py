@@ -26,13 +26,34 @@ class param_inventory_stock_aging_report(osv.osv_memory):
     _name = 'param.inventory.stock.aging.report'
     _description = 'Param Inventory Stock Aging Report'
     _columns = {
-        'brand_from':fields.many2one('product.brand', 'Inventory Brand From', required=False),
-        'brand_to':fields.many2one('product.brand', 'Inventory Brand To', required=False),
-        'product_from':fields.many2one('product.product', 'Supplier Part No From', required=False),
-        'product_to':fields.many2one('product.product', 'Supplier Part No To', required=False),
-        'location_from':fields.many2one('stock.location', 'Location From', required=False),
-        'location_to':fields.many2one('stock.location', 'Location To', required=False),
+        #Brand Selection
+        'brand_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Inventory Brand Filter Selection', required=True),
+        'brand_default_from':fields.many2one('product.brand', 'Inventory Brand From', domain=[], required=False),
+        'brand_default_to':fields.many2one('product.brand', 'Inventory Brand To', domain=[], required=False),
+        'brand_input_from': fields.char('Inventory Brand From', size=128),
+        'brand_input_to': fields.char('Inventory Brand To', size=128),
+        'brand_ids' :fields.many2many('product.brand', 'report_inventory_stock_pb_rel', 'report_id', 'product_id', 'Product', domain=[]),
+        #Product Selection
+        'product_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supplier Part No Filter Selection', required=True),
+        'product_default_from':fields.many2one('product.product', 'Supplier Part No From', domain=[], required=False),
+        'product_default_to':fields.many2one('product.product', 'Supplier Part No To', domain=[], required=False),
+        'product_input_from': fields.char('Supplier Part No From', size=128),
+        'product_input_to': fields.char('Supplier Part No To', size=128),
+        'product_ids' :fields.many2many('product.product', 'report_inventory_stock_product_rel', 'report_id', 'product_id', 'Product', domain=[]),
+        #Location Selection
+        'sl_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Location Filter Selection', required=True),
+        'sl_default_from':fields.many2one('stock.location', 'Location From', domain=[], required=False),
+        'sl_default_to':fields.many2one('stock.location', 'Location To', domain=[], required=False),
+        'sl_input_from': fields.char('Location From', size=128),
+        'sl_input_to': fields.char('Location To', size=128),
+        'sl_ids' :fields.many2many('stock.location', 'report_inventory_stock_sl_rel', 'report_id', 'sl_id', 'Product', domain=[]),
     }
+
+    _default = {
+                'brand_selection':'all_vall',
+                'product_selection':'all_vall',
+                'sl_selection':'all_vall',
+              }
 
     def create_vat(self, cr, uid, ids, context=None):
         if context is None:
