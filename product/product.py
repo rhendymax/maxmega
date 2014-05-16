@@ -108,6 +108,31 @@ class product_product(osv.osv):
 
         return super(product_product, self).create(cr, uid, data, context)
 
+    def unlink(self, cr, uid, ids, context=None):
+        sale_obj = self.pool.get('sale.order.line')
+        purchase_obj = self.pool.get('purchase.order.line')
+        inventory_obj = self.pool.get('stock.inventory.line')
+        move_obj = self.pool.get('stock.move')
+        invoice_obj = self.pool.get('account.invoice.line')
+        product_ids = self.search(cr, uid, [('id', 'in', ids)])
+
+        if sale_obj.search(cr, uid, [('product_id', 'in', product_ids)]):
+            raise osv.except_osv(_('Error !'), _('You can not remove an product containing sales line items.'))
+
+        if purchase_obj.search(cr, uid, [('product_id', 'in', product_ids)]):
+            raise osv.except_osv(_('Error !'), _('You can not remove an product containing product lines items.'))
+
+        if inventory_obj.search(cr, uid, [('product_id', 'in', product_ids)]):
+            raise osv.except_osv(_('Error !'), _('You can not remove an product containing stock inventory lines items.'))
+
+        if move_obj.search(cr, uid, [('product_id', 'in', product_ids)]):
+            raise osv.except_osv(_('Error !'), _('You can not remove an product containing stock moves items.'))
+
+        if invoice_obj.search(cr, uid, [('product_id', 'in', product_ids)]):
+            raise osv.except_osv(_('Error !'), _('You can not remove an product containing invoices lines items.'))
+        return super(product_product, self).unlink(cr, uid, ids, context=context)
+
+
     def write(self, cr, uid, ids, vals, context=None):
 
         #Load the required Object
