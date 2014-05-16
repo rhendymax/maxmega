@@ -85,6 +85,8 @@ class product_product(osv.osv):
 
         result = []
         for product in self.browse(cr, user, ids, context=context):
+#            print product.seller_ids
+#            raise osv.except_osv(_('Debug !'), _(str(product.id) + '----' + '' + '----' + ''))
             sellers = filter(lambda x: x.name.id == partner_id, product.seller_ids)
             if sellers:
                 for s in sellers:
@@ -792,7 +794,7 @@ class product_product(osv.osv):
         'brand_name': fields.related('brand_id','name', type='char', readonly=True, size=64, relation='product.brand', string='Brand Name'),
         'max_categ_id': fields.many2one('product.categ.max','Product Category', required=True),
     }
-
+  
     _defaults = {
         'type': lambda *a: 'product',
         'procure_method': lambda *a: 'make_to_order',
