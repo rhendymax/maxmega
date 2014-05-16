@@ -31,11 +31,25 @@ class voucher(report_sxw.rml_parse):
             'to_upper': self.to_upper,
             'get_partner_address': self.get_partner_address,
             'split_word': self.split_word,
+            'get_total_amount': self._get_total_amount,
         })
 
     def to_upper(self, s):
         return s.upper()
-    
+
+    def _get_total_amount(self, voucher):
+        cr          = self.cr
+        uid         = self.uid
+#
+        total_amount = 0
+        for r in voucher:
+            if r.type == '"receipt"':
+                sign = 1
+                for lines in r.line_ids:
+                    if lines.type == 'dr':
+                        total_amount = round(line.amount or 0, 2)
+        return total_amount
+
     def get_partner_address(self, partner, add=False):
         result = ''
         if partner.address:
