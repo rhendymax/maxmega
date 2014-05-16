@@ -48,6 +48,7 @@ class voucher(report_sxw.rml_parse):
                 for lines in r.line_ids:
                     if lines.type == 'dr':
                         total_amount = round(line.amount or 0, 2)
+    
         return total_amount
 
     def get_partner_address(self, partner, add=False):
