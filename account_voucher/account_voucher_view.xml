@@ -213,7 +213,9 @@
 				<field name="journal_id" position="replace"/>
 				<field name="date" position="replace"/>
 				<field name="partner_id" position="replace">
-					<field name="partner_id" required="1" invisible="context.get('line_type', False)" string="Customer" on_change="onchange_journal2(partner_id, journal_id, type, context)" context="{'search_default_customer': 1}" colspan="6"/>
+					<field name="partner_id" required="1" invisible="context.get('line_type', False)"
+						domain="[('customer','=',True)]"
+						string="Customer" on_change="onchange_journal2(partner_id, journal_id, type, context)" context="{'invoice_currency':currency_id,'search_default_customer': 1, 'default_customer': 1, 'default_supplier': 0}" colspan="6"/>
 					<field name="journal_id"
 						domain="[('type','in',['bank', 'cash'])]"
 						invisible="context.get('line_type', False)"
