@@ -62,6 +62,7 @@ class account_invoice(osv.osv):
             vals.update({'partner_id': partner_id})
             partner = self.pool.get('res.partner').browse(cr, user, partner_id, context=None)
             addr = self.pool.get('res.partner').address_get(cr, user, [partner_id], ['delivery', 'invoice', 'contact'])
+            salesman = 'user_id' in vals and vals['user_id'] or False
             if vals['type'] in ('in_invoice', 'in_refund'):
                 currency_id = partner and partner.property_product_pricelist_purchase and \
                                 partner.property_product_pricelist_purchase.currency_id and \
@@ -69,12 +70,16 @@ class account_invoice(osv.osv):
                 account_id = partner and partner.property_account_payable and \
                                 partner.property_account_payable.id or False
             else:
+                if not salesman:
+                    salesman = partner and partner.user_id and partner.user_id.id or False
+
                 currency_id = partner and partner.property_product_pricelist and \
                                 partner.property_product_pricelist.currency_id and \
                                 partner.property_product_pricelist.currency_id.id or False
                 account_id = partner and partner.property_account_receivable and \
                                 partner.property_account_receivable.id or False
             vals.update({
+                         'user_id': salesman,
                          'partner_id': partner_id,
                          'address_contact_id': addr['contact'],
                          'address_invoice_id': addr['invoice'],
@@ -108,6 +113,7 @@ class account_invoice(osv.osv):
         if 'partner_id2' in vals:
             partner_id = vals['partner_id2']
             partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=None)
+            salesman =  False
             addr = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['delivery', 'invoice', 'contact'])
             if typexx in ('in_invoice', 'in_refund'):
                 currency_id = partner and partner.property_product_pricelist_purchase and \
@@ -116,12 +122,15 @@ class account_invoice(osv.osv):
                 account_id = partner and partner.property_account_payable and \
                                 partner.property_account_payable.id or False
             else:
+                salesman = partner and partner.user_id and partner.user_id.id or False
+
                 currency_id = partner and partner.property_product_pricelist and \
                                 partner.property_product_pricelist.currency_id and \
                                 partner.property_product_pricelist.currency_id.id or False
                 account_id = partner and partner.property_account_receivable and \
                                 partner.property_account_receivable.id or False
             vals.update({
+                         'user_id': salesman,
                          'partner_id': partner_id,
                          'address_contact_id': addr['contact'],
                          'address_invoice_id': addr['invoice'],
