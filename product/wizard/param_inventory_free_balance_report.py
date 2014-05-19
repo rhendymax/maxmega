@@ -42,7 +42,7 @@ class param_inventory_free_balance_report(osv.osv_memory):
         'sl_ids' :fields.many2many('stock.location', 'report_inventory_balance_sl_rel', 'report_id', 'sl_id', 'Product', domain=[]),
     }
 
-    _default = {
+    _defaults = {
         'product_selection': 'all_vall',
         'sl_selection': 'all_vall',
     }

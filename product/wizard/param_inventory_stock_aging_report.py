@@ -49,7 +49,7 @@ class param_inventory_stock_aging_report(osv.osv_memory):
         'sl_ids' :fields.many2many('stock.location', 'report_inventory_stock_sl_rel', 'report_id', 'sl_id', 'Product', domain=[]),
     }
 
-    _default = {
+    _defaults = {
                 'brand_selection':'all_vall',
                 'product_selection':'all_vall',
                 'sl_selection':'all_vall',

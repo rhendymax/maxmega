@@ -39,14 +39,6 @@ class incoming_report(report_sxw.rml_parse):
     _name = 'incoming.report'
 
     def set_context(self, objects, data, ids, report_type=None):
-#        new_ids = ids
-#        res = {}
-#        self.date_from = data['form']['date_from']
-#        self.date_to = data['form']['date_to']
-#        self.product_from = data['form']['product_from'] and data['form']['product_from'][0] or False
-#        self.product_to = data['form']['product_to'] and data['form']['product_to'][0] or False
-#        self.location_from = data['form']['location_from'] and data['form']['location_from'][0] or False
-#        self.location_to = data['form']['location_to'] and data['form']['location_to'][0] or False
         new_ids = ids
         res = {}
         product_product_obj = self.pool.get('product.product')
@@ -108,7 +100,7 @@ class incoming_report(report_sxw.rml_parse):
         elif data['form']['product_selection'] == 'selection':
             if data['form']['product_ids']:
                 pp_ids = data['form']['product_ids']
-        
+        self.pp_ids = pp_ids
         #Stock Location
         sl_default_from = data['form']['sl_default_from'] and data['form']['sl_default_from'][0] or False
         sl_default_to = data['form']['sl_default_to'] and data['form']['sl_default_to'][0] or False
@@ -154,9 +146,6 @@ class incoming_report(report_sxw.rml_parse):
             if data['form']['sl_ids']:
                 sl_ids = data['form']['sl_ids']
         self.sl_ids = sl_ids
-        
-
-
 #        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
         return super(incoming_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
@@ -168,7 +157,7 @@ class incoming_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'locale': locale,
-#            'get_lines': self._get_lines,
+            'get_lines': self._get_lines,
 #            'total_cost' : self._total_cost,
 #            'total_qty' : self._total_qty,
 #            'product_from': self._get_product_from,
@@ -179,46 +168,60 @@ class incoming_report(report_sxw.rml_parse):
 
     def _get_lines(self):
         results = []
-        cr              = self.cr
-        uid             = self.uid
+        cr = self.cr
+        uid = self.uid
         date_from = self.date_from
         date_to = self.date_to
-        date_from_qry = date_from and "And so.date_order >= '" + str(date_from) + "' " or " "
-        date_to_qry = date_to and "And so.date_order <= '" + str(date_to) + "' " or " "
-
+        date_from_qry = date_from and "And sp.date_done >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And sp.date_done <= '" + str(date_to) + "' " or " "
         pp_ids = self.pp_ids or False
-        pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pp.id = " + str(pp_ids[0]) + " ") or "AND pp.id IN " + str(tuple(pp_ids)) + " ")) or "AND pp.id IN (0) "
+        pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pt.id = " + str(pp_ids[0]) + " ") or "AND pt.id IN " + str(tuple(pp_ids)) + " ")) or "AND pt.id IN (0) "
         sl_ids = self.sl_ids or False
         sl_qry = (sl_ids and ((len(sl_ids) == 1 and "AND sl.id = " + str(sl_ids[0]) + " ") or "AND sl.id IN " + str(tuple(sl_ids)) + " ")) or "AND sl.id IN (0) "
         res_lines = []
-
-        cr.execute("select so.name as so_no, " \
-                        "so.date_order as so_date, " \
-                        "so.client_order_ref as customer_po_no, " \
-                        "sol.price_unit as unit_price, " \
-                        "sol.product_uom_qty as qty, " \
-                        "sol.price_unit * sol.product_uom_qty as total, " \
-                        "sl.name as location, " \
-                        "rp.ref as partner_ref, " \
-                        "rp.name as partner_name, " \
-                        "pc.name as customer_part_no, " \
-                        "pt.name as part_no, " \
-                        "pb.name as brand " \
-                        "from sale_order so " \
-                        "inner join sale_order_line sol on so.id = sol.order_id " \
-                        "left join stock_location sl on sol.location_id = sl.id " \
-                        "left join res_partner rp on so.partner_id = rp.id " \
-                        "left join product_customer pc on sol.product_customer_id = pc.id " \
-                        "left join product_template pt on sol.product_id2 = pt.id " \
-                        "left join product_product pp on sol.product_id2 = pp.id " \
-                        "left join product_brand pb on pp.brand_id = pb.id " \
-                        "WHERE so.state in ('progress','done') " \
+        cr.execute("select sp.do_date as date, " \
+                        "sp.name as inc_no, " \
+                        "pt.name as spn, " \
+                        "rp.name as sn, " \
+                        "sp.invoice_no as in, " \
+                        "sm.product_qty as qty, " \
+                        "po.name as po, " \
+                        "sl.name as location, "\
+                        "sm.id as sm_id " \
+                        "from stock_move sm " \
+                        "inner join stock_picking sp on sp.id = sm.picking_id " \
+                        "left join stock_location sl on sm.location_dest_id = sl.id " \
+                        "left join res_partner rp on sp.partner_id = rp.id " \
+                        "left join product_template pt on sm.product_id = pt.id " \
+                        "inner join purchase_order_line pol on sm.purchase_line_id = pol.id " \
+                        "left join purchase_order po on pol.order_id=po.id " \
+                        "WHERE sm.state = 'done' and sp.state = 'done' and sp.type = 'in' " \
                         + date_from_qry \
                         + date_to_qry \
-                        + partner_qry + \
-                        " order by so.name")
-        result = self.cr.dictfetchall()
-        return result
+                        + pp_qry \
+                        + sl_qry + \
+                        " order by spn, inc_no, date")
+        qry = cr.dictfetchall()
+        print cr
+        if qry:
+            for s in qry:
+                    results.append({
+                                    'date' : s['date'],
+                                    'inc_no' : s['inc_no'],
+                                    'spn' : s['spn'],
+                                    'sn' : s['sn'],
+                                    'in': s['in'],
+                                    'qty' : s['qty'],
+                                    'po' : s['po'],
+                                    'location': s['location'],
+                                    'sm_id' : s['sm_id'],
+                                     })
+#        results = results and sorted(results, key=lambda val_res: val_res['spn']) or []
+#        results = results and sorted(results, key=lambda val_res: val_res['inc_no']) or []
+#        results = results and sorted(results, key=lambda val_res: val_res['date']) or []
+        return results
+
+
 #    def _get_product_from(self):
 #           return self.product_from and self.pool.get('product.product').browse(self.cr, self.uid, self.product_from).name or False
 #    
@@ -236,12 +239,11 @@ class incoming_report(report_sxw.rml_parse):
 #        results = []
 #        val_product = []
 #        val_location = []
-#        date_from = self.date_from
-#        date_to =  self.date_to + ' ' + '23:59:59'
-#        product_from = self.product_from
-#        product_to = self.product_to
-#        location_from = self.location_from
-#        location_to = self.location_to
+##        date_from = self.date_from
+##        date_to = self.date_to + ' ' + '23:59:59'
+#
+##        location_from = self.location_from
+##        location_to = self.location_to
 #        res_temp1 = []
 #        res_temp2 = []
 #        res_temp3 = []
@@ -257,14 +259,14 @@ class incoming_report(report_sxw.rml_parse):
 #        stock_location_obj = self.pool.get('stock.location')
 #        stock_move_obj = self.pool.get('stock.move')
 #        uom_obj = self.pool.get('product.uom')
-#        if product_from and product_product_obj.browse(self.cr, self.uid, product_from) and product_product_obj.browse(self.cr, self.uid, product_from).name:
-#            val_product.append(('name', '>=', product_product_obj.browse(self.cr, self.uid, product_from).name))
-#        if product_to and product_product_obj.browse(self.cr, self.uid, product_to) and product_product_obj.browse(self.cr, self.uid, product_to).name:
-#            val_product.append(('name', '<=', product_product_obj.browse(self.cr, self.uid, product_to).name))
-#        if location_from and stock_location_obj.browse(self.cr, self.uid, location_from) and stock_location_obj.browse(self.cr, self.uid, location_from).name:
-#            val_location.append(('name', '>=', stock_location_obj.browse(self.cr, self.uid, location_from).name))
-#        if location_to and stock_location_obj.browse(self.cr, self.uid, location_to) and stock_location_obj.browse(self.cr, self.uid, location_to).name:
-#            val_location.append(('name', '<=', stock_location_obj.browse(self.cr, self.uid, location_to).name))
+##        if product_from and product_product_obj.browse(self.cr, self.uid, product_from) and product_product_obj.browse(self.cr, self.uid, product_from).name:
+##            val_product.append(('name', '>=', product_product_obj.browse(self.cr, self.uid, product_from).name))
+##        if product_to and product_product_obj.browse(self.cr, self.uid, product_to) and product_product_obj.browse(self.cr, self.uid, product_to).name:
+##            val_product.append(('name', '<=', product_product_obj.browse(self.cr, self.uid, product_to).name))
+##        if location_from and stock_location_obj.browse(self.cr, self.uid, location_from) and stock_location_obj.browse(self.cr, self.uid, location_from).name:
+##            val_location.append(('name', '>=', stock_location_obj.browse(self.cr, self.uid, location_from).name))
+##        if location_to and stock_location_obj.browse(self.cr, self.uid, location_to) and stock_location_obj.browse(self.cr, self.uid, location_to).name:
+##            val_location.append(('name', '<=', stock_location_obj.browse(self.cr, self.uid, location_to).name))
 #
 ##        if code_to and res_partner_obj.browse(self.cr, self.uid, code_to) and res_partner_obj.browse(self.cr, self.uid, code_to).ref:
 ##            val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, code_to).ref))
@@ -272,20 +274,26 @@ class incoming_report(report_sxw.rml_parse):
 ##            val_po.append(('name', '>=', purchase_order_obj.browse(self.cr, self.uid, po_from).name))
 ##        if po_to and purchase_order_obj.browse(self.cr, self.uid, po_to) and purchase_order_obj.browse(self.cr, self.uid, po_to).name:
 ##            val_po.append(('name', '<=', purchase_order_obj.browse(self.cr, self.uid, po_to).name))
-##        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(vals, code_to))
-#
+#        
 ##        part_ids = res_partner_obj.search(self.cr, self.uid, val_part)
-#        product_ids = product_product_obj.search(self.cr, self.uid, val_product,order='name')
-#        location_ids = stock_location_obj.search(self.cr, self.uid, val_location)
+#        product_ids = self.pp_ids
+##        print product_ids
+##        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %('', ''))
+#
+##        product_ids = product_product_obj.search(self.cr, self.uid, val_product, order='name')
+##        location_ids = stock_location_obj.search(self.cr, self.uid, val_location)
 ##        purcs = purchase_order_line_obj.browse(self.cr, self.uid, line_ids)
 #        for product_id in product_ids:
 #            pp = product_product_obj.browse(self.cr, self.uid, product_id)
 ##            raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(pp.id, pp.name))
-#            stock_move_ids = stock_move_obj.search(self.cr, self.uid, [('product_id','=',product_id),('location_dest_id','in',location_ids),('state','=','done')])
+#            stock_move_ids = stock_move_obj.search(self.cr, self.uid, [('product_id', '=', product_id), ('state', '=', 'done')])
+##            print stock_move_ids
+##            raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %('', ''))
+#
 #            if stock_move_ids:
 #                for stock_move_id in stock_move_ids:
 #                    sm = stock_move_obj.browse(self.cr, self.uid, stock_move_id)
-#                    if sm.picking_id and sm.picking_id.type == 'in' and sm.picking_id.date_done >= date_from and sm.picking_id.date_done <= date_to:
+#                    if sm.picking_id and sm.picking_id.type == 'in':
 #                        qty = uom_obj._compute_qty(self.cr, self.uid, sm.product_uom.id, sm.product_qty, sm.product_id.uom_id.id)
 #                        res_temp1.append({
 #                                        'date' : sm.picking_id.date_done,
@@ -303,7 +311,7 @@ class incoming_report(report_sxw.rml_parse):
 #                        dest_loc_group[sm.id] = sm.location_dest_id.name
 #
 #        if res_temp1:
-#            for key, value in sorted(dest_loc_group.iteritems(), key=lambda (k,v): (v,k)):
+#            for key, value in sorted(dest_loc_group.iteritems(), key=lambda (k, v): (v, k)):
 ##                for key, value in sorted(customer_group.iteritems(), key=lambda (k,v): (v,k)):
 #                for temp in res_temp1:
 #                    if temp['sm_id'] == key:
@@ -322,7 +330,7 @@ class incoming_report(report_sxw.rml_parse):
 #                                        })
 #
 #        if res_temp2:
-#            for key, value in sorted(product_group.iteritems(), key=lambda (k,v): (v,k)):
+#            for key, value in sorted(product_group.iteritems(), key=lambda (k, v): (v, k)):
 ##                for key, value in sorted(customer_group.iteritems(), key=lambda (k,v): (v,k)):
 #                for temp in res_temp2:
 #                    if temp['sm_id'] == key:
@@ -341,14 +349,14 @@ class incoming_report(report_sxw.rml_parse):
 #                                        })
 #
 #        if res_temp3:
-#            for key, value in sorted(inc_group.iteritems(), key=lambda (k,v): (v,k)):
+#            for key, value in sorted(inc_group.iteritems(), key=lambda (k, v): (v, k)):
 ##                for key, value in sorted(customer_group.iteritems(), key=lambda (k,v): (v,k)):
 #                for temp in res_temp3:
 #                    if temp['sm_id'] == key:
 #                        #sort by date
 #                        date_group[temp['sm_id']] = temp['date']
 #                        res_temp4.append({
-#                                        'date' : temp['date'],
+#                                                                    'date' : temp['date'],
 #                                        'inc_no' : temp['inc_no'],
 #                                        'spn' : temp['spn'],
 #                                        'sn' : temp['sn'],
@@ -360,7 +368,7 @@ class incoming_report(report_sxw.rml_parse):
 #                                        })
 #
 #        if res_temp4:
-#            for key, value in sorted(date_group.iteritems(), key=lambda (k,v): (v,k)):
+#            for key, value in sorted(date_group.iteritems(), key=lambda (k, v): (v, k)):
 #                for temp in res_temp4:
 #                    if temp['sm_id'] == key:
 #                        res = {
@@ -375,6 +383,7 @@ class incoming_report(report_sxw.rml_parse):
 #                        }
 #                        results.append(res)
 #                        res = {}
+#        print 'test'
 #        return results 
 #
 #    def _total_cost(self):

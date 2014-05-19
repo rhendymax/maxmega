@@ -11,11 +11,6 @@
 					<label colspan="4" nolabel="1" string="This menu prints Incoming Report"/>
 					<newline/>
 					<notebook colspan="4">
-						<page string="Date">
-							<field name="date_selection" colspan="4"/>
-							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
-							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
-						</page>
 						<page string="Supplier Part No">
 							<field name="product_selection" colspan="4"/>
 							<field name="product_default_from" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
@@ -30,6 +25,11 @@
 									<field name="name"/>
 								</tree>
 							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 						</page>
 						<page string="Location">
 							<field name="sl_selection" colspan="4"/>
