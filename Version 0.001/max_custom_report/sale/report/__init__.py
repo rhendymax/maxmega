@@ -1,2 +1,0 @@
-import allocated_sale_order_checklist_report
-import sale_order_issued_report
