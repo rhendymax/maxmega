@@ -434,7 +434,7 @@ class report(report_sxw.rml_parse):
                     'ttl_char': ttl_char,
                     'ttl_char_home': ttl_char_home,
                     })
-        results = results and sorted(results, key=lambda val_res: val_res['journal_name']) or []
+        results = results and sorted(results, key=lambda val_res: results['journal_name']) or []
         return results
 
 report_sxw.report_sxw('report.deposit.bank_landscape', 'account.voucher',
