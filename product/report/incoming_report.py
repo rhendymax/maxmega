@@ -141,7 +141,7 @@ class incoming_report(report_sxw.rml_parse):
                     data_found = True
                     val_sl.append(('name', '<=', qry['name']))
             if data_found:
-                sl_ids = stock_location.search(self.cr, self.uid, val_sl, order='name ASC')
+                sl_ids = stock_location_obj.search(self.cr, self.uid, val_sl, order='name ASC')
         elif data['form']['sl_selection'] == 'selection':
             if data['form']['sl_ids']:
                 sl_ids = data['form']['sl_ids']
