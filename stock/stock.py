@@ -465,7 +465,9 @@ class stock_picking(osv.osv):
             val = val1 = 0.0
             cur = order.pricelist_id.currency_id
             for line in order.move_lines:
+#Try Fix Bug
                 val1 += line.price_subtotal
+#                val1 += line.price_subtotal
                 if (order.type == 'internal'):
                     taxes_id = False
                 else:
@@ -791,16 +793,24 @@ class stock_picking(osv.osv):
                     results = cr.fetchone()
                     if results:
                         do_posted_amt = results[0]
-                
+#Fix 19 May 2014
+#                credit_limit = 0
+
                 credit_limit = (st.partner_id and st.partner_id.credit_limit) or 0.00
                 term_days = (st.partner_id and st.partner_id.sale_term_id and st.partner_id.sale_term_id.days) or 0
                 grace = (st.partner_id and st.partner_id.grace) or (st.partner_id and st.partner_id.sale_term_id and st.partner_id.sale_term_id.grace) or 0
+#Fix 19 May 2014
+
+#                os_inv_amount = 0
                 os_inv_amount = st.partner_id and st.partner_id.credit or 0.00
 
                 company_id = self.pool.get('res.company').browse(cr, uid, st.company_id.id, context=context) or False
                 ptype_src = company_id and company_id.currency_id and company_id.currency_id.id or False
                 org_src = st.pricelist_id and st.pricelist_id.currency_id and st.pricelist_id.currency_id.id or False
+#Fix 19 May 2014
                 do_amt = (ptype_src and org_src and currency_obj.compute(cr, uid, org_src, ptype_src, st.amount_total, round=False)) or 0.00
+#                do_amt = 0.00
+
                 credit_balance = (credit_limit > 0.00 and credit_limit - os_inv_amount - do_posted_amt) or 0.00
 
                 credit_due_amount = (do_amt > credit_balance and ((credit_balance > 0 and do_amt - credit_balance) or do_amt)) or 0.00
@@ -822,7 +832,9 @@ class stock_picking(osv.osv):
                                 gracedays = sale_grace
                             termdays = sale_term_id.days
                             over_due_days = daysremaining - (termdays + gracedays)
-                credit_type = (do_amt > credit_balance and credit_limit > 0 and "Credit Limit") or (st.overdue_days > 0 and "Payment Terms") or False
+#Fix 19 May 2014
+                credit_type = False
+#                credit_type = (do_amt > credit_balance and credit_limit > 0 and "Credit Limit") or (st.overdue_days > 0 and "Payment Terms") or False
 
         for f in field_names:
             c = context.copy()
@@ -844,11 +856,19 @@ class stock_picking(osv.osv):
                 result = credit_due_amount
             if f == 'overdue_days':
                 result = over_due_days
-            if f == 'credit_type':
-                result = credit_type
             for id in ids:
                 res[id][f] = result
         return res
+
+    def _credit_type(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        credit_type = ''
+        for st in self.browse(cr, uid, ids, context=context):
+            credit_type = (st.do_amt > st.credit_balance and st.credit_limit > 0 and "Credit Limit") or (st.overdue_days > 0 and "Payment Terms") or False
+#            credit_type = 'testing'
+            res[st.id] = credit_type
+        return res
+
 
     _columns = {
         'user_id': fields.many2one('res.users', 'Salesman', select=True, readonly=True),
@@ -880,7 +900,7 @@ class stock_picking(osv.osv):
         'days': fields.function(_credit_limit, multi='credit_limit', type='float', string='Payment Term Days'),
         'grace': fields.function(_credit_limit, multi='credit_limit', type='float', string='Grace Days Given'),
         'account_receivable': fields.function(_credit_limit, multi='credit_limit', type='float', string='OS Inv Amount'),
-        'credit_type': fields.function(_credit_limit, multi='credit_limit', type='char', string='Type'),
+        'credit_type': fields.function(_credit_type, type='char', string='Type'),
         'do_amt': fields.function(_credit_limit, multi='credit_limit', type='float', string='Total DO Amt'),
         'do_posted_amt': fields.function(_credit_limit, multi='credit_limit', type='float', digits_compute=dp.get_precision('Purchase Price'), string='Total DO Posted'),
         'credit_balance': fields.function(_credit_limit, multi='credit_limit', type='float', string='Credit Limit Bal/Exc'),
@@ -1386,10 +1406,10 @@ class stock_move(osv.osv):
                 taxes_id = line.taxes_id or False
                 taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty)
                 res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
-                
+
             if (line.picking_id.type == 'out'):
                 discount = 0.00
-                tax_id = line.taxes_id
+                tax_id = line.taxes_id or False
                 price = line.price_unit * (1 - (discount or 0.0) / 100.0)
                 taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty)
                 res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
