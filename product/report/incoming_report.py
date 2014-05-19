@@ -172,8 +172,8 @@ class incoming_report(report_sxw.rml_parse):
         uid = self.uid
         date_from = self.date_from
         date_to = self.date_to
-        date_from_qry = date_from and "And sp.date_done >= '" + str(date_from) + "' " or " "
-        date_to_qry = date_to and "And sp.date_done <= '" + str(date_to) + "' " or " "
+        date_from_qry = date_from and "And sp.do_date >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And sp.do_date <= '" + str(date_to) + "' " or " "
         pp_ids = self.pp_ids or False
         pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pt.id = " + str(pp_ids[0]) + " ") or "AND pt.id IN " + str(tuple(pp_ids)) + " ")) or "AND pt.id IN (0) "
         sl_ids = self.sl_ids or False
@@ -200,7 +200,7 @@ class incoming_report(report_sxw.rml_parse):
                         + date_to_qry \
                         + pp_qry \
                         + sl_qry + \
-                        " order by spn, inc_no, date")
+                        " order by date, inc_no, spn")
         qry = cr.dictfetchall()
         print cr
         if qry:
