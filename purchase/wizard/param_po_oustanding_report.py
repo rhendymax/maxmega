@@ -321,7 +321,8 @@ class param_po_oustanding_report(osv.osv_memory):
         po_qry = (po_ids and ((len(po_ids) == 1 and "AND po.id = " + str(po_ids[0]) + " ") or "AND po.id IN " + str(tuple(po_ids)) + " ")) or "AND po.id IN (0) "
 
         all_content_line = ''
-        header = 'Supplier Delivery Outstanding Purchase Order' + " \n"
+        header = 'sep=;' + " \n"
+        header += 'Supplier Delivery Outstanding Purchase Order' + " \n"
         header += 'Supplier Key;Supplier Name;PO Number;Item Description;ETD Date;Order Qty(PCS);Unit Price;Oustanding Qty' + " \n"
 
         cr.execute(
