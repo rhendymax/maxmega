@@ -114,7 +114,7 @@ class po_oustanding_report(report_sxw.rml_parse):
                     partner_ids = data['form']['partner_ids']
         elif data_search == 'name':
             if data['form']['filter_selection'] == 'all_vall':
-                self.partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
+                partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).name:
@@ -263,7 +263,7 @@ class po_oustanding_report(report_sxw.rml_parse):
             + date_from_qry \
             + date_to_qry \
             + po_qry + \
-            "order by po.date_order")
+            "order by po.name")
         qry3 = cr.dictfetchall()
         if qry3:
             for t in qry3:
@@ -280,6 +280,7 @@ class po_oustanding_report(report_sxw.rml_parse):
                 }
                 self.oustanding += (t['oustanding'] or 0)
                 results.append(res)
+        results = results and sorted(results, key=lambda val_res: val_res['s_name']) or []
         return results
 report_sxw.report_sxw('report.po.oustanding.report_landscape', 'purchase.order',
     'addons/max_custom_report/purchase/report/po_oustanding_report.rml', parser=po_oustanding_report, header="internal landscape")
