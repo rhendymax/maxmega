@@ -65,7 +65,7 @@ class incoming_report(report_sxw.rml_parse):
         if data['form']['product_selection'] == 'all_vall':
             pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
 
-        if data['form']['product_selection'] == 'def':
+        elif data['form']['product_selection'] == 'def':
             data_found = False
             if pp_default_from and product_product_obj.browse(self.cr, self.uid, pp_default_from) and product_product_obj.browse(self.cr, self.uid, pp_default_from).name:
                 data_found = True
@@ -202,20 +202,19 @@ class incoming_report(report_sxw.rml_parse):
                         + sl_qry + \
                         " order by date, inc_no, spn")
         qry = cr.dictfetchall()
-        print cr
         if qry:
             for s in qry:
-                    results.append({
-                                    'date' : s['date'],
-                                    'inc_no' : s['inc_no'],
-                                    'spn' : s['spn'],
-                                    'sn' : s['sn'],
-                                    'in': s['in'],
-                                    'qty' : s['qty'],
-                                    'po' : s['po'],
-                                    'location': s['location'],
-                                    'sm_id' : s['sm_id'],
-                                     })
+                results.append({
+                                'date' : s['date'],
+                                'inc_no' : s['inc_no'],
+                                'spn' : s['spn'],
+                                'sn' : s['sn'],
+                                'in': s['in'],
+                                'qty' : s['qty'],
+                                'po' : s['po'],
+                                'location': s['location'],
+                                'sm_id' : s['sm_id'],
+                                 })
 #        results = results and sorted(results, key=lambda val_res: val_res['spn']) or []
 #        results = results and sorted(results, key=lambda val_res: val_res['inc_no']) or []
 #        results = results and sorted(results, key=lambda val_res: val_res['date']) or []
