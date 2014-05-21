@@ -65,7 +65,7 @@ class inventory_free_balance_report(report_sxw.rml_parse):
         if data['form']['product_selection'] == 'all_vall':
             pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
 
-        if data['form']['product_selection'] == 'def':
+        elif data['form']['product_selection'] == 'def':
             data_found = False
             if pp_default_from and product_product_obj.browse(self.cr, self.uid, pp_default_from) and product_product_obj.browse(self.cr, self.uid, pp_default_from).name:
                 data_found = True
@@ -110,7 +110,7 @@ class inventory_free_balance_report(report_sxw.rml_parse):
         if data['form']['sl_selection'] == 'all_vall':
             sl_ids = stock_location_obj.search(self.cr, self.uid, val_sl, order='name ASC')
 
-        if data['form']['sl_selection'] == 'def':
+        elif data['form']['sl_selection'] == 'def':
             data_found = False
             if sl_default_from and stock_location_obj.browse(self.cr, self.uid, sl_default_from) and stock_location_obj.browse(self.cr, self.uid, sl_default_from).name:
                 data_found = True

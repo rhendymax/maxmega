@@ -71,16 +71,16 @@ class max_ledger_report(report_sxw.rml_parse):
                 qry_supp = 'supplier = True and sundry = True'
                 val_part.append(('supplier', '=', True))
                 val_part.append(('sundry', '=', True))
-        
+
         partner_default_from = data['form']['partner_default_from'] and data['form']['partner_default_from'][0] or False
         partner_default_to = data['form']['partner_default_to'] and data['form']['partner_default_to'][0] or False
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
-        
+
         if data_search == 'code':
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
-            if data['form']['filter_selection'] == 'def':
+            elif data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref:
                     data_found = True
