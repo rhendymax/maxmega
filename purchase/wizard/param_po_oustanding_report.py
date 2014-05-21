@@ -296,9 +296,6 @@ class param_po_oustanding_report(osv.osv_memory):
         return self._get_tplines(cr, uid, ids, used_context, context=context)
 
     def _get_tplines(self, cr, uid, ids,data, context):
-        res={}
-        pool = pooler.get_pool(cr.dbname)
-        
         form = data
         if not ids:
             ids = data['ids']
