@@ -126,8 +126,8 @@ class param_po_oustanding_report(osv.osv_memory):
             val_part.append(('supplier', '=', True))
             val_part.append(('sundry', '=', True))
 
-        partner_default_from = data['form']['partner_default_from'] and data['form']['partner_default_from'][0] or False
-        partner_default_to = data['form']['partner_default_to'] and data['form']['partner_default_to'][0] or False
+        partner_default_from = data['form']['partner_default_from'] or False
+        partner_default_to = data['form']['partner_default_to'] or False
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
 
@@ -227,8 +227,8 @@ class param_po_oustanding_report(osv.osv_memory):
         qry_po = 'state = "approved"'
         val_po.append(('state','=', 'approved'))
 
-        po_default_from = data['form']['po_default_from'] and data['form']['po_default_from'][0] or False
-        po_default_to = data['form']['po_default_to'] and data['form']['po_default_to'][0] or False
+        po_default_from = data['form']['po_default_from'] or False
+        po_default_to = data['form']['po_default_to'] or False
         po_input_from = data['form']['po_input_from'] or False
         po_input_to = data['form']['po_input_to'] or False
 

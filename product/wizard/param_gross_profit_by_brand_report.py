@@ -21,15 +21,14 @@
 
 from osv import fields, osv
 import time
+import pooler
+import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_gross_profit_by_brand_report(osv.osv_memory):
     _name = 'param.gross.profit.by.brand.report'
     _description = 'Param Gross Profit By Inventory Brand Report'
     _columns = {
-#        'date_from': fields.date("Voucher Date From", required=True),
-#        'date_to': fields.date("Voucher Date To", required=True),
-#        'brand_from':fields.many2one('product.brand', 'Inventory Brand From', required=False),
-#        'brand_to':fields.many2one('product.brand', 'Inventory Brand To', required=False),
         'date_selection': fields.selection([('none_sel','None'),('date_sel', 'Date')],'Type Selection', required=True),
         'date_from': fields.date("Voucher Date From"),
         'date_to': fields.date("Voucher Date To"),
@@ -40,7 +39,8 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         'pb_input_from': fields.char('Inventory Brand From', size=128),
         'pb_input_to': fields.char('Inventory Brand To', size=128),
         'pb_ids' :fields.many2many('product.brand', 'report_gross_profit_pb_rel', 'report_id', 'pb_id', 'Inventory Brand', domain=[]),
-
+        'data': fields.binary('Exported CSV', readonly=True),
+        'filename': fields.char('File Name',size=64),
     }
 
     _defaults = {
@@ -59,6 +59,239 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
             'report_name': 'gross.profit.by.brand.report_landscape',
             'datas': datas,
         }
+
+    def check_report(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        data = {}
+        data['ids'] = context.get('active_ids', [])
+        data['model'] = context.get('active_model', 'ir.ui.menu')
+
+        data['form'] = self.read(cr, uid, ids, ['date_selection', 'date_from', 'date_to', \
+                                                'pb_selection','pb_default_from','pb_default_to', 'pb_input_from','pb_input_to','pb_ids', \
+                                                ], context=context)[0]
+        for field in ['date_selection', 'date_from', 'date_to', \
+                                                'pb_selection','pb_default_from','pb_default_to', 'pb_input_from','pb_input_to','pb_ids']:
+            if isinstance(data['form'][field], tuple):
+                data['form'][field] = data['form'][field][0]
+        used_context = self._build_contexts(cr, uid, ids, data, context=context)
+
+        return self._get_tplines(cr, uid, ids, used_context, context=context)
+
+    def _build_contexts(self, cr, uid, ids, data, context=None):
+        if context is None:
+            context = {}
+        result = {}
+        new_ids = ids
+        res = {}
+        product_brand_obj = self.pool.get('product.brand')
+        val_pb = []
+        
+        if data['form']['date_selection'] == 'none_sel':
+            result['date_from'] = False
+            result['date_to'] = False
+        else:
+            result['date_from'] = data['form']['date_from']
+            result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+
+        pb_default_from = data['form']['pb_default_from'] or False
+        pb_default_to = data['form']['pb_default_to'] or False
+        pb_input_from = data['form']['pb_input_from'] or False
+        pb_input_to = data['form']['pb_input_to'] or False
+        
+        if data['form']['pb_selection'] == 'all_vall':
+            pb_ids = product_brand_obj.search(cr, uid, val_pb, order='name ASC')
+        if data['form']['pb_selection'] == 'def':
+            data_found = False
+            if pb_default_from and product_brand_obj.browse(cr, uid, pb_default_from) and product_brand_obj.browse(cr, uid, pb_default_from).name:
+                data_found = True
+                val_pb.append(('name', '>=', product_brand_obj.browse(cr, uid, pb_default_from).name))
+            if pb_default_to and product_brand_obj.browse(cr, uid, pb_default_to) and product_brand_obj.browse(cr, uid, pb_default_to).name:
+                data_found = True
+                val_pb.append(('name', '<=', product_brand_obj.browse(cr, uid, pb_default_to).name))
+            if data_found:
+                pb_ids = product_brand_obj.search(cr, uid, val_pb, order='name ASC')
+        elif data['form']['pb_selection'] == 'input':
+            data_found = False
+            if pb_input_from:
+                cr.execute("select name " \
+                                "from product_brand "\
+                                "where name ilike '" + str(pb_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pb.append(('name', '>=', qry['name']))
+            if pb_input_to:
+                cr.execute("select name " \
+                                "from product_brand "\
+                                "where name ilike '" + str(pb_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pb.append(('name', '<=', qry['name']))
+            #print val_part
+            if data_found:
+                pb_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+        elif data['form']['pb_selection'] == 'selection':
+            if data['form']['pb_ids']:
+                pb_ids = data['form']['pb_ids']
+        result['pb_ids'] = pb_ids
+        return result
+
+    def _get_tplines(self, cr, uid, ids,data, context):
+        form = data
+        if not ids:
+            ids = data['ids']
+        if not ids:
+            return []
+
+        results = []
+        cr = cr
+        uid = uid
+        date_from = form['date_from'] or False
+        date_to = form['date_to'] or False
+        cost = 0
+        qty = 0
+        sales = 0
+        product_product_obj = self.pool.get('product.product')
+        res_company_obj = self.pool.get('res.company')
+        currency_pool = self.pool.get('res.currency')
+        pb_ids = form['pb_ids'] or False
+        brnd_ids = []
+        brnd_ids_sm_ids = {}
+        brnd_ids_qty = {}
+        brnd_ids_sales = {}
+        brnd_ids_cost = {}
+        brnd_ids_name = {}
+        brnd_ids_desc = {}
+        date_from = date_from
+        date_to = date_to
+
+        pb_qry = (pb_ids and ((len(pb_ids) == 1 and "AND pb.id = " + str(pb_ids[0]) + " ") or "AND pb.id IN " + str(tuple(pb_ids)) + " ")) or "AND pb.id IN (0) "
+
+        date_from_qry = date_from and "AND ai.date_invoice >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "AND ai.date_invoice <= '" + str(date_to) + "' " or " "
+
+        all_content_line = ''
+        header = 'sep=;' + " \n"
+        header += 'Gross Profit By Inventory Brand Report' + " \n"
+        header += 'Inventory Brand Key;Main Description;Qty;Sales;Cost;Gross;GP %' + " \n"
+
+        cr.execute("SELECT pb.id as brand_id, pb.name as brand_name, pb.description as description, \
+        ail.quantity as brand_qty, ail.uos_id as brand_uom, ail.price_unit as brand_price, \
+        ail.product_id as product_id, ai.currency_id as currency_id, ail.company_id as company_id, \
+        ai.cur_date as cur_date, ail.stock_move_id as stock_move_id \
+        from account_invoice_line ail \
+        inner join account_invoice ai on ail.invoice_id = ai.id \
+        inner join product_product pp on ail.product_id = pp.id \
+        inner join product_brand pb on pp.brand_id= pb.id \
+        WHERE ai.state in ('open', 'paid') AND ai.type = 'out_invoice' "\
+        + pb_qry \
+        + date_from_qry \
+        + date_to_qry  +\
+        "order by pb.name")
+
+        res_general = cr.dictfetchall()
+        sm_ids = []
+        brand_id = False
+        for r in res_general:
+            product_id = product_product_obj.browse(cr, uid, r['product_id'])
+            company_currency = res_company_obj.browse(cr, uid, r['company_id']).currency_id.id
+            if r['currency_id'] == company_currency:
+                price_unit = r['brand_price']
+            else:
+                ctx = {}
+                ctx.update({'date': time.strftime('%Y-%m-%d %H:%M:%S')})
+                ctx2 = {}
+                ctx2.update({'date': r['cur_date']})
+                rate_inv = currency_pool.browse(cr, uid, r['currency_id'], context=ctx2).rate
+                rate_home = currency_pool.browse(cr, uid, company_currency, context=ctx).rate
+                price_unit = r['brand_price'] * rate_home / rate_inv
+            if r['brand_id'] not in brnd_ids:
+                brnd_ids.append(r['brand_id'])
+                brnd_ids_qty[r['brand_id']] = r['brand_qty']
+                brnd_ids_sales[r['brand_id']] = float_round(price_unit * r['brand_qty'],5)
+                brnd_ids_name[r['brand_id']] = r['brand_name']
+                brnd_ids_desc[r['brand_id']] = r['description']
+                if brand_id:
+                    brnd_ids_sm_ids[brand_id] = sm_ids
+                    sm_ids = []
+                brand_id = r['brand_id']
+            else:
+                brnd_ids_qty[r['brand_id']] += r['brand_qty']
+                brnd_ids_sales[r['brand_id']] += float_round(price_unit * r['brand_qty'],5)
+
+            sm_ids.append(r['stock_move_id'])
+
+        if brand_id:
+            brnd_ids_sm_ids[brand_id] = sm_ids
+            sm_ids = []
+#        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(sm_ids, brnd_ids_sm_ids))
+        if brnd_ids:
+
+            for brnd_id in brnd_ids:
+                res = {}
+                if brnd_ids_qty[brnd_id] > 0:
+                    res['brand_name'] = brnd_ids_name[brnd_id]
+                    res['description'] = brnd_ids_desc[brnd_id]
+                    res['brand_qty'] = brnd_ids_qty[brnd_id]
+                    res['brand_sales'] = brnd_ids_sales[brnd_id]
+                    st_m_ids = brnd_ids_sm_ids[brnd_id]
+                    val_ss = ''
+                    if st_m_ids:
+                        for ss in st_m_ids:
+                            if val_ss == '':
+                                val_ss += str(ss)
+                            else:
+                                val_ss += (', ' + str(ss))
+                    cr.execute("select SUM(CASE WHEN COALESCE(pp_in.currency_id, rc.currency_id) = rc.currency_id THEN \
+                            round(CAST(sm_in.price_unit as numeric), 5) * fc.quantity \
+                            ELSE round(CAST(sm_in.price_unit / \
+                            (select rate from res_currency_rate where currency_id = pp_in.currency_id and name >=  sp_in.do_date order by name limit 1) as numeric), 5) \
+                            * fc.quantity END) AS test \
+                            from fifo_control fc \
+                            left join stock_move sm_in on COALESCE(fc.int_in_move_id, fc.in_move_id) = sm_in.id \
+                            left join stock_move sm_out on fc.out_move_id = sm_out.id \
+                            left join stock_picking sp_in on sm_in.picking_id = sp_in.id \
+                            left join stock_picking sp_out on sm_out.picking_id = sp_out.id \
+                            left join product_pricelist pp_in on sp_in.pricelist_id = pp_in.id \
+                            left join res_company rc on sm_out.company_id = rc.id \
+                            where (fc.out_move_id in (" + val_ss + "))")
+                    res_val = cr.dictfetchall()
+                    for res_val1 in res_val:
+                        res['brand_cost'] = res_val1['test']
+                        res['gross_profit'] = brnd_ids_sales[brnd_id] - res_val1['test']
+                        res['gross_profit_p'] = (brnd_ids_sales[brnd_id] - res_val1['test']) / brnd_ids_sales[brnd_id] * 100
+                        cost += (res_val1['test'] or 0)
+                    qty += (brnd_ids_qty[brnd_id] or 0)
+                    sales += (brnd_ids_sales[brnd_id] or 0)
+                    header += str(res['brand_name'] or '') + ";" + str(res['description'] or '') + ";" \
+                            + str("%.2f" % res['brand_qty'] or 0) + ";" + str("%.5f" % res['brand_sales'] or 0) + ";" + str("%.5f" % res['brand_cost'] or 0) + ";" \
+                            + str("%.5f" % res['gross_profit'] or 0) + ";" + str("%.5f" % res['gross_profit_p'] or 0) + "% \n"
+            header += 'Report Total;;' + str("%.2f" % qty or 0) + ";" + str("%.2f" % sales or 0.00) + ";" + str("%.2f" % cost or 0) + ";" + str("%.2f" % (sales - cost) or 0) + ";" + str("%.5f" % ((sales - cost) / sales * 100) or 0) + "% \n" 
+        all_content_line += header
+        all_content_line += ' \n'
+        all_content_line += 'End of Report'
+        csv_content = ''
+
+        filename = 'Gross Profit By Inventory Brand Report.csv'
+        out = base64.encodestring(all_content_line)
+        self.write(cr, uid, ids,{'data':out, 'filename':filename})
+        obj_model = self.pool.get('ir.model.data')
+        model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','gross_profit_by_brand_report_result_csv_view')])
+        resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
+        return {
+                'name':'Gross Profit By Inventory Brand Report',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'param.gross.profit.by.brand.report',
+                'views': [(resource_id,'form')],
+                'type': 'ir.actions.act_window',
+                'target':'new',
+                'res_id':ids[0],
+                }
 
 param_gross_profit_by_brand_report()
 

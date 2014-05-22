@@ -228,7 +228,6 @@ class param_incoming_report(osv.osv_memory):
         header += 'Incoming Report' + " \n"
         header += 'Date Done;Inc No;Supplier Part No;Supplier Name;Invoice No;Qty Received;Purchase Order;Location' + " \n"
 
-
         cr.execute("select sp.do_date as date, " \
                         "sp.name as inc_no, " \
                         "pt.name as spn, " \

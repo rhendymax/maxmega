@@ -63,8 +63,8 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
         val_pp = []
         pp_ids = False
 
-        pp_default_from = data['form']['pp_default_from'] and data['form']['pp_default_from'][0] or False
-        pp_default_to = data['form']['pp_default_to'] and data['form']['pp_default_to'][0] or False
+        pp_default_from = data['form']['pp_default_from'] or False
+        pp_default_to = data['form']['pp_default_to'] or False
         pp_input_from = data['form']['pp_input_from'] or False
         pp_input_to = data['form']['pp_input_to'] or False
 
