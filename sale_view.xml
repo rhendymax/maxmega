@@ -44,6 +44,12 @@
 			parent="menu_sale_sales"
 			action="sale.action_order_form"
 			sequence="10"/>
+
+		<menuitem 
+			action="so_workflowchange.action_do_creation"
+			id="menu_sale_sales_do_creation" 
+			parent="menu_sale_sales" sequence="20"/>
+
 <!-- -->
 
 <!-- -->

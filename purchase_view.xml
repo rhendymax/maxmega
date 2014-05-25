@@ -44,6 +44,13 @@
 			parent="menu_purchase_purchase"
 			action="purchase.purchase_form_action"
 			sequence="20"/>
+
+
+		<menuitem
+			name="Incoming Creation"
+			action="so_workflowchange.action_incoming_creation_wizard"
+			id="menu_purchase_purchase_incoming_creation" parent="menu_purchase_purchase" sequence="30"/>
+
 <!-- -->
 
 <!-- -->
