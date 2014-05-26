@@ -96,7 +96,7 @@ class incoming_creation_wizard(osv.osv):
                 qty_sales = product_uom_obj._compute_qty(cr, uid, order_lines.product_uom.id, order_lines.product_qty, order_lines.product_id.uom_id.id)
 
                 qty_order = qty_sales - qty_delivery
-                qty_unit_sale = qty_sales / lines.product_qty
+                qty_unit_sale = qty_sales / order_lines.product_qty
                 qty_order = math.floor(qty_order / qty_unit_sale)
                 if qty_order > 0:
                     incoming_lines_vals = {

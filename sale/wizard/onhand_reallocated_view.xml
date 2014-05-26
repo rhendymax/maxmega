@@ -33,7 +33,7 @@
 									<field name="allocated_by_field" on_change="onchange_allocated_by_field(allocated_by_field)"/>
 								</group>
 								<field name="total_qty_reallocated" colspan="2"/>
-								<field on_change="onchange_qty_reallocated(qty_reallocated,qty_delivery,total_qty_reallocated, spq)" name="qty_reallocated" colspan="2"/>
+								<field on_change="onchange_qty_reallocated(sale_line_id,qty_reallocated,qty_delivery,total_qty_reallocated, spq)" name="qty_reallocated" colspan="2"/>
 								<field colspan="6" name="fifo_product_detail_ids" nolabel="1" widget="many2many"/>
 							</group>
 						</page>

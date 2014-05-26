@@ -42,9 +42,14 @@ class onhand_reallocated(osv.osv_memory):
             return {'value':{'allocated_by_coulumn': True}}
         return True
 
-    def onchange_qty_reallocated(self, cr, uid, ids ,qty_reallocated, qty_delivery, total_qty_reallocated, spq):
+    def onchange_qty_reallocated(self, cr, uid, ids ,sale_line_id, qty_reallocated, qty_delivery, total_qty_reallocated, spq):
+        
+        spq_approve = False
+        if sale_line_id:
+            spq_approve = self.pool.get('sale.order.line').browse(cr, uid, sale_line_id, context=None).order_id.spq_approve
+        
         if qty_reallocated > 0:
-            if qty_reallocated%spq != 0:
+            if spq_approve == False and qty_reallocated%spq != 0:
                 qty_reallocated= spq * ((qty_reallocated-(qty_reallocated%spq))/spq)
         else:
             qty_reallocated = 0
