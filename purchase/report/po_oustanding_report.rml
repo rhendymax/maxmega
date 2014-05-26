@@ -54,7 +54,29 @@
 		<para><font color="white"> </font></para>
 		<para style="terp_header_Centre">Supplier Delivery Outstanding Purchase Order</para>
 		<para><font color="white"> </font></para>
-		
+<!--		<blockTable colWidths="800.0" >
+			<tr>
+				<td>
+					<blockTable colWidths="250,250,300">
+						<tr>
+							<td>
+								<para style="terp_default_ItalicBold_7">Supplier Selection</para>
+								<para style="terp_default_ItalicBold_7">Supplier Search</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">:</para>
+								<para style="terp_default_ItalicBold_7">:</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['supp_selection'] or '') ]]</para>
+								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['supplier_search_vals'] or '') ]]</para>
+							</td>
+						</tr>
+					</blockTable>
+				</td>
+			</tr>
+		</blockTable!-->
+
 	<blockTable colWidths="70.0,220.0,70.0,140.0,60.0,80.0,80.0,80.0" style="TableMiddle">
 		<tr>
 			<td><para style="terp_default_8">Supplier Key</para></td>

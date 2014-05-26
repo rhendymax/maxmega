@@ -115,13 +115,16 @@ class param_po_oustanding_report(osv.osv_memory):
         data_search = data['form']['supplier_search_vals']
         
         if data['form']['supp_selection'] == 'all':
+            result['supp_selection'] = 'Supplier & Sundry'
             qry_supp = 'supplier = True'
             val_part.append(('supplier', '=', True))
         elif data['form']['supp_selection'] == 'supplier':
+            result['supp_selection'] = 'Supplier'
             qry_supp = 'supplier = True and sundry = False'
             val_part.append(('supplier', '=', True))
             val_part.append(('sundry', '=', False))
         elif data['form']['supp_selection'] == 'sundry':
+            result['supp_selection'] = 'Sundry'
             qry_supp = 'supplier = True and sundry = True'
             val_part.append(('supplier', '=', True))
             val_part.append(('sundry', '=', True))
@@ -130,19 +133,25 @@ class param_po_oustanding_report(osv.osv_memory):
         partner_default_to = data['form']['partner_default_to'] or False
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
-
+        partner_default_from_str = partner_default_to_str = ''
+        partnet_input_from_str = partner_input_to_str= ''
         if data_search == 'code':
+            result['data_search'] = 'Supplier Code'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
+                result['filter_selection'] = 'All Code'
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).ref:
+                    partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).ref
                     data_found = True
                     val_part.append(('ref', '>=', res_partner_obj.browse(cr, uid, partner_default_from).ref))
                 if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).ref:
+                    partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).ref
                     data_found = True
                     val_part.append(('ref', '<=', res_partner_obj.browse(cr, uid, partner_default_to).ref))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
@@ -154,6 +163,7 @@ class param_po_oustanding_report(osv.osv_memory):
                                     "order by ref limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).ref
                         data_found = True
                         val_part.append(('ref', '>=', qry['ref']))
                 if partner_input_to:
@@ -164,26 +174,37 @@ class param_po_oustanding_report(osv.osv_memory):
                                     "order by ref desc limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_to_str = res_partner_obj.browse(cr, uid, partner_input_to).ref
                         data_found = True
                         val_part.append(('ref', '<=', qry['ref']))
                 #print val_part
                 if data_found:
+                    result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(cr, uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.ref) + '",'
                     partner_ids = data['form']['partner_ids']
+                result['filter_selection'] = '[' + pr_ids +']'
         elif data_search == 'name':
+            result['data_search'] = 'Supplier Name'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
+                result['filter_selection'] = 'All Name'
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).name:
+                    partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).name
                     data_found = True
                     val_part.append(('name', '>=', res_partner_obj.browse(cr, uid, partner_default_from).name))
                 if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).name:
+                    partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).name
                     data_found = True
                     val_part.append(('name', '<=', res_partner_obj.browse(cr, uid, partner_default_to).name))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
@@ -208,13 +229,19 @@ class param_po_oustanding_report(osv.osv_memory):
                         data_found = True
                         val_part.append(('name', '<=', qry['name']))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(cr, uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.name) + '",'
                     partner_ids = data['form']['partner_ids']
+                result['filter_selection'] = '[' + pr_ids +']'
         result['partner_ids'] = partner_ids
         
         #Period
+        result['supp_selection'] = data['form']['supp_selection']
 
         if data['form']['date_selection'] == 'none_sel':
             result['date_from'] = False
@@ -284,13 +311,13 @@ class param_po_oustanding_report(osv.osv_memory):
         data['form'] = self.read(cr, uid, ids, ['supp_selection', 'supplier_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                                                 'date_selection', 'date_from', 'date_to', \
                                                 'po_selection','po_default_from','po_default_to', 'po_input_from','po_input_to','po_ids' \
-                                                ], context=context)
+                                                ], context=context)[0]
         for field in ['supp_selection', 'supplier_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                     'date_selection', 'date_from', 'date_to', \
                     'po_selection','po_default_from','po_default_to', 'po_input_from','po_input_to','po_ids'\
                     ]:
             if isinstance(data['form'][field], tuple):
-                data['form'][field] = data['form'][field]
+                data['form'][field] = data['form'][field][0]
         used_context = self._build_contexts(cr, uid, ids, data, context=context)
 
         return self._get_tplines(cr, uid, ids, used_context, context=context)
@@ -316,10 +343,15 @@ class param_po_oustanding_report(osv.osv_memory):
 
         po_ids = form['po_ids'] or False
         po_qry = (po_ids and ((len(po_ids) == 1 and "AND po.id = " + str(po_ids[0]) + " ") or "AND po.id IN " + str(tuple(po_ids)) + " ")) or "AND po.id IN (0) "
+        supp_selection = form['supp_selection']
+        data_search = form['data_search']
+        filter_selection = form['filter_selection']
 
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Supplier Delivery Outstanding Purchase Order' + " \n"
+        header += 'Supplier;' + supp_selection + " (" + data_search + ") \n"
+        header += 'Supplier search;' + filter_selection + " \n"
         header += 'Supplier Key;Supplier Name;PO Number;Item Description;ETD Date;Order Qty(PCS);Unit Price;Oustanding Qty' + " \n"
 
         cr.execute(
