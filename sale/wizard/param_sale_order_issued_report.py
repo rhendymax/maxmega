@@ -74,12 +74,12 @@ class param_sale_order_issued_report(osv.osv_memory):
         qry_supp = 'customer = True'
         val_part.append(('customer', '=', True))
 
-        if data['form']['date_selection'] == 'none_sel':
-            date_from = False
-            date_to = False
-        else:
-            date_from = data['form']['date_from']
-            date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+#        if data['form']['date_selection'] == 'none_sel':
+#            date_from = False
+#            date_to = False
+#        else:
+#            date_from = data['form']['date_from']
+#            date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
         partner_default_from = data['form']['partner_default_from'] or False
         partner_default_to = data['form']['partner_default_to'] or False

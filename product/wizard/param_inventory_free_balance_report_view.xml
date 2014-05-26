@@ -42,9 +42,27 @@
 							</field>
 						</page>
 					</notebook>
-					<group col="2" colspan="4">
-						<button icon='gtk-cancel' special="cancel" string="Cancel" />
-						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					<group col="8" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2"/>
+						<label colspan="2" nolabel="1" string=" "/>
+						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
+						<button name="create_vat" string="Print" colspan="2" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="inventory_free_balance_report_result_csv_view" model="ir.ui.view">
+			<field name="name">Gross Profit By Brand Report</field>
+			<field name="model">param.gross.profit.by.brand.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Report Options">
+					<field name="data" filename="filename" colspan="4" readonly="1"/>
+					<field name="filename" invisible="1"/>
+					<separator colspan="4"/>
+					<group col="4" colspan="4">
+						<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
 					</group>
 				</form>
 			</field>
@@ -56,6 +74,7 @@
 			<field name="res_model">param.inventory.free.balance.report</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_inventory_free_balance_report"/>
 			<field name="target">new</field>
 			<field name="help">This menu print Inventory Free Balance Report.</field>
 		</record>

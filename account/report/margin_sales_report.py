@@ -58,16 +58,17 @@ class margin_sales_report(report_sxw.rml_parse):
             else:
                 self.date_from = data['form']['date_from']
                 self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
-    
+
     #invoice
-            qry_ai = 'type = "out_invoice" and state in ("open","paid") '
+            qry_ai = "type = 'out_invoice' and state in ('open','paid') "
             val_ai.append(('type','=', 'out_invoice'))
             val_ai.append(('state','in', ('open','paid')))
+
             ai_default_from = data['form']['invoice_default_from'] and data['form']['invoice_default_from'][0] or False
             ai_default_to = data['form']['invoice_default_to'] and data['form']['invoice_default_to'][0] or False
             ai_input_from = data['form']['invoice_input_from'] or False
             ai_input_to = data['form']['invoice_input_to'] or False
-    
+
             if data['form']['invoice_selection'] == 'all_vall':
                 invoice_ids = account_invoice_obj.search(self.cr, self.uid, val_ai, order='number ASC')
             if data['form']['invoice_selection'] == 'def':

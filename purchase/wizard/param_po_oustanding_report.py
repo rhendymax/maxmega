@@ -284,13 +284,13 @@ class param_po_oustanding_report(osv.osv_memory):
         data['form'] = self.read(cr, uid, ids, ['supp_selection', 'supplier_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                                                 'date_selection', 'date_from', 'date_to', \
                                                 'po_selection','po_default_from','po_default_to', 'po_input_from','po_input_to','po_ids' \
-                                                ], context=context)[0]
+                                                ], context=context)
         for field in ['supp_selection', 'supplier_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                     'date_selection', 'date_from', 'date_to', \
                     'po_selection','po_default_from','po_default_to', 'po_input_from','po_input_to','po_ids'\
                     ]:
             if isinstance(data['form'][field], tuple):
-                data['form'][field] = data['form'][field][0]
+                data['form'][field] = data['form'][field]
         used_context = self._build_contexts(cr, uid, ids, data, context=context)
 
         return self._get_tplines(cr, uid, ids, used_context, context=context)
