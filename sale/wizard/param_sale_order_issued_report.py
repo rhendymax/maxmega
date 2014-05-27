@@ -74,30 +74,29 @@ class param_sale_order_issued_report(osv.osv_memory):
         qry_supp = 'customer = True'
         val_part.append(('customer', '=', True))
 
-#        if data['form']['date_selection'] == 'none_sel':
-#            date_from = False
-#            date_to = False
-#        else:
-#            date_from = data['form']['date_from']
-#            date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
-
         partner_default_from = data['form']['partner_default_from'] or False
         partner_default_to = data['form']['partner_default_to'] or False
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
+        partner_default_from_str = partner_default_to_str = ''
+        partnet_input_from_str = partner_input_to_str= ''
 
         if data_search == 'code':
+            result['data_search'] = 'Customer Code'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).ref:
+                    partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).ref
                     data_found = True
                     val_part.append(('ref', '>=', res_partner_obj.browse(cr, uid, partner_default_from).ref))
                 if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).ref:
                     data_found = True
+                    partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).ref
                     val_part.append(('ref', '<=', res_partner_obj.browse(cr, uid, partner_default_to).ref))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
@@ -109,6 +108,7 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by ref limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).ref
                         data_found = True
                         val_part.append(('ref', '>=', qry['ref']))
                 if partner_input_to:
@@ -119,26 +119,36 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by ref desc limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_to_str = res_partner_obj.browse(cr, uid, partner_input_to).ref
                         data_found = True
                         val_part.append(('ref', '<=', qry['ref']))
                 #print val_part
                 if data_found:
+                    result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(cr, uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.ref) + '",'
                     partner_ids = data['form']['partner_ids']
+                result['filter_selection'] = '[' + pr_ids +']'
         elif data_search == 'name':
+            result['data_search'] = 'Customer Name'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).name:
                     data_found = True
+                    partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).name
                     val_part.append(('name', '>=', res_partner_obj.browse(cr, uid, partner_default_from).name))
                 if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).name:
                     data_found = True
+                    partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).name
                     val_part.append(('name', '<=', res_partner_obj.browse(cr, uid, partner_default_to).name))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
@@ -150,6 +160,7 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by name limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).name
                         data_found = True
                         val_part.append(('name', '>=', qry['name']))
                 if partner_input_to:
@@ -160,19 +171,26 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by name desc limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_to_str = res_partner_obj.browse(cr, uid, partner_input_to).name
                         data_found = True
                         val_part.append(('name', '<=', qry['name']))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(cr, uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.name) + '",'
                     partner_ids = data['form']['partner_ids']
+                result['filter_selection'] = '[' + pr_ids +']'
         result['partner_ids'] = partner_ids
 
         if data['form']['date_selection'] == 'none_sel':
             result['date_from'] = False
             result['date_to'] = False
         else:
+            result['date_selection'] = 'Date'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -210,10 +228,15 @@ class param_sale_order_issued_report(osv.osv_memory):
 
         partner_ids = form['partner_ids'] or False
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND rp.id = " + str(partner_ids[0]) + " ") or "AND rp.id IN " + str(tuple(partner_ids)) + " ")) or "AND rp.id IN (0) "
+        data_search = form['data_search']
         
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Sale Order Issued' + " \n"
+        
+        header += ('filter_selection' in form and 'Customer search :;' + form['filter_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        
         header += 'Sale Order No;Customer PO No;Unit Price;Qty;Location;Customer Code;Customer Part No;Brand' + " \n"
         header += 'Sale Order Date;;;Total Sell;;Customer Name;Part No' + " \n"
         cr.execute("select so.name as so_no, " \
