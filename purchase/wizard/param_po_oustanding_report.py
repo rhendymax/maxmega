@@ -139,7 +139,6 @@ class param_po_oustanding_report(osv.osv_memory):
             result['data_search'] = 'Supplier Code'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
-                result['filter_selection'] = 'All Code'
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).ref:
@@ -192,7 +191,6 @@ class param_po_oustanding_report(osv.osv_memory):
             result['data_search'] = 'Supplier Name'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
-                result['filter_selection'] = 'All Name'
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).name:
@@ -216,6 +214,7 @@ class param_po_oustanding_report(osv.osv_memory):
                                     "order by name limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).name
                         data_found = True
                         val_part.append(('name', '>=', qry['name']))
                 if partner_input_to:
@@ -226,6 +225,7 @@ class param_po_oustanding_report(osv.osv_memory):
                                     "order by name desc limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).name
                         data_found = True
                         val_part.append(('name', '<=', qry['name']))
                 if data_found:
@@ -247,6 +247,7 @@ class param_po_oustanding_report(osv.osv_memory):
             result['date_from'] = False
             result['date_to'] = False
         else:
+            result['date_selection'] = 'Date'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -258,19 +259,23 @@ class param_po_oustanding_report(osv.osv_memory):
         po_default_to = data['form']['po_default_to'] or False
         po_input_from = data['form']['po_input_from'] or False
         po_input_to = data['form']['po_input_to'] or False
-
+        po_default_from_str = po_default_to_str = ''
+        po_input_from_str = po_input_to_str= ''
+        
         if data['form']['po_selection'] == 'all_vall':
             po_ids = purchase_order_obj.search(cr, uid, val_po, order='name ASC')
-
         if data['form']['po_selection'] == 'def':
             data_found = False
             if po_default_from and purchase_order_obj.browse(cr, uid, po_default_from) and purchase_order_obj.browse(cr, uid, po_default_from).name:
+                po_default_from_str = purchase_order_obj.browse(cr, uid, po_default_from).name
                 data_found = True
                 val_po.append(('name', '>=', purchase_order_obj.browse(cr, uid, po_default_from).name))
             if po_default_to and purchase_order_obj.browse(cr, uid, po_default_to) and purchase_order_obj.browse(cr, uid, po_default_to).name:
+                po_default_to_str = purchase_order_obj.browse(cr, uid, po_default_to).name
                 data_found = True
                 val_po.append(('name', '<=', purchase_order_obj.browse(cr, uid, po_default_to).name))
             if data_found:
+                result['po_selection'] = '"' + po_default_from_str + '" - "' + po_default_to_str + '"'
                 po_ids = purchase_order_obj.search(cr, uid, val_po, order='name ASC')
         elif data['form']['po_selection'] == 'input':
             data_found = False
@@ -282,6 +287,7 @@ class param_po_oustanding_report(osv.osv_memory):
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
+                    po_input_from_str = purchase_order_obj.browse(cr, uid, po_input_from).name
                     data_found = True
                     val_po.append(('name', '>=', qry['name']))
             if po_input_to:
@@ -292,13 +298,19 @@ class param_po_oustanding_report(osv.osv_memory):
                                 "order by name desc limit 1")
                 qry = cr.dictfetchone()
                 if qry:
+                    po_input_to_str = purchase_order_obj.browse(cr, uid, po_input_to).name
                     data_found = True
                     val_po.append(('name', '<=', qry['name']))
             if data_found:
+                result['po_selection'] = '"' + po_input_from_str + '" - "' + po_input_to_str + '"'
                 po_ids = purchase_order_obj.search(cr, uid, val_po, order='name ASC')
         elif data['form']['po_selection'] == 'selection':
+            p_ids = ''
             if data['form']['po_ids']:
+                for po in  purchase_order_obj.browse(cr, uid, data['form']['po_ids']):
+                    p_ids += '"' + str(po.name) + '",'
                 po_ids = data['form']['po_ids']
+            result['po_selection'] = '[' + p_ids +']'
         result['po_ids'] = po_ids
         return result
 
@@ -345,13 +357,15 @@ class param_po_oustanding_report(osv.osv_memory):
         po_qry = (po_ids and ((len(po_ids) == 1 and "AND po.id = " + str(po_ids[0]) + " ") or "AND po.id IN " + str(tuple(po_ids)) + " ")) or "AND po.id IN (0) "
         supp_selection = form['supp_selection']
         data_search = form['data_search']
-        filter_selection = form['filter_selection']
-
+        
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Supplier Delivery Outstanding Purchase Order' + " \n"
-        header += 'Supplier;' + supp_selection + " (" + data_search + ") \n"
-        header += 'Supplier search;' + filter_selection + " \n"
+        header += 'Supplier :;' + supp_selection + " (" + data_search + "); \n"
+        header += ('filter_selection' in form and 'Supplier search :;' + form['filter_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        
+        header += ('po_selection' in form and 'PO :;' + form['po_selection'] + "\n") or ''
         header += 'Supplier Key;Supplier Name;PO Number;Item Description;ETD Date;Order Qty(PCS);Unit Price;Oustanding Qty' + " \n"
 
         cr.execute(
