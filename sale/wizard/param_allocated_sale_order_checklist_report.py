@@ -67,7 +67,9 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
         pp_default_to = data['form']['pp_default_to'] or False
         pp_input_from = data['form']['pp_input_from'] or False
         pp_input_to = data['form']['pp_input_to'] or False
-
+        pp_default_from_str = pp_default_to_str = ''
+        pp_input_from_str = pp_input_to_str= ''
+        
         if data['form']['pp_selection'] == 'all_vall':
             pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
 
@@ -75,15 +77,19 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
             data_found = False
             if pp_default_from and product_product_obj.browse(cr, uid, pp_default_from) and product_product_obj.browse(cr, uid, pp_default_from).name:
                 data_found = True
+                pp_default_from_str = product_product_obj.browse(cr, uid, pp_default_from).name
                 val_pp.append(('name', '>=', product_product_obj.browse(cr, uid, pp_default_from).name))
             if pp_default_to and product_product_obj.browse(cr, uid, pp_default_to) and product_product_obj.browse(cr, uid, pp_default_to).name:
                 data_found = True
+                pp_default_to_str = product_product_obj.browse(cr, uid, pp_default_to).name
                 val_pp.append(('name', '<=', product_product_obj.browse(cr, uid, pp_default_to).name))
             if data_found:
+                result['pp_selection'] = '"' + pp_default_from_str + '" - "' + pp_default_to_str + '"'
                 pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
         elif data['form']['pp_selection'] == 'input':
             data_found = False
             if pp_input_from:
+                pp_input_from_str = pp_input_from
                 cr.execute("select name " \
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_from) + "%' " \
@@ -93,19 +99,25 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
                     data_found = True
                     val_pp.append(('name', '>=', qry['name']))
             if pp_input_to:
+                pp_input_to_str = pp_input_to
                 cr.execute("select name " \
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_to) + "%' " \
                                 "order by name desc limit 1")
-                qry = self.cr.dictfetchone()
+                qry = cr.dictfetchone()
                 if qry:
                     data_found = True
                     val_pp.append(('name', '<=', qry['name']))
+            result['pp_selection'] = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
             if data_found:
                 pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
         elif data['form']['pp_selection'] == 'selection':
+            p_ids = ''
             if data['form']['pp_ids']:
+                for pp in  product_product_obj.browse(cr, uid, data['form']['pp_ids']):
+                    p_ids += '"' + str(pp.name) + '",'
                 pp_ids = data['form']['pp_ids']
+            result['pp_selection'] = '[' + p_ids +']'
         result['pp_ids'] = pp_ids
         return result
     
@@ -140,6 +152,7 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Allocated Sale Order Checklist' + " \n"
+        header += ('pp_selection' in form and 'Supplier Part No :;' + form['pp_selection'] + "\n") or ''
         header += 'Sale Order No.;Customer Ref;CPN;Location;Qty;UOM' + " \n"
         
         cr.execute("select  DISTINCT sol.product_id \

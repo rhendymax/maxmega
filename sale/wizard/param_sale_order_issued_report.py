@@ -101,6 +101,7 @@ class param_sale_order_issued_report(osv.osv_memory):
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
                 if partner_input_from:
+                    partner_input_from_str = partner_input_from
                     cr.execute("select ref " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -108,10 +109,10 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by ref limit 1")
                     qry = cr.dictfetchone()
                     if qry:
-                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).ref
                         data_found = True
                         val_part.append(('ref', '>=', qry['ref']))
                 if partner_input_to:
+                    partner_input_to_str = partner_input_to
                     cr.execute("select ref " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -119,12 +120,11 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by ref desc limit 1")
                     qry = cr.dictfetchone()
                     if qry:
-                        partner_input_to_str = res_partner_obj.browse(cr, uid, partner_input_to).ref
                         data_found = True
                         val_part.append(('ref', '<=', qry['ref']))
                 #print val_part
+                result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                 if data_found:
-                    result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'selection':
                 pr_ids = ''
@@ -153,6 +153,7 @@ class param_sale_order_issued_report(osv.osv_memory):
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
                 if partner_input_from:
+                    partner_input_from_str = partner_input_from
                     cr.execute("select name " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -160,10 +161,10 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by name limit 1")
                     qry = cr.dictfetchone()
                     if qry:
-                        partner_input_from_str = res_partner_obj.browse(cr, uid, partner_input_from).name
                         data_found = True
                         val_part.append(('name', '>=', qry['name']))
                 if partner_input_to:
+                    partner_input_to_str = partner_input_to
                     cr.execute("select name " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -171,11 +172,10 @@ class param_sale_order_issued_report(osv.osv_memory):
                                     "order by name desc limit 1")
                     qry = cr.dictfetchone()
                     if qry:
-                        partner_input_to_str = res_partner_obj.browse(cr, uid, partner_input_to).name
                         data_found = True
                         val_part.append(('name', '<=', qry['name']))
+                result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                 if data_found:
-                    result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'selection':
                 pr_ids = ''
