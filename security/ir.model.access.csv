@@ -15,6 +15,8 @@
 "access_sale_order_purchase_user","sale.order purchase_user","sale.model_sale_order","group_max_purchase_user",1,0,0,0
 "access_sale_order_line_purchase_user","sale.order.line purchase_user","sale.model_sale_order_line","group_max_purchase_user",1,0,0,0
 "access_product_brand_purchase_user","product.brand purchase_user","so_workflowchange.model_product_brand","group_max_purchase_user",1,0,0,0
+"access_incoming_creation_wizard_purchase_user","incoming.creation.wizard purchase_user","so_workflowchange.model_incoming_creation_wizard","group_max_purchase_user",1,1,1,1
+"access_incoming_creation_lines_purchase_user","incoming.creation.lines purchase_user","so_workflowchange.model_incoming_creation_lines","group_max_purchase_user",1,1,1,1
 ,,,,,,,
 "access_product_template_purchase_manager","product.template purchase_manager","product.model_product_template","group_max_purchase_manager",1,1,1,1
 "access_product_product_purchase_manager","product.product purchase_manager","product.model_product_product","group_max_purchase_manager",1,1,1,1
@@ -60,6 +62,8 @@
 "access_purchase_order_sale_user","purchase.order sale_user","purchase.model_purchase_order","group_sale_user",1,0,0,0
 "access_purchase_order_line_sale_user","purchase.order.line sale_user","purchase.model_purchase_order_line","group_sale_user",1,0,0,0
 "access_fifo_control_sale_user","fifo.control sale_user","so_workflowchange.model_fifo_control","group_sale_user",1,0,0,0
+"access_do_creation_sale_user","do.creation sale_user","so_workflowchange.model_do_creation","group_sale_user",1,1,1,1
+"access_do_creation_lines_sale_user","do.creation.lines sale_user","so_workflowchange.model_do_creation_lines","group_sale_user",1,1,1,1
 ,,,,,,,
 "access_res_partner_address_sale_manager","res.partner.address sale_manager","base.model_res_partner_address","group_sale_manager",1,1,1,1
 "access_product_template_sale_manager","product.template sale_manager","product.model_product_template","group_sale_manager",1,1,1,1
