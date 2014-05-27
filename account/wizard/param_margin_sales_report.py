@@ -77,10 +77,11 @@ class param_margin_sales_report(osv.osv_memory):
             result['date_from'] = False
             result['date_to'] = False
         else:
+            result['date_selection'] = 'Date'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
-
-#invoice
+        
+        #Account Invoice
         qry_ai = "type = 'out_invoice' and state in ('open','paid') "
         val_ai.append(('type', '=', 'out_invoice'))
         val_ai.append(('state', 'in', ('open', 'paid')))
@@ -89,22 +90,28 @@ class param_margin_sales_report(osv.osv_memory):
         ai_default_to = data['form']['invoice_default_to'] or False
         ai_input_from = data['form']['invoice_input_from'] or False
         ai_input_to = data['form']['invoice_input_to'] or False
+        ai_default_from_str = ai_default_to_str = ''
+        ai_input_from_str = ai_input_to_str= ''
 
         if data['form']['invoice_selection'] == 'all_vall':
             invoice_ids = account_invoice_obj.search(cr, uid, val_ai, order='number ASC')
         if data['form']['invoice_selection'] == 'def':
             data_found = False
             if ai_default_from and account_invoice_obj.browse(cr, uid, ai_default_from) and account_invoice_obj.browse(cr, uid, ai_default_from).number:
+                ai_default_from_str = account_invoice_obj.browse(cr, uid, ai_default_from).number
                 data_found = True
                 val_ai.append(('number', '>=', account_invoice_obj.browse(cr, uid, ai_default_from).number))
             if ai_default_to and account_invoice_obj.browse(cr, uid, ai_default_to) and account_invoice_obj.browse(cr, uid, ai_default_to).number:
+                ai_default_to_str = account_invoice_obj.browse(cr, uid, ai_default_to).number
                 data_found = True
                 val_ai.append(('number', '<=', account_invoice_obj.browse(cr, uid, ai_default_to).number))
+                result['ai_selection'] = '"' + ai_default_from_str + '" - "' + ai_default_to_str + '"'
             if data_found:
                 invoice_ids = account_invoice_obj.search(cr, uid, val_ai, order='number ASC')
         elif data['form']['invoice_selection'] == 'input':
             data_found = False
             if ai_input_from:
+                ai_input_from_str = ai_input_from
                 cr.execute("select number " \
                                 "from account_invoice "\
                                 "where " + qry_ai + " and " \
@@ -115,6 +122,7 @@ class param_margin_sales_report(osv.osv_memory):
                     data_found = True
                     val_ai.append(('number', '>=', qry['number']))
             if ai_input_to:
+                ai_input_to_str = ai_input_to
                 cr.execute("select number " \
                                 "from account_invoice "\
                                 "where " + qry_ai + " and " \
@@ -125,11 +133,16 @@ class param_margin_sales_report(osv.osv_memory):
                     data_found = True
                     val_ai.append(('number', '<=', qry['number']))
             #print val_part
+            result['ai_selection'] = '"' + ai_input_from_str + '" - "' + ai_input_to_str + '"'
             if data_found:
                 invoice_ids = account_invoice_obj.search(cr, uid, val_ai, order='number ASC')
         elif data['form']['invoice_selection'] == 'selection':
+            av_ids = ''
             if data['form']['invoice_ids']:
+                for a in  account_invoice_obj.browse(cr, uid, data['form']['invoice_ids']):
+                    av_ids += '"' + str(a.name) + '",'
                 invoice_ids = data['form']['invoice_ids']
+            result['ai_selection'] = '[' + av_ids +']'
         result['invoice_ids'] = invoice_ids
         
         return result
@@ -170,6 +183,8 @@ class param_margin_sales_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Margin Sales' + " \n"
+        header += ('ai_selection' in form and 'Invoice Filter Selection :;' + form['ai_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
         header += 'Inventory Key;Inv Date;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
 
         cr.execute("select  DISTINCT l.partner_id " \
