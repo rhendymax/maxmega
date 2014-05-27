@@ -248,7 +248,6 @@ class so_to_po(osv.osv_memory):
 
 #Declaration
 #############################################
-
         purchase_sequences_obj = self.pool.get('purchase.sequences')
         obj_sequence = self.pool.get('ir.sequence')
 
@@ -277,6 +276,9 @@ class so_to_po(osv.osv_memory):
         account_fiscal_position = self.pool.get('account.fiscal.position')
         account_tax = self.pool.get('account.tax')
 #############################################
+        if sale_order_obj.browse(cr, uid, context['active_id'], context=None).state != 'draft':
+            return {'type': 'ir.actions.act_window_close'}
+
 
         partial = self.browse(cr, uid, ids[0], context=context)
 
