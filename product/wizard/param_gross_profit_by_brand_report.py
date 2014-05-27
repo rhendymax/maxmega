@@ -86,11 +86,13 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         res = {}
         product_brand_obj = self.pool.get('product.brand')
         val_pb = []
+        pb_ids = False
         
         if data['form']['date_selection'] == 'none_sel':
             result['date_from'] = False
             result['date_to'] = False
         else:
+            result['date_selection'] = 'Date'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -98,22 +100,28 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         pb_default_to = data['form']['pb_default_to'] or False
         pb_input_from = data['form']['pb_input_from'] or False
         pb_input_to = data['form']['pb_input_to'] or False
+        pb_default_from_str = pb_default_to_str = ''
+        pb_input_from_str = pb_input_to_str= ''
         
         if data['form']['pb_selection'] == 'all_vall':
             pb_ids = product_brand_obj.search(cr, uid, val_pb, order='name ASC')
         if data['form']['pb_selection'] == 'def':
             data_found = False
             if pb_default_from and product_brand_obj.browse(cr, uid, pb_default_from) and product_brand_obj.browse(cr, uid, pb_default_from).name:
+                pb_default_from_str = product_brand_obj.browse(cr, uid, pb_default_from).name
                 data_found = True
                 val_pb.append(('name', '>=', product_brand_obj.browse(cr, uid, pb_default_from).name))
             if pb_default_to and product_brand_obj.browse(cr, uid, pb_default_to) and product_brand_obj.browse(cr, uid, pb_default_to).name:
+                pb_default_to_str = product_brand_obj.browse(cr, uid, pb_default_to).name
                 data_found = True
                 val_pb.append(('name', '<=', product_brand_obj.browse(cr, uid, pb_default_to).name))
+            result['pb_selection'] = '"' + pb_default_from_str + '" - "' + pb_default_to_str + '"'
             if data_found:
                 pb_ids = product_brand_obj.search(cr, uid, val_pb, order='name ASC')
         elif data['form']['pb_selection'] == 'input':
             data_found = False
             if pb_input_from:
+                pb_input_from_str = pb_input_from
                 cr.execute("select name " \
                                 "from product_brand "\
                                 "where name ilike '" + str(pb_input_from) + "%' " \
@@ -123,6 +131,7 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
                     data_found = True
                     val_pb.append(('name', '>=', qry['name']))
             if pb_input_to:
+                pb_input_to_str = pb_input_to
                 cr.execute("select name " \
                                 "from product_brand "\
                                 "where name ilike '" + str(pb_input_to) + "%' " \
@@ -132,12 +141,18 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
                     data_found = True
                     val_pb.append(('name', '<=', qry['name']))
             #print val_part
+            result['pb_selection'] = '"' + pb_input_from_str + '" - "' + pb_input_to_str + '"'
             if data_found:
                 pb_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
         elif data['form']['pb_selection'] == 'selection':
+            pbr_ids = ''
             if data['form']['pb_ids']:
+                for pbro in product_brand_obj.browse(cr, uid, data['form']['pb_ids']):
+                    pbr_ids += '"' + str(pbro.name) + '",'
                 pb_ids = data['form']['pb_ids']
+            result['pb_selection'] = '[' + pbr_ids +']'
         result['pb_ids'] = pb_ids
+
         return result
 
     def _get_tplines(self, cr, uid, ids,data, context):
@@ -177,6 +192,8 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Gross Profit By Inventory Brand Report' + " \n"
+        header += ('pb_selection' in form and 'Inventory Brand Selection :;' + form['pb_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
         header += 'Inventory Brand Key;Main Description;Qty;Sales;Cost;Gross;GP %' + " \n"
 
         cr.execute("SELECT pb.id as brand_id, pb.name as brand_name, pb.description as description, \

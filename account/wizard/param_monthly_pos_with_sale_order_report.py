@@ -142,7 +142,7 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
                         av_ids += '"' + str(a.name) + '",'
                     invoice_ids = data['form']['invoice_ids']
                 result['ai_selection'] = '[' + av_ids +']'
-        result['invoice_ids'] = invoice_ids 
+        result['invoice_ids'] = invoice_ids
 
         return result
 
