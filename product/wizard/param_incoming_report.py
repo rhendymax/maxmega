@@ -106,15 +106,18 @@ class param_incoming_report(osv.osv_memory):
             result['date_from'] = False
             result['date_to'] = False
         else:
+            result['date_selection'] = 'Date'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
 #product_product
 
-        pp_default_from = data['form']['product_default_from'] and data['form']['product_default_from'][0] or False
-        pp_default_to = data['form']['product_default_to'] and data['form']['product_default_to'][0] or False
+        pp_default_from = data['form']['product_default_from'] or False
+        pp_default_to = data['form']['product_default_to'] or False
         pp_input_from = data['form']['product_input_from'] or False
         pp_input_to = data['form']['product_input_to'] or False
+        pp_default_from_str = pp_default_to_str = ''
+        pp_input_from_str = pp_input_to_str= ''
 
         if data['form']['product_selection'] == 'all_vall':
             pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
@@ -122,16 +125,21 @@ class param_incoming_report(osv.osv_memory):
         elif data['form']['product_selection'] == 'def':
             data_found = False
             if pp_default_from and product_product_obj.browse(cr, uid, pp_default_from) and product_product_obj.browse(cr, uid, pp_default_from).name:
+                pp_default_from_str = product_product_obj.browse(cr, uid, pp_default_from).name
                 data_found = True
                 val_pp.append(('name', '>=', product_product_obj.browse(cr, uid, pp_default_from).name))
             if pp_default_to and product_product_obj.browse(cr, uid, pp_default_to) and product_product_obj.browse(cr, uid, pp_default_to).name:
+                pp_default_to_str = product_product_obj.browse(cr, uid, pp_default_to).name
                 data_found = True
                 val_pp.append(('name', '<=', product_product_obj.browse(cr, uid, pp_default_to).name))
+            result['pp_selection'] = '"' + pp_default_from_str + '" - "' + pp_default_to_str + '"'
             if data_found:
                 pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
+        
         elif data['form']['product_selection'] == 'input':
             data_found = False
             if pp_input_from:
+                pp_input_from_str = pp_input_from
                 cr.execute("select name " \
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_from) + "%' " \
@@ -141,6 +149,7 @@ class param_incoming_report(osv.osv_memory):
                     data_found = True
                     val_pp.append(('name', '>=', qry['name']))
             if pp_input_to:
+                pp_input_to_str = pp_input_to
                 cr.execute("select name " \
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_to) + "%' " \
@@ -149,18 +158,25 @@ class param_incoming_report(osv.osv_memory):
                 if qry:
                     data_found = True
                     val_pp.append(('name', '<=', qry['name']))
+            result['pp_selection'] = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
             if data_found:
                 pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
         elif data['form']['product_selection'] == 'selection':
+            ppr_ids = ''
             if data['form']['product_ids']:
+                for ppro in product_product_obj.browse(cr, uid, data['form']['product_ids']):
+                    ppr_ids += '"' + str(ppro.name) + '",'
                 pp_ids = data['form']['product_ids']
+            result['pp_selection'] = '[' + ppr_ids +']'
         result['pp_ids'] = pp_ids
 
         #Stock Location
-        sl_default_from = data['form']['sl_default_from'] and data['form']['sl_default_from'][0] or False
-        sl_default_to = data['form']['sl_default_to'] and data['form']['sl_default_to'][0] or False
+        sl_default_from = data['form']['sl_default_from'] or False
+        sl_default_to = data['form']['sl_default_to'] or False
         sl_input_from = data['form']['sl_input_from'] or False
         sl_input_to = data['form']['sl_input_to'] or False
+        sl_default_from_str = sl_default_to_str = ''
+        sl_input_from_str = sl_input_to_str= ''
 
         if data['form']['sl_selection'] == 'all_vall':
             sl_ids = stock_location_obj.search(cr, uid, val_sl, order='name ASC')
@@ -168,16 +184,20 @@ class param_incoming_report(osv.osv_memory):
         elif data['form']['sl_selection'] == 'def':
             data_found = False
             if sl_default_from and stock_location_obj.browse(cr, uid, sl_default_from) and stock_location_obj.browse(cr, uid, sl_default_from).name:
+                sl_default_from_str = stock_location_obj.browse(cr, uid, sl_default_from).name
                 data_found = True
                 val_sl.append(('name', '>=', stock_location_obj.browse(cr, uid, sl_default_from).name))
             if sl_default_to and stock_location_obj.browse(cr, uid, sl_default_to) and stock_location_obj.browse(cr, uid, sl_default_to).name:
+                sl_default_to_str = stock_location_obj.browse(cr, uid, sl_default_to).name
                 data_found = True
                 val_sl.append(('name', '<=', stock_location_obj.browse(cr, uid, sl_default_to).name))
+            result['sl_selection'] = '"' + sl_default_from_str + '" - "' + sl_default_to_str + '"'
             if data_found:
                 sl_ids = stock_location_obj.search(cr, uid, val_sl, order='name ASC')
         elif data['form']['sl_selection'] == 'input':
             data_found = False
             if sl_input_from:
+                sl_input_from_str = sl_input_from
                 cr.execute("select name " \
                                 "from stock_location "\
                                 "where name ilike '" + str(sl_input_from) + "%' " \
@@ -187,6 +207,7 @@ class param_incoming_report(osv.osv_memory):
                     data_found = True
                     val_sl.append(('name', '>=', qry['name']))
             if sl_input_to:
+                sl_input_to_str = sl_input_to
                 cr.execute("select name " \
                                 "from stock_location "\
                                 "where name ilike '" + str(sl_input_to) + "%' " \
@@ -195,11 +216,16 @@ class param_incoming_report(osv.osv_memory):
                 if qry:
                     data_found = True
                     val_sl.append(('name', '<=', qry['name']))
+            result['sl_selection'] = '"' + sl_input_from_str + '" - "' + sl_input_to_str + '"'
             if data_found:
                 sl_ids = stock_location_obj.search(cr, uid, val_sl, order='name ASC')
         elif data['form']['sl_selection'] == 'selection':
+            slc_ids = ''
             if data['form']['sl_ids']:
+                for slo in stock_location_obj.browse(cr, uid, data['form']['sl_ids']):
+                    slc_ids += '"' + str(slo.name) + '",'
                 sl_ids = data['form']['sl_ids']
+            result['sl_selection'] = '[' + slc_ids + ' ]'
         result['sl_ids'] = sl_ids
         return result
 
@@ -226,6 +252,9 @@ class param_incoming_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Incoming Report' + " \n"
+        header += ('pp_selection' in form and 'Supplier Part No Filter Selection :;' + form['pp_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + " \n") or ''
+        header += ('sl_selection' in form and 'Location Filter Selection :;' + form['sl_selection'] + " \n") or ''
         header += 'Date Done;Inc No;Supplier Part No;Supplier Name;Invoice No;Qty Received;Purchase Order;Location' + " \n"
 
         cr.execute("select sp.do_date as date, " \

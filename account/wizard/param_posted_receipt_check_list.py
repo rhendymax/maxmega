@@ -48,6 +48,8 @@ class param_posted_receipt_check_list(osv.osv_memory):
         'journal_input_from': fields.char('Bank From', size=128),
         'journal_input_to': fields.char('Bank To', size=128),
         'journal_ids' :fields.many2many('account.journal', 'report_receivable_journal_rel', 'report_id', 'journal_id', 'Bank', domain=[('type','in',('bank','cash'))]),
+        'data': fields.binary('Exported CSV', readonly=True),
+        'filename': fields.char('File Name',size=64),
     }
 
     _defaults = {
@@ -84,6 +86,25 @@ class param_posted_receipt_check_list(osv.osv_memory):
             'nodestroy':True,
         }
 
+    def check_report(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        data = {}
+        data['ids'] = context.get('active_ids', [])
+        data['model'] = context.get('active_model', 'ir.ui.menu')
+        data['form'] = self.read(cr, uid, ids, ['cust_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_selection', 'date_from', 'date_to','period_filter_selection','period_default_from','period_default_to','period_input_from','period_input_to', \
+                                                'journal_selection','journal_default_from','journal_default_to', 'journal_input_from','journal_input_to','journal_ids' \
+                                                ], context=context)[0]
+        for field in ['cust_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_selection', 'date_from', 'date_to','period_filter_selection','period_default_from','period_default_to','period_input_from','period_input_to', \
+                                                'journal_selection','journal_default_from','journal_default_to', 'journal_input_from','journal_input_to','journal_ids'\
+                    ]:
+            if isinstance(data['form'][field], tuple):
+                data['form'][field] = data['form'][field][0]
+        used_context = self.pool.get('param.posted.payment.check.list')._build_contexts(cr, uid, ids, data, 'receivable', context=context)
+
+        return self.pool.get('param.posted.payment.check.list')._get_tplines(cr, uid, ids, used_context, 'receivable', context=context)
 param_posted_receipt_check_list()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

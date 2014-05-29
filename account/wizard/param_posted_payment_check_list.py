@@ -21,6 +21,9 @@
 
 from osv import fields, osv
 import time
+import pooler
+import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_posted_payment_check_list(osv.osv_memory):
     _name = 'param.posted.payment.check.list'
@@ -49,6 +52,8 @@ class param_posted_payment_check_list(osv.osv_memory):
         'journal_input_from': fields.char('Bank From', size=128),
         'journal_input_to': fields.char('Bank To', size=128),
         'journal_ids' :fields.many2many('account.journal', 'report_payment_journal_rel', 'report_id', 'journal_id', 'Bank', domain=[('type','in',('bank', 'cash'))]),
+        'data': fields.binary('Exported CSV', readonly=True),
+        'filename': fields.char('File Name',size=64),
     }
 
     _defaults = {
@@ -109,6 +114,518 @@ class param_posted_payment_check_list(osv.osv_memory):
             'datas': datas,
             'nodestroy':True,
         }
+
+    def check_report(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        data = {}
+        data['ids'] = context.get('active_ids', [])
+        data['model'] = context.get('active_model', 'ir.ui.menu')
+        data['form'] = self.read(cr, uid, ids, ['supp_selection', 'supplier_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_selection', 'date_from', 'date_to','period_filter_selection','period_default_from','period_default_to','period_input_from','period_input_to', \
+                                                'journal_selection','journal_default_from','journal_default_to', 'journal_input_from','journal_input_to','journal_ids' \
+                                                ], context=context)[0]
+        for field in ['supp_selection', 'supplier_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_selection', 'date_from', 'date_to','period_filter_selection','period_default_from','period_default_to','period_input_from','period_input_to', \
+                                                'journal_selection','journal_default_from','journal_default_to', 'journal_input_from','journal_input_to','journal_ids'\
+                    ]:
+            if isinstance(data['form'][field], tuple):
+                data['form'][field] = data['form'][field][0]
+        used_context = self._build_contexts(cr, uid, ids, data, 'payable', context=context)
+
+        return self._get_tplines(cr, uid, ids, used_context, 'payable', context=context)
+
+    def _build_contexts(self, cr, uid, ids, data, report_type, context=None):
+        if context is None:
+            context = {}
+        result = {}
+        res_partner_obj = self.pool.get('res.partner')
+        account_journal_obj = self.pool.get('account.journal')
+        period_obj = self.pool.get('account.period')
+        qry_supp = ''
+        val_part = []
+        qry_jour = ''
+        val_jour = []
+        
+        partner_ids = False
+        journal_ids = False
+        if report_type == 'receivable':
+            data_search = data['form']['cust_search_vals']
+            qry_supp = 'customer = True'
+            val_part.append(('customer', '=', True))
+
+        elif report_type == 'payable':
+            data_search = data['form']['supplier_search_vals']
+    
+            if data['form']['supp_selection'] == 'all':
+                qry_supp = 'supplier = True'
+                val_part.append(('supplier', '=', True))
+            elif data['form']['supp_selection'] == 'supplier':
+                qry_supp = 'supplier = True and sundry = False'
+                val_part.append(('supplier', '=', True))
+                val_part.append(('sundry', '=', False))
+            elif data['form']['supp_selection'] == 'sundry':
+                qry_supp = 'supplier = True and sundry = True'
+                val_part.append(('supplier', '=', True))
+                val_part.append(('sundry', '=', True))
+
+        partner_default_from = data['form']['partner_default_from'] or False
+        partner_default_to = data['form']['partner_default_to'] or False
+        partner_input_from = data['form']['partner_input_from'] or False
+        partner_input_to = data['form']['partner_input_to'] or False
+        
+        if data_search == 'code':
+            if data['form']['filter_selection'] == 'all_vall':
+                partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
+            if data['form']['filter_selection'] == 'def':
+                data_found = False
+                if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).ref:
+                    data_found = True
+                    val_part.append(('ref', '>=', res_partner_obj.browse(cr, uid, partner_default_from).ref))
+                if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).ref:
+                    data_found = True
+                    val_part.append(('ref', '<=', res_partner_obj.browse(cr, uid, partner_default_to).ref))
+                if data_found:
+                    partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
+            elif data['form']['filter_selection'] == 'input':
+                data_found = False
+                if partner_input_from:
+                    cr.execute("select ref " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "ref ilike '" + str(partner_input_from) + "%' " \
+                                    "order by ref limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('ref', '>=', qry['ref']))
+                if partner_input_to:
+                    cr.execute("select ref " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "ref ilike '" + str(partner_input_to) + "%' " \
+                                    "order by ref desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('ref', '<=', qry['ref']))
+                #print val_part
+                if data_found:
+                    partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
+            elif data['form']['filter_selection'] == 'selection':
+                if data['form']['partner_ids']:
+                    partner_ids = data['form']['partner_ids']
+        elif data_search == 'name':
+            if data['form']['filter_selection'] == 'all_vall':
+                partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
+            if data['form']['filter_selection'] == 'def':
+                data_found = False
+                if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).name:
+                    data_found = True
+                    val_part.append(('name', '>=', res_partner_obj.browse(cr, uid, partner_default_from).name))
+                if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).name:
+                    data_found = True
+                    val_part.append(('name', '<=', res_partner_obj.browse(cr, uid, partner_default_to).name))
+                if data_found:
+                    partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
+            elif data['form']['filter_selection'] == 'input':
+                data_found = False
+                if partner_input_from:
+                    cr.execute("select name " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "name ilike '" + str(partner_input_from) + "%' " \
+                                    "order by name limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('name', '>=', qry['name']))
+                if partner_input_to:
+                    cr.execute("select name " \
+                                    "from res_partner "\
+                                    "where " + qry_supp + " and " \
+                                    "name ilike '" + str(partner_input_to) + "%' " \
+                                    "order by name desc limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_part.append(('name', '<=', qry['name']))
+                if data_found:
+                    partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
+            elif data['form']['filter_selection'] == 'selection':
+                if data['form']['partner_ids']:
+                    partner_ids = data['form']['partner_ids']
+        result['partner_ids'] = partner_ids
+        
+        #Period
+        period_default_from = data['form']['period_default_from'] or False
+        period_default_from = period_default_from and period_obj.browse(cr, uid, period_default_from) or False
+        period_default_to = data['form']['period_default_to'] or False
+        period_default_to = period_default_to and period_obj.browse(cr, uid, period_default_to) or False
+
+        period_input_from = data['form']['period_input_from'] or False
+        period_input_to = data['form']['period_input_to'] or False
+
+        if data['form']['date_selection'] == 'none_sel':
+            result['period_ids'] = False
+            result['date_from'] = False
+            result['date_to'] = False
+        elif data['form']['date_selection'] == 'period_sel':
+            val_period = []
+            if data['form']['period_filter_selection'] == 'def':
+                if period_default_from and period_default_from.date_start:
+                    val_period.append(('date_start', '>=', period_default_from.date_start))
+                if period_default_to and period_default_to.date_start:
+                    val_period.append(('date_start', '<=', period_default_to.date_start))
+        #        period_criteria_search.append(('special', '=', False))
+                period_ids = period_obj.search(cr, uid, val_period)
+            elif data['form']['period_filter_selection'] == 'input':
+                if period_input_from:
+                    cr.execute("select code " \
+                                    "from account_period "\
+                                    "where " \
+                                    "code ilike '" + str(period_input_from) + "%' " \
+                                    "order by code limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        val_period.append(('code', '>=', qry['code']))
+                if period_input_to:
+                    cr.execute("select code " \
+                                    "from account_period "\
+                                    "where " \
+                                    "code ilike '" + str(period_input_to) + "%' " \
+                                    "order by code limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        val_period.append(('code', '<=', qry['code']))
+                result['period_ids'] = period_obj.search(cr, uid, val_period)
+            result['date_from'] = False
+            result['date_to'] = False
+        else:
+            result['period_ids'] = False
+            result['date_selection'] = 'Date'
+            result['date_from'] = data['form']['date_from']
+            result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
+
+#journal
+        qry_jour = "type in ('bank', 'cash')"
+        val_jour.append(('type', 'in', ('bank', 'cash')))
+
+        journal_default_from = data['form']['journal_default_from'] or False
+        journal_default_to = data['form']['journal_default_to'] or False
+        journal_input_from = data['form']['journal_input_from'] or False
+        journal_input_to = data['form']['journal_input_to'] or False
+
+        if data['form']['journal_selection'] == 'all_vall':
+            journal_ids = account_journal_obj.search(cr, uid, val_jour, order='name ASC')
+
+        if data['form']['journal_selection'] == 'name':
+            data_found = False
+            if journal_default_from and account_journal_obj.browse(cr, uid, journal_default_from) and account_journal_obj.browse(cr, uid, journal_default_from).name:
+                data_found = True
+                val_jour.append(('name', '>=', account_journal_obj.browse(cr, uid, journal_default_from).name))
+            if journal_default_to and account_journal_obj.browse(cr, uid, journal_default_to) and account_journal_obj.browse(cr, uid, journal_default_to).name:
+                data_found = True
+                val_jour.append(('name', '<=', account_journal_obj.browse(cr, uid, journal_default_to).name))
+            if data_found:
+                journal_ids = account_journal_obj.search(cr, uid, val_jour, order='name ASC')
+        elif data['form']['journal_selection'] == 'input':
+            data_found = False
+            if journal_input_from:
+                cr.execute("select name " \
+                                "from account_journal "\
+                                "where " + qry_jour + " and " \
+                                "name ilike '" + str(journal_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_jour.append(('name', '>=', qry['name']))
+            if journal_input_to:
+                cr.execute("select name " \
+                                "from account_journal "\
+                                "where " + qry_jour + " and " \
+                                "name ilike '" + str(journal_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_jour.append(('name', '<=', qry['name']))
+            #print val_part
+            if data_found:
+                journal_ids = account_journal_obj.search(cr, uid, val_jour, order='name ASC')
+        elif data['form']['journal_selection'] == 'selection':
+            if data['form']['journal_ids']:
+                journal_ids = data['form']['journal_ids']
+        result['journal_ids'] = journal_ids
+        return result
+
+    def _get_tplines(self, cr, uid, ids,data, type, context):
+
+        form = data
+
+
+
+        if not ids:
+            ids = data['ids']
+        if not ids:
+            return []
+        period_obj      = self.pool.get('account.period')
+        res_partner_obj = self.pool.get('res.partner')
+        voucher_obj = self.pool.get('account.voucher')
+        results = []
+#                RT 201405288
+        payment_count = 0.00
+        footer_cheque_home = 0.00
+        footer_gain_loss_home = 0.00
+        footer_alloc_inv_home = 0.00
+        footer_bank_charges_home = 0.00
+        footer_deposit_home = 0.00
+        footer_credit_note_home =0.00
+
+
+        qry_type = ''
+        if type == 'payable':
+            qry_type = "and l.type in ('payment') "
+        elif type == 'receivable':
+            qry_type = "and l.type in ('receipt') "
+
+
+        partner_ids = form['partner_ids'] or False
+        partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND l.partner_id = " + str(partner_ids[0]) + " ") or "AND l.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND l.partner_id IN (0) "
+
+        date_from = form['date_from']
+        date_to = form['date_to']
+        date_from_qry = date_from and "And l.date >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And l.date <= '" + str(date_to) + "' " or " "
+        
+        period_ids = form['period_ids'] or False
+        min_period = False
+        
+        all_content_line = ''
+        header = 'sep=;' + " \n"
+        header += 'Posted Payment Check List' + " \n"
+#        header += 'Supplier :;' + supp_selection + " (" + data_search + "); \n"
+#        header += ('filter_selection' in form and 'Supplier search :;' + form['filter_selection'] + " \n") or ''
+#        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        
+        header += ('po_selection' in form and 'PO :;' + form['po_selection'] + "\n") or ''
+        header += 'Voucher No;Credit Note No;Date;Currency Date;Cheque Home;Credit Note Amt;Credit Note Home;Alloc Inv Amt;Alloc Inv Home;Alloc Realized Ex' + " \n"
+
+        if period_ids:
+            min_period = period_obj.search(cr, uid, [('id', 'in', period_ids)], order='date_start', limit=1)
+
+        elif date_from:
+            min_period = period_obj.search(cr, uid, [('date_start', '<=', date_from)], order='date_start Desc', limit=1)
+
+        if not min_period:
+            min_period = period_obj.search(cr, uid, [], order='date_start', limit=1)
+        min_period = period_obj.browse(cr, uid, min_period[0])
+
+        max_period = False
+        if period_ids:
+            max_period = period_obj.search(cr, uid, [('id', 'in', period_ids)], order='date_start Desc', limit=1)
+        elif date_to:
+            max_period = period_obj.search(cr, uid, [('date_start', '<=', date_to)], order='date_start Desc', limit=1)
+
+        if not max_period:
+            max_period = period_obj.search(cr, uid, [], order='date_start Desc', limit=1)
+        max_period = period_obj.browse(cr, uid, max_period[0])
+        date_start_min_period = min_period and min_period.date_start or False
+        date_start_max_period = max_period and period_obj.browse(cr, uid, max_period.id).date_start or False
+        val_period = []
+        if date_start_min_period:
+            val_period.append(('date_start', '>=', date_start_min_period))
+        if date_start_max_period:
+            val_period.append(('date_start', '<=', date_start_max_period))
+        qry_period_ids = period_obj.search(cr, uid, val_period)
+        period_qry = (qry_period_ids and ((len(qry_period_ids) == 1 and "AND l.period_id = " + str(qry_period_ids[0]) + " ") or "AND l.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND l.period_id IN (0) "
+        journal_ids = form['journal_ids'] or False
+        journal_qry = (journal_ids and ((len(journal_ids) == 1 and "AND l.journal_id = " + str(journal_ids[0]) + " ") or "AND l.journal_id IN " + str(tuple(journal_ids)) + " ")) or "AND l.journal_id IN (0) "
+
+        cr.execute(
+                "SELECT l.id as voucher_id " \
+                "FROM account_voucher AS l " \
+                "WHERE l.partner_id IS NOT NULL " \
+                "AND l.state IN ('posted') " \
+                + qry_type \
+                + partner_qry \
+                + date_from_qry \
+                + date_to_qry \
+                + period_qry \
+                + journal_qry + \
+                "order by l.date")
+        qry3 = cr.dictfetchall()
+        if qry3:
+            for t in qry3:
+                inv = voucher_obj.browse(cr, uid, t['voucher_id'])
+                res = {}
+                lines_ids = []
+                amount_all = 0.00
+                amount_home_all = 0.00
+                gain_loss_all = 0.00
+                credit_inv_amt_credit = 0.00
+                credit_inv_home_credit = 0.00
+    
+                alloc_inv_amt_debit = 0.00
+                alloc_inv_home_debit = 0.00
+                
+                for lines in inv.line_dr_ids:
+                    if lines.amount > 0:
+                        amount_all += lines.amount
+                        alloc_inv_amt_debit += lines.amount
+                        amount_home_all += lines.amount_home or 0.00
+                        alloc_inv_home_debit += lines.amount_inv_home or 0.00
+    
+                        #count Gain Loss
+                        amount_home = lines.amount_home or 0.00
+                        amount_inv_home = lines.amount_inv_home or 0.00
+                        gain_loss = (amount_inv_home - amount_home) or 0.00
+                        gain_loss_all += gain_loss
+                        #
+                for lines in inv.line_cr_ids:
+                    if lines.amount > 0:
+                        sign = -1
+                        amount_all -= lines.amount
+                        credit_inv_amt_credit += (sign * lines.amount)
+                        amount_home_all -= lines.amount_home or 0.00
+                        credit_inv_home_credit += (sign * (lines.amount_inv_home or 0.00) or 0.00)
+                        #count Gain Loss
+                        amount_home = lines.amount_home or 0.00
+                        amount_inv_home = lines.amount_inv_home or 0.00
+                        gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                        gain_loss_all -= gain_loss
+                        #
+                payment_count += 1
+                res['voucher_no'] = inv.number
+                res['supp_ref'] = inv.partner_id and inv.partner_id.ref or ''
+                res['supp_name'] = inv.partner_id and inv.partner_id.name or ''
+                res['ex_glan'] = inv.company_id and inv.company_id.property_currency_gain_loss and  inv.company_id.property_currency_gain_loss.code or ''
+                res['cheque_no'] = inv.cheque_no or ''
+                res['curr_name'] = inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.name or inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.name or ''
+                res['cheque_date'] = inv.date or False
+                res['bank_glan'] = inv.journal_id and inv.journal_id.property_bank_charges and inv.journal_id.property_bank_charges.code or ''
+                ctx = {'date':inv.date}
+                res['cur_exrate'] = self.pool.get('res.currency').browse(cr, uid, inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.id or inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.id, context=ctx).rate or 0.00
+                res['cheq_amount'] = amount_all
+                res['cheq_amount_home'] = amount_home_all
+                footer_cheque_home += amount_home_all
+                footer_gain_loss_home += gain_loss_all
+                res['credit_inv_amt'] = credit_inv_amt_credit
+                res['credit_inv_home'] = credit_inv_home_credit
+                footer_credit_note_home += credit_inv_home_credit
+                res['alloc_inv_amt'] = alloc_inv_amt_debit
+                res['alloc_inv_home'] = alloc_inv_home_debit
+                footer_alloc_inv_home += alloc_inv_home_debit
+                res['bank_draft'] = inv.bank_draft_no or ''
+                res['bank_chrgs'] = inv.bank_charges_amount or 0.00
+                res['bank_chrgs_home'] = inv.bank_charges_in_company_currency or 0.00
+                footer_bank_charges_home += inv.bank_charges_in_company_currency or 0.00
+                res['deposit_amt'] = inv.writeoff_amount or 0.00
+                res['deposit_amt_home'] = inv.writeoff_amount_home or 0.00
+                footer_deposit_home += inv.writeoff_amount_home or 0.00
+                res['lines'] = lines_ids
+                
+                header += 'P/V No. : ' + str(res['voucher_no'] or '') + ";Realized Ex GLAN : " + str(res['ex_glan'] or '') + ";Cheque No. : " + str(res['cheque_no'] or '') + \
+                ';Bank Currency Key : ' + str(res['curr_name'] or '') + " \n" 
+                
+                header += 'Supplier : ' + str(res['supp_ref'] or '') + ';Currency : ' + str(res['curr_name'] or '') + ";Cheque Date : " + str(res['cheque_date'] or '') + \
+                ';Bank Chrgs GLAN : ' + str(res['bank_glan'] or '') + " \n"
+                
+                header += str(res['supp_name'] or '') + ';Ex Rate : ' + str("%.5f" % res['cur_exrate'] or 0.00000) + ";Cheque Amt : " + str("%.2f" % res['cheq_amount'] or 0.00) + \
+                ';Bank Draft No.;' + str(res['bank_draft']) + " \n" 
+                
+                header += 'Deposit Amt : ' + str("%.2f" % res['deposit_amt'] or 0.00) + ";Cheque Home : " + str("%.2f" % res['cheq_amount_home'] or 0.00) + \
+                ';Bank chrgs Amt : ' + str("%.2f" % res['bank_chrgs'] or 0.00) + "; \n"
+                
+                header += 'Deposit Home : ' + str("%.2f" % res['deposit_amt_home'] or 0.00) + ';Bank chrgs Home : ' + str("%.2f" % res['bank_chrgs'] or  0.00) + "; \n"
+
+                for lines in inv.line_dr_ids:
+                    if lines.amount > 0:
+                        amount_inv_home = lines.amount_inv_home or 0.00
+                        amount_home = lines.amount_home or 0.00
+                        gain_loss = amount_inv_home - amount_home or 0.00
+                        header += str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
+                                  ";" + \
+                                  str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                  str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                  str("%.2f" % (lines.amount_home or 0.00)) + ";" + \
+                                  ";" + \
+                                  ";" + \
+                                  str("%.2f" % (lines.amount or 0.00)) + ";" + \
+                                  str("%.2f" % (lines.amount_inv_home or 0.00)) + ";" + \
+                                  str("%.2f" % (((lines.amount_inv_home or 0.00) - (lines.amount_home or 0.00)) or 0.00)) + " \n"
+
+                for lines in inv.line_cr_ids:
+                    if lines.amount > 0:
+                        sign = -1
+                        amount_inv_home = lines.amount_inv_home or 0.00
+                        amount_home = lines.amount_home or 0.00
+                        gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                        header += ";" + \
+                                  str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
+                                  str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                  str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                  str("%.2f" % ((sign * lines.amount_home) or 0.00)) + ";" + \
+                                  str("%.2f" % ((sign * lines.amount) or 0.00)) + ";" + \
+                                  str("%.2f" % ((sign * lines.amount_inv_home) or 0.00)) + ";" + \
+                                  ";" + \
+                                  ";" + \
+                                  str("%.2f" % (gain_loss))+ " \n"
+                header += 'Total for ' + str(inv.number) + \
+                        ';' + ';' + ';' + ';' + str("%.2f" % res['cheq_amount_home']) + ';' + \
+                        str("%.2f" % res['credit_inv_amt']) + ';' + \
+                        str("%.2f" % res['credit_inv_home']) + ';' + \
+                        str("%.2f" % res['alloc_inv_amt']) + ';' + \
+                        str("%.2f" % res['alloc_inv_home']) + ';' + \
+                        str("%.2f" % gain_loss_all) + ';' + ' \n' + '\n' + ' \n'
+        header += 'Report Total' + ' \n'
+        header += 'No. of Payment Vouchers : ' + str(payment_count or '') + ';' + 'Credit Note Home : ' + str("%.2f" % footer_credit_note_home or 0.00) + ' \n'
+        header += 'Cheque Home : ' + str("%.2f" % footer_cheque_home or 0.00)+ ';' + 'Alloc Inv Home : ' + str("%.2f" %  footer_alloc_inv_home or 0.00) + ' \n'
+        header += 'Bank Charges Home : ' + str("%.2f" % footer_bank_charges_home or 0.00) + ';' + 'Alloc Realize Ex : ' + str("%.2f" % footer_gain_loss_home or 0.00) + ' \n'
+        header += 'Deposit Home : ' + str("%.2f" % footer_deposit_home or 0.00) + ' \n'
+        
+        all_content_line += header
+        all_content_line += ' \n'
+        all_content_line += 'End of Report'
+        csv_content = ''
+
+        if type == 'payable':
+            filename = 'Posted Payment Check List Report.csv'
+            out = base64.encodestring(all_content_line)
+            self.pool.get('param.posted.payment.check.list').write(cr, uid, ids,{'data':out, 'filename':filename})
+            obj_model = self.pool.get('ir.model.data')
+            model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','posted_payment_check_list_result_csv_view')])
+            resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
+            return {
+                    'name':'Posted Payment Check List Report',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'param.posted.payment.check.list',
+                    'views': [(resource_id,'form')],
+                    'type': 'ir.actions.act_window',
+                    'target':'new',
+                    'res_id':ids[0],
+                    }
+        elif type == 'receivable':
+            filename = 'Posted Receipt Check List Report.csv'
+            out = base64.encodestring(all_content_line)
+            self.pool.get('param.posted.receipt.check.list').write(cr, uid, ids,{'data':out, 'filename':filename})
+            obj_model = self.pool.get('ir.model.data')
+            model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','posted_receipt_check_list_result_csv_view')])
+            resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
+            return {
+                    'name':'Posted Receipt Check List Report',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'param.posted.receipt.check.list',
+                    'views': [(resource_id,'form')],
+                    'type': 'ir.actions.act_window',
+                    'target':'new',
+                    'res_id':ids[0],
+                    }
+
+        
 
 param_posted_payment_check_list()
 
