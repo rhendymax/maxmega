@@ -152,7 +152,7 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Allocated Sale Order Checklist' + " \n"
-        header += ('pp_selection' in form and 'Supplier Part No :;' + form['pp_selection'] + "\n") or ''
+        header += ('pp_selection' in form and 'Supplier Part No : ' + form['pp_selection'] + "\n") or ''
         header += 'Sale Order No.;Customer Ref;CPN;Location;Qty;UOM' + " \n"
         
         cr.execute("select  DISTINCT sol.product_id \

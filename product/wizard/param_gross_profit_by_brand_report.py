@@ -93,6 +93,7 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
             result['date_to'] = False
         else:
             result['date_selection'] = 'Date'
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -192,8 +193,8 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Gross Profit By Inventory Brand Report' + " \n"
-        header += ('pb_selection' in form and 'Inventory Brand Selection :;' + form['pb_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        header += ('pb_selection' in form and 'Inventory Brand Selection : ' + form['pb_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         header += 'Inventory Brand Key;Main Description;Qty;Sales;Cost;Gross;GP %' + " \n"
 
         cr.execute("SELECT pb.id as brand_id, pb.name as brand_name, pb.description as description, \

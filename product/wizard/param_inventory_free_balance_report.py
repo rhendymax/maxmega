@@ -233,8 +233,8 @@ class param_inventory_free_balance_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Inventory Free Balance Report' + " \n"
-        header += ('pp_selection' in form and 'Supplier Part No Filter Selection :;' + form['pp_selection'] + " \n") or ''
-        header += ('sl_selection' in form and 'Location Filter Selection :;' + form['sl_selection'] + " \n") or ''
+        header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
+        header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
         header += 'SPN No;Qty On Hand;Qty GRN Allocated;Qty GRN Un-Allocated;Total SO Qty;Qty On Hand Free;Qty On Hand Allocated;Quantity Free Balance' + " \n"
 
         if sl_ids:

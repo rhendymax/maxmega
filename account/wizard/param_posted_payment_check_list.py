@@ -131,7 +131,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                     ]:
             if isinstance(data['form'][field], tuple):
                 data['form'][field] = data['form'][field][0]
-        used_context = self._build_contexts(cr, uid, ids, data, 'payable', context=context)
+        used_context = self._build_contexts(cr, uid, ids, data, 'payable',  context=context)
 
         return self._get_tplines(cr, uid, ids, used_context, 'payable', context=context)
 
@@ -149,47 +149,59 @@ class param_posted_payment_check_list(osv.osv_memory):
         
         partner_ids = False
         journal_ids = False
+        
         if report_type == 'receivable':
             data_search = data['form']['cust_search_vals']
+            result['supp_selection'] = 'Customer'
             qry_supp = 'customer = True'
             val_part.append(('customer', '=', True))
-
         elif report_type == 'payable':
             data_search = data['form']['supplier_search_vals']
-    
             if data['form']['supp_selection'] == 'all':
+                result['supp_selection'] = 'Supplier & Sundry'
                 qry_supp = 'supplier = True'
                 val_part.append(('supplier', '=', True))
             elif data['form']['supp_selection'] == 'supplier':
+                result['supp_selection'] = 'Supplier'
                 qry_supp = 'supplier = True and sundry = False'
                 val_part.append(('supplier', '=', True))
                 val_part.append(('sundry', '=', False))
             elif data['form']['supp_selection'] == 'sundry':
+                result['supp_selection'] = 'Sundry'
                 qry_supp = 'supplier = True and sundry = True'
                 val_part.append(('supplier', '=', True))
                 val_part.append(('sundry', '=', True))
-
+        
         partner_default_from = data['form']['partner_default_from'] or False
         partner_default_to = data['form']['partner_default_to'] or False
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
+        partner_default_from_str = partner_default_to_str = ''
+        partnet_input_from_str = partner_input_to_str= ''
         
         if data_search == 'code':
+            if report_type =='payable':
+                result['data_search'] = 'Supplier Code'
+            elif report_type =='receivable':
+                result['data_search'] = 'Customer Code'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).ref:
-                    data_found = True
+                    partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).ref
                     val_part.append(('ref', '>=', res_partner_obj.browse(cr, uid, partner_default_from).ref))
                 if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).ref:
+                    partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).ref
                     data_found = True
                     val_part.append(('ref', '<=', res_partner_obj.browse(cr, uid, partner_default_to).ref))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
                 if partner_input_from:
+                    partner_input_from_str = partner_input_from
                     cr.execute("select ref " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -200,6 +212,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                         data_found = True
                         val_part.append(('ref', '>=', qry['ref']))
                 if partner_input_to:
+                    partner_input_to_str = partner_input_to
                     cr.execute("select ref " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -209,28 +222,43 @@ class param_posted_payment_check_list(osv.osv_memory):
                     if qry:
                         data_found = True
                         val_part.append(('ref', '<=', qry['ref']))
-                #print val_part
+
+                result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
+
                 if data_found:
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(cr, uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.ref) + '",'
                     partner_ids = data['form']['partner_ids']
+                result['filter_selection'] = '[' + pr_ids +']'
+                
         elif data_search == 'name':
+            if report_type =='payable':
+                result['data_search'] = 'Supplier Name'
+            elif report_type =='receivable':
+                result['data_search'] = 'Customer Name'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
-            if data['form']['filter_selection'] == 'def':
+            if data['form']['filter_selection'] == 'name':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).name:
+                    partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).name
                     data_found = True
                     val_part.append(('name', '>=', res_partner_obj.browse(cr, uid, partner_default_from).name))
                 if partner_default_to and res_partner_obj.browse(cr, uid, partner_default_to) and res_partner_obj.browse(cr, uid, partner_default_to).name:
+                    partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).name
                     data_found = True
                     val_part.append(('name', '<=', res_partner_obj.browse(cr, uid, partner_default_to).name))
                 if data_found:
+                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
                 if partner_input_from:
+                    partner_input_from_str = partner_input_from
                     cr.execute("select name " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -241,6 +269,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                         data_found = True
                         val_part.append(('name', '>=', qry['name']))
                 if partner_input_to:
+                    partner_input_to_str = partner_input_to
                     cr.execute("select name " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -250,13 +279,18 @@ class param_posted_payment_check_list(osv.osv_memory):
                     if qry:
                         data_found = True
                         val_part.append(('name', '<=', qry['name']))
+                result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                 if data_found:
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(cr, uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.name) + '",'
                     partner_ids = data['form']['partner_ids']
+                result['filter_selection'] = '[' + pr_ids +']'
+
         result['partner_ids'] = partner_ids
-        
         #Period
         period_default_from = data['form']['period_default_from'] or False
         period_default_from = period_default_from and period_obj.browse(cr, uid, period_default_from) or False
@@ -265,22 +299,29 @@ class param_posted_payment_check_list(osv.osv_memory):
 
         period_input_from = data['form']['period_input_from'] or False
         period_input_to = data['form']['period_input_to'] or False
+        period_default_from_str = period_default_to_str = False
+        period_input_from_str = period_input_from_str= False
 
         if data['form']['date_selection'] == 'none_sel':
+            result['date_search'] = ''
             result['period_ids'] = False
             result['date_from'] = False
             result['date_to'] = False
         elif data['form']['date_selection'] == 'period_sel':
+            result['date_search'] = 'period'
             val_period = []
+            period_from_txt = period_to_txt = ''
             if data['form']['period_filter_selection'] == 'def':
                 if period_default_from and period_default_from.date_start:
+                    period_from_txt = period_default_from.code
                     val_period.append(('date_start', '>=', period_default_from.date_start))
                 if period_default_to and period_default_to.date_start:
+                    period_to_txt = period_default_to.code
                     val_period.append(('date_start', '<=', period_default_to.date_start))
-        #        period_criteria_search.append(('special', '=', False))
-                period_ids = period_obj.search(cr, uid, val_period)
+                result['period_ids'] = period_obj.search(cr, uid, val_period)
             elif data['form']['period_filter_selection'] == 'input':
                 if period_input_from:
+                    period_from_txt = period_input_from
                     cr.execute("select code " \
                                     "from account_period "\
                                     "where " \
@@ -288,8 +329,11 @@ class param_posted_payment_check_list(osv.osv_memory):
                                     "order by code limit 1")
                     qry = cr.dictfetchone()
                     if qry:
+                        
                         val_period.append(('code', '>=', qry['code']))
+                        
                 if period_input_to:
+                    period_from_txt = period_from_txt
                     cr.execute("select code " \
                                     "from account_period "\
                                     "where " \
@@ -299,11 +343,13 @@ class param_posted_payment_check_list(osv.osv_memory):
                     if qry:
                         val_period.append(('code', '<=', qry['code']))
                 result['period_ids'] = period_obj.search(cr, uid, val_period)
+            result['date_showing'] = '"' + period_from_txt + '" - "' + period_to_txt + '"'
             result['date_from'] = False
             result['date_to'] = False
         else:
             result['period_ids'] = False
-            result['date_selection'] = 'Date'
+            result['date_search'] = 'date'
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -315,19 +361,23 @@ class param_posted_payment_check_list(osv.osv_memory):
         journal_default_to = data['form']['journal_default_to'] or False
         journal_input_from = data['form']['journal_input_from'] or False
         journal_input_to = data['form']['journal_input_to'] or False
+        journal_default_from_str = journal_default_to_str = ''
+        journal_input_from_str = journal_input_to_str= ''
 
         if data['form']['journal_selection'] == 'all_vall':
             journal_ids = account_journal_obj.search(cr, uid, val_jour, order='name ASC')
-
-        if data['form']['journal_selection'] == 'name':
+        if data['form']['journal_selection'] == 'def':
             data_found = False
             if journal_default_from and account_journal_obj.browse(cr, uid, journal_default_from) and account_journal_obj.browse(cr, uid, journal_default_from).name:
+                journal_default_from_str = account_journal_obj.browse(cr, uid, journal_default_from).name
                 data_found = True
                 val_jour.append(('name', '>=', account_journal_obj.browse(cr, uid, journal_default_from).name))
             if journal_default_to and account_journal_obj.browse(cr, uid, journal_default_to) and account_journal_obj.browse(cr, uid, journal_default_to).name:
+                journal_default_to_str = account_journal_obj.browse(cr, uid, journal_default_to).name
                 data_found = True
                 val_jour.append(('name', '<=', account_journal_obj.browse(cr, uid, journal_default_to).name))
             if data_found:
+                result['journal_selection'] = '"' + journal_default_from_str + '" - "' + journal_default_to_str + '"'
                 journal_ids = account_journal_obj.search(cr, uid, val_jour, order='name ASC')
         elif data['form']['journal_selection'] == 'input':
             data_found = False
@@ -339,6 +389,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
+                    journal_input_from_str = journal_input_from
                     data_found = True
                     val_jour.append(('name', '>=', qry['name']))
             if journal_input_to:
@@ -349,23 +400,26 @@ class param_posted_payment_check_list(osv.osv_memory):
                                 "order by name desc limit 1")
                 qry = cr.dictfetchone()
                 if qry:
+                    journal_input_to_str = journal_input_to
                     data_found = True
                     val_jour.append(('name', '<=', qry['name']))
             #print val_part
             if data_found:
+                result['journal_selection'] = '"' + journal_input_from_str + '" - "' + journal_input_to_str + '"'
                 journal_ids = account_journal_obj.search(cr, uid, val_jour, order='name ASC')
         elif data['form']['journal_selection'] == 'selection':
+            j_ids = ''
             if data['form']['journal_ids']:
+                for jo in  account_journal_obj.browse(cr, uid, data['form']['journal_ids']):
+                    j_ids += '"' + str(jo.name) + '",'
                 journal_ids = data['form']['journal_ids']
+            result['journal_selection'] = '[' + j_ids +']'
         result['journal_ids'] = journal_ids
         return result
 
     def _get_tplines(self, cr, uid, ids,data, type, context):
 
         form = data
-
-
-
         if not ids:
             ids = data['ids']
         if not ids:
@@ -385,31 +439,42 @@ class param_posted_payment_check_list(osv.osv_memory):
 
 
         qry_type = ''
-        if type == 'payable':
-            qry_type = "and l.type in ('payment') "
-        elif type == 'receivable':
-            qry_type = "and l.type in ('receipt') "
-
 
         partner_ids = form['partner_ids'] or False
+        journal_ids = form['journal_ids'] or False
+        
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND l.partner_id = " + str(partner_ids[0]) + " ") or "AND l.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND l.partner_id IN (0) "
 
         date_from = form['date_from']
         date_to = form['date_to']
+
         date_from_qry = date_from and "And l.date >= '" + str(date_from) + "' " or " "
         date_to_qry = date_to and "And l.date <= '" + str(date_to) + "' " or " "
         
         period_ids = form['period_ids'] or False
         min_period = False
+        supp_selection = form['supp_selection']
+        data_search = form['data_search']
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Posted Payment Check List' + " \n"
-#        header += 'Supplier :;' + supp_selection + " (" + data_search + "); \n"
-#        header += ('filter_selection' in form and 'Supplier search :;' + form['filter_selection'] + " \n") or ''
-#        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
-        
-        header += ('po_selection' in form and 'PO :;' + form['po_selection'] + "\n") or ''
+
+        if type == 'payable':
+            qry_type = "and l.type in ('payment') "
+            header += 'Posted Payment Check List' + " \n"
+            header += 'Supplier : ' + supp_selection + " (" + data_search + "); \n"
+            header += ('filter_selection' in form and 'Supplier search : ' + form['filter_selection'] + " \n") or ''
+        elif type == 'receivable':
+            qry_type = "and l.type in ('receipt') "
+            header += 'Posted Receipt Check List' + " \n"
+            header += 'Customer : ' + supp_selection + " (" + data_search + "); \n"
+            header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
+
+        header += ('date_search' in form and (form['date_search'] == 'date' and 'Date : ' + str(form['date_showing']) + " \n") or \
+                   (form['date_search'] == 'period' and 'Period : ' + str(form['date_showing']) + " \n")) or ''
+
+        header += ('journal_selection' in form and 'Bank : ' + str(form['journal_selection']) + "\n") or ''
+
         header += 'Voucher No;Credit Note No;Date;Currency Date;Cheque Home;Credit Note Amt;Credit Note Home;Alloc Inv Amt;Alloc Inv Home;Alloc Realized Ex' + " \n"
 
         if period_ids:

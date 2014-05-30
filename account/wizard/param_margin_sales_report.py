@@ -79,6 +79,7 @@ class param_margin_sales_report(osv.osv_memory):
         else:
             result['date_selection'] = 'Date'
             result['date_from'] = data['form']['date_from']
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
         
         #Account Invoice
@@ -183,8 +184,8 @@ class param_margin_sales_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Margin Sales' + " \n"
-        header += ('ai_selection' in form and 'Invoice Filter Selection :;' + form['ai_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         header += 'Inventory Key;Inv Date;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
 
         cr.execute("select  DISTINCT l.partner_id " \

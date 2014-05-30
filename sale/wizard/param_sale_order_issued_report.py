@@ -191,6 +191,7 @@ class param_sale_order_issued_report(osv.osv_memory):
             result['date_to'] = False
         else:
             result['date_selection'] = 'Date'
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -234,8 +235,8 @@ class param_sale_order_issued_report(osv.osv_memory):
         header = 'sep=;' + " \n"
         header += 'Sale Order Issued' + " \n"
         
-        header += ('filter_selection' in form and 'Customer search :;' + form['filter_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date : ' + str(form['date_showing'])+ "\n") or ''
         
         header += 'Sale Order No;Customer PO No;Unit Price;Qty;Location;Customer Code;Customer Part No;Brand' + " \n"
         header += 'Sale Order Date;;;Total Sell;;Customer Name;Part No' + " \n"

@@ -108,10 +108,9 @@ class param_po_oustanding_report(osv.osv_memory):
         val_part = []
         qry_po = ''
         val_po = []
-        
+    
         partner_ids = False
         po_ids = False
-        
         data_search = data['form']['supplier_search_vals']
         
         if data['form']['supp_selection'] == 'all':
@@ -187,6 +186,7 @@ class param_po_oustanding_report(osv.osv_memory):
                         pr_ids += '"' + str(pr.ref) + '",'
                     partner_ids = data['form']['partner_ids']
                 result['filter_selection'] = '[' + pr_ids +']'
+                
         elif data_search == 'name':
             result['data_search'] = 'Supplier Name'
             if data['form']['filter_selection'] == 'all_vall':
@@ -241,13 +241,14 @@ class param_po_oustanding_report(osv.osv_memory):
         result['partner_ids'] = partner_ids
         
         #Period
-        result['supp_selection'] = data['form']['supp_selection']
+#        result['supp_selection'] = data['form']['supp_selection']
 
         if data['form']['date_selection'] == 'none_sel':
             result['date_from'] = False
             result['date_to'] = False
         else:
             result['date_selection'] = 'Date'
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
@@ -361,11 +362,11 @@ class param_po_oustanding_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Supplier Delivery Outstanding Purchase Order' + " \n"
-        header += 'Supplier :;' + supp_selection + " (" + data_search + "); \n"
-        header += ('filter_selection' in form and 'Supplier search :;' + form['filter_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        header += 'Supplier : ' + supp_selection + " (" + data_search + "); \n"
+        header += ('filter_selection' in form and 'Supplier search  ;' + form['filter_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         
-        header += ('po_selection' in form and 'PO :;' + form['po_selection'] + "\n") or ''
+        header += ('po_selection' in form and 'PO : ' + form['po_selection'] + "\n") or ''
         header += 'Supplier Key;Supplier Name;PO Number;Item Description;ETD Date;Order Qty(PCS);Unit Price;Oustanding Qty' + " \n"
 
         cr.execute(

@@ -89,6 +89,7 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
             result['date_to'] = False
         else:
             result['date_selection'] = 'Date'
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
         
@@ -183,8 +184,8 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Monthly Pos With Sale Order' + " \n"
-        header += ('ai_selection' in form and 'Invoice Filter Selection :;' + form['ai_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date :;' + date_from + " / " + date_to + "\n") or ''
+        header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
+        header += ('date_selection' in form and 'Date : ' + form['date_showing'] + "\n") or ''
         header += 'Date;SO No;Customer;CPN;Selling Price;Qty;Total;Brand' + " \n"
         header += 'Invoice No;Customer PO No;Location;MPN;;;;' + " \n"
 

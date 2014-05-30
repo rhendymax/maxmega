@@ -56,7 +56,7 @@
 							<field name="journal_input_from"
 								attrs="{'invisible': [('journal_selection','!=','input')], 'required': [('journal_selection','=','input')]}"/>
 							<field name="journal_input_to"
-								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('journal_selection','=','input')]}"/>
+								attrs="{'invisible': [('journal_selection','!=','input')], 'required': [('journal_selection','=','input')]}"/>
 							<field name="journal_ids"
 								attrs="{'invisible': [('journal_selection','!=','selection')], 'required': [('journal_selection','=','selection')]}" nolabel="1" colspan="4">
 								<tree>
