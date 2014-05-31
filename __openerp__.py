@@ -35,6 +35,7 @@ Maxmega Finance Module
         'account_voucher/wizard/change_payment_no_view.xml',
         'account_voucher/account_voucher_view.xml',
         'account_voucher/simple_voucher_view.xml',
+        'journal_entries/journal_entries_view.xml',
     ],
 
     'demo_xml': [],
