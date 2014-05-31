@@ -152,18 +152,25 @@
 			sequence="20"/>
 
 		<menuitem
+			name="Max Journal Entries"
+			id="menu_account_max_journal_entries_max_journal_entries"
+			parent="menu_account_max_journal_entries"
+			action="max_finance_module.action_max_journal_entries"
+			sequence="30"/>
+
+		<menuitem
 			name="Sales Receipt"
 			id="menu_account_max_journal_entries_sales_receipt"
 			parent="menu_account_max_journal_entries"
 			action="max_finance_module.action_sales_receipt"
-			sequence="30"/>
+			sequence="40"/>
 
 		<menuitem
 			name="Purchase Payment"
 			id="menu_account_max_journal_entries_purchase_payment"
 			parent="menu_account_max_journal_entries"
 			action="max_finance_module.action_purchase_payment"
-			sequence="40"/>
+			sequence="50"/>
 
 <!-- -->
 

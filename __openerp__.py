@@ -47,6 +47,7 @@
                 "stock",
                 "max_custom_report",
                 "max_report",
+                "max_finance_module",
                 "upgrade_all"],
     'init_xml': [],
     'update_xml': [
