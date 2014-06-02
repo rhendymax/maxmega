@@ -238,8 +238,7 @@ class param_sale_order_issued_report(osv.osv_memory):
         header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing'])+ "\n") or ''
         
-        header += 'Sale Order No;Customer PO No;Unit Price;Qty;Location;Customer Code;Customer Part No;Brand' + " \n"
-        header += 'Sale Order Date;;;Total Sell;;Customer Name;Part No' + " \n"
+        header += 'Sale Order No;Sale Order Date;Customer PO No;Unit Price;Qty;Total Sell;Location;Customer Code;Customer Name;Customer Part No;Part No;Brand' + " \n"
         cr.execute("select so.name as so_no, " \
                         "so.date_order as so_date, " \
                         "so.client_order_ref as customer_po_no, " \
@@ -268,12 +267,9 @@ class param_sale_order_issued_report(osv.osv_memory):
         qry3 = cr.dictfetchall()
         if qry3:
             for t in qry3:
-                header += str(t['so_no'] or '') + ";" + str(t['customer_po_no'] or '') + ";" + str(t['unit_price'] or 0.00) + ";"\
-                        + str(t['qty'] or 0.00) + ";" + str(t['location'] or '') + ";" + str(t['partner_ref'] or '') + ";"\
-                        + str(t['customer_part_no'] or '')+ ";" + str(t['brand'] or '') + "\n"
-
-                header += str(t['so_date'] or '') + ";;;" + str(t['total'] or 0.00) + ";;" + str(t['partner_name'] or '') + ";"\
-                        + str(t['part_no'] or '') + "\n"
+                header += str(t['so_no'] or '') + ";" + str(t['so_date'] or '') + ";" + str(t['customer_po_no'] or '') + ";" + str(t['unit_price'] or 0.00) + ";"\
+                        + str(t['qty'] or 0.00) + ";"  + str(t['total'] or 0.00) + ";" + str(t['location'] or '') + ";" + str(t['partner_ref'] or '') + ";"\
+                        + str(t['partner_name'] or '') + ";" + str(t['customer_part_no'] or '')+ ";" + str(t['part_no'] or '') + ";" + str(t['brand'] or '') + "\n"
 
         all_content_line += header
         all_content_line += ' \n'

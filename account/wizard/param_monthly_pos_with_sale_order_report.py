@@ -186,8 +186,7 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
         header += 'Monthly Pos With Sale Order' + " \n"
         header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + form['date_showing'] + "\n") or ''
-        header += 'Date;SO No;Customer;CPN;Selling Price;Qty;Total;Brand' + " \n"
-        header += 'Invoice No;Customer PO No;Location;MPN;;;;' + " \n"
+        header += 'Date;Invoice No;SO No;Customer PO No;Customer;Location;CPN;MPN;Selling Price;Qty;Total;Brand' + " \n"
 
         cr.execute("select ai.number as invoice_no, " \
                         "ai.date_invoice as date_inv, " \
@@ -221,12 +220,10 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
         results = cr.dictfetchall()
         if results:
             for t in results:
-                header += str(t['date_inv'] or '') + ";" + str(t['so_no'] or '') + ";" + str(t['customer_name'] or '') + ";"\
-                        + str(t['cpn'] or '') + ";" + str(t['selling_price'] or '') + ";" + str(t['quantity'] or '') + ";"\
-                        + str(t['total'] or '')+ ";" + str(t['brand_name'] or '') + "\n"
-
-                header += str(t['invoice_no'] or '') + ";" + str(t['customer_po_no'] or 0.00) + ";" + str(t['customer_po_no'] or '') + ";"\
-                        + str(t['mpn'] or '') + ";;;; \n"
+                header += str(t['date_inv'] or '') + ";" + str(t['invoice_no']) + ";" + str(t['so_no'] or '') + ";'" \
+                        + str(t['customer_po_no']) + ";" + str(t['customer_name'] or '') + ";" + str(t['location'] or '') + ";" \
+                        + str(t['cpn'] or '') + ";" + str(t['mpn'] or '') + str(t['selling_price'] or '') + ";" + str(t['quantity'] or '') + ";"\
+                        + str(t['total'] or '')+ ";" + str(t['brand_name'] or '') + " \n"
 
         all_content_line += header
         all_content_line += ' \n'

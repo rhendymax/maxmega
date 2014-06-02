@@ -33,6 +33,7 @@ from osv import osv, fields
 from tools.translate import _
 from report import report_sxw
 import locale
+from tools import float_round, float_is_zero, float_compare
 locale.setlocale(locale.LC_ALL, '')
 
 class purchase_tax_report(report_sxw.rml_parse):
@@ -813,7 +814,7 @@ class purchase_tax_report(report_sxw.rml_parse):
                             + date_to_qry \
                             + period_qry + \
                             "and ai.partner_id = " + str(s['id']) + " " \
-                            "order by ai.date_invoice, ait.sequence")
+                            "order by ai.number, ai.date_invoice, ait.sequence")
                 qry_inv = cr.dictfetchall()
                 inv_taxable_amt = inv_tax_amt = inv_tax_home = inv_sup_tax = inv_difference = 0
                 if qry_inv:
@@ -882,7 +883,7 @@ class purchase_tax_report(report_sxw.rml_parse):
                             + date_to_qry \
                             + period_qry + \
                             "and ai.partner_id = " + str(s['id']) + " " \
-                            "order by ai.date_invoice, ait.sequence")
+                            "order by ai.number, ai.date_invoice, ait.sequence")
                 qry_cred = cr.dictfetchall()
                 cred_taxable_amt = cred_tax_amt = cred_tax_home = cred_sup_tax = cred_difference = 0
                 if qry_cred:

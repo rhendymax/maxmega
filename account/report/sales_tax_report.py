@@ -378,7 +378,7 @@ class sales_tax_report(report_sxw.rml_parse):
                             + date_to_qry \
                             + period_qry + \
                             "and ac_t.id = " + str(s['id']) + " " \
-                            "order by ai.date_invoice, ait.sequence")
+                            "order by ai.number, ai.date_invoice, ait.sequence")
                 qry_inv = cr.dictfetchall()
                 if qry_inv:
                     for inv in qry_inv:
@@ -433,7 +433,7 @@ class sales_tax_report(report_sxw.rml_parse):
                         + date_to_qry \
                         + period_qry + \
                         "and ac_t.id = " + str(s['id']) + " " \
-                        "order by ai.date_invoice, ait.sequence")
+                        "order by ai.number, ai.date_invoice, ait.sequence")
                 qry_cred = cr.dictfetchall()
                 if qry_cred:
                     for cred in qry_cred:

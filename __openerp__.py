@@ -34,8 +34,14 @@ Customise report
     'update_xml': [
         'menu_view.xml',
         'purchase/wizard/param_po_oustanding_report_view.xml',
+        #RT 20140602
+        'purchase/wizard/param_purchase_order_issued_report_view.xml',
+        #
         'sale/wizard/param_allocated_sale_order_checklist_report_view.xml',
         'sale/wizard/param_sale_order_issued_report_view.xml',
+        #RT 20140602
+        'sale/wizard/param_so_oustanding_report_view.xml',
+        #
         'product/wizard/param_inventory_valuation_report_view.xml',
         'product/wizard/param_inventory_valuation_report__max_view.xml',
         'product/wizard/param_inventory_ledger_details_report_view.xml',
@@ -43,6 +49,9 @@ Customise report
         'product/wizard/param_gross_profit_by_brand_report_view.xml',
         'product/wizard/param_inventory_free_balance_report_view.xml',
         'product/wizard/param_inventory_stock_aging_report_view.xml',
+        #RT 20140630
+        'product/wizard/param_outgoing_report_view.xml',
+        #
         'account/wizard/param_sales_journal_by_customer_report_view.xml',
         'account/wizard/param_purchase_journal_by_supplier_report_view.xml',
         'account/wizard/param_profit_and_lost_report_view.xml',

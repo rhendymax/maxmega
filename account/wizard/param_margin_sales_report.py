@@ -210,7 +210,7 @@ class param_margin_sales_report(osv.osv_memory):
         qry = cr.dictfetchall()
         if qry:
             for s in qry:
-                header += str(s['ref'] or '') + ";" + str(s['name'] or '') + " \n"
+                header += '[' + str(s['ref'] or '') + '] ' + str(s['name'] or '') + ' \n'
                 cr.execute("select pt.name as inventory_key, " \
                             "l.date_invoice as inv_date, " \
                             "l.number as invoice_no, " \
