@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="max_journal_entries_tree" model="ir.ui.view">
+			<field name="name">max.journal.entries.tree</field>
+			<field name="model">max.journal.entries</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Journal Entries">
+					<field name="name"/>
+					<field name="journal_id"/>
+					<field name="period_id"/>
+					<field name="date"/>
+					<field name="state"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="max_journal_entries_form" model="ir.ui.view">
+			<field name="name">max.journal.entries.form</field>
+			<field name="model">max.journal.entries</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string = "Journal Entries">
+					<group colspan="4" col="6">
+						<field name="name"/>
+						<field name="ref"/>
+						<field name="journal_id" domain="[('type','=','general')]"/>
+						<field name="period_id"/>
+						<field name="date"/>
+					</group>
+					<notebook colspan="4">
+						<page string="Journal Items">
+								<field name="line_id" nolabel="1" colspan="4">
+									<tree editable="bottom" string="Journal Items">
+										<field name="account_id"/>
+										<field name="currency_id" on_change="onchange_currency(parent.date,currency_id,debit,credit)"/>
+										<field name="debit" sum="Total Debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit)"/>
+										<field name="credit" sum="Total Credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit)"/>
+										<field name="debit_home" sum="Total Debit Home"/>
+										<field name="credit_home" sum="Total Credit Home"/>
+										<field name="ex_rate"/>
+									</tree>
+								</field>
+								<field name="state" colspan ="2"/>
+								<label colspan="1"/>
+								<group col="1" colspan="1">
+									<button name="set_to_draft" states="cancel" string="Set To Draft" type="object"/>
+									<button name="button_cancel" states="posted" string="Cancel" type="object" icon="gtk-cancel"/>
+									<button name="button_validate" states="draft" string="Post" type="object" icon="terp-camera_test"/>
+								</group>
+								
+						</page>
+					</notebook>
+				</form>
+			</field>
+		</record>
+
+		<record id="max_journal_entries_filter" model="ir.ui.view">
+			<field name="name">max.journal.entries.select</field>
+			<field name="model">max.journal.entries</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Search Move">
+					<group>
+						<filter icon="terp-document-new" string="Unposted" domain="[('state','=','draft')]" help="Unposted Journal Entries"/>
+						<filter icon="terp-camera_test" string="Posted" domain="[('state','=','posted')]" help="Posted Journal Entries"/>
+						<separator orientation="vertical"/>
+						<field name="name"/>
+						<field name="ref"/>
+						<field name="date"/>
+					</group>
+					<newline/>
+					<group>
+						<field name="journal_id" widget="selection"/>
+						<field name="period_id"/>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_max_journal_entries" model="ir.actions.act_window">
+			<field name="name">Journal Entries</field>
+			<field name="res_model">max.journal.entries</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="max_journal_entries_tree"/>
+			<field name="search_view_id" ref="max_journal_entries_filter"/>
+		</record>
+
+
+		<record id="max_journal_lines_entries_tree" model="ir.ui.view">
+			<field name="name">max.journal.lines.entries.tree</field>
+			<field name="model">max.journal.lines.entries</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Lines">
+					<field name="account_id"/>
+					<field name="currency_id"/>
+					<field name="debit" sum="Total Debit"/>
+					<field name="credit" sum="Total Credit"/>
+					<field name="debit_home"/>
+					<field name="credit_home"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="max_journal_lines_entries_form" model="ir.ui.view">
+			<field name="name">max.journal.lines.entries.form</field>
+			<field name="model">max.journal.lines.entries</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string = "Lines">
+					<group colspan="4" col="6">
+						<field name="account_id"/>
+						<field name="currency_id"/>
+						<field name="debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit)"/>
+						<field name="credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit)"/>
+						<field name="debit_home"/>
+						<field name="credit_home"/>
+					</group>
+				</form>
+			</field>
+		</record>
+	</data>
+</openerp>
