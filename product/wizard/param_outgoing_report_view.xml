@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_outgoing_report" model="ir.ui.view">
+			<field name="name">view.param.outgoing.report</field>
+			<field name="model">param.outgoing.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Outgoing Report">
+					<separator string="Outgoing Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Outgoing Report"/>
+					<newline/>
+					<notebook colspan="4">
+						<page string="Supplier Part No">
+							<field name="product_selection" colspan="4"/>
+							<field name="product_default_from" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_default_to" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_input_from"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_input_to"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_ids"
+								attrs="{'invisible': [('product_selection','!=','selection')], 'required': [('product_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+						</page>
+						<page string="Location">
+							<field name="sl_selection" colspan="4"/>
+							<field name="sl_default_from" attrs="{'invisible': [('sl_selection','!=','def')], 'required': [('sl_selection','=','def')]}"/>
+							<field name="sl_default_to" attrs="{'invisible': [('sl_selection','!=','def')], 'required': [('sl_selection','=','def')]}"/>
+							<field name="sl_input_from"
+								attrs="{'invisible': [('sl_selection','!=','input')], 'required': [('sl_selection','=','input')]}"/>
+							<field name="sl_input_to"
+								attrs="{'invisible': [('sl_selection','!=','input')], 'required': [('sl_selection','=','input')]}"/>
+							<field name="sl_ids"
+								attrs="{'invisible': [('sl_selection','!=','selection')], 'required': [('sl_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+					<group col="8" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2"/>
+						<label colspan="2" nolabel="1" string=" "/>
+						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="outgoing_report_result_csv_view" model="ir.ui.view">
+			<field name="name">Outgoing Report</field>
+			<field name="model">param.outgoing.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Report Options">
+					<field name="data" filename="filename" colspan="4" readonly="1"/>
+					<field name="filename" invisible="1"/>
+					<separator colspan="4"/>
+					<group col="4" colspan="4">
+						<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_outgoing_report" model="ir.actions.act_window">
+			<field name="name">Outgoing Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.outgoing.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_outgoing_report"/>
+			<field name="target">new</field>
+			<field name="help">This menu print outgoing Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_outgoing_report"
+			name="Outgoing Report"
+			action="action_param_outgoing_report"
+			parent="menu_custom_stock" sequence="6"/>
+	</data>
+</openerp>
