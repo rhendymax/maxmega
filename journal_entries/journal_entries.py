@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
+ 
 import tools
 from osv import fields,osv
 import decimal_precision as dp
@@ -43,6 +43,7 @@ class max_journal_entries(osv.osv):
         'date': fields.date('Date', required=True, states={'posted':[('readonly',True)]}, select=True),
         'line_id': fields.one2many('max.journal.lines.entries', 'move_id', 'Entries', states={'posted':[('readonly',True)]}),
         'move_id':fields.many2one('account.move', 'Account Entry'),
+        'move_ids': fields.related('move_id','line_id', type='one2many', relation='account.move.line', string='Journal Items', readonly=True),
     }
 
     def _get_period(self, cr, uid, context=None):
@@ -90,8 +91,15 @@ class max_journal_entries(osv.osv):
         return move
 
     def unlink(self, cr, uid, ids, context=None):
-        raise osv.except_osv(_('Invalid action !'), _('Cannot delete Journal Entries!'))
-        return super(max_journal_entries, self).unlink(cr, uid, ids, context=context)
+        entries = self.read(cr, uid, ids, ['state'], context=context)
+        unlink_ids = []
+        for s in entries:
+            if s['state'] in ['draft','cancel']:
+                unlink_ids.append(s['id'])
+            else:
+                raise osv.except_osv(_('Invalid action !'), _('In order to delete a Journal Entries, it must be cancelled first!'))
+
+        return super(max_journal_entries, self).unlink(cr, uid, unlink_ids, context=context)
 
     def button_cancel(self, cr, uid, ids, context=None):
         move_pool = self.pool.get('account.move')
