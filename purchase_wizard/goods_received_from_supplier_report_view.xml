@@ -33,8 +33,8 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem icon="STOCK_PRINT" name="Goods Received From Supplier Report" parent="maxmega_reports.menu_maxmega_purchase_reports"
-                action="action_goods_received_from_supplier_report_menu" id="menu_goods_received_from_supplier_report" />
+        <menuitem icon="STOCK_PRINT" name="Goods Received From Supplier Report" parent="max_custom_report.menu_custom_purchase"
+                action="action_goods_received_from_supplier_report_menu" id="menu_goods_received_from_supplier_report" sequence="30"/>
 
         <record id="goods_received_from_supplier_result_data_view" model="ir.ui.view">
             <field name="name">Goods Received From Supplier Report</field>

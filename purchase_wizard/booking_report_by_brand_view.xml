@@ -31,8 +31,8 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem icon="STOCK_PRINT" name="Booking Report By Brand" parent="maxmega_reports.menu_maxmega_purchase_reports"
-                action="action_booking_report_by_brand_menu" id="menu_booking_report_by_brand" />
+        <menuitem icon="STOCK_PRINT" name="Booking Report By Brand" parent="max_custom_report.menu_custom_purchase"
+                action="action_booking_report_by_brand_menu" id="menu_booking_report_by_brand" sequence="20"/>
 
         <record id="booking_report_by_brand_result_data_view" model="ir.ui.view">
             <field name="name">Booking Report By Brand</field>

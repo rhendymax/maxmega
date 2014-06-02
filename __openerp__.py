@@ -29,7 +29,7 @@ Customise report
 """,
     'author': 'Sunil Kumar Singh',
     'website': 'http://www.openerp.com',
-    'depends': ["account", "base_setup", "product", "analytic", "process", "board", "edi", "base", "product", "purchase", "sale","so_workflowchange","stock","price_methodology", "upgrade_all"],
+    'depends': ["account", "base_setup", "product", "analytic", "process", "board", "edi", "base", "product", "purchase", "sale","so_workflowchange","stock","price_methodology","max_custom_report","upgrade_all"],
     'init_xml': [],
     'update_xml': [
         'menu_view.xml',

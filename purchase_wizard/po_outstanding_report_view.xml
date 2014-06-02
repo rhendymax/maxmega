@@ -40,8 +40,8 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem icon="STOCK_PRINT" name="PO Outstanding" parent="maxmega_reports.menu_maxmega_purchase_reports"
-                action="action_po_outstanding_menu" id="menu_po_outstanding_report" />
+        <!--menuitem icon="STOCK_PRINT" name="PO Outstanding" parent="maxmega_reports.menu_maxmega_purchase_reports"
+                action="action_po_outstanding_menu" id="menu_po_outstanding_report" /-->
 
         <record id="po_outstanding_result_data_view" model="ir.ui.view">
             <field name="name">PO Outstanding Report</field>

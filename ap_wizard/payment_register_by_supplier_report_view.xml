@@ -34,8 +34,8 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem icon="STOCK_PRINT" name="Payment Register By Supplier Key"
-                parent="maxmega_reports.menu_maxmega_ap_control_report" action="action_maxmega_ap_payment_reg_by_supplier_menu" id="menu_maxmega_ap_payment_reg_by_supplier_report" />
+        <!--menuitem icon="STOCK_PRINT" name="Payment Register By Supplier Key"
+                parent="maxmega_reports.menu_maxmega_ap_control_report" action="action_maxmega_ap_payment_reg_by_supplier_menu" id="menu_maxmega_ap_payment_reg_by_supplier_report" /-->
 
         <record id="maxmega_ap_payment_reg_by_supplier_result_data_view" model="ir.ui.view">
             <field name="name">Payment Register By Supplier Key</field>

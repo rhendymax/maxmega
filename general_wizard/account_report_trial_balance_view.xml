@@ -53,8 +53,8 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem icon="STOCK_PRINT" name="Trial Balance" parent="maxmega_reports.menu_maxmega_account_general_report"
-                action="action_maxmega_trial_balance_menu" id="menu_maxmega_general_trial_balance_report" />
+        <!--menuitem icon="STOCK_PRINT" name="Trial Balance" parent="maxmega_reports.menu_maxmega_account_general_report"
+                action="action_maxmega_trial_balance_menu" id="menu_maxmega_general_trial_balance_report" /-->
 
     </data>
 </openerp>
