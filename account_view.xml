@@ -300,6 +300,25 @@
 			parent="menu_account_max_report_gr"
 			action="max_custom_report.action_param_profit_and_lost_report"
 			sequence="20"/>
+		
+		<menuitem
+			name="Profit and Loss Report"
+			id="menu_account_max_report_gr_profit_loss"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_param_profit_and_lost_report"
+			sequence="20"/>
+		
+		<menuitem icon="STOCK_PRINT" name="General Ledger"
+			id="menu_account_max_report_gr_general"
+			parent="menu_account_max_report_gr"
+			action="maxmega_reports.action_maxmega_gl_menu"
+			sequence="30"/>
+
+		<menuitem icon="STOCK_PRINT" name="Trial Balance"
+			id="menu_account_max_report_gr_general_trial"
+			parent="menu_account_max_report_gr"
+			action="maxmega_reports.action_maxmega_trial_balance_menu"
+			sequence="40"/>
 
 <!-- -->
 

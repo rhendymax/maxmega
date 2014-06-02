@@ -48,6 +48,7 @@
                 "max_custom_report",
                 "max_report",
                 "max_finance_module",
+                "maxmega_reports",
                 "upgrade_all"],
     'init_xml': [],
     'update_xml': [
