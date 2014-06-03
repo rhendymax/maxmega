@@ -289,8 +289,7 @@ class param_outgoing_report(osv.osv_memory):
                 header += str(s['date'] or '') + ";" + str(s['inc_no'] or '') + ";" \
                 + str(s['spn'] or '') + ";" + str(s['sn'] or '') + ";" + str(s['in'] or '') + ";" \
                 + str(s['qty'] or 0) + ";" + str(s['price'] or 0) + ";" + str(s['grand_total'] or 0) + ";" + str(s['so'] or '')+ ";" + str(s['location'] or '') + "\n"
-
-
+        
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'
