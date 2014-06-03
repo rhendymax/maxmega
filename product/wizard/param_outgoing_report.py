@@ -256,7 +256,7 @@ class param_outgoing_report(osv.osv_memory):
         header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + " \n") or ''
         header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
-        header += 'Date Done;Do No;Supplier Part No;Customer Name;Invoice No;Qty Received;Sale Order;Location' + " \n"
+        header += 'Date Done;Do No;Supplier Part No;Customer Name;Invoice No;Qty Received;Price;Total;Sale Order;Location' + " \n"
 
         cr.execute("select sp.do_date as date, " \
                         "sp.name as inc_no, " \
@@ -264,8 +264,10 @@ class param_outgoing_report(osv.osv_memory):
                         "rp.name as sn, " \
                         "sp.invoice_no as in, " \
                         "sm.product_qty as qty, " \
+                        "sm.price_unit as price, "\
+                        "(sm.product_qty * sm.price_unit) as grand_total, "\
                         "so.name as so, " \
-                        "sl.name as location, "\
+                        "sm.location_dest_id as location, "\
                         "sm.id as sm_id " \
                         "from stock_move sm " \
                         "inner join stock_picking sp on sp.id = sm.picking_id " \
@@ -286,7 +288,7 @@ class param_outgoing_report(osv.osv_memory):
             for s in qry:
                 header += str(s['date'] or '') + ";" + str(s['inc_no'] or '') + ";" \
                 + str(s['spn'] or '') + ";" + str(s['sn'] or '') + ";" + str(s['in'] or '') + ";" \
-                + str(s['qty'] or 0) + ";" + str(s['so'] or '')+ ";" + str(s['location'] or '') + "\n"
+                + str(s['qty'] or 0) + ";" + str(s['price'] or 0) + ";" + str(s['grand_total'] or 0) + ";" + str(s['so'] or '')+ ";" + str(s['location'] or '') + "\n"
 
 
         all_content_line += header

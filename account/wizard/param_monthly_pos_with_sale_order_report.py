@@ -179,7 +179,6 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
 
         invoice_ids = form['invoice_ids'] or False
         invoice_qry = (invoice_ids and ((len(invoice_ids) == 1 and "AND ai.id = " + str(invoice_ids[0]) + " ") or "AND ai.id IN " + str(tuple(invoice_ids)) + " ")) or "AND ai.id IN (0) "
-        res_lines = []
         
         all_content_line = ''
         header = 'sep=;' + " \n"
