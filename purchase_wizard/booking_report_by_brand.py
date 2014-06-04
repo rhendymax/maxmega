@@ -155,10 +155,10 @@ class booking_report_by_brand(osv.osv_memory):
                 brand_ids = product_brand_obj.search(cr, uid, val_pb, order='name ASC')
         elif data['form']['brand_selection'] == 'selection':
             pb_ids = ''
-            if data['form']['invoice_ids']:
+            if data['form']['brand_ids']:
                 for pb in  product_brand_obj.browse(cr, uid, data['form']['brand_ids']):
                     pb_ids += '"' + str(pb.name) + '",'
-                invoice_ids = data['form']['brand_ids']
+                brand_ids = data['form']['brand_ids']
             result['pb_selection'] = '[' + pb_ids +']'
         result['brand_ids'] = brand_ids
         
@@ -232,7 +232,7 @@ class booking_report_by_brand(osv.osv_memory):
         qry = cr.dictfetchall()
         if qry:
             for s in qry:
-                header = "\n" + "INV Brank Key : " + str(s['name']) + "\n"
+                header += "INV Brank Key : " + str(s['name']) + "\n"
                 partner_ids_vals = []
                 qry2 = cr.dictfetchall()
                 all_content_line += header

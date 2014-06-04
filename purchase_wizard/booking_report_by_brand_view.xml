@@ -7,12 +7,12 @@
 			<field name="model">booking.report.by.brand</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Monthly POS Report with Selected Brand">
-					<separator string="Monthly POS Report with Selected Brand" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Monthly POS Report with Selected Brand"/>
+				<form string="Booking Report By Brand">
+					<separator string="Booking Report By Brand" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Booking Report By Brand"/>
 					<newline/>
 					<notebook colspan="4">
-						<page string="Invoice No">
+						<page string="Product Brand">
 							<field name="brand_selection" colspan="4"/>
 							<field name="brand_default_from" attrs="{'invisible': [('brand_selection','!=','def')], 'required': [('brand_selection','=','def')]}"/>
 							<field name="brand_default_to" attrs="{'invisible': [('brand_selection','!=','def')], 'required': [('brand_selection','=','def')]}"/>
