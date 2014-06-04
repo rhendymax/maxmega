@@ -41,6 +41,7 @@ Customise report
         'sale/wizard/param_sale_order_issued_report_view.xml',
         #RT 20140602
         'sale/wizard/param_so_oustanding_report_view.xml',
+        'sale/wizard/param_monthly_sale_report_view.xml',
         #
         'product/wizard/param_inventory_valuation_report_view.xml',
         'product/wizard/param_inventory_valuation_report__max_view.xml',
