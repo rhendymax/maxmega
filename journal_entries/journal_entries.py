@@ -182,7 +182,7 @@ class max_journal_entries(osv.osv):
                         'date': vch.date,
                         'date_maturity': vch.date,
                         'cur_date' : vch.date,
-                        'exrate' : ln.ex_rate,
+                        'exrate' : company_currency <> current_currency and ln.ex_rate_other or ln.ex_rate,
                     }
                 move_line_pool.create(cr, uid, move_line, context)
 
@@ -227,13 +227,14 @@ class max_journal_lines_entries(osv.osv):
         'account_id': fields.many2one('account.account', 'Account', required=True, ondelete="cascade", domain=[('type','<>','view'), ('type', '<>', 'closed')], select=2),
         'debit': fields.float('Debit', digits=(12,2)),
         'credit': fields.float('Credit', digits=(12,2)),
-        'debit_home': fields.float('Debit Home', digits=(12,2)),
-        'credit_home': fields.float('Credit Home', digits=(12,2)),
+        'debit_home': fields.float('Debit Home(*)', digits=(12,2)),
+        'credit_home': fields.float('Credit Home(*)', digits=(12,2)),
         'currency_id': fields.many2one('res.currency', 'Currency', help="The optional other currency if it is a multi-currency entry."),
+        'ex_rate_other': fields.float('Other Currency Rate', digits=(12,6)),
         'ex_rate': fields.function(_rate, type='float', digits=(12,6), string='Currency Rate'),
    }
 
-    def onchange_currency(self, cr, uid, ids, date, currency_id, debit, credit, context=None):
+    def onchange_currency(self, cr, uid, ids, date, currency_id, debit, credit, ex_rate_other, context=None):
         res = {'value': {'debit': 0.0, 'debit_home': 0.0}}
         user_pool = self.pool.get('res.users')
         currency_pool = self.pool.get('res.currency')
@@ -253,15 +254,20 @@ class max_journal_lines_entries(osv.osv):
             if currency_id == company_currency:
                 res['value'].update({'debit_home': debit, 'credit_home': credit})
             else:
-                debit_home = currency_pool.compute(cr, uid, currency_id, company_currency, debit, context=context_multi_currency)
-                credit_home = currency_pool.compute(cr, uid, currency_id, company_currency, credit, context=context_multi_currency)
+                if ex_rate_other > 0:
+                    debit_home = debit/ex_rate_other
+                    credit_home = credit/ex_rate_other
+                else:
+                    debit_home = currency_pool.compute(cr, uid, currency_id, company_currency, debit, context=context_multi_currency)
+                    credit_home = currency_pool.compute(cr, uid, currency_id, company_currency, credit, context=context_multi_currency)
 
                 res['value'].update({'debit_home': round(debit_home,2),'credit_home': round(credit_home,2)})
+            ex_rate_other
         else:
             res['value'].update({'debit_home': debit, 'credit_home': credit})
         return res
 
-    def onchange_amount_debit(self, cr, uid, ids, date, currency_id, debit, credit, context=None):
+    def onchange_amount_debit(self, cr, uid, ids, date, currency_id, debit, credit, ex_rate_other, context=None):
         res = {'value': {'debit': 0.0, 'debit_home': 0.0}}
         user_pool = self.pool.get('res.users')
         currency_pool = self.pool.get('res.currency')
@@ -282,13 +288,16 @@ class max_journal_lines_entries(osv.osv):
             if currency_id == company_currency:
                 res['value'].update({'debit_home': debit})
             else:
-                debit_home = currency_pool.compute(cr, uid, currency_id, company_currency, debit, context=context_multi_currency)
+                if ex_rate_other > 0:
+                    debit_home = debit/ex_rate_other
+                else:
+                    debit_home = currency_pool.compute(cr, uid, currency_id, company_currency, debit, context=context_multi_currency)
                 res['value'].update({'debit_home': round(debit_home,2)})
         else:
             res['value'].update({'debit_home': debit})
         return res
 
-    def onchange_amount_credit(self, cr, uid, ids, date, currency_id, debit, credit, context=None):
+    def onchange_amount_credit(self, cr, uid, ids, date, currency_id, debit, credit, ex_rate_other, context=None):
         res = {'value': {'credit': 0.0, 'credit_home' : 0.0}}
         user_pool = self.pool.get('res.users')
         currency_pool = self.pool.get('res.currency')
@@ -308,7 +317,10 @@ class max_journal_lines_entries(osv.osv):
             if currency_id == company_currency:
                 res['value'].update({'credit_home': credit})
             else:
-                credit_home = currency_pool.compute(cr, uid, currency_id, company_currency, credit, context=context_multi_currency)
+                if ex_rate_other > 0:
+                    credit_home = credit/ex_rate_other
+                else:
+                    credit_home = currency_pool.compute(cr, uid, currency_id, company_currency, credit, context=context_multi_currency)
                 res['value'].update({'credit_home': round(credit_home,2)})
         else:
             res['value'].update({'credit_home': credit})

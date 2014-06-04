@@ -34,11 +34,12 @@
 								<field name="line_id" nolabel="1" colspan="4">
 									<tree editable="bottom" string="Journal Items">
 										<field name="account_id"/>
-										<field name="currency_id" on_change="onchange_currency(parent.date,currency_id,debit,credit)"/>
-										<field name="debit" sum="Total Debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit)"/>
-										<field name="credit" sum="Total Credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit)"/>
-										<field name="debit_home" sum="Total Debit Home"/>
-										<field name="credit_home" sum="Total Credit Home"/>
+										<field name="currency_id" on_change="onchange_currency(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+										<field name="debit" sum="Total Debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+										<field name="credit" sum="Total Credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+										<field name="debit_home" sum="Total Debit Home" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+										<field name="credit_home" sum="Total Credit Home" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+										<field name="ex_rate_other" on_change="onchange_currency(parent.date,currency_id,debit,credit,ex_rate_other)"/>
 										<field name="ex_rate"/>
 									</tree>
 								</field>
