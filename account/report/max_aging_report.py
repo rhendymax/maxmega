@@ -336,7 +336,7 @@ class max_aging_report(report_sxw.rml_parse):
                                     cr.execute(
                                             "select so.client_order_ref as cust_po_no from sale_order_picking_rel sopr " \
                                             "left join sale_order so on sopr.order_id = so.id left join stock_picking sp on sopr.picking_id = sp.id " \
-                                            "where sopr.picking_id = " + t['picking_id'] + " " \
+                                            "where sopr.picking_id = " + str(t['picking_id']) + " " \
                                             "order by so.date_order limit 1")
                                     qry4 = cr.dictfetchall()
                                     if qry4:
