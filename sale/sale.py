@@ -2157,7 +2157,7 @@ class sale_order(osv.osv):
 # Create The Product Detail
                 if move_line.product_id.id not in product_ids:
                     product_ids.append(move_line.product_id.id)
-                    result1 = product_location_wizard_obj.stock_location_get(cr, uid, product.id, context=context)
+                    result1 = product_location_wizard_obj.stock_location_get(cr, uid, [product.id], context=context)
                     for rs in result1:
                         product_detail_obj.create(cr, uid, {
                             'wizard_id': wizard_id,
@@ -2474,7 +2474,7 @@ class sale_order_line(osv.osv):
             if context is None: context = {}
             context = dict(context, active_ids=ids, active_model=self._name)
 
-            result1 = product_location_wizard_obj.stock_location_get(cr, uid, o.product_id.id, context=context)
+            result1 = product_location_wizard_obj.stock_location_get(cr, uid, [o.product_id.id], context=context)
             qty_free = 0.00
             for rs in result1:
                 if rs['location_id'] == o.location_id.id:

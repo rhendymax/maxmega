@@ -92,7 +92,7 @@ class return_picking(osv.osv_memory):
                     location_dest_id = False
                     if pick.type=='in':
                         location_dest_id = line.location_dest_id.id
-                        res_1 = product_location_wizard_obj.stock_location_get(cr, uid, line.product_id.id, context=context)
+                        res_1 = product_location_wizard_obj.stock_location_get(cr, uid, [line.product_id.id], context=context)
                         if res_1:
                             for rs in res_1:
                                 if rs['location_id'] == line.location_dest_id.id:

@@ -1289,7 +1289,7 @@ class stock_move(osv.osv):
         
         if prod_id:
             product_product = product_product_obj.browse(cr, uid, prod_id, context=None)
-            result1 = product_location_wizard_obj.stock_location_get(cr, uid, prod_id, context=None)
+            result1 = product_location_wizard_obj.stock_location_get(cr, uid, [prod_id], context=None)
             loc_id_updated = False
             qty_on_hand = 0.00
             qty_on_hand_free = 0.00
@@ -1361,7 +1361,7 @@ class stock_move(osv.osv):
                               'qty_onhand_free_r' : 0.0,
                               'qty_onhand_allocated_r' : 0.0}}
         product_product = product_product_obj.browse(cr, uid, prod_id, context=None)
-        result1 = product_location_wizard_obj.stock_location_get(cr, uid, prod_id, context=None)
+        result1 = product_location_wizard_obj.stock_location_get(cr, uid, [prod_id], context=None)
         loc_id_updated = False
         qty_on_hand = 0.00
         qty_on_hand_free = 0.00
@@ -1655,7 +1655,7 @@ class stock_inventory_line(osv.osv):
                 location_id = default_location_id or False
         else:
             location_id = default_location_id
-        result1 = product_location_wizard_obj.stock_location_get(cr, uid, product, context=None)
+        result1 = product_location_wizard_obj.stock_location_get(cr, uid, [product], context=None)
         qty_available = 0.00
         qty_allocated = 0.00
         if result1:
@@ -1698,7 +1698,7 @@ class stock_inventory_line(osv.osv):
         result = {}
         product_location_wizard_obj = self.pool.get('product.location.wizard')
         warning = False
-        result1 = product_location_wizard_obj.stock_location_get(cr, uid, product, context=None)
+        result1 = product_location_wizard_obj.stock_location_get(cr, uid, [product], context=None)
         qty_available = 0.00
         qty_allocated = 0.00
         if result1:
