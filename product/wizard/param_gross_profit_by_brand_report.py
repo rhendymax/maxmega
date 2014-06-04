@@ -197,7 +197,7 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         header += 'Inventory Brand Key;Main Description;Qty;Sales;Cost;Gross;GP %' + " \n"
         cost = qty = sales = 0
-        cr.execute("SELECT pb.id as brand_id \
+        cr.execute("SELECT distinct pb.id as brand_id \
         from account_invoice_line ail \
         inner join account_invoice ai on ail.invoice_id = ai.id \
         inner join product_product pp on ail.product_id = pp.id \

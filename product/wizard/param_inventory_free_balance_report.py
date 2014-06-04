@@ -23,6 +23,7 @@ from osv import fields, osv
 import time
 import pooler
 import base64
+from tools.translate import _
 #from tools import float_round, float_is_zero, float_compare
 
 class param_inventory_free_balance_report(osv.osv_memory):
@@ -38,11 +39,11 @@ class param_inventory_free_balance_report(osv.osv_memory):
         'product_ids' :fields.many2many('product.product', 'report_inventory_balance_product_rel', 'report_id', 'product_id', 'Product', domain=[]),
         #Location Selection
         'sl_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Location Filter Selection', required=True),
-        'sl_default_from':fields.many2one('stock.location', 'Location From', domain=[], required=False),
-        'sl_default_to':fields.many2one('stock.location', 'Location To', domain=[], required=False),
+        'sl_default_from':fields.many2one('stock.location', 'Location From', domain=[('usage', '=', 'internal')], required=False),
+        'sl_default_to':fields.many2one('stock.location', 'Location To', domain=[('usage', '=', 'internal')], required=False),
         'sl_input_from': fields.char('Location From', size=128),
         'sl_input_to': fields.char('Location To', size=128),
-        'sl_ids' :fields.many2many('stock.location', 'report_inventory_balance_sl_rel', 'report_id', 'sl_id', 'Product', domain=[]),
+        'sl_ids' :fields.many2many('stock.location', 'report_inventory_balance_sl_rel', 'report_id', 'sl_id', 'Location', domain=[('usage', '=', 'internal')]),
         'data': fields.binary('Exported CSV', readonly=True),
         'filename': fields.char('File Name',size=64),
     }
@@ -229,6 +230,9 @@ class param_inventory_free_balance_report(osv.osv_memory):
         plw_obj = self.pool.get('product.location.wizard')
         pp_ids = form['pp_ids'] or False
         sl_ids = form['sl_ids'] or False
+#         if pp_ids and len(pp_ids) > 3000:
+#             raise osv.except_osv(_('Data Limitation !'), _('the product data has limit to 3000 product, pls select the product to view with least than 3000 product'))
+        sl_qry = (sl_ids and ((len(sl_ids) == 1 and "AND id = " + str(sl_ids[0]) + " ") or "AND id IN " + str(tuple(sl_ids)) + " ")) or "AND id IN (0) "
 
         all_content_line = ''
         header = 'sep=;' + " \n"
@@ -237,54 +241,188 @@ class param_inventory_free_balance_report(osv.osv_memory):
         header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
         header += 'SPN No;Qty On Hand;Qty GRN Allocated;Qty GRN Un-Allocated;Total SO Qty;Qty On Hand Free;Qty On Hand Allocated;Quantity Free Balance' + " \n"
 
-        if sl_ids:
-            for location in stock_location_obj.browse(cr, uid, sl_ids):
-                sl_checking = stock_location_obj.search(cr, uid, [('location_id','=',location.id)])
-                if sl_checking:
-                    continue
-                res = {}
-                vals_ids = []
-                total_cost = 0
-                total_qty = 0
-                if pp_ids:
-                    for product_id in product_product_obj.browse(cr, uid, pp_ids):
-                        ctx = {'location_id': location.id}
-                        cpf_loc = plw_obj.stock_location_get(cr, uid, product_id.id, context=ctx)
-                        if cpf_loc:
-                            total_prod_cost = 0.00
-                            total_prod_qty = 0.00
+        if pp_ids:
+            data_found = False
+            ctx = {'location_id': sl_ids}
+            cpf_loc = plw_obj.stock_location_get(cr, uid, pp_ids, context=ctx)
+            if cpf_loc:
+                for res_f1 in cpf_loc:
+#                 if data_found == False:
+#                     header += str(r['sl_name'] or '') + "\n"
+#                     data_found = True
+#                 if data_found == True and 
+#                 raise osv.except_osv(_('Data Limitation !'), _('the product data has limit to 3000 product, pls select the product to view with least than 3000 product'))
+                    if data_found == False:
+                        header += str(res_f1['location_name'] or '') + "\n"
+                        data_found = str(res_f1['location_id'] or '')
+                        qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+                        qty_onhand += res_f1['qty_available'] or 0.00
+                        qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+                        qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+                        total_so_qty += res_f1['qty_booked'] or 0.00
+                        qty_on_hand_free += res_f1['qty_free'] or 0.00
+                        qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+                        qty_free_balance += res_f1['qty_free_balance'] or 0.00
+                        header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+                                        + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+                                        + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+                                        + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+                
+                    else:
+                        if data_found == str(res_f1['location_id'] or ''):
                             qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
-                            for res_f1 in cpf_loc:
-                                qty_onhand += res_f1['qty_available'] or 0.00
-                                qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
-                                qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
-                                total_so_qty += res_f1['qty_booked'] or 0.00
-                                qty_on_hand_free += res_f1['qty_free'] or 0.00
-                                qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
-                                qty_free_balance += res_f1['qty_free_balance'] or 0.00
-                            
-                            vals_ids.append({
-                            'prod_name' : product_id.name,
-                            'qty_onhand' : qty_onhand,
-                            'qty_grn_allocated' : qty_grn_allocated,
-                            'qty_grn_unallocated' : qty_grn_unallocated,
-                            'total_so_qty' : total_so_qty,
-                            'qty_on_hand_free' : qty_on_hand_free,
-                            'qty_on_hand_allocated' : qty_on_hand_allocated,
-                            'qty_free_balance' : qty_free_balance,
-                            })
-                            
-                    if not vals_ids:
-                        continue
-                    res['pro_lines'] = vals_ids
-                    res['loc_name'] = location.name or ''
-                    header += str(res['loc_name'] or '') + "\n"
-                    for pro_lines in res['pro_lines']:
-                        header += str(pro_lines['prod_name'] or '') + ";" + str("%.2f" % pro_lines['qty_onhand'] or 0) + ";" \
-                                            + str("%.2f" % pro_lines['qty_grn_allocated'] or 0) + ";" + str("%.2f" % pro_lines['qty_grn_unallocated'] or 0) + ";" \
-                                            + str("%.2f" % pro_lines['total_so_qty'] or 0) + ";" + str("%.2f" % pro_lines['qty_on_hand_free'] or 0) + ";" \
-                                            + str("%.2f" % pro_lines['qty_on_hand_allocated'] or 0) + ";" + str("%.2f" % pro_lines['qty_free_balance'] or 0) + " \n"
-                    results.append(res)
+                            qty_onhand += res_f1['qty_available'] or 0.00
+                            qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+                            qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+                            total_so_qty += res_f1['qty_booked'] or 0.00
+                            qty_on_hand_free += res_f1['qty_free'] or 0.00
+                            qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+                            qty_free_balance += res_f1['qty_free_balance'] or 0.00
+                            header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+                                            + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+                                            + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+                                            + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+                        else:
+                            header += str(res_f1['location_name'] or '') + "\n"
+                            data_found = str(res_f1['location_id'] or '')
+                            qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+                            qty_onhand += res_f1['qty_available'] or 0.00
+                            qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+                            qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+                            total_so_qty += res_f1['qty_booked'] or 0.00
+                            qty_on_hand_free += res_f1['qty_free'] or 0.00
+                            qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+                            qty_free_balance += res_f1['qty_free_balance'] or 0.00
+                            header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+                                            + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+                                            + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+                                            + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+
+
+#         cr.execute("select id as sl_id, name as sl_name \
+#         from stock_location \
+#         where id not in (select distinct location_id from stock_location WHERE location_id IS NOT NULL) "\
+#         + sl_qry  +\
+#         "order by name")
+# 
+#         qry2 = cr.fetchall()
+#         if qry2:
+#             for r in qry2:
+#                 if pp_ids:
+#                     data_found = False
+# #                     for product_id in product_product_obj.browse(cr, uid, pp_ids):
+#                     ctx = {'location_id': r['sl_id']}
+#                     cpf_loc = plw_obj.stock_location_get(cr, uid, pp_ids, context=ctx)
+#                     if cpf_loc:
+#                         for res_f1 in cpf_loc:
+#                             if data_found == False:
+#                                 header += str(res_f1['sl_name'] or '') + "\n"
+#                                 data_found = str(res_f1['sl_name'] or '')
+#                                 qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+#                                 qty_onhand += res_f1['qty_available'] or 0.00
+#                                 qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+#                                 qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+#                                 total_so_qty += res_f1['qty_booked'] or 0.00
+#                                 qty_on_hand_free += res_f1['qty_free'] or 0.00
+#                                 qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+#                                 qty_free_balance += res_f1['qty_free_balance'] or 0.00
+#                                 header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+#                                                 + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+#                                                 + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+#                                                 + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+#                         
+#                             else:
+#                                 if data_found == str(res_f1['sl_name'] or ''):
+#                                     qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+#                                     qty_onhand += res_f1['qty_available'] or 0.00
+#                                     qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+#                                     qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+#                                     total_so_qty += res_f1['qty_booked'] or 0.00
+#                                     qty_on_hand_free += res_f1['qty_free'] or 0.00
+#                                     qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+#                                     qty_free_balance += res_f1['qty_free_balance'] or 0.00
+#                                     header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+#                                                     + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+#                                                     + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+#                                                     + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+#                                 else:
+#                                     header += str(res_f1['sl_name'] or '') + "\n"
+#                                     data_found = str(res_f1['sl_name'] or '')
+#                                     qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+#                                     qty_onhand += res_f1['qty_available'] or 0.00
+#                                     qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+#                                     qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+#                                     total_so_qty += res_f1['qty_booked'] or 0.00
+#                                     qty_on_hand_free += res_f1['qty_free'] or 0.00
+#                                     qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+#                                     qty_free_balance += res_f1['qty_free_balance'] or 0.00
+#                                     header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+#                                                     + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+#                                                     + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+#                                                     + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+
+#                         for res_f1 in cpf_loc:
+#                             qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+#                             qty_onhand += res_f1['qty_available'] or 0.00
+#                             qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+#                             qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+#                             total_so_qty += res_f1['qty_booked'] or 0.00
+#                             qty_on_hand_free += res_f1['qty_free'] or 0.00
+#                             qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+#                             qty_free_balance += res_f1['qty_free_balance'] or 0.00
+#                             header += ";" + str(res_f1['prod_name'] or '') + ";" + str("%.2f" % qty_onhand or 0) + ";" \
+#                                             + str("%.2f" % qty_grn_allocated or 0) + ";" + str("%.2f" % qty_grn_unallocated or 0) + ";" \
+#                                             + str("%.2f" % total_so_qty or 0) + ";" + str("%.2f" % qty_on_hand_free or 0) + ";" \
+#                                             + str("%.2f" % qty_on_hand_allocated or 0) + ";" + str("%.2f" % qty_free_balance or 0) + " \n"
+
+
+
+#         if sl_ids:
+#             for location in stock_location_obj.browse(cr, uid, sl_ids):
+#                 sl_checking = stock_location_obj.search(cr, uid, [('location_id','=',location.id)])
+#                 if sl_checking:
+#                     continue
+#                 res = {}
+#                 vals_ids = []
+#                 total_cost = 0
+#                 total_qty = 0
+#                 if pp_ids:
+#                     for product_id in product_product_obj.browse(cr, uid, pp_ids):
+#                         ctx = {'location_id': location.id}
+#                         cpf_loc = plw_obj.stock_location_get(cr, uid, product_id.id, context=ctx)
+#                         if cpf_loc:
+#                             qty_onhand = qty_grn_allocated = qty_grn_unallocated = total_so_qty = qty_on_hand_free = qty_on_hand_allocated = qty_free_balance = 0
+#                             for res_f1 in cpf_loc:
+#                                 qty_onhand += res_f1['qty_available'] or 0.00
+#                                 qty_grn_allocated += res_f1['qty_incoming_booked'] or 0.00
+#                                 qty_grn_unallocated += res_f1['qty_incoming_non_booked'] or 0.00
+#                                 total_so_qty += res_f1['qty_booked'] or 0.00
+#                                 qty_on_hand_free += res_f1['qty_free'] or 0.00
+#                                 qty_on_hand_allocated += res_f1['qty_allocated'] or 0.00
+#                                 qty_free_balance += res_f1['qty_free_balance'] or 0.00
+#                             
+#                             vals_ids.append({
+#                             'prod_name' : product_id.name,
+#                             'qty_onhand' : qty_onhand,
+#                             'qty_grn_allocated' : qty_grn_allocated,
+#                             'qty_grn_unallocated' : qty_grn_unallocated,
+#                             'total_so_qty' : total_so_qty,
+#                             'qty_on_hand_free' : qty_on_hand_free,
+#                             'qty_on_hand_allocated' : qty_on_hand_allocated,
+#                             'qty_free_balance' : qty_free_balance,
+#                             })
+#                             
+#                     if not vals_ids:
+#                         continue
+#                     res['pro_lines'] = vals_ids
+#                     res['loc_name'] = location.name or ''
+#                     header += str(res['loc_name'] or '') + "\n"
+#                     for pro_lines in res['pro_lines']:
+#                         header += str(pro_lines['prod_name'] or '') + ";" + str("%.2f" % pro_lines['qty_onhand'] or 0) + ";" \
+#                                             + str("%.2f" % pro_lines['qty_grn_allocated'] or 0) + ";" + str("%.2f" % pro_lines['qty_grn_unallocated'] or 0) + ";" \
+#                                             + str("%.2f" % pro_lines['total_so_qty'] or 0) + ";" + str("%.2f" % pro_lines['qty_on_hand_free'] or 0) + ";" \
+#                                             + str("%.2f" % pro_lines['qty_on_hand_allocated'] or 0) + ";" + str("%.2f" % pro_lines['qty_free_balance'] or 0) + " \n"
+#                     results.append(res)
 
         all_content_line += header
         all_content_line += ' \n'
