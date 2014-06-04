@@ -420,19 +420,19 @@ class param_monthly_sale_report(osv.osv_memory):
                         sign = 1
                         if rs['type'] == 'out_refund':
                             sign = -1
-                        selling_price = (rs['selling_price'] or 0.00) * sign
+                        selling_price = round(rs['selling_price'] or 0.00,6) * sign
                         qty = (rs['quantity'] or 0) * sign
-                        total_selling_price = (rs['total_selling'] or 0.00) * sign
+                        total_selling_price = round(rs['total_selling'] or 0.00,2) * sign
                 
                         sub_qty += qty
                         sub_total_selling_price +=  total_selling_price
 
-                        header += str(rs['cust_name'] or '') + ';;' + str(rs['inv_key'] or '') + ';' + str(rs['curr_name'] or '') + ';' + str(round(selling_price,6)) + ';' \
+                        header += str(rs['cust_name'] or '') + ';;' + str(rs['inv_key'] or '') + ';' + str(rs['curr_name'] or '') + ';' + str(selling_price) + ';' \
                          + str(qty) + ';' + str("%.2f" % total_selling_price) + ';' + str(rs['brand_name'] or '') + ';' + str(rs['inv_date'] or '') + ';' \
                          + str(rs['sales_zone']) + ' \n'
                     header += ';;;;' + 'Sub Total :;' + str(sub_qty or 0.00) + ';' + str(sub_total_selling_price or 0.00) + ' \n'
                     grand_qty += sub_qty
-                    grand_total_selling_price += sub_total_selling_price
+                    grand_total_selling_price += round(sub_total_selling_price,6)
             header += ';;;;' + 'Grand Total :;' + str(grand_qty or 0.00) + ';' + str(grand_total_selling_price or 0.00) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
