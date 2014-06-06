@@ -20,6 +20,8 @@
 ##############################################################################
 
 from osv import fields, osv
+import pooler
+import base64
 import time
 
 class param_sales_journal_by_customer_report(osv.osv_memory):
@@ -42,6 +44,8 @@ class param_sales_journal_by_customer_report(osv.osv_memory):
         'period_default_to':fields.many2one('account.period', 'Period To'),
         'period_input_from': fields.char('Period From', size=128),
         'period_input_to': fields.char('Period To', size=128),
+        'data': fields.binary('Exported CSV', readonly=True),
+        'filename': fields.char('File Name',size=64),
     }
     
     _defaults = {
@@ -75,6 +79,23 @@ class param_sales_journal_by_customer_report(osv.osv_memory):
             'report_name': 'max.journal.report_landscape',
             'datas': datas,
         }
+
+    def check_report(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        data = {}
+        data['ids'] = context.get('active_ids', [])
+        data['model'] = context.get('active_model', 'ir.ui.menu')
+        data['form'] = self.read(cr, uid, ids, ['cust_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_selection', 'date_from', 'date_to','period_filter_selection','period_default_from','period_default_to','period_input_from','period_input_to' \
+                                                ], context=context)[0]
+        for field in ['cust_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_selection', 'date_from', 'date_to','period_filter_selection','period_default_from','period_default_to','period_input_from','period_input_to']:
+            if isinstance(data['form'][field], tuple):
+                data['form'][field] = data['form'][field][0]
+        used_context = self.pool.get('param.purchase.journal.by.supplier.report')._build_contexts(cr, uid, ids, data, 'receivable', context=context)
+
+        return self.pool.get('param.purchase.journal.by.supplier.report')._get_tplines(cr, uid, ids, used_context, 'receivable', context=context)
 
 param_sales_journal_by_customer_report()
 
