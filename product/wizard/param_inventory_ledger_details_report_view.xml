@@ -11,7 +11,7 @@
 					<label colspan="4" nolabel="1" string="This menu prints Inventory Ledger Details Report"/>
 					<newline/>
 					<notebook colspan="4">
-						<page string="Supplier Part No">
+						<page string="Product">
 							<field name="product_selection" colspan="4"/>
 							<field name="product_default_from" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
 							<field name="product_default_to" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
