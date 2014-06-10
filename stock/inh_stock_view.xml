@@ -21,7 +21,7 @@
 			<field name="arch" type="xml">
 				<field name="date" position="after">
 					<field name="int_type_id"/>
-					<field name="opening_bal"/>
+					<!--field name="opening_bal"/-->
 					<field name="reason" colspan="4"/>
 				</field>
 				<button name="action_done" position="replace">
@@ -32,7 +32,7 @@
 					<tree string="Products">
 						<field name="product_id" domain="[('type','&lt;&gt;','service')]"/>
 						<field domain="[('usage','=','internal')]" name="location_id"/>
-						<field name="write_off"/>
+						<!--field name="write_off"/-->
 						<field name="product_qty"/>
 						<field name="product_uom"/>
 						<field name="price_unit"/>
@@ -48,11 +48,11 @@
 				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/form/field[@name='product_id']" position="replace">
 					<field name="product_id" on_change="on_change_product_id2(location_id,product_id,product_uom)"  domain="[('type','&lt;&gt;','service')]"/>
 					<field domain="[('usage','=','internal')]" name="location_id" on_change="on_change_product_id2(location_id,product_id,product_uom)"/>
-					<field name="qty_available" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/>
-					<field name="qty_allocated" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/>
+					<!--field name="qty_available" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/-->
+					<!--field name="qty_allocated" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/-->
 				</xpath>
 				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/form/field[@name='product_uom']" position="replace">
-					<field name="product_uom" on_change="on_change_uom(product_id)"/>
+					<field name="product_uom" invisible="1" on_change="on_change_uom(product_id)"/>
 				</xpath>
 				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/form/field[@name='product_uom']" position="after">
 					<field name="price_unit" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/>
@@ -60,7 +60,7 @@
 					<field colspan="4" name="note" nolabel="1"/>
 				</xpath>
 				<xpath expr="/form/notebook/page/field[@name='inventory_line_id']/form/field[@name='product_qty']" position="replace">
-					<field name="write_off" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/>
+					<!--field name="write_off" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/-->
 					<field name="product_qty" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/>
 				</xpath>
 
