@@ -61,6 +61,16 @@ class int_type(osv.osv):
         'seq_name': fields.char('Sequence Code', size=64, select=True),
         'sequence_id': fields.many2one('ir.sequence', 'Sequence', help="This field contains the information related to the numbering of the purchase order entries."),
         'company_id':fields.many2one('res.company', 'Company'),
+        'type': fields.selection([('addiction', 'Addiction'),
+                                   ('reduction', 'Reduction'),
+                                   ('all', 'All')], 'Type',
+                                   required=True),
+        'property_stock_input': fields.property('account.account',
+            type='many2one', relation='account.account',
+            string='Input Account', view_load=True),
+        'property_stock_output': fields.property('account.account',
+            type='many2one', relation='account.account',
+            string='Output Account', view_load=True),
     }
 
     _defaults = {

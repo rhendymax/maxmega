@@ -22,16 +22,15 @@
 			<field name="type">form</field>
 			<field name="arch" type="xml">
 				<form string="Physical Inventories Type">
-					<group colspan="2" col="2">
-						<field name="name" colspan="2"/>
-						<field name="desc" colspan="2"/>
-						<field name="seq_name" colspan="2"/>
-						<field name="sequence_id" readonly="1" colspan="2"/>
-						<label string="" colspan="1"/>
-						<button name="btn_create_type_s" string="Create Type Sequence" type="object" colspan="1"/>
-					</group>
-					<group colspan="2" col="4">
-					</group> 
+					<field name="name"/>
+					<field name="desc"/>
+					<field name="seq_name" colspan="2"/>
+					<field name="sequence_id" readonly="1" colspan="2"/>
+					<field name="type" colspan="2"/>
+					<field name="property_stock_input" colspan="2"/>
+					<field name="property_stock_output" colspan="2"/>
+					<label string="" colspan="3"/>
+					<button name="btn_create_type_s" string="Create Type Sequence" type="object" colspan="1"/>
 				</form>
 			</field>
 		</record>
