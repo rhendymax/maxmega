@@ -120,7 +120,11 @@ class param_payable_report(osv.osv_memory):
         res_partner_obj = self.pool.get('res.partner')
         account_journal_obj = self.pool.get('account.journal')
         period_obj = self.pool.get('account.period')
-        result['fiscal_year'] = data['form']['fiscal_year']
+        account_fiscalyear_obj = self.pool.get('account.fiscalyear')
+        result['fiscal_year'] = data['form']['fiscal_year'] or ''
+        fiscal_year_name =  data['form']['fiscal_year'] and account_fiscalyear_obj.browse(cr, uid, data['form']['fiscal_year']) \
+                            and account_fiscalyear_obj.browse(cr, uid, data['form']['fiscal_year']).name or ''
+        result['fiscal_year_name'] = fiscal_year_name
         qry_supp = ''
         val_part = []
         qry_jour = ''
@@ -352,7 +356,6 @@ class param_payable_report(osv.osv_memory):
         results = []
         results1 = []
         fiscal_year = form['fiscal_year'] or ''
-        
         partner_ids = form['partner_ids'] or False
         
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND l.partner_id = " + str(partner_ids[0]) + " ") or "AND l.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND l.partner_id IN (0) "
@@ -370,7 +373,6 @@ class param_payable_report(osv.osv_memory):
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-
         if type == 'payable':
             header += 'Account Payable Ledger Report' + " \n"
             header += 'Supplier : ' + supp_selection + " (" + data_search + "); \n"
@@ -382,6 +384,7 @@ class param_payable_report(osv.osv_memory):
             header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
             sign = 1
 
+        header += ('fiscal_year_name' in form and 'Fiscal Year : ' + form['fiscal_year_name'] + " \n") or ''
         header += ('date_search' in form and (form['date_search'] == 'date' and 'Date : ' + str(form['date_showing']) + " \n") or \
                    (form['date_search'] == 'period' and 'Period : ' + str(form['date_showing']) + " \n")) or ''
 
@@ -572,7 +575,7 @@ class param_payable_report(osv.osv_memory):
                                             'period_startdate': t['period_startdate'],
                                             'val_ids2' : val_ids_check,
                                             }
-                                
+
                             elif (str(t['period_id'])) in period_id_vals:
                                 val_ids_check = list(period_id_vals[str(t['period_id'])]['val_ids2'])
                                 balance += (t['home_amt'] * sign)

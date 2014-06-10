@@ -30,7 +30,6 @@ class param_monthly_sale_report(osv.osv_memory):
     _name = 'param.monthly.sale.report'
     _description = 'Param Monthly Sale Report'
     _columns = {
-        'cust_selection': fields.selection([('all','Customer & Sundry'),('customer', 'Customer Only'),('sundry','Sundry Only')],'Customer Selection', required=True),
         'customer_search_vals': fields.selection([('code','Customer Code'),('name', 'Customer Name')],'Customer Search Values', required=True),
         'filter_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Cust Filter Selection', required=True),
         'partner_default_from':fields.many2one('res.partner', 'Customer From', domain=[('customer','=',True)], required=False),
@@ -55,35 +54,10 @@ class param_monthly_sale_report(osv.osv_memory):
 #        'date_from': lambda *a: time.strftime('%Y-01-01'),
 #        'date_to': lambda *a: time.strftime('%Y-%m-%d')
         'date_selection': 'none_sel',
-        'cust_selection': 'all',
         'customer_search_vals': 'code',
         'filter_selection': 'all_vall',
         'pb_selection': 'all_vall',
     }
-    
-    def onchange_cust_selection(self, cr, uid, ids, cust_selection, context=None):
-        if context is None:
-            context = {}
-        
-        res = {'value': {'partner_code_from': False, 'partner_code_to':False, 'partner_ids':False}}
-
-        if cust_selection:
-            if cust_selection == 'all':
-                res['domain'] = {'partner_code_from': [('customer','=',True)],
-                                 'partner_code_to': [('customer','=',True)],
-                                 'partner_ids': [('customer','=',True)],
-                                 }
-            elif cust_selection == 'customer':
-                res['domain'] = {'partner_code_from': [('customer','=',True),('sundry', '=', False)],
-                                 'partner_code_to': [('customer','=',True),('sundry', '=', False)],
-                                 'partner_ids': [('customer','=',True),('sundry', '=', False)],
-                                 }
-            elif cust_selection == 'sundry':
-                res['domain'] = {'partner_code_from': [('sundry','=',True),('customer', '=', True)],
-                                 'partner_code_to': [('sundry','=',True),('customer', '=', True)],
-                                 'partner_ids': [('sundry','=',True),('customer', '=', True)],
-                                 }
-        return res
     
     def create_vat(self, cr, uid, ids, context=None):
         if context is None:
@@ -114,20 +88,8 @@ class param_monthly_sale_report(osv.osv_memory):
         so_ids = False
         data_search = data['form']['customer_search_vals']
         
-        if data['form']['cust_selection'] == 'all':
-            result['cust_selection'] = 'Customer & Sundry'
-            qry_cust = 'customer = True'
-            val_part.append(('customer', '=', True))
-        elif data['form']['cust_selection'] == 'customer':
-            result['cust_selection'] = 'Customer'
-            qry_cust = 'customer = True and sundry = False'
-            val_part.append(('customer', '=', True))
-            val_part.append(('sundry', '=', False))
-        elif data['form']['cust_selection'] == 'sundry':
-            result['cust_selection'] = 'Sundry'
-            qry_cust = 'customer = True and sundry = True'
-            val_part.append(('customer', '=', True))
-            val_part.append(('customer', '=', True))
+        qry_supp = 'customer = True'
+        val_part.append(('customer', '=', True))
 
         partner_default_from = data['form']['partner_default_from'] or False
         partner_default_to = data['form']['partner_default_to'] or False
@@ -319,11 +281,11 @@ class param_monthly_sale_report(osv.osv_memory):
         data = {}
         data['ids'] = context.get('active_ids', [])
         data['model'] = context.get('active_model', 'ir.ui.menu')
-        data['form'] = self.read(cr, uid, ids, ['cust_selection', 'customer_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+        data['form'] = self.read(cr, uid, ids, ['customer_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                                                 'date_selection', 'date_from', 'date_to', \
                                                 'pb_selection','pb_default_from','pb_default_to', 'pb_input_from','pb_input_to','pb_ids' \
                                                 ], context=context)[0]
-        for field in ['cust_selection', 'customer_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+        for field in ['customer_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                     'date_selection', 'date_from', 'date_to', \
                     'pb_selection','pb_default_from','pb_default_to', 'pb_input_from','pb_input_to','pb_ids'\
                     ]:
@@ -351,13 +313,11 @@ class param_monthly_sale_report(osv.osv_memory):
 
         pb_ids = form['pb_ids'] or False
         pb_qry = (pb_ids and ((len(pb_ids) == 1 and "AND pb.id = " + str(pb_ids[0]) + " ") or "AND pb.id IN " + str(tuple(pb_ids)) + " ")) or "AND pb.id IN (0) "
-        cust_selection = form['cust_selection']
         data_search = form['data_search']
         
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Monthly Sale Report' + " \n"
-        header += 'Customer : ' + cust_selection + " (" + data_search + "); \n"
         header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         

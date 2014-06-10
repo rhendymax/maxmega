@@ -35,6 +35,8 @@ class param_receivable_aging_report(osv.osv_memory):
         'partner_input_to': fields.char('Customer To', size=128),
         'partner_ids' :fields.many2many('res.partner', 'report_receivable_aging_rel', 'report_id', 'partner_id', 'Customer', domain=[('customer','=',True)]),
         'date_to': fields.date("Age Reference Date", required=True),
+        'data': fields.binary('Exported CSV', readonly=True),
+        'filename': fields.char('File Name',size=64),
     }
 
     _defaults = {
@@ -55,6 +57,22 @@ class param_receivable_aging_report(osv.osv_memory):
             'report_name': 'max.aging.report_landscape',
             'datas': datas,
         }
+
+    def check_report(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        data = {}
+        data['ids'] = context.get('active_ids', [])
+        data['model'] = context.get('active_model', 'ir.ui.menu')
+        data['form'] = self.read(cr, uid, ids, ['cust_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_to'], context=context)[0]
+        for field in ['cust_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
+                                                'date_to']:
+            if isinstance(data['form'][field], tuple):
+                data['form'][field] = data['form'][field][0]
+        used_context = self.pool.get('param.payable.aging.report')._build_contexts(cr, uid, ids, data, 'receivable', context=context)
+
+        return self.pool.get('param.payable.aging.report')._get_tplines(cr, uid, ids, used_context, 'receivable', context=context)
 
 param_receivable_aging_report()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

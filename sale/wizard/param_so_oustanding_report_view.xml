@@ -12,9 +12,6 @@
 					<newline/>
 					<notebook colspan="4">
 						<page string="Customer">
-							<field name="cust_selection"
-								on_change="onchange_cust_selection(cust_selection)"
-								colspan="4"/>
 							<field name="customer_search_vals"
 								colspan="4"/>
 							<field name="filter_selection" colspan="4"/>

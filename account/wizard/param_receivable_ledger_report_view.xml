@@ -56,14 +56,14 @@
 						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2"/>
 						<label colspan="2" nolabel="1" string=" "/>
 						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
-						<button name="create_vat" string="Print" colspan="2" type="object" icon="gtk-ok"/>
+						<button name="generate" string="Print" colspan="2" type="object" icon="gtk-ok"/>
 					</group>
 				</form>
 			</field>
 		</record>
 
 		<record id="receivable_ledger_result_csv_view" model="ir.ui.view">
-			<field name="name">Payable Ledger Report</field>
+			<field name="name">Receivable Ledger Report</field>
 			<field name="model">param.receivable.ledger.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
