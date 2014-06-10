@@ -49,24 +49,29 @@ class max_aging_report(report_sxw.rml_parse):
         qry_supp = ''
         val_part = []
         self.date_to = data['form']['date_to'] 
+        self.date_to_header = data['form']['date_to'] or False
+        
         report_type = data['form']['report_type']
         partner_ids = False
         if report_type == 'receivable':
             data_search = data['form']['cust_search_vals']
+            self.supp_selection = 'Customer'
             qry_supp = 'customer = True'
             val_part.append(('customer', '=', True))
 
         elif report_type == 'payable':
             data_search = data['form']['supplier_search_vals']
-
             if data['form']['supp_selection'] == 'all':
+                self.supp_selection = 'Supplier & Sundry'
                 qry_supp = 'supplier = True'
                 val_part.append(('supplier', '=', True))
             elif data['form']['supp_selection'] == 'supplier':
+                self.supp_selection = 'Supplier'
                 qry_supp = 'supplier = True and sundry = False'
                 val_part.append(('supplier', '=', True))
                 val_part.append(('sundry', '=', False))
             elif data['form']['supp_selection'] == 'sundry':
+                self.supp_selection = 'Sundry'
                 qry_supp = 'supplier = True and sundry = True'
                 val_part.append(('supplier', '=', True))
                 val_part.append(('sundry', '=', True))
@@ -75,23 +80,27 @@ class max_aging_report(report_sxw.rml_parse):
         partner_default_to = data['form']['partner_default_to'] and data['form']['partner_default_to'][0] or False
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
-        
+        filter_selection = False
         if data_search == 'code':
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref:
+                    partner_default_from_str = res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref
                     data_found = True
                     val_part.append(('ref', '>=', res_partner_obj.browse(self.cr, self.uid, partner_default_from).ref))
                 if partner_default_to and res_partner_obj.browse(self.cr, self.uid, partner_default_to) and res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref:
+                    partner_default_to_str = res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref
                     data_found = True
                     val_part.append(('ref', '<=', res_partner_obj.browse(self.cr, self.uid, partner_default_to).ref))
                 if data_found:
+                    filter_selection = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
                 if partner_input_from:
+                    partner_input_from_str = partner_input_from
                     self.cr.execute("select ref " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -102,6 +111,7 @@ class max_aging_report(report_sxw.rml_parse):
                         data_found = True
                         val_part.append(('ref', '>=', qry['ref']))
                 if partner_input_to:
+                    partner_input_to_str = partner_input_to
                     self.cr.execute("select ref " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -111,28 +121,38 @@ class max_aging_report(report_sxw.rml_parse):
                     if qry:
                         data_found = True
                         val_part.append(('ref', '<=', qry['ref']))
+                        filter_selection = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                 #print val_part
                 if data_found:
                     partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(self.cr, self.uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.ref) + '",'
                     partner_ids = data['form']['partner_ids']
+                filter_selection = '[' + pr_ids +']'
+                
         elif data_search == 'name':
             if data['form']['filter_selection'] == 'all_vall':
                 self.partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
             if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(self.cr, self.uid, partner_default_from) and res_partner_obj.browse(self.cr, self.uid, partner_default_from).name:
+                    partner_default_from_str = res_partner_obj.browse(self.cr, self.uid, partner_default_from).name
                     data_found = True
                     val_part.append(('name', '>=', res_partner_obj.browse(self.cr, self.uid, partner_default_from).name))
                 if partner_default_to and res_partner_obj.browse(self.cr, self.uid, partner_default_to) and res_partner_obj.browse(self.cr, self.uid, partner_default_to).name:
+                    partner_default_to_str = res_partner_obj.browse(self.cr, self.uid, partner_default_to).name
                     data_found = True
                     val_part.append(('name', '<=', res_partner_obj.browse(self.cr, self.uid, partner_default_to).name))
                 if data_found:
+                    filter_selection = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
                 if partner_input_from:
+                    partner_input_from_str = partner_input_from
                     self.cr.execute("select name " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -143,6 +163,7 @@ class max_aging_report(report_sxw.rml_parse):
                         data_found = True
                         val_part.append(('name', '>=', qry['name']))
                 if partner_input_to:
+                    partner_input_to_str = partner_input_to
                     self.cr.execute("select name " \
                                     "from res_partner "\
                                     "where " + qry_supp + " and " \
@@ -152,12 +173,18 @@ class max_aging_report(report_sxw.rml_parse):
                     if qry:
                         data_found = True
                         val_part.append(('name', '<=', qry['name']))
+                filter_selection = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
                 if data_found:
                     partner_ids = res_partner_obj.search(self.cr, self.uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'selection':
+                pr_ids = ''
                 if data['form']['partner_ids']:
+                    for pr in  res_partner_obj.browse(self.cr, self.uid, data['form']['partner_ids']):
+                        pr_ids += '"' + str(pr.name) + '",'
                     partner_ids = data['form']['partner_ids']
-
+                filter_selection = '[' + pr_ids +']'
+        self.filter_selection = filter_selection
+        self.data_search = data_search
         self.report_type = data['form']['report_type']
         self.partner_ids = partner_ids
 
@@ -174,7 +201,54 @@ class max_aging_report(report_sxw.rml_parse):
             'get_lines': self._get_lines,
             'get_header_title': self._get_header,
             'get_balance_by_cur': self._get_balance_by_cur,
+            'get_filter_selection' : self._get_filter_selection,
+            'get_search_by_partner' : self._get_search_by_partner,
+            'get_date_to' : self._get_date_to,
             })
+
+#    def _get_search_header(self):
+#        result = []
+#        if self.type == 'payable':
+#                result.append({
+#                               'supplier' : self.supp_selection + " (" + self.data_search + ")",
+#                               'filter_selection' : ('filter_selection' in form and 'Supplier search : ' + form['filter_selection']),
+#                               'date_to_header' : ('date_to_header' in form and 'Age Reference Date : ' + form['date_to_header']),
+#                               })
+#                
+#        elif self.type == 'receivable':
+#                result.append({
+#                               'title' : 'Account Payable Aging Report',
+#                               'supplier' : self.supp_selection + " (" + self.data_search + ")",
+#                               'filter_selection' : ('filter_selection' in form and 'Customer search : ' + form['filter_selection']),
+#                               'date_to_header' : ('date_to_header' in form and 'Age Reference Date : ' + form['date_to_header']),
+#                               })
+#        return result
+
+    def _get_filter_selection(self):
+        header = False
+        if self.report_type == 'payable':
+            if self.filter_selection:
+                header = 'Supplier search : ' + self.filter_selection
+        elif self.report_type == 'receivable':
+            if self.filter_selection:
+                header = 'Customer search : ' + self.filter_selection
+        return header
+    
+    def _get_search_by_partner(self):
+        header = False
+        if self.report_type == 'payable':
+            if self.supp_selection:
+                header = 'Supplier : ' + self.supp_selection + " (" + self.data_search + ")"
+        elif self.report_type == 'receivable':
+            if self.supp_selection:
+                header = 'Customer : ' + self.supp_selection + " (" + self.data_search + ")"
+        return header
+    
+    def _get_date_to(self):
+        header = False
+        if self.date_to_header:
+                header = 'Age Reference Date : ' + self.date_to_header
+        return header
 
     def _get_balance_by_cur(self):
         result = []

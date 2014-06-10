@@ -98,7 +98,8 @@ class param_payable_aging_report(osv.osv_memory):
         res_partner_obj = self.pool.get('res.partner')
         account_journal_obj = self.pool.get('account.journal')
         period_obj = self.pool.get('account.period')
-        result['date_to'] = data['form']['date_to'] or ''
+        result['date_to'] = data['form']['date_to']
+        result['date_to_header'] = data['form']['date_to'] or False
         qry_supp = ''
         val_part = []
         qry_jour = ''
@@ -175,7 +176,7 @@ class param_payable_aging_report(osv.osv_memory):
                                     "where " + qry_supp + " and " \
                                     "ref ilike '" + str(partner_input_to) + "%' " \
                                     "order by ref desc limit 1")
-                    qry = self.cr.dictfetchone()
+                    qry = cr.dictfetchone()
                     if qry:
                         data_found = True
                         val_part.append(('ref', '<=', qry['ref']))
@@ -298,6 +299,8 @@ class param_payable_aging_report(osv.osv_memory):
             header += 'Customer : ' + supp_selection + " (" + data_search + "); \n"
             header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
             sign = 1
+        
+        header += ('date_to_header' in form and 'Age Reference Date : ' + form['date_to_header'] + ' \n') or ''
 
 #        header += ('date_search' in form and (form['date_search'] == 'date' and 'Date : ' + str(form['date_showing']) + " \n") or \
 #                   (form['date_search'] == 'period' and 'Period : ' + str(form['date_showing']) + " \n")) or ''
@@ -500,12 +503,12 @@ class param_payable_aging_report(osv.osv_memory):
                           
                 header += ';;;;;;;;;;' + str(rs2['home_amt1']) + ';' + str(rs2['home_amt2']) + ';' + str(rs2['home_amt3']) + ';' + str(rs2['home_amt4']) + ' \n'
             
-            header += str('Total For : ' + rs1['part_ref']) + ';;;;' + str(rs1['cur_name']) + ';' + 'Home;' + str(rs1['total_inv']) + ';' + str(rs1['total_home']) + ';' \
+            header += str('Total For : ' + rs1['part_ref']) + ';;;;' + str(rs1['cur_name']) + ';' + 'Home;' + str(rs1['total_inv']) + ';' + str(rs1['total_home']) + ';;;' \
                     + str(rs1['total_amt1']) + ';' + str(rs1['total_amt2']) + ';' \
-                    + str(rs1['total_amt3']) + ';' + str(rs1['total_amt4']) + ' \n \n'
+                    + str(rs1['total_amt3']) + ';' + str(rs1['total_amt4']) + ' \n'
             
             header += ';;;;;;;;;;' + str(rs1['total_home_amt1']) + ';' + str(rs1['total_home_amt2']) + ';' \
-                    + str(rs1['total_home_amt3']) + ';' + str(rs1['total_home_amt4']) + ' \n'
+                    + str(rs1['total_home_amt3']) + ';' + str(rs1['total_home_amt4']) + ' \n \n'
                     
         result_currency = []
         currency_obj    = self.pool.get('res.currency')
@@ -535,13 +538,13 @@ class param_payable_aging_report(osv.osv_memory):
             _total_amt3 += rs_curr['home_amt3'] or 0.00
             _total_amt4 += rs_curr['home_amt4'] or 0.00
             
-            header += ';;;;' + str(rs_curr['cur_name']) + ';' + str(rs_curr['total_inv']) + ';' + str(rs_curr['amt1']) + ';' \
+            header += ';;;;;;' + str(rs_curr['cur_name']) + ';' + str(rs_curr['total_inv']) + ';;;' + str(rs_curr['amt1']) + ';' \
                     + str(rs_curr['amt2']) + ';' + str(rs_curr['amt3']) + ';' + str(rs_curr['amt4']) + ' \n'
             
-            header += ';;;;' + 'Home' + ';' + str(rs_curr['total_home']) + ';' + str(rs_curr['home_amt1']) + ';' + str(rs_curr['home_amt2']) + ';' \
+            header += ';;;;;;' + 'Home' + ';' + str(rs_curr['total_home']) + ';;;' + str(rs_curr['home_amt1']) + ';' + str(rs_curr['home_amt2']) + ';' \
                     + str(rs_curr['home_amt3']) + ';' + str(rs_curr['home_amt4']) + ' \n'
                     
-        header += ';' + 'Total Home' + ';' + str(_total_home) + ';' + str(_total_amt1) + ';' + str(_total_amt2) + ';' + str(_total_amt3) + ';' \
+        header += ';;;;;;' + 'Total Home' + ';' + str(_total_home) + ';;;' + str(_total_amt1) + ';' + str(_total_amt2) + ';' + str(_total_amt3) + ';' \
                 + str(_total_amt4) + ' \n'
         
         all_content_line += header
