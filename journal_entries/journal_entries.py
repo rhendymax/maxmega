@@ -169,7 +169,7 @@ class max_journal_entries(osv.osv):
             for ln in vch.line_id:
                 current_currency = ln.currency_id and ln.currency_id.id or company_currency
                 move_line = {
-                        'name': vch.name or '/',
+                        'name': ln.name or '/',
                         'debit': ln.debit_home,
                         'credit': ln.credit_home,
                         'account_id': ln.account_id.id,
@@ -223,6 +223,7 @@ class max_journal_lines_entries(osv.osv):
         return res
 
     _columns = {
+        'name':fields.char('Description', size=256),
         'move_id': fields.many2one('max.journal.entries', 'Move', ondelete="cascade", help="The move of this entry line.", select=2, required=True),
         'account_id': fields.many2one('account.account', 'Account', required=True, ondelete="cascade", domain=[('type','<>','view'), ('type', '<>', 'closed')], select=2),
         'debit': fields.float('Debit', digits=(12,2)),

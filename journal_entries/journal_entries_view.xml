@@ -31,18 +31,7 @@
 					</group>
 					<notebook colspan="4">
 						<page string="Journal Items">
-								<field name="line_id" nolabel="1" colspan="4">
-									<tree editable="bottom" string="Journal Items">
-										<field name="account_id"/>
-										<field name="currency_id" on_change="onchange_currency(parent.date,currency_id,debit,credit,ex_rate_other)"/>
-										<field name="debit" sum="Total Debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
-										<field name="credit" sum="Total Credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
-										<field name="debit_home" sum="Total Debit Home" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
-										<field name="credit_home" sum="Total Credit Home" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
-										<field name="ex_rate_other" on_change="onchange_currency(parent.date,currency_id,debit,credit,ex_rate_other)"/>
-										<field name="ex_rate"/>
-									</tree>
-								</field>
+								<field name="line_id" nolabel="1" colspan="4"/>
 								<field name="state" colspan ="2"/>
 								<label colspan="1"/>
 								<group col="1" colspan="1">
@@ -112,13 +101,15 @@
 			<field name="model">max.journal.lines.entries</field>
 			<field name="type">tree</field>
 			<field name="arch" type="xml">
-				<tree string="Lines">
+				<tree string="Journal Items">
 					<field name="account_id"/>
 					<field name="currency_id"/>
 					<field name="debit" sum="Total Debit"/>
 					<field name="credit" sum="Total Credit"/>
-					<field name="debit_home"/>
-					<field name="credit_home"/>
+					<field name="debit_home" sum="Total Debit Home"/>
+					<field name="credit_home" sum="Total Credit Home"/>
+					<field name="ex_rate_other"/>
+					<field name="ex_rate"/>
 				</tree>
 			</field>
 		</record>
@@ -129,14 +120,15 @@
 			<field name="type">form</field>
 			<field name="arch" type="xml">
 				<form string = "Lines">
-					<group colspan="4" col="6">
-						<field name="account_id"/>
-						<field name="currency_id"/>
-						<field name="debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit)"/>
-						<field name="credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit)"/>
-						<field name="debit_home"/>
-						<field name="credit_home"/>
-					</group>
+					<field name="account_id"/>
+					<field name="currency_id" on_change="onchange_currency(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+					<field name="debit" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+					<field name="credit" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+					<field name="debit_home" on_change="onchange_amount_debit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+					<field name="credit_home" on_change="onchange_amount_credit(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+					<field name="ex_rate_other" on_change="onchange_currency(parent.date,currency_id,debit,credit,ex_rate_other)"/>
+					<field name="ex_rate"/>
+					<field name="name" colspan="4"/>
 				</form>
 			</field>
 		</record>
