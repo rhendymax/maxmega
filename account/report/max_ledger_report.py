@@ -269,7 +269,6 @@ class max_ledger_report(report_sxw.rml_parse):
         date_from = self.date_from
         date_to = self.date_to
         partner_ids = self.partner_ids or False
-        #print partner_ids
         min_period = False
         if period_ids:
             min_period = period_obj.search(cr, uid, [('id', 'in', period_ids)], order='date_start', limit=1)
@@ -305,8 +304,6 @@ class max_ledger_report(report_sxw.rml_parse):
         date_start_min_period = min_period and min_period.date_start or False
         date_start_max_period = max_period and period_obj.browse(cr, uid, max_period.id).date_start or False
         val_period = []
-        if date_start_min_period:
-            val_period.append(('date_start', '>=', date_start_min_period))
         if date_start_max_period:
             val_period.append(('date_start', '<=', date_start_max_period))
 
@@ -327,7 +324,6 @@ class max_ledger_report(report_sxw.rml_parse):
                     "And account.type = '" + type + "' " \
                     "AND am.state IN ('draft', 'posted') " \
                     + partner_qry \
-                    + date_from_qry \
                     + date_to_qry \
                     + period_qry)
         partner_ids_vals = []
@@ -340,19 +336,51 @@ class max_ledger_report(report_sxw.rml_parse):
         period_qry2 = (qry_period_ids and ((len(qry_period_ids) == 1 and "and aml.period_id = " + str(qry_period_ids[0]) + " ") or "and aml.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND and aml.period_id IN (0) "
         date_from_qry2 = date_from and "And aml.date >= '" + str(date_from) + "' " or " "
         date_to_qry2 = date_to and "And aml.date <= '" + str(date_to) + "' " or " "
-
+        val = []
         cr.execute(
                 "SELECT id, name, ref " \
                 "FROM res_partner " \
                 + partner_ids_vals_qry \
                 + " order by name")
         qry = cr.dictfetchall()
-        
         if qry:
-            
             for s in qry:
-                
-                cr.execute("select rp.id as partner_id, " \
+                cr.execute("SELECT DISTINCT ap.id as period_id " \
+                    "from account_move_line aml "\
+                    "left join account_move am on aml.move_id = am.id "\
+                    "left join account_account aa on aml.account_id = aa.id "\
+                    "left join res_company rco on aml.company_id = rco.id "\
+                    "left join res_currency rc on COALESCE(aml.currency_id,rco.currency_id) = rc.id "\
+                    "left join res_partner rp on aml.partner_id = rp.id "\
+                    "left join account_period ap on aml.period_id = ap.id "\
+                    "left join account_fiscalyear af on ap.fiscalyear_id = af.id "\
+                    "left join account_journal aj on aml.journal_id = aj.id "\
+                    "where " \
+                    "am.state in ('draft', 'posted') " \
+                    "and aa.type = '" + type + "' " \
+                     + period_qry2 \
+                    + date_to_qry2 + \
+                    "and aml.partner_id = " + str(s['id']))
+                period_ids_vals = []
+                qry3 = cr.dictfetchall()
+                if qry3:
+                    for t in qry3:
+                        period_ids_vals.append(t['period_id'])
+                period_ids_vals_qry = (len(period_ids_vals) > 0 and ((len(period_ids_vals) == 1 and "where ap.id = " +  str(period_ids_vals[0]) + " ") or "where ap.id IN " +  str(tuple(period_ids_vals)) + " ")) or "where ap.id IN (0) "
+                cr.execute(
+                        "SELECT ap.id, ap.code, ap.date_start as period_startdate, af.name as fiscalyear_name " \
+                        "FROM account_period ap " \
+                        "left join account_fiscalyear af on ap.fiscalyear_id = af.id "\
+                        + period_ids_vals_qry \
+                        + " order by ap.date_start")
+                qry4 = cr.dictfetchall()
+                balance = 0
+                closing = 0
+                closing_inv = 0
+                if qry4:
+                    for u in qry4:
+                        opening_balance = balance
+                        cr.execute("select rp.id as partner_id, " \
                             "rp.ref as partner_ref, " \
                             "rp.name as partner_name, " \
                             "rc.id as currency_id, " \
@@ -363,12 +391,9 @@ class max_ledger_report(report_sxw.rml_parse):
                             "ap.code as period_code, " \
                             "ap.date_start as period_startdate, " \
                             "aml.is_depo as depo_status, " \
-                            "am.id as am_id, " \
-                            "aml.id as aml_id, " \
                             "am.name as am_name, " \
-                            "aml.name as aml_name, " \
-                            "aml.debit - aml.credit as home_amt, " \
-                            "abs(CASE WHEN (aml.currency_id is not null) and (aml.cur_date is not null) " \
+                            "sum(aml.debit - aml.credit) as home_amt, " \
+                            "sum(abs(CASE WHEN (aml.currency_id is not null) and (aml.cur_date is not null) " \
                             "THEN amount_currency " \
                             "ELSE aml.debit - aml.credit " \
                             "END) * (" \
@@ -376,7 +401,7 @@ class max_ledger_report(report_sxw.rml_parse):
                             "THEN 1 " \
                             "ELSE -1 " \
                             "END" \
-                            ") as inv_amt, " \
+                            ")) as inv_amt, " \
                             "aml.exrate as rate, " \
                             "aj.type as journal_type, " \
                             "aml.date as aml_date "\
@@ -392,111 +417,61 @@ class max_ledger_report(report_sxw.rml_parse):
                             "where " \
                             "am.state in ('draft', 'posted') " \
                             "and aa.type = '" + type + "' " \
-                            + period_qry2 \
-                            + date_from_qry2 \
+                            "and ap.id = " + str(u['id']) + " "\
                             + date_to_qry2 + \
                             "and aml.partner_id = " + str(s['id']) + " "\
+                            "group by rp.id, rp.ref, rp.name, rc.id, rc.name, af.id, " + \
+                            "af.name, ap.id, ap.code, ap.date_start, aml.is_depo, am.name, " + \
+                            "aml.exrate, aj.type, aml.date " + \
                             "order by rp.ref,af.name, ap.date_start, aml.date")
-                qry3 = cr.dictfetchall()
-                balance = 0
-                closing = 0
-                closing_inv = 0
-                period = fiscal_year = False
-                
-                val = []
-                period_id_vals = {}
-                if qry3:
-
-                    for t in qry3:
-                        if t['journal_type'] == 'purchase':
-                            journal_type = 'INV'
-                        elif t['journal_type'] == 'sale':
-                            journal_type = 'INV'
-                        elif t['journal_type'] == 'purchase_refund':
-                            journal_type = 'INV-REF'
-                        elif t['journal_type'] == 'sale_refund':
-                            journal_type = 'INV-REF'
-                        elif t['journal_type'] in ('bank','cash') and t['depo_status'] == True:
-                            journal_type = 'DEPOSIT'
-                        elif t['journal_type'] in ('bank', 'cash') and t['depo_status'] == False:
-                            journal_type = 'PAYMENT'
-
-                        if t['period_startdate'] < min_period.date_start:
-                            balance += (t['home_amt'] * sign)
-                            closing += (t['home_amt'] * sign)
-                            closing_inv += (t['inv_amt'] * sign)
-                        else:
-                            if period == False:
-                                period = t['period_id']
-                                open_balance = balance
-                                balance += (t['home_amt'] * sign)
-                                closing += (t['home_amt'] * sign)
-                                closing_inv += (t['inv_amt'] * sign)
-                                val_ids_check = []
-                                val_ids_check.append({
-                                       'am_name' : t['am_name'],
-                                       'aml_date' : t['aml_date'],
-                                       'journal_type' : journal_type,
-                                       'currency_name': t['currency_name'],
-                                       'exchange_rate': t['rate'],
-                                       'inv_amount': (t['inv_amt'] * sign),
-                                       'home_amount': (t['home_amt'] * sign),
-                                       'balance': balance,
-                                       })
-                                period_id_vals[str(t['period_id'])] = {
-                                            'inv_balance': t['inv_amt'],
-                                            'opening_balance': open_balance,
-                                            'fiscalyear_name': t['fiscalyear_name'],
-                                            'period_code': t['period_code'],
-                                            'period_startdate': t['period_startdate'],
-                                            'val_ids2' : val_ids_check,
-                                            }
+                        qry5 = cr.dictfetchall()
+                        period = False
+                        val_ids2 = []
+                        period_id_vals = {}
+                        if qry5:
+                            for v in qry5:
+                                balance += (v['home_amt'] * sign)
+                                closing += (v['home_amt'] * sign)
+                                closing_inv += (v['inv_amt'] * sign)
                                 
-                            elif (str(t['period_id'])) in period_id_vals:
-                                val_ids_check = list(period_id_vals[str(t['period_id'])]['val_ids2'])
-                                balance += (t['home_amt'] * sign)
-                                closing += (t['home_amt'] * sign)
-                                closing_inv += (t['inv_amt'] * sign)
-                                val_ids_check.append({
-                                       'am_name' : t['am_name'],
-                                       'aml_date' : t['aml_date'],
-                                       'journal_type' : journal_type,
-                                       'currency_name': t['currency_name'],
-                                       'exchange_rate': t['rate'],
-                                       'inv_amount': (t['inv_amt'] * sign),
-                                       'home_amount': (t['home_amt'] * sign),
-                                       'balance': balance,
-                                       })
-                                period_id_vals[str(t['period_id'])]['val_ids2'] = val_ids_check
-                            else:
-                                period = t['period_id']
-                                open_balance = balance
-                                balance += (t['home_amt'] * sign)
-                                closing += (t['home_amt'] * sign)
-                                closing_inv += (t['inv_amt'] * sign)
-                                val_ids_check = []
-                                val_ids_check.append({
-                                       'am_name' : t['am_name'],
-                                       'aml_date' : t['aml_date'],
-                                       'journal_type' : journal_type,
-                                       'currency_name': t['currency_name'],
-                                       'exchange_rate': t['rate'],
-                                       'inv_amount': (t['inv_amt'] * sign),
-                                       'home_amount': (t['home_amt'] * sign),
-                                       'balance': balance,
-                                       })
-                                period_id_vals[str(t['period_id'])] = {
-                                            'inv_balance': t['inv_amt'],
-                                            'opening_balance': open_balance,
-                                            'fiscalyear_name': t['fiscalyear_name'],
-                                            'period_code': t['period_code'],
-                                            'period_startdate': t['period_startdate'],
-                                            'val_ids2' : val_ids_check,
-                                            }
+                                if u['period_startdate'] < min_period.date_start:
+                                    continue
 
-                if period_id_vals:
-                    for pr in period_id_vals:
-                        val.append(period_id_vals[pr].copy())
+                                else:
+                                    if v['journal_type'] == 'purchase':
+                                        journal_type = 'INV'
+                                    elif v['journal_type'] == 'sale':
+                                        journal_type = 'INV'
+                                    elif v['journal_type'] == 'purchase_refund':
+                                        journal_type = 'INV-REF'
+                                    elif v['journal_type'] == 'sale_refund':
+                                        journal_type = 'INV-REF'
+                                    elif v['journal_type'] in ('bank','cash') and v['depo_status'] == True:
+                                        journal_type = 'DEPOSIT'
+                                    elif v['journal_type'] in ('bank', 'cash') and v['depo_status'] == False:
+                                        journal_type = 'PAYMENT'
+                                    val_ids2.append({
+                                       'am_name' : v['am_name'],
+                                       'aml_date' : v['aml_date'],
+                                       'journal_type' : journal_type,
+                                       'currency_name': v['currency_name'],
+                                       'exchange_rate': v['rate'],
+                                       'inv_amount': (v['inv_amt'] * sign),
+                                       'home_amount': (v['home_amt'] * sign),
+                                       'balance': balance,
+                                       })
+                        val_ids2 = val_ids2 and sorted(val_ids2, key=lambda val_res: val_res['aml_date']) or []
+
+                        if u['period_startdate'] < min_period.date_start:
+                            continue
+                        else:
+                            val.append({
+                               'opening_balance' : opening_balance,
+                               'fiscalyear_name' : u['fiscalyear_name'],
+                               'period_code': u['code'],
+                               'period_startdate': u['period_startdate'],
+                               'val_ids2': val_ids2,
+                               })
                 val = val and sorted(val, key=lambda val_res: val_res['period_startdate']) or []
                 cur_name = 'False'
                 if type == 'payable':
@@ -518,7 +493,6 @@ class max_ledger_report(report_sxw.rml_parse):
                     res_currency_grouping['home'] += closing
 
                     self.balance_by_cur[cur_id] = res_currency_grouping
-
                 results1.append({
                     'part_name' : s['name'],
                     'part_ref' : s['ref'],
@@ -529,7 +503,6 @@ class max_ledger_report(report_sxw.rml_parse):
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
 
         return results1
-
 report_sxw.report_sxw('report.max.ledger.report_landscape', 'account.invoice',
     'addons/max_custom_report/account/report/max_ledger_report.rml', parser=max_ledger_report, header="internal landscape")
 
