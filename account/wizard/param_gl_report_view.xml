@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+	<data>
+		<record id="view_param_gl_report" model="ir.ui.view">
+			<field name="name">General Ledger Report</field>
+			<field name="model">param.gl.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="General Ledger Report">
+					<separator string="General Ledger Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints General Ledger Report" />
+					<field name="fiscalyear_id" colspan="4"/>
+					<newline/>
+					<notebook colspan="4">
+						<page string="Account No">
+							<field name="account_selection" colspan="4"/>
+							<field name="account_default_from" attrs="{'invisible': [('account_selection','!=','def')], 'required': [('account_selection','=','def')]}"/>
+							<field name="account_default_to" attrs="{'invisible': [('account_selection','!=','def')], 'required': [('account_selection','=','def')]}"/>
+							<field name="account_input_from"
+								attrs="{'invisible': [('account_selection','!=','input')], 'required': [('account_selection','=','input')]}"/>
+							<field name="account_input_to"
+								attrs="{'invisible': [('account_selection','!=','input')], 'required': [('account_selection','=','input')]}"/>
+							<field name="account_ids"
+								attrs="{'invisible': [('account_selection','!=','selection')], 'required': [('account_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" on_change="onchange_date_selection(date_selection)" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="period_filter_selection" colspan="4" attrs="{'invisible': [('date_selection','!=','period_sel')], 'required': [('date_selection','=','period_sel')]}"/>
+							<field name="period_default_from"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'), ('period_filter_selection','!=','def')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','def')]}"/>
+							<field name="period_default_to"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'),('period_filter_selection','!=','def')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','def')]}"/>
+							<field name="period_input_from"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
+							<field name="period_input_to"
+								attrs="{'invisible': ['|',('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
+						</page>
+					</notebook>
+					<group col="2" colspan="4">
+						<button icon="gtk-cancel" special="cancel" string="Cancel" />
+						<button icon="gtk-print" name="check_report" string="Print As CSV" type="object" colspan="1" default_focus="1" />
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_gl_report" model="ir.actions.act_window">
+			<field name="name">General Ledger</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.gl.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_gl_report"/>
+			<field name="target">new</field>
+		</record>
+
+		<!--menuitem icon="STOCK_PRINT" name="General Ledger" parent="maxmega_reports.menu_maxmega_account_general_report"
+			action="action_maxmega_gl_menu" id="menu_maxmega_general_gl_report" /-->
+
+		<record id="param_gl_result_data_view" model="ir.ui.view">
+			<field name="name">General Ledger Report</field>
+			<field name="model">param.gl.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Report Options">
+					<field name="data" filename="filename" colspan="4" readonly="1"/>
+					<field name="filename" invisible="1"/>
+					<separator colspan="4"/>
+					<group col="4" colspan="4">
+						<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+					</group>
+				</form>
+			</field>
+		</record>
+	</data>
+</openerp>
