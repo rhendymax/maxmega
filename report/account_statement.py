@@ -25,6 +25,7 @@ from report import report_sxw
 from datetime import datetime
 from mx import DateTime as dt
 from mx.DateTime import RelativeDateTime as rdt
+from datetime import timedelta
 
 class statement(report_sxw.rml_parse):
     def set_context(self, objects, data, ids, report_type=None):
@@ -41,6 +42,7 @@ class statement(report_sxw.rml_parse):
             'to_upper': self.to_upper,
             'get_statement_date': self.get_statement_date,
             'format_date': self.format_date,
+            'get_due': self.get_due,
             'get_invoice': self.get_invoice,
             'get_type': self.get_type,
             'get_debit': self.get_debit,
@@ -57,6 +59,16 @@ class statement(report_sxw.rml_parse):
     def format_date(self, date):
         try:
             date_format = datetime.strftime(datetime.strptime(date,'%Y-%m-%d'),'%d-%b-%y')
+        except:
+            return ''
+        return date_format
+
+    def get_due(self, date, line):
+        try:
+            ttl_days = line.sale_term_id and line.sale_term_id.days or 0
+            date = datetime.strptime(date,'%Y-%m-%d')
+            date_due =  date + timedelta(days=ttl_days)
+            date_format = datetime.strftime(date_due,'%d-%b-%y')
         except:
             return ''
         return date_format

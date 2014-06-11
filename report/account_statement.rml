@@ -193,7 +193,7 @@
         <td><para style="std8">[[ line.document ]]</para></td>
         <td><para style="std8"></para></td>
         <td><para style="std8">[[ format_date(line.date_invoice) ]]</para></td>
-        <td><para style="std8">[[ format_date(line.date_due) ]]</para></td>
+        <td><para style="std8">[[ get_due(line.date_invoice, line) ]]</para></td>
         <td><para style="std8"><font color="white"> </font></para></td>
         <td><para style="std8right">[[ get_debit(line) and formatLang(get_debit(line), digits=2) or '' ]]</para></td>
         <td><para style="std8right">[[ get_credit(line) and formatLang(get_credit(line), digits=2) or '' ]]</para></td>
