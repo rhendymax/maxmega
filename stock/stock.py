@@ -955,26 +955,18 @@ class stock_move(osv.osv):
 
         if not move.picking_id:
             for si in move.stock_inventory_ids:
-                if si.opening_bal == True:
-                    acc_src = move.product_id and move.product_id.categ_id and move.product_id.categ_id.property_stock_opening_balance_categ and move.product_id.categ_id.property_stock_opening_balance_categ.id or False
+                si_type = si.int_type_id.type
+                if si_type == 'addiction':
+                    acc_src = si.int_type_id and si.int_type_id.property_stock_input and si.int_type_id.property_stock_input.id or False
                     if not acc_src:
-                        raise osv.except_osv(_('Error!'),  _('There is no opening balance account defined for this product category: "%s" (id: %d)') % \
-                                    (move.product_id.name, move.product_id.id,))
+                        raise osv.except_osv(_('Error!'),  _('There is no physical inventory input account defined for this product: "%s" (id: %d)') % \
+                            (move.product_id.name, move.product_id.id,))
                 else:
-                    acc_src = move.product_id and move.product_id.categ_id and move.product_id.categ_id.property_stock_physical_inventory_in_categ and move.product_id.categ_id.property_stock_physical_inventory_in_categ.id or False
-                    if not acc_src:
-                        raise osv.except_osv(_('Error!'),  _('There is no physical inventory input account defined for this product category: "%s" (id: %d)') % \
-                            (move.product_id.name, move.product_id.id,))
-                    if move.write_off:
-                        acc_dest = move.product_id and move.product_id.categ_id and move.product_id.categ_id.property_stock_physical_inventory_write_off_categ and move.product_id.categ_id.property_stock_physical_inventory_write_off_categ.id or False
-                        if not acc_dest:
-                            raise osv.except_osv(_('Error!'),  _('There is no physical inventory write off account defined for this product category: "%s" (id: %d)') % \
-                            (move.product_id.name, move.product_id.id,))
-                    else:
-                        acc_dest = move.product_id and move.product_id.categ_id and move.product_id.categ_id.property_stock_physical_inventory_out_categ and move.product_id.categ_id.property_stock_physical_inventory_out_categ.id or False
-                        if not acc_dest:
-                            raise osv.except_osv(_('Error!'),  _('There is no physical inventory output account defined for this product category: "%s" (id: %d)') % \
-                            (move.product_id.name, move.product_id.id,))
+                    acc_dest = si.int_type_id and si.int_type_id.property_stock_output and si.int_type_id.property_stock_output.id or False
+                    if not acc_dest:
+                        raise osv.except_osv(_('Error!'),  _('There is no physical inventory output account defined for this product: "%s" (id: %d)') % \
+                        (move.product_id.name, move.product_id.id,))
+
         acc_valuation = accounts.get('property_stock_valuation_account_id', False)
         journal_id = accounts['stock_journal']
 
@@ -1511,31 +1503,32 @@ class stock_inventory(osv.osv):
                 pid = line.product_id.id
                 product_context.update(uom=line.product_uom.id, date=inv.date, prodlot_id=line.prod_lot_id.id)
                 amount = location_obj._product_get(cr, uid, line.location_id.id, [pid], product_context)[pid]
+                
+                type = inv.int_type_id.type
 
-                change = line.product_qty - amount
                 lot_id = line.prod_lot_id.id
-                if change:
+                if line.product_qty > 0:
                     location_id = line.product_id.product_tmpl_id.property_stock_inventory.id
                     value = {
                         'name': 'INV:' + str(line.inventory_id.id) + ':' + line.inventory_id.name,
                         'product_id': line.product_id.id,
                         'product_uom': line.product_uom.id,
                         'date': inv.date,
-                        'write_off': line.write_off,
                     }
-                    if change > 0:
+                    if type == 'addiction':
+                        if line.price_unit < 0.00:
+                            raise osv.except_osv(_('Error !'), _('cannot process, found zero price unit for the product, can bypass it with permission.'))
+
                         value.update( {
-                            'product_qty': change,
+                            'product_qty': line.product_qty,
                             'price_unit' : line.price_unit,
                             'location_id': location_id,
                             'location_dest_id': line.location_id.id,
+                            
                         })
                     else:
-                        if inv.opening_bal == True:
-                            raise osv.except_osv(_('Error !'), _('cannot process, found output stock in opening balance'))
-
                         value.update( {
-                            'product_qty': -change,
+                            'product_qty': line.product_qty,
                             'location_id': line.location_id.id,
                             'location_dest_id': location_id,
                         })
