@@ -63,6 +63,20 @@
 					<!--field name="write_off" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/-->
 					<field name="product_qty" on_change="on_change_qty(location_id,product_id,product_qty, write_off)"/>
 				</xpath>
+				<xpath expr="/form/notebook/page[@string='General Informations']" position="after">
+					
+				</xpath>
+				<page string="General Informations" position="after">
+					<page string="Other Information">
+						<field name="approved_zero"/>
+						<group col="8" colspan="4">
+							<field name="zero_approver" readonly="1" colspan="3"/>
+							<field name="zero_date" readonly="1" colspan="3"/>
+							<button name="action_approve_zero" attrs="{'invisible': [('zero_approver', '=', True)]}" string="Approved Zero Allowed" type="object" icon="gtk-go-forward" colspan="1"/>
+							<button name="action_undo_zero" attrs="{'invisible': [('zero_approver', '!=', True)]}" string="Undo Zero Allowed Approved" type="object" icon="gtk-go-back" colspan="1"/>
+						</group>
+					</page>
+				</page>
 
 			</field>
 		</record>

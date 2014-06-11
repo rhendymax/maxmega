@@ -1463,12 +1463,23 @@ class stock_inventory(osv.osv):
         raise osv.except_osv(_('Error!'), _('cannot duplicate Physical Inventory'))
         return super(stock_inventory, self).copy(cr, uid, id, default, context)
 
+    def action_approve_zero(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'approved_zero': True, 'zero_approver': uid, 'zero_date':time.strftime('%Y-%m-%d %H:%M:%S')})
+        return True
+
+    def action_undo_zero(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'approved_zero': False, 'zero_approver': False, 'zero_date':False})
+        return True
+
     _columns = {
         'name': fields.char('Inventory Reference', size=64, readonly=True),
         'int_type_id': fields.many2one('int.type', 'Sequence Type', required=True, states={'done': [('readonly', True)]}),
         'reason': fields.char('Reason', size=64),
         'move_ids': fields.many2many('stock.move', 'stock_inventory_move_rel', 'inventory_id', 'move_id', 'Created Moves', states={'done': [('readonly', True)]}),
         'opening_bal': fields.boolean('Opening Balance', help="Tick The Opening Balance when want do the Opening Balance Transaction", states={'done': [('readonly', True)]}),
+        'approved_zero': fields.boolean('approved zero', invisible=True),
+        'zero_approver':fields.many2one('res.users', 'Zero Allowed Approved By'),
+        'zero_date': fields.datetime('Zero Allowed Approved Date'),
     }
 
     def create(self, cr, user, vals, context=None):
@@ -1519,7 +1530,7 @@ class stock_inventory(osv.osv):
                     if type == 'addiction':
 #                         raise osv.except_osv(_('Error !'), _(str(line.price_unit)))
 
-                        if line.price_unit <= 0:
+                        if line.price_unit <= 0 and inv.approved_zero == False:
                             raise osv.except_osv(_('Error !'), _('cannot process, found zero price unit for the product, can bypass it with permission.'))
 
                         value.update( {
