@@ -56,7 +56,7 @@
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<!-- label colspan="2" nolabel="1" string=" "/ !-->
 						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="1" default_focus="1" />
-						<!-- button name="generate" string="Print" colspan="2" type="object" icon="gtk-ok"/ !-->
+						<!--button name="generate" string="Print" colspan="2" type="object" icon="gtk-ok"/-->
 					</group>
 				</form>
 			</field>

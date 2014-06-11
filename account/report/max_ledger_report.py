@@ -336,7 +336,7 @@ class max_ledger_report(report_sxw.rml_parse):
         period_qry2 = (qry_period_ids and ((len(qry_period_ids) == 1 and "and aml.period_id = " + str(qry_period_ids[0]) + " ") or "and aml.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND and aml.period_id IN (0) "
         date_from_qry2 = date_from and "And aml.date >= '" + str(date_from) + "' " or " "
         date_to_qry2 = date_to and "And aml.date <= '" + str(date_to) + "' " or " "
-        val = []
+        
         cr.execute(
                 "SELECT id, name, ref " \
                 "FROM res_partner " \
@@ -345,6 +345,7 @@ class max_ledger_report(report_sxw.rml_parse):
         qry = cr.dictfetchall()
         if qry:
             for s in qry:
+                val = []
                 cr.execute("SELECT DISTINCT ap.id as period_id " \
                     "from account_move_line aml "\
                     "left join account_move am on aml.move_id = am.id "\
@@ -379,6 +380,7 @@ class max_ledger_report(report_sxw.rml_parse):
                 closing_inv = 0
                 if qry4:
                     for u in qry4:
+                        val_ids2 = []
                         opening_balance = balance
                         cr.execute("select rp.id as partner_id, " \
                             "rp.ref as partner_ref, " \
@@ -426,7 +428,7 @@ class max_ledger_report(report_sxw.rml_parse):
                             "order by rp.ref,af.name, ap.date_start, aml.date")
                         qry5 = cr.dictfetchall()
                         period = False
-                        val_ids2 = []
+                        
                         period_id_vals = {}
                         if qry5:
                             for v in qry5:
@@ -493,6 +495,8 @@ class max_ledger_report(report_sxw.rml_parse):
                     res_currency_grouping['home'] += closing
 
                     self.balance_by_cur[cur_id] = res_currency_grouping
+#                 print val
+#                 raise osv.except_osv(_('Invalid action !'), _('test'))
                 results1.append({
                     'part_name' : s['name'],
                     'part_ref' : s['ref'],

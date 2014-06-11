@@ -24,6 +24,7 @@ import pooler
 import base64
 import time
 from datetime import datetime, timedelta
+from tools.translate import _
 
 class param_payable_aging_report(osv.osv_memory):
     _name = 'param.payable.aging.report'
@@ -268,8 +269,17 @@ class param_payable_aging_report(osv.osv_memory):
         sale_payment_term_obj = self.pool.get('sale.payment.term')
         report_total = 0.00
         balance_by_cur = {}
-        
-        
+        ####################
+#         pp_ids = []
+#         val_part = []
+#         val_part.append(('customer', '=', True))
+#         pp_search = partner_obj.search(cr, uid, val_part, order='ref ASC')
+#         for pp_ids_brw in partner_obj.browse(cr, uid, pp_search):
+#             if pp_ids_brw.property_product_pricelist.currency_id.id == 38:
+#                 pp_ids.append(pp_ids_brw.id)
+#         print pp_ids
+#         raise osv.except_osv(_('Invalid action !'), _('test'))
+        #######################
         results = []
         results1 = []
         sign = -1
@@ -324,6 +334,7 @@ class param_payable_aging_report(osv.osv_memory):
                 "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id), 0 " \
                 ")) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END))) > 0 " \
                 "And aml.date  <= '" +str(date_to) + "' "\
+                "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
                 + partner_qry)
         
         partner_ids_vals = []
@@ -378,6 +389,7 @@ class param_payable_aging_report(osv.osv_memory):
                         "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id), 0 " \
                         ")) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END))) > 0 " \
                         "And aml.date  <= '" +str(date_to) + "' "\
+                        "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
                         "and aml.partner_id = " + str(s['id']) + " order by aml.date")
                 qry3 = cr.dictfetchall()
                 val = []
@@ -500,11 +512,9 @@ class param_payable_aging_report(osv.osv_memory):
                           + str(rs2['ref_no']) + ';' + str(rs2['cust_po_no']) + ';' + str(rs2['orig_amt']) + ';' + str(rs2['home_orig_amt']) + ';' \
                           + str(rs2['paid_amt']) + ';' + str(rs2['home_paid_amt']) + ';' + str(rs2['amt1']) + ';' \
                           + str(rs2['home_amt1']) + ';' + str(rs2['amt2']) + ';' + str(rs2['home_amt2']) + ';' \
-                          + str(rs2['amt3']) + ';' + str(rs2['home_amt3']) + ';' + str(rs2['amt4']) + ';' + str(rs2['home_amt4']) + ' \n \n'
-                          
-                
+                          + str(rs2['amt3']) + ';' + str(rs2['home_amt3']) + ';' + str(rs2['amt4']) + ';' + str(rs2['home_amt4']) + ' \n'
             header += str('Total For : ' + rs1['part_ref']) + ';' + 'Oustanding Amount;< 31;31 To 60;61 To 90;Over 90' + ' \n'
-                    
+
             header += str(rs1['cur_name']) + ';' + str(rs1['total_inv']) + ';' \
                     + str(rs1['total_amt1']) + ';' + str(rs1['total_amt2']) + ';' \
                     + str(rs1['total_amt3']) + ';' + str(rs1['total_amt4']) + ' \n'

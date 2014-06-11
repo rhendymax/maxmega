@@ -398,8 +398,9 @@ class param_payable_report(osv.osv_memory):
         elif date_from:
             min_period = period_obj.search(cr, uid, [('date_start', '<=', date_from)], order='date_start Desc', limit=1)
         if fiscal_year:
+            
             if min_period:
-                if fiscal_year[0] != period_obj.browse(cr, uid, min_period[0]).fiscalyear_id.id:
+                if fiscal_year != period_obj.browse(cr, uid, min_period[0]).fiscalyear_id.id:
                     min_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start', limit=1)
             else:
                 min_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start', limit=1)
@@ -415,7 +416,7 @@ class param_payable_report(osv.osv_memory):
             max_period = period_obj.search(cr, uid, [('date_start', '<=', date_to)], order='date_start Desc', limit=1)
         if fiscal_year:
             if max_period:
-                if fiscal_year[0] != period_obj.browse(cr, uid, max_period[0]).fiscalyear_id.id:
+                if fiscal_year != period_obj.browse(cr, uid, max_period[0]).fiscalyear_id.id:
                     max_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start Desc', limit=1)
             else:
                 max_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start Desc', limit=1)
@@ -458,7 +459,7 @@ class param_payable_report(osv.osv_memory):
         period_qry2 = (qry_period_ids and ((len(qry_period_ids) == 1 and "and aml.period_id = " + str(qry_period_ids[0]) + " ") or "and aml.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND and aml.period_id IN (0) "
         date_from_qry2 = date_from and "And aml.date >= '" + str(date_from) + "' " or " "
         date_to_qry2 = date_to and "And aml.date <= '" + str(date_to) + "' " or " "
-        val = []
+        
         cr.execute(
                 "SELECT id, name, ref " \
                 "FROM res_partner " \
@@ -467,14 +468,7 @@ class param_payable_report(osv.osv_memory):
         qry = cr.dictfetchall()
         if qry:
             for s in qry:
-                
-#                curr_name = ''
-
-#                if type == 'payable':
-#                    curr_name = partner_obj.browse(cr, uid, s['id']).property_product_pricelist_purchase.currency_id.name
-#                elif type == 'receivable':
-#                    curr_name = partner_obj.browse(cr, uid, s['id']).property_product_pricelist.currency_id.name
-                
+                val = []
                 cr.execute("SELECT DISTINCT ap.id as period_id " \
                     "from account_move_line aml "\
                     "left join account_move am on aml.move_id = am.id "\
