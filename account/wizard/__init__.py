@@ -13,3 +13,4 @@ import param_payable_ledger_report
 import param_receivable_ledger_report
 import param_payable_aging_report
 import param_receivable_aging_report
+import param_gl_report
