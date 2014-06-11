@@ -463,7 +463,7 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
         
         if qry:
             for s in qry:
-                header += str(s['ref'] or '') + ';' + str(s['name'] or '') + ' \n'
+                header += '[' + str(s['ref'] or '') + '] ' + str(s['name'] or '') + ' \n'
                 cr.execute(
                         "SELECT l.id as inv_id " \
                         "FROM account_invoice AS l " \
@@ -545,15 +545,15 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
                         + str((inv.amount_untaxed or 0) * sign) + ';' + str((inv.amount_tax or 0) * sign) + ';' \
                         + str((inv.amount_total or 0) * sign) + ';' + str((inv.amount_untaxed_home or 0) * sign) + ';' + str((inv.amount_tax_home or 0) * sign) + ';' \
                         + str((inv.amount_total_home or 0) * sign) + ' \n'
-                    header += 'Total For : ' + str(s['ref'] or '') + ';;;;' + str(total_pre_tax) + ';' + str(total_sale_tax) + ';' \
-                            + str(total_after_tax) + ';' + str(total_pre_tax_home) + str(total_sale_tax_home) + ';' + str(total_after_tax_home) + ' \n'
+                    header += 'Total For : ' + str(s['ref'] or '') + ';;;;;' + str(total_pre_tax) + ';' + str(total_sale_tax) + ';' \
+                            + str(total_after_tax) + ';' + str(total_pre_tax_home) + ';' + str(total_sale_tax_home) + ';' + str(total_after_tax_home) + ' \n \n'
                     
                     _total_pre_tax_home += total_pre_tax_home
                     _total_sales_tax_home += total_sale_tax_home
                     _total_after_tax_home += total_after_tax_home
                     
-        header += 'Report Total By Currency' + ' \n'
-        header += 'Invoice' + ' \n'
+        header += 'Report Total By Currency;;;;;Pre Tax Amt;Sales Tax Amt;After Tax Amt;Pre Tax Home;Sales Tax Home;After Tax Home' + ' \n'
+        header += ';;;;' + 'Invoice' + ' \n'
         result2 = []
         currency_obj = self.pool.get('res.currency')
         for item in inv_balance_by_cur.items():
@@ -568,11 +568,11 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
             })
         result2 = result2 and sorted(result2, key=lambda val_res: val_res['cur_name']) or []
         for rs in result2:
-            header += str(rs['cur_name']) + ';' + str(rs['pre_tax']) + ';' + str(rs['sale_tax']) + ';' \
+            header += ';;;;' +  str(rs['cur_name']) + ';' + str(rs['pre_tax']) + ';' + str(rs['sale_tax']) + ';' \
                     + str(rs['after_tax']) + ';' + str(rs['pre_tax_home']) + ';' + str(rs['sale_tax_home']) + ';' \
                     + str(rs['after_tax_home']) + ' \n'
             
-        header += 'Credit No' + ' \n'
+        header += ';;;;' + 'Credit No' + ' \n'
         result3 = []
         currency_obj    = self.pool.get('res.currency')
         for item in ref_balance_by_cur.items():
@@ -587,11 +587,11 @@ class param_purchase_journal_by_supplier_report(osv.osv_memory):
             })
         result3 = result3 and sorted(result3, key=lambda val_res: val_res['cur_name']) or []
         for rs in result3:
-            header += str(rs['cur_name']) + ';' + str(rs['pre_tax']) + ';' + str(rs['sale_tax']) + ';' \
+            header += ';;;;' + str(rs['cur_name']) + ';' + str(rs['pre_tax']) + ';' + str(rs['sale_tax']) + ';' \
                     + str(rs['after_tax']) + ';' + str(rs['pre_tax_home']) + ';' + str(rs['sale_tax_home']) + ';' \
                     + str(rs['after_tax_home']) + ' \n'
             
-        header += ';;;;' + str(_total_pre_tax_home) + ';' + str(_total_sales_tax_home) + ';' + str(_total_after_tax_home) + ' \n'
+        header += ';;;;;;;;' + str(_total_pre_tax_home) + ';' + str(_total_sales_tax_home) + ';' + str(_total_after_tax_home) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'

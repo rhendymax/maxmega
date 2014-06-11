@@ -632,7 +632,7 @@ class param_payable_report(osv.osv_memory):
                     })
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
         for rs1 in results1:
-            header += str(rs1['part_ref']) + ';' + str(rs1['part_name']) + ';;;' + str(rs1['cur_name']) + ' \n'
+            header += '[' + str(rs1['part_ref']) + '] ' + str(rs1['part_name']) + ';;;;' + str(rs1['cur_name']) + ' \n'
             total_home_amt = 0
             for rs2 in rs1['val_ids']:
                 header += str(rs2['fiscalyear_name']) + ';' + str(rs2['period_code']) + ';;' + 'Opening Balance' + ';;;;' \
@@ -644,7 +644,7 @@ class param_payable_report(osv.osv_memory):
                         + str(rs3['currency_name']) + ';' + str(rs3['exchange_rate']) + ';' + str(rs3['inv_amount']) + ';' \
                         + str(rs3['home_amount']) + ';' + str(rs3['balance']) + ' \n'
                 header += ';' + ';' + ';' + 'Closing Balance' + ';;;;' + str(total_home_amt + rs2['opening_balance']) + ' \n'
-            header += 'Closing Balance By Currency' + ';;;' + str(rs1['cur_name']) + ';;;' + str(rs1['closing']) + ' \n'
+            header += 'Closing Balance By Currency' + ';;;' + str(rs1['cur_name']) + ';;;' + str(rs1['closing']) + ' \n \n'
         header += 'Report Total :;;;;;;;' + str(report_total) + '\n \n \n'
         
         result_currency = []

@@ -68,6 +68,8 @@ Customise report
         'account/wizard/param_receivable_ledger_report_view.xml',
         'account/wizard/param_payable_aging_report_view.xml',
         'account/wizard/param_receivable_aging_report_view.xml',
+        # 11-06-2014
+        'account/wizard/param_gl_report_view.xml',
     ],
 
     'demo_xml': [],

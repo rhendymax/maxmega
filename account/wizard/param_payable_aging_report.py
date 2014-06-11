@@ -305,7 +305,7 @@ class param_payable_aging_report(osv.osv_memory):
 #        header += ('date_search' in form and (form['date_search'] == 'date' and 'Date : ' + str(form['date_showing']) + " \n") or \
 #                   (form['date_search'] == 'period' and 'Period : ' + str(form['date_showing']) + " \n")) or ''
 
-        header += 'Vch No;Sales Person;TP Doc Date;Due Date;Ref No;Cust PO No;Orig Amt;Orig Amt Home;Paid/CN;Paid/CN Home;< 31;31 To 60;61 To 90;Over 91' + " \n"
+        header += 'Vch No;Sales Person;TP Doc Date;Due Date;Ref No;Cust PO No;Orig Amt;Orig Amt Home;Paid/CN;Paid/CN Home;< 31;< 31 Home;31 To 60;31 To 60 Home;61 To 90;61 To 90 Home;Over 91;Over 91 Home' + " \n"
 
         
 
@@ -492,22 +492,24 @@ class param_payable_aging_report(osv.osv_memory):
                     
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
         for rs1 in results1:
-            header += str(rs1['part_ref']) + ';' + str(rs1['part_name']) + ';' + str(rs1['cur_name']) + ';' + 'Tel : ' + str(rs1['contact_phone']) + ';' + 'Contact : ' + str(rs1['contact_person']) \
+            header += '[' + str(rs1['part_ref'])  + '] ' + str(rs1['part_name']) + ';' + str(rs1['cur_name']) + ';' + 'Tel : ' + str(rs1['contact_phone']) + ';' + 'Contact : ' + str(rs1['contact_person']) \
                           + ';' + 'Credit Limit : ' + str(rs1['credit_limit'] or 0.00) + ' \n'
             total_home_amt = 0
             for rs2 in rs1['val_ids']:
                 header += str(rs2['invoice_name']) + ';' + str(rs2['sales_person']) + ';' + str(rs2['invoice_date']) + ';' + str(rs2['due_date']) + ';' \
                           + str(rs2['ref_no']) + ';' + str(rs2['cust_po_no']) + ';' + str(rs2['orig_amt']) + ';' + str(rs2['home_orig_amt']) + ';' \
                           + str(rs2['paid_amt']) + ';' + str(rs2['home_paid_amt']) + ';' + str(rs2['amt1']) + ';' \
-                          + str(rs2['amt2']) + ';' + str(rs2['amt3']) + ';' + str(rs2['amt4']) + ' \n'
+                          + str(rs2['home_amt1']) + ';' + str(rs2['amt2']) + ';' + str(rs2['home_amt2']) + ';' \
+                          + str(rs2['amt3']) + ';' + str(rs2['home_amt3']) + ';' + str(rs2['amt4']) + ';' + str(rs2['home_amt4']) + ' \n \n'
                           
-                header += ';;;;;;;;;;' + str(rs2['home_amt1']) + ';' + str(rs2['home_amt2']) + ';' + str(rs2['home_amt3']) + ';' + str(rs2['home_amt4']) + ' \n'
-            
-            header += str('Total For : ' + rs1['part_ref']) + ';;;;' + str(rs1['cur_name']) + ';' + 'Home;' + str(rs1['total_inv']) + ';' + str(rs1['total_home']) + ';;;' \
+                
+            header += str('Total For : ' + rs1['part_ref']) + ';' + 'Oustanding Amount;< 31;31 To 60;61 To 90;Over 90' + ' \n'
+                    
+            header += str(rs1['cur_name']) + ';' + str(rs1['total_inv']) + ';' \
                     + str(rs1['total_amt1']) + ';' + str(rs1['total_amt2']) + ';' \
                     + str(rs1['total_amt3']) + ';' + str(rs1['total_amt4']) + ' \n'
-            
-            header += ';;;;;;;;;;' + str(rs1['total_home_amt1']) + ';' + str(rs1['total_home_amt2']) + ';' \
+            header += 'Home;' + str(rs1['total_home']) + ';' \
+                    + str(rs1['total_home_amt1']) + ';' + str(rs1['total_home_amt2']) + ';' \
                     + str(rs1['total_home_amt3']) + ';' + str(rs1['total_home_amt4']) + ' \n \n'
                     
         result_currency = []
@@ -530,7 +532,7 @@ class param_payable_aging_report(osv.osv_memory):
         result_currency = result_currency and sorted(result_currency, key=lambda val_res: val_res['cur_name']) or []
         _total_home = 0
         _total_amt1 = _total_amt2 = _total_amt3 = _total_amt4 = 0.00
-        header += 'Report Total By Currency' + ' \n'
+        header += 'Report Total By Currency;Oustanding Amount;< 31;31 To 60;61 To 90;Over 90' + ' \n'
         for rs_curr in result_currency:
             _total_home += rs_curr['total_home'] or 0
             _total_amt1 += rs_curr['home_amt1'] or 0.00
@@ -538,13 +540,13 @@ class param_payable_aging_report(osv.osv_memory):
             _total_amt3 += rs_curr['home_amt3'] or 0.00
             _total_amt4 += rs_curr['home_amt4'] or 0.00
             
-            header += ';;;;;;' + str(rs_curr['cur_name']) + ';' + str(rs_curr['total_inv']) + ';;;' + str(rs_curr['amt1']) + ';' \
+            header += str(rs_curr['cur_name']) + ';' + str(rs_curr['total_inv']) + ';' + str(rs_curr['amt1']) + ';' \
                     + str(rs_curr['amt2']) + ';' + str(rs_curr['amt3']) + ';' + str(rs_curr['amt4']) + ' \n'
             
-            header += ';;;;;;' + 'Home' + ';' + str(rs_curr['total_home']) + ';;;' + str(rs_curr['home_amt1']) + ';' + str(rs_curr['home_amt2']) + ';' \
+            header += 'Home' + ';' + str(rs_curr['total_home']) + ';' + str(rs_curr['home_amt1']) + ';' + str(rs_curr['home_amt2']) + ';' \
                     + str(rs_curr['home_amt3']) + ';' + str(rs_curr['home_amt4']) + ' \n'
                     
-        header += ';;;;;;' + 'Total Home' + ';' + str(_total_home) + ';;;' + str(_total_amt1) + ';' + str(_total_amt2) + ';' + str(_total_amt3) + ';' \
+        header += 'Total Home' + ';' + str(_total_home) + ';' + str(_total_amt1) + ';' + str(_total_amt2) + ';' + str(_total_amt3) + ';' \
                 + str(_total_amt4) + ' \n'
         
         all_content_line += header
