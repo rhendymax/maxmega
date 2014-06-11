@@ -1495,7 +1495,8 @@ class stock_inventory(osv.osv):
         # to perform the correct inventory corrections we need analyze stock location by
         # location, never recursively, so we use a special context
         product_context = dict(context, compute_child=False)
-
+        product_location_wizard_obj = self.pool.get('product.location.wizard')
+        
         location_obj = self.pool.get('stock.location')
         for inv in self.browse(cr, uid, ids, context=context):
             move_ids = []
@@ -1516,7 +1517,9 @@ class stock_inventory(osv.osv):
                         'date': inv.date,
                     }
                     if type == 'addiction':
-                        if line.price_unit < 0.00:
+#                         raise osv.except_osv(_('Error !'), _(str(line.price_unit)))
+
+                        if line.price_unit <= 0:
                             raise osv.except_osv(_('Error !'), _('cannot process, found zero price unit for the product, can bypass it with permission.'))
 
                         value.update( {
@@ -1527,12 +1530,28 @@ class stock_inventory(osv.osv):
                             
                         })
                     else:
+
+                        result1 = product_location_wizard_obj.stock_location_get(cr, uid, [line.product_id.id], context=None)
+                        qty_available = 0.00
+                        qty_allocated = 0.00
+                        if result1:
+                            for res_f1 in result1:
+                                if res_f1['location_id'] == line.location_id.id:
+                                    qty_available = res_f1['qty_available']
+                                    qty_allocated = res_f1['qty_allocated']
+
+                        if line.product_qty > (qty_available - qty_allocated):
+                            raise osv.except_osv(_('Error !'), _('cannot process, the product qty entered is more than qty onhand free for the product.('+ str(line.product_id.name) + ')'))
+
                         value.update( {
                             'product_qty': line.product_qty,
                             'location_id': line.location_id.id,
                             'location_dest_id': location_id,
                         })
                     move_ids.append(self._inventory_line_hook(cr, uid, line, value))
+            if not move_ids:
+                raise osv.except_osv(_('Error !'), _('cannot process, no product to process.'))
+
             self.write(cr, uid, [inv.id], {'state': 'confirm', 'move_ids': [(6, 0, move_ids)]})
             self.pool.get('stock.move').action_confirm(cr, uid, move_ids, context=context)
             self.action_done2(cr, uid, [inv.id], context)
@@ -1659,9 +1678,6 @@ class stock_inventory_line(osv.osv):
         domain = {'location_id': [('id','in',location_ids)]}
         result = { 'write_off': False,
                   'product_uom': obj_product.uom_id.id,
-                    'qty_available' : qty_available,
-                    'qty_allocated' : qty_allocated,
-                    'product_qty' : qty_available,
                     'location_id' : location_id}
 #        raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(obj_product.uom_id.name, result))
 
