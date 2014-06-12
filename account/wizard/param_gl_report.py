@@ -38,7 +38,7 @@ class param_gl_report(osv.osv_memory):
     _description = 'General Ledger Report'
 
     _columns = {
-        'fiscalyear_id': fields.many2one('account.fiscalyear', 'Fiscal Year',required=True, help='Keep empty for all open fiscal year'),
+        'fiscalyear_id': fields.many2one('account.fiscalyear', 'Fiscal Year', help='Keep empty for all open fiscal year'),
 #        'from_period_id': fields.many2one('account.period', 'From Period',required=True,domain="[('fiscalyear_id','=',fiscalyear_id)]"),
 #        'to_period_id': fields.many2one('account.period', 'To Period',required=True,domain="[('fiscalyear_id','=',fiscalyear_id)]"),
 #        'account_ids': fields.many2many('account.account', string='Accounts', required=True, domain="[('type','!=','view')]"),
