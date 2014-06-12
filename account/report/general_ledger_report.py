@@ -47,7 +47,7 @@ class general_ledger_report(report_sxw.rml_parse):
         account_obj = self.pool.get('account.account')
         period_obj = self.pool.get('account.period')
         account_fiscalyear_obj = self.pool.get('account.fiscalyear')
-        self.fiscal_year = data['form']['fiscalyear_id'][0]
+        self.fiscal_year = data['form']['fiscalyear_id']
 
         fiscal_year_name =  data['form']['fiscalyear_id'] and data['form']['fiscalyear_id'][1] or False
         self.fiscal_year_name = fiscal_year_name
@@ -193,9 +193,6 @@ class general_ledger_report(report_sxw.rml_parse):
             'get_debit_total': self._get_debit_total,
             'get_credit_total': self._get_credit_total,
             'get_total': self._get_total,
-#            'get_header_title': self._get_header,
-#            'get_balance_by_cur': self._get_balance_by_cur,
-#            'get_filter_selection' : self._get_filter_selection,
             'get_fiscal_year' : self._get_fiscal_year,
             'get_search_by_account' : self._get_search_by_account,
             'get_date' : self._get_date,
@@ -231,25 +228,6 @@ class general_ledger_report(report_sxw.rml_parse):
 
     def _get_total(self):
         return self.grand_total
-
-#    def _get_header(self):
-#        if self.report_type == 'payable':
-#            header = 'Account Payable Ledger Report'
-#        elif self.report_type == 'receivable':
-#            header = 'Account Receivable Ledger Report'
-#        return header
-#    
-#    def _get_balance_by_cur(self):
-#        result = []
-#        currency_obj    = self.pool.get('res.currency')
-#        for item in self.balance_by_cur.items():
-#            result.append({
-#                'cur_name' : currency_obj.browse(self.cr, self.uid, item[0]).name,
-#                'inv' : item[1]['inv'],
-#                'home' : item[1]['home'],
-#            })
-#        result = result and sorted(result, key=lambda val_res: val_res['cur_name']) or []
-#        return result
 #
     def _get_lines(self):
         cr              = self.cr
@@ -275,7 +253,7 @@ class general_ledger_report(report_sxw.rml_parse):
             min_period = period_obj.search(cr, uid, [('date_start', '<=', date_from)], order='date_start Desc', limit=1)
         if fiscal_year:
             if min_period:
-                if fiscal_year != period_obj.browse(cr, uid, min_period[0]).fiscalyear_id.id:
+                if fiscal_year[0] != period_obj.browse(cr, uid, min_period[0]).fiscalyear_id.id:
                     min_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start', limit=1)
             else:
                 min_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start', limit=1)
@@ -291,7 +269,7 @@ class general_ledger_report(report_sxw.rml_parse):
             max_period = period_obj.search(cr, uid, [('date_start', '<=', date_to)], order='date_start Desc', limit=1)
         if fiscal_year:
             if max_period:
-                if fiscal_year != period_obj.browse(cr, uid, max_period[0]).fiscalyear_id.id:
+                if fiscal_year[0] != period_obj.browse(cr, uid, max_period[0]).fiscalyear_id.id:
                     max_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start Desc', limit=1)
             else:
                 max_period = period_obj.search(cr, uid, [('fiscalyear_id', '=', fiscal_year)], order='date_start Desc', limit=1)
@@ -419,14 +397,14 @@ class general_ledger_report(report_sxw.rml_parse):
                         if u['period_startdate'] < min_period.date_start:
                             continue
                         else:
-                            period_end = u['period_stopdate']
+                            period_end = datetime.strftime(datetime.strptime(u['period_stopdate'],'%Y-%m-%d'),'%d %B %Y')
                             val.append({
                                'fiscalyear_name' : u['fiscalyear_name'],
                                'period_code': u['code'],
                                'period_startdate': u['period_startdate'],
                                'opening_balance' : opening_balance,
                                'val_ids2': val_ids2,
-                               'period_end': u['period_stopdate'],
+                               'period_end': datetime.strftime(datetime.strptime(u['period_stopdate'],'%Y-%m-%d'),'%d %B %Y'),
                                })
 #                 val = val and sorted(val, key=lambda val_res: val_res['period_startdate']) or []
 #                 cur_name = 'False'

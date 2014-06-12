@@ -52,20 +52,7 @@
 				</form>
 			</field>
 		</record>
-
-		<record id="action_param_gl_report" model="ir.actions.act_window">
-			<field name="name">General Ledger</field>
-			<field name="type">ir.actions.act_window</field>
-			<field name="res_model">param.gl.report</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">form</field>
-			<field name="view_id" ref="view_param_gl_report"/>
-			<field name="target">new</field>
-		</record>
-
-		<!--menuitem icon="STOCK_PRINT" name="General Ledger" parent="maxmega_reports.menu_maxmega_account_general_report"
-			action="action_maxmega_gl_menu" id="menu_maxmega_general_gl_report" /-->
-
+		
 		<record id="param_gl_result_data_view" model="ir.ui.view">
 			<field name="name">General Ledger Report</field>
 			<field name="model">param.gl.report</field>
@@ -81,5 +68,20 @@
 				</form>
 			</field>
 		</record>
+		
+		<record id="action_param_gl_report" model="ir.actions.act_window">
+			<field name="name">General Ledger</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.gl.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_gl_report"/>
+			<field name="target">new</field>
+		</record>
+
+		<!--menuitem icon="STOCK_PRINT" name="General Ledger" parent="maxmega_reports.menu_maxmega_account_general_report"
+			action="action_maxmega_gl_menu" id="menu_maxmega_general_gl_report" /-->
+
+
 	</data>
 </openerp>
