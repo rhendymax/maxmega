@@ -178,8 +178,8 @@ class param_payable_report(osv.osv_memory):
                     partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).ref
                     data_found = True
                     val_part.append(('ref', '<=', res_partner_obj.browse(cr, uid, partner_default_to).ref))
+                result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                 if data_found:
-                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='ref ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
@@ -235,8 +235,8 @@ class param_payable_report(osv.osv_memory):
                     partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).name
                     data_found = True
                     val_part.append(('name', '<=', res_partner_obj.browse(cr, uid, partner_default_to).name))
+                result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                 if data_found:
-                    result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
                     partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
             elif data['form']['filter_selection'] == 'input':
                 data_found = False
@@ -316,7 +316,7 @@ class param_payable_report(osv.osv_memory):
                         val_period.append(('code', '>=', qry['code']))
                         
                 if period_input_to:
-                    period_from_txt = period_from_txt
+                    period_to_txt = period_input_to
                     cr.execute("select code " \
                                     "from account_period "\
                                     "where " \

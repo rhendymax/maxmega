@@ -10,3 +10,4 @@ import purchase_tax_report
 import sales_tax_report
 import max_journal_report
 import max_payment_report
+import general_ledger_report
