@@ -26,6 +26,7 @@ from tools.translate import _
 from datetime import datetime
 import time
 import math
+import netsvc
 
 from tools import float_round, float_is_zero, float_compare
 
@@ -685,6 +686,8 @@ class account_voucher(osv.osv):
         tax_obj = self.pool.get('account.tax')
         res_currency_rate_obj = self.pool.get("res.currency.rate")
         tot_line = line_total
+#         print "#1.1"
+#         print tot_line
         rec_lst_ids = []
         rec_ids = []
         voucher_brw = self.pool.get('account.voucher').browse(cr, uid, voucher_id, context)
@@ -784,7 +787,10 @@ class account_voucher(osv.osv):
             move_line['exrate'] = exrate
             move_line['amount_currency'] = amount_currency
             voucher_line = move_line_obj.create(cr, uid, move_line)
-
+#             print "#1.1 repeat"
+#             print move_line
+#             print line.type
+#             print tot_line
             rec_ids = [voucher_line, line.move_line_id.id]
 
             if not currency_obj.is_zero(cr, uid, voucher_brw.company_id.currency_id, currency_rate_difference):
@@ -821,8 +827,9 @@ class account_voucher(osv.osv):
 
             inv_amountx = self._convert_amount(cr, uid, line.inv_amount, voucher_brw.id, context=ctx)
             if line.reconcile:
-                inv_amountx = line.move_line_id.amount_residual
+                inv_amountx = abs(line.move_line_id.amount_residual)
             amountx = self._convert_amount(cr, uid, line.amount, voucher_brw.id, context=ctx)
+            
 #            print line.inv_amount
 #            print line.amount
 #            print inv_amountx
@@ -852,8 +859,14 @@ class account_voucher(osv.osv):
                         'exrate': 1,
                         }
                         new_id = move_line_obj.create(cr, uid, move_line1, context)
+                        
                         tot_line += gain_lost_amount
-
+#                         print "#1.1 repeat gain_lost_amount 1"
+#                         print line.move_line_id.amount_residual
+#                         print inv_amountx
+#                         print amountx
+#                         print gain_lost_amount
+#                         print tot_line
                     else:
                         move_line1 = {
                         'journal_id': voucher_brw.journal_id.id,
@@ -874,6 +887,8 @@ class account_voucher(osv.osv):
                         }
                         new_id = move_line_obj.create(cr, uid, move_line1, context)
                         tot_line -= gain_lost_amount
+#                         print "#1.1 repeat gain_lost_amount 2"
+#                         print tot_line
                 else:
                     if inv_amountx - amountx < 0:
                         move_line1 = {
@@ -895,6 +910,8 @@ class account_voucher(osv.osv):
                         }
                         new_id = move_line_obj.create(cr, uid, move_line1, context)
                         tot_line -= gain_lost_amount
+#                         print "#1.1 repeat gain_lost_amount 3"
+#                         print tot_line
                     else:
                         move_line1 = {
                         'journal_id': voucher_brw.journal_id.id,
@@ -916,12 +933,17 @@ class account_voucher(osv.osv):
                         }
                         new_id = move_line_obj.create(cr, uid, move_line1, context)
                         tot_line += gain_lost_amount
+#                         print "#1.1 repeat gain_lost_amount 4"
+#                         print tot_line
 #            raise osv.except_osv(_('Error'), _(str('gain_lost_amount v2')))
             if line.move_line_id.id:
                 if rec_ids:
                     rec_lst_ids.append(rec_ids)
 #        raise osv.except_osv(_('Error'), _('xcsd'))
-
+#         print "#1.2"
+#         print tot_line
+#         print tot_line
+#         print rec_lst_ids
         return (tot_line, rec_lst_ids)
 
     def bank_charge_account_create(self, cr, uid, voucher_id, move_id, company_currency, current_currency, context=None):
@@ -1124,8 +1146,10 @@ class account_voucher(osv.osv):
             if voucher.bank_charges_amount != 0:
                 self.bank_charge_account_create(cr,uid,voucher.id, move_id, company_currency, current_currency, context)
 #            raise osv.except_osv(_('Error'), _(str('t')))
+            
             line_total = move_line_brw.debit - move_line_brw.credit
-
+#             print '#1'
+#             print line_total
             rec_list_ids = []
 
             if voucher.type == 'sale':
@@ -1135,16 +1159,18 @@ class account_voucher(osv.osv):
 
             # Create one move line per voucher line where amount is not 0.0
             line_total, rec_list_ids = self.voucher_move_line_create(cr, uid, voucher.id, line_total, move_id, company_currency, current_currency, context)
-
+#             print '#2'
+#             print line_total
             line_total = self.voucher_simple_line_create(cr, uid, voucher.id, line_total, move_id, company_currency, current_currency, context)
-#            print line_total
+#             print '#3'
+#             print line_total
 #            raise osv.except_osv(_('Error'), _(str('t')))
             ml_writeoff = self.writeoff_move_line_get(cr, uid, voucher.id, line_total, move_id, name, company_currency, current_currency, context)
 
 
 
             if ml_writeoff:
-
+#                 print 'yes'
                 move_line_pool.create(cr, uid, ml_writeoff, context)
             # We post the voucher.
 
@@ -1286,7 +1312,7 @@ class account_voucher(osv.osv):
         if not currency_obj.is_zero(cr, uid, current_currency_obj, line_total):
             diff = line_total
             
-#            print diff
+#             print diff
             if diff != 0 and voucher_brw.payment_option == 'none':
 #                if voucher_brw.writeoff_amount == 0:
 #                    gain_lost_acc = voucher_brw.company_id and voucher_brw.company_id.property_currency_gain_loss and voucher_brw.company_id.property_currency_gain_loss.id or False 
@@ -1916,6 +1942,149 @@ account_voucher_line()
 class account_move_line(osv.osv):
     _inherit = 'account.move.line'
     _description = 'Journal Items'
+
+    def reconcile(self, cr, uid, ids, type='auto', writeoff_acc_id=False, writeoff_period_id=False, writeoff_journal_id=False, context=None):
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        move_rec_obj = self.pool.get('account.move.reconcile')
+        partner_obj = self.pool.get('res.partner')
+        currency_obj = self.pool.get('res.currency')
+        lines = self.browse(cr, uid, ids, context=context)
+        unrec_lines = filter(lambda x: not x['reconcile_id'], lines)
+        credit = debit = 0.0
+        currency = 0.0
+        account_id = False
+        partner_id = False
+        if context is None:
+            context = {}
+        company_list = []
+        for line in self.browse(cr, uid, ids, context=context):
+            if company_list and not line.company_id.id in company_list:
+                raise osv.except_osv(_('Warning !'), _('To reconcile the entries company should be the same for all entries'))
+            company_list.append(line.company_id.id)
+        for line in unrec_lines:
+            if line.state <> 'valid':
+                raise osv.except_osv(_('Error'),
+                        _('Entry "%s" is not valid !') % line.name)
+            credit += line['credit']
+            debit += line['debit']
+            currency += line['amount_currency'] or 0.0
+            account_id = line['account_id']['id']
+            partner_id = (line['partner_id'] and line['partner_id']['id']) or False
+#         print debit
+#         print credit
+#         
+        writeoff = debit - credit
+#         print writeoff
+        # Ifdate_p in context => take this date
+        if context.has_key('date_p') and context['date_p']:
+            date=context['date_p']
+        else:
+            date = time.strftime('%Y-%m-%d')
+
+        cr.execute('SELECT account_id, reconcile_id '\
+                   'FROM account_move_line '\
+                   'WHERE id IN %s '\
+                   'GROUP BY account_id,reconcile_id',
+                   (tuple(ids), ))
+        r = cr.fetchall()
+        #TODO: move this check to a constraint in the account_move_reconcile object
+        if not unrec_lines:
+            raise osv.except_osv(_('Error'), _('Entry is already reconciled'))
+        account = account_obj.browse(cr, uid, account_id, context=context)
+        if r[0][1] != None:
+            raise osv.except_osv(_('Error'), _('Some entries are already reconciled !'))
+#         print 'test'
+#         print (not currency_obj.is_zero(cr, uid, account.company_id.currency_id, writeoff))
+#         print account.name
+#         print account.currency_id
+#         print currency
+#         print (account.currency_id and (not currency_obj.is_zero(cr, uid, account.currency_id, currency)))
+#         if (not currency_obj.is_zero(cr, uid, account.company_id.currency_id, writeoff)) or \
+#            (account.currency_id and (not currency_obj.is_zero(cr, uid, account.currency_id, currency))):
+#             if not writeoff_acc_id:
+#                 raise osv.except_osv(_('Warning'), _('You have to provide an account for the write off/exchange difference entry !'))
+#             if writeoff > 0:
+#                 debit = writeoff
+#                 credit = 0.0
+#                 self_credit = writeoff
+#                 self_debit = 0.0
+#             else:
+#                 debit = 0.0
+#                 credit = -writeoff
+#                 self_credit = 0.0
+#                 self_debit = -writeoff
+#             # If comment exist in context, take it
+#             if 'comment' in context and context['comment']:
+#                 libelle = context['comment']
+#             else:
+#                 libelle = _('Write-Off')
+# 
+#             cur_obj = self.pool.get('res.currency')
+#             cur_id = False
+#             amount_currency_writeoff = 0.0
+#             if context.get('company_currency_id',False) != context.get('currency_id',False):
+#                 cur_id = context.get('currency_id',False)
+#                 for line in unrec_lines:
+#                     if line.currency_id and line.currency_id.id == context.get('currency_id',False):
+#                         amount_currency_writeoff += line.amount_currency
+#                     else:
+#                         tmp_amount = cur_obj.compute(cr, uid, line.account_id.company_id.currency_id.id, context.get('currency_id',False), abs(line.debit-line.credit), context={'date': line.date})
+#                         amount_currency_writeoff += (line.debit > 0) and tmp_amount or -tmp_amount
+# 
+#             writeoff_lines = [
+#                 (0, 0, {
+#                     'name': libelle,
+#                     'debit': self_debit,
+#                     'credit': self_credit,
+#                     'account_id': account_id,
+#                     'date': date,
+#                     'partner_id': partner_id,
+#                     'currency_id': cur_id or (account.currency_id.id or False),
+#                     'amount_currency': amount_currency_writeoff and -1 * amount_currency_writeoff or (account.currency_id.id and -1 * currency or 0.0)
+#                 }),
+#                 (0, 0, {
+#                     'name': libelle,
+#                     'debit': debit,
+#                     'credit': credit,
+#                     'account_id': writeoff_acc_id,
+#                     'analytic_account_id': context.get('analytic_id', False),
+#                     'date': date,
+#                     'partner_id': partner_id,
+#                     'currency_id': cur_id or (account.currency_id.id or False),
+#                     'amount_currency': amount_currency_writeoff and amount_currency_writeoff or (account.currency_id.id and currency or 0.0)
+#                 })
+#             ]
+# 
+#             writeoff_move_id = move_obj.create(cr, uid, {
+#                 'period_id': writeoff_period_id,
+#                 'journal_id': writeoff_journal_id,
+#                 'date':date,
+#                 'state': 'draft',
+#                 'line_id': writeoff_lines
+#             })
+# 
+#             writeoff_line_ids = self.search(cr, uid, [('move_id', '=', writeoff_move_id), ('account_id', '=', account_id)])
+#             if account_id == writeoff_acc_id:
+#                 writeoff_line_ids = [writeoff_line_ids[1]]
+#             ids += writeoff_line_ids
+
+        r_id = move_rec_obj.create(cr, uid, {
+            'type': type,
+            'line_id': map(lambda x: (4, x, False), ids),
+            'line_partial_ids': map(lambda x: (3, x, False), ids)
+        })
+        wf_service = netsvc.LocalService("workflow")
+        # the id of the move.reconcile is written in the move.line (self) by the create method above
+        # because of the way the line_id are defined: (4, x, False)
+        for id in ids:
+            wf_service.trg_trigger(uid, 'account.move.line', id, cr)
+
+        if lines and lines[0]:
+            partner_id = lines[0].partner_id and lines[0].partner_id.id or False
+            if partner_id and context and context.get('stop_reconcile', False):
+                partner_obj.write(cr, uid, [partner_id], {'last_reconciliation_date': time.strftime('%Y-%m-%d %H:%M:%S')})
+        return r_id
 
     def reconcile_partial(self, cr, uid, ids, type='auto', context=None, writeoff_acc_id=False, writeoff_period_id=False, writeoff_journal_id=False):
         move_rec_obj = self.pool.get('account.move.reconcile')
