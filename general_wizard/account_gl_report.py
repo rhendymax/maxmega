@@ -235,7 +235,7 @@ class maxmega_gl_report(osv.osv_memory):
 			debit_amount = self._sum_debit_account(cr,uid, result,prds, data['form'],context)
 			header += '\n,,,,,,' + str(round(debit_amount,2)) +"," + str(round(credit_amount,2)) + "," + str(round((debit_amount-credit_amount),2)) + " \n"
 			acc_ids.append(result['id'])
-		print "::: accounts :::", acc_ids
+# 		print "::: accounts :::", acc_ids
 		total_debit_amount = self._sum_debit(cr,uid, acc_ids,prds, data['form'],context)
 		total_credit_amount = self._sum_credit(cr,uid, acc_ids,prds, data['form'],context)
 
