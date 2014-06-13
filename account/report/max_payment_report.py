@@ -402,49 +402,92 @@ class max_payment_report(report_sxw.rml_parse):
     
                 alloc_inv_amt_debit = 0.00
                 alloc_inv_home_debit = 0.00
-    
-                for lines in inv.line_dr_ids:
-                    if lines.amount > 0:
-                        amount_all += lines.amount
-                        alloc_inv_amt_debit += lines.amount
-                        amount_home = lines.amount_home or 0.00
-                        amount_home_all += amount_home
-                        amount_inv_home = lines.amount_inv_home or 0.00
-                        alloc_inv_home_debit += amount_inv_home
-                        gain_loss = (amount_inv_home - amount_home) or 0.00
-                        gain_loss_all += gain_loss
-                        lines_ids.append({
-                            'voucher_no' : lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '',
-                            'date' : lines.move_line_id and lines.move_line_id.date or False,
-                            'currency_date' : lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or False,
-                            'alloc_inv_amt' : lines.amount or 0.00,
-                            'cheque_home' : lines.amount_home or 0.00,
-                            'alloc_inv_home': amount_inv_home,
-                            'gain_loss': gain_loss,
-                            })
-                for lines in inv.line_cr_ids:
-                    if lines.amount > 0:
-                        sign = -1
-                        amount_all -= lines.amount
-                        credit_inv_amt_credit += (sign * lines.amount)
-    
-                        amount_home = lines.amount_home or 0.00
-                        amount_home_all -= amount_home
-                        amount_inv_home = lines.amount_inv_home or 0.00
-                        credit_inv_home_credit += (sign * amount_inv_home)
-                        gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
-                        gain_loss_all -= gain_loss
-                        lines_ids.append({
-                            'credit_no' : lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '',
-                            'date' : lines.move_line_id and lines.move_line_id.date or False,
-                            'currency_date' : lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or False,
-                            'credit_inv_amt' : (sign * lines.amount) or 0.00,
-                            'cheque_home' : (sign * lines.amount_home) or 0.00,
-                            'credit_inv_home': (sign * amount_inv_home),
-                            'gain_loss': gain_loss,
-                            })
+
+                if type == 'payable':
+                    for lines in inv.line_dr_ids:
+                        if lines.amount > 0:
+                            amount_all += lines.amount
+                            alloc_inv_amt_debit += lines.amount
+                            amount_home = lines.amount_home or 0.00
+                            amount_home_all += amount_home
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            alloc_inv_home_debit += amount_inv_home
+                            gain_loss = (amount_inv_home - amount_home) or 0.00
+                            gain_loss_all += gain_loss
+                            lines_ids.append({
+                                'voucher_no' : lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '',
+                                'date' : lines.move_line_id and lines.move_line_id.date or False,
+                                'currency_date' : lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or False,
+                                'alloc_inv_amt' : lines.amount or 0.00,
+                                'cheque_home' : lines.amount_home or 0.00,
+                                'alloc_inv_home': amount_inv_home,
+                                'gain_loss': gain_loss,
+                                })
+                    for lines in inv.line_cr_ids:
+                        if lines.amount > 0:
+                            sign = -1
+                            amount_all -= lines.amount
+                            credit_inv_amt_credit += (sign * lines.amount)
+        
+                            amount_home = lines.amount_home or 0.00
+                            amount_home_all -= amount_home
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            credit_inv_home_credit += (sign * amount_inv_home)
+                            gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                            gain_loss_all -= gain_loss
+                            lines_ids.append({
+                                'credit_no' : lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '',
+                                'date' : lines.move_line_id and lines.move_line_id.date or False,
+                                'currency_date' : lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or False,
+                                'credit_inv_amt' : (sign * lines.amount) or 0.00,
+                                'cheque_home' : (sign * lines.amount_home) or 0.00,
+                                'credit_inv_home': (sign * amount_inv_home),
+                                'gain_loss': gain_loss,
+                                })
+                elif type == 'receivable':
+                    for lines in inv.line_cr_ids:
+                        if lines.amount > 0:
+                            amount_all += lines.amount
+                            alloc_inv_amt_debit += lines.amount
+                            amount_home = lines.amount_home or 0.00
+                            amount_home_all += amount_home
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            alloc_inv_home_debit += amount_inv_home
+                            gain_loss = (amount_inv_home - amount_home) or 0.00
+                            gain_loss_all += gain_loss
+                            lines_ids.append({
+                                'voucher_no' : lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '',
+                                'date' : lines.move_line_id and lines.move_line_id.date or False,
+                                'currency_date' : lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or False,
+                                'alloc_inv_amt' : lines.amount or 0.00,
+                                'cheque_home' : lines.amount_home or 0.00,
+                                'alloc_inv_home': amount_inv_home,
+                                'gain_loss': gain_loss,
+                                })
+                    for lines in inv.line_dr_ids:
+                        if lines.amount > 0:
+                            sign = -1
+                            amount_all -= lines.amount
+                            credit_inv_amt_credit += (sign * lines.amount)
+        
+                            amount_home = lines.amount_home or 0.00
+                            amount_home_all -= amount_home
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            credit_inv_home_credit += (sign * amount_inv_home)
+                            gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                            gain_loss_all -= gain_loss
+                            lines_ids.append({
+                                'credit_no' : lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '',
+                                'date' : lines.move_line_id and lines.move_line_id.date or False,
+                                'currency_date' : lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or False,
+                                'credit_inv_amt' : (sign * lines.amount) or 0.00,
+                                'cheque_home' : (sign * lines.amount_home) or 0.00,
+                                'credit_inv_home': (sign * amount_inv_home),
+                                'gain_loss': gain_loss,
+                                })
                 self.payment_count += 1
                 res['voucher_no'] = inv.number
+                res['part_header'] = (type == 'payable' and 'Supplier' or 'Customer')
                 res['supp_ref'] = inv.partner_id and inv.partner_id.ref or ''
                 res['supp_name'] = inv.partner_id and inv.partner_id.name or ''
                 res['ex_glan'] = inv.company_id and inv.company_id.property_currency_gain_loss and  inv.company_id.property_currency_gain_loss.code or ''

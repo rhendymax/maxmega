@@ -534,33 +534,58 @@ class param_posted_payment_check_list(osv.osv_memory):
     
                 alloc_inv_amt_debit = 0.00
                 alloc_inv_home_debit = 0.00
-                
-                for lines in inv.line_dr_ids:
-                    if lines.amount > 0:
-                        amount_all += lines.amount
-                        alloc_inv_amt_debit += lines.amount
-                        amount_home_all += lines.amount_home or 0.00
-                        alloc_inv_home_debit += lines.amount_inv_home or 0.00
-    
-                        #count Gain Loss
-                        amount_home = lines.amount_home or 0.00
-                        amount_inv_home = lines.amount_inv_home or 0.00
-                        gain_loss = (amount_inv_home - amount_home) or 0.00
-                        gain_loss_all += gain_loss
-                        #
-                for lines in inv.line_cr_ids:
-                    if lines.amount > 0:
-                        sign = -1
-                        amount_all -= lines.amount
-                        credit_inv_amt_credit += (sign * lines.amount)
-                        amount_home_all -= lines.amount_home or 0.00
-                        credit_inv_home_credit += (sign * (lines.amount_inv_home or 0.00) or 0.00)
-                        #count Gain Loss
-                        amount_home = lines.amount_home or 0.00
-                        amount_inv_home = lines.amount_inv_home or 0.00
-                        gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
-                        gain_loss_all -= gain_loss
-                        #
+                if type == 'payable':
+                    for lines in inv.line_dr_ids:
+                        if lines.amount > 0:
+                            amount_all += lines.amount
+                            alloc_inv_amt_debit += lines.amount
+                            amount_home_all += lines.amount_home or 0.00
+                            alloc_inv_home_debit += lines.amount_inv_home or 0.00
+        
+                            #count Gain Loss
+                            amount_home = lines.amount_home or 0.00
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            gain_loss = (amount_inv_home - amount_home) or 0.00
+                            gain_loss_all += gain_loss
+                            #
+                    for lines in inv.line_cr_ids:
+                        if lines.amount > 0:
+                            sign = -1
+                            amount_all -= lines.amount
+                            credit_inv_amt_credit += (sign * lines.amount)
+                            amount_home_all -= lines.amount_home or 0.00
+                            credit_inv_home_credit += (sign * (lines.amount_inv_home or 0.00) or 0.00)
+                            #count Gain Loss
+                            amount_home = lines.amount_home or 0.00
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                            gain_loss_all -= gain_loss
+                elif type == 'receivable':
+                    for lines in inv.line_cr_ids:
+                        if lines.amount > 0:
+                            amount_all += lines.amount
+                            alloc_inv_amt_debit += lines.amount
+                            amount_home_all += lines.amount_home or 0.00
+                            alloc_inv_home_debit += lines.amount_inv_home or 0.00
+        
+                            #count Gain Loss
+                            amount_home = lines.amount_home or 0.00
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            gain_loss = (amount_inv_home - amount_home) or 0.00
+                            gain_loss_all += gain_loss
+                            #
+                    for lines in inv.line_dr_ids:
+                        if lines.amount > 0:
+                            sign = -1
+                            amount_all -= lines.amount
+                            credit_inv_amt_credit += (sign * lines.amount)
+                            amount_home_all -= lines.amount_home or 0.00
+                            credit_inv_home_credit += (sign * (lines.amount_inv_home or 0.00) or 0.00)
+                            #count Gain Loss
+                            amount_home = lines.amount_home or 0.00
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                            gain_loss_all -= gain_loss
                 payment_count += 1
                 res['voucher_no'] = inv.number
                 res['supp_ref'] = inv.partner_id and inv.partner_id.ref or ''
@@ -594,7 +619,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                 header += 'P/V No. : ' + str(res['voucher_no'] or '') + ";Realized Ex GLAN : " + str(res['ex_glan'] or '') + ";Cheque No. : " + str(res['cheque_no'] or '') + \
                 ';Bank Currency Key : ' + str(res['curr_name'] or '') + " \n" 
                 
-                header += 'Supplier : ' + str(res['supp_ref'] or '') + ';Currency : ' + str(res['curr_name'] or '') + ";Cheque Date : " + str(res['cheque_date'] or '') + \
+                header +=  (type == 'payable' and 'Supplier' or 'Customer') + ' : ' + str(res['supp_ref'] or '') + ';Currency : ' + str(res['curr_name'] or '') + ";Cheque Date : " + str(res['cheque_date'] or '') + \
                 ';Bank Chrgs GLAN : ' + str(res['bank_glan'] or '') + " \n"
                 
                 header += str(res['supp_name'] or '') + ';Ex Rate : ' + str("%.5f" % res['cur_exrate'] or 0.00000) + ";Cheque Amt : " + str("%.2f" % res['cheq_amount'] or 0.00) + \
@@ -604,39 +629,72 @@ class param_posted_payment_check_list(osv.osv_memory):
                 ';Bank chrgs Amt : ' + str("%.2f" % res['bank_chrgs'] or 0.00) + "; \n"
                 
                 header += 'Deposit Home : ' + str("%.2f" % res['deposit_amt_home'] or 0.00) + ';Bank chrgs Home : ' + str("%.2f" % res['bank_chrgs'] or  0.00) + "; \n"
-
-                for lines in inv.line_dr_ids:
-                    if lines.amount > 0:
-                        amount_inv_home = lines.amount_inv_home or 0.00
-                        amount_home = lines.amount_home or 0.00
-                        gain_loss = amount_inv_home - amount_home or 0.00
-                        header += str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
-                                  ";" + \
-                                  str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
-                                  str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
-                                  str("%.2f" % (lines.amount_home or 0.00)) + ";" + \
-                                  ";" + \
-                                  ";" + \
-                                  str("%.2f" % (lines.amount or 0.00)) + ";" + \
-                                  str("%.2f" % (lines.amount_inv_home or 0.00)) + ";" + \
-                                  str("%.2f" % (((lines.amount_inv_home or 0.00) - (lines.amount_home or 0.00)) or 0.00)) + " \n"
-
-                for lines in inv.line_cr_ids:
-                    if lines.amount > 0:
-                        sign = -1
-                        amount_inv_home = lines.amount_inv_home or 0.00
-                        amount_home = lines.amount_home or 0.00
-                        gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
-                        header += ";" + \
-                                  str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
-                                  str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
-                                  str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
-                                  str("%.2f" % ((sign * lines.amount_home) or 0.00)) + ";" + \
-                                  str("%.2f" % ((sign * lines.amount) or 0.00)) + ";" + \
-                                  str("%.2f" % ((sign * lines.amount_inv_home) or 0.00)) + ";" + \
-                                  ";" + \
-                                  ";" + \
-                                  str("%.2f" % (gain_loss))+ " \n"
+                if type == 'payable':
+                    for lines in inv.line_dr_ids:
+                        if lines.amount > 0:
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            amount_home = lines.amount_home or 0.00
+                            gain_loss = amount_inv_home - amount_home or 0.00
+                            header += str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
+                                      ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str("%.2f" % (lines.amount_home or 0.00)) + ";" + \
+                                      ";" + \
+                                      ";" + \
+                                      str("%.2f" % (lines.amount or 0.00)) + ";" + \
+                                      str("%.2f" % (lines.amount_inv_home or 0.00)) + ";" + \
+                                      str("%.2f" % (((lines.amount_inv_home or 0.00) - (lines.amount_home or 0.00)) or 0.00)) + " \n"
+    
+                    for lines in inv.line_cr_ids:
+                        if lines.amount > 0:
+                            sign = -1
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            amount_home = lines.amount_home or 0.00
+                            gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                            header += ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str("%.2f" % ((sign * lines.amount_home) or 0.00)) + ";" + \
+                                      str("%.2f" % ((sign * lines.amount) or 0.00)) + ";" + \
+                                      str("%.2f" % ((sign * lines.amount_inv_home) or 0.00)) + ";" + \
+                                      ";" + \
+                                      ";" + \
+                                      str("%.2f" % (gain_loss))+ " \n"
+                elif type == 'receivable':
+                    for lines in inv.line_cr_ids:
+                        if lines.amount > 0:
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            amount_home = lines.amount_home or 0.00
+                            gain_loss = amount_inv_home - amount_home or 0.00
+                            header += str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
+                                      ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str("%.2f" % (lines.amount_home or 0.00)) + ";" + \
+                                      ";" + \
+                                      ";" + \
+                                      str("%.2f" % (lines.amount or 0.00)) + ";" + \
+                                      str("%.2f" % (lines.amount_inv_home or 0.00)) + ";" + \
+                                      str("%.2f" % (((lines.amount_inv_home or 0.00) - (lines.amount_home or 0.00)) or 0.00)) + " \n"
+    
+                    for lines in inv.line_dr_ids:
+                        if lines.amount > 0:
+                            sign = -1
+                            amount_inv_home = lines.amount_inv_home or 0.00
+                            amount_home = lines.amount_home or 0.00
+                            gain_loss = (sign * (amount_inv_home - amount_home)) or 0.00
+                            header += ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.move_id and lines.move_line_id.move_id.name or '') + ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str(lines.move_line_id and lines.move_line_id.cur_date or lines.move_line_id and lines.move_line_id.date or '') + ";" + \
+                                      str("%.2f" % ((sign * lines.amount_home) or 0.00)) + ";" + \
+                                      str("%.2f" % ((sign * lines.amount) or 0.00)) + ";" + \
+                                      str("%.2f" % ((sign * lines.amount_inv_home) or 0.00)) + ";" + \
+                                      ";" + \
+                                      ";" + \
+                                      str("%.2f" % (gain_loss))+ " \n"
                 header += 'Total for ' + str(inv.number) + \
                         ';' + ';' + ';' + ';' + str("%.2f" % res['cheq_amount_home']) + ';' + \
                         str("%.2f" % res['credit_inv_amt']) + ';' + \

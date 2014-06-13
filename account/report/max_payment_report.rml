@@ -73,7 +73,7 @@
 								<td><para style="terp_default_7"><font>[[ln['voucher_no'] ]]</font></para></td>
 							</tr>
 							<tr>
-								<td><para style="terp_default_7"><font>Supplier</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['part_header'] ]]</font></para></td>
 								<td><para style="terp_default_7"><font>[[ln['supp_ref'] ]]</font></para></td>
 							</tr>
 						</blockTable>
