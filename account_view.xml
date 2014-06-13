@@ -308,11 +308,11 @@
 			action="max_custom_report.action_param_profit_and_lost_report"
 			sequence="20"/>
 		
-		<menuitem icon="STOCK_PRINT" name="General Ledger"
+		<!-- menuitem icon="STOCK_PRINT" name="General Ledger"
 			id="menu_account_max_report_gr_general"
 			parent="menu_account_max_report_gr"
 			action="maxmega_reports.action_maxmega_gl_menu"
-			sequence="30"/>
+			sequence="30"/ -->
 			
 		<menuitem icon="STOCK_PRINT" name="General Ledger"
 			id="menu_account_report_gr_general"
