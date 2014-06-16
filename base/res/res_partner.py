@@ -30,6 +30,7 @@ class res_partner(osv.osv):
     _description = "Partner"
 
     _columns = {
+        'ref': fields.char('Code', size=64, select=1),
         'sundry': fields.boolean('Sundry', help="Check this box to set this partner as Sundry."),
         'contact_person_ids': fields.one2many('contact.person', 'partner_id', 'Contact Person'),
         'sale_term_id': fields.many2one('sale.payment.term','Sale Payment Term'),
