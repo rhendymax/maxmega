@@ -73,6 +73,6 @@
 			id="menu_param_margin_sales_report"
 			name="Margin Sales Report"
 			action="action_param_margin_sales_report"
-			parent="menu_custom_account" sequence="9"/>
+			parent="menu_custom_sale" sequence="7"/>
 	</data>
 </openerp>

@@ -87,6 +87,6 @@
 			id="menu_outgoing_report"
 			name="Outgoing Report"
 			action="action_param_outgoing_report"
-			parent="menu_custom_stock" sequence="6"/>
+			parent="menu_custom_sale" sequence="8"/>
 	</data>
 </openerp>

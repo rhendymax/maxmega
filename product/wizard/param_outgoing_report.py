@@ -267,11 +267,11 @@ class param_outgoing_report(osv.osv_memory):
                         "sm.price_unit as price, "\
                         "(sm.product_qty * sm.price_unit) as grand_total, "\
                         "so.name as so, " \
-                        "sm.location_dest_id as location, "\
+                        "sl.name as location_name, "\
                         "sm.id as sm_id " \
                         "from stock_move sm " \
                         "inner join stock_picking sp on sp.id = sm.picking_id " \
-                        "left join stock_location sl on sm.location_dest_id = sl.id " \
+                        "left join stock_location sl on sm.location_id = sl.id " \
                         "left join res_partner rp on sp.partner_id = rp.id " \
                         "left join product_template pt on sm.product_id = pt.id " \
                         "inner join sale_order_line sol on sm.sale_line_id = sol.id " \
@@ -288,7 +288,7 @@ class param_outgoing_report(osv.osv_memory):
             for s in qry:
                 header += str(s['date'] or '') + ";" + str(s['inc_no'] or '') + ";" \
                 + str(s['spn'] or '') + ";" + str(s['sn'] or '') + ";" + str(s['in'] or '') + ";" \
-                + str(s['qty'] or 0) + ";" + str(s['price'] or 0) + ";" + str(s['grand_total'] or 0) + ";" + str(s['so'] or '')+ ";" + str(s['location'] or '') + "\n"
+                + str(s['qty'] or 0) + ";" + str(s['price'] or 0) + ";" + str(s['grand_total'] or 0) + ";" + str(s['so'] or '')+ ";" + str(s['location_name'] or '') + "\n"
         
         all_content_line += header
         all_content_line += ' \n'

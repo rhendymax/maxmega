@@ -93,6 +93,6 @@
 			id="menu_monthly_sale_report"
 			name="Monthly Sales Report"
 			action="action_param_monthly_sale_report"
-			parent="menu_custom_sale" sequence="2"/>
+			parent="menu_custom_sale" sequence="4"/>
 	</data>
 </openerp>

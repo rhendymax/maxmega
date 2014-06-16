@@ -95,6 +95,6 @@
 			id="menu_so_oustanding_report"
 			name="SO Oustanding Report"
 			action="action_param_so_oustanding_report"
-			parent="menu_custom_sale" sequence="2"/>
+			parent="menu_custom_sale" sequence="3"/>
 	</data>
 </openerp>
