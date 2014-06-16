@@ -88,6 +88,6 @@
 			id="menu_incoming_report"
 			name="Incoming Report"
 			action="action_param_incoming_report"
-			parent="menu_custom_stock" sequence="3"/>
+			parent="menu_custom_purchase" sequence="5"/>
 	</data>
 </openerp>
