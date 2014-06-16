@@ -191,7 +191,7 @@ class booking_report_by_brand(osv.osv_memory):
 
         brand_ids = form['brand_ids'] or False
         brand_qry = (brand_ids and ((len(brand_ids) == 1 and "AND pbd.id = " + str(brand_ids[0]) + " ") or "AND pbd.id IN " + str(tuple(brand_ids)) + " ")) or "AND pbd.id IN (0) "
-        
+
 #        code_from = form['partner_code_from']
 #        code_to = form['partner_code_to']
         brand_ids = form['brand_ids']
@@ -225,7 +225,7 @@ class booking_report_by_brand(osv.osv_memory):
         brand_ids_vals_qry = (len(brand_ids_vals) > 0 and ((len(brand_ids_vals) == 1 and "where id = " + str(brand_ids_vals[0]) + " ") or "where id IN " + str(tuple(brand_ids_vals)) + " ")) or "where id IN (0) "
 
         cr.execute(
-                "SELECT name " \
+                "SELECT name, id " \
                 "FROM product_brand " \
                 + brand_ids_vals_qry \
                 + " order by name")
@@ -233,9 +233,6 @@ class booking_report_by_brand(osv.osv_memory):
         if qry:
             for s in qry:
                 header += "INV Brank Key : " + str(s['name']) + "\n"
-                partner_ids_vals = []
-                qry2 = cr.dictfetchall()
-                all_content_line += header
         #        for brand in pool.get('product.brand').browse(cr, uid, brand_ids):
                 cr.execute("SELECT res_partner.name as part_name," \
                     "res_partner.ref as ref_partner, line.ref as line_ref, line.date as line_date,"\
@@ -251,14 +248,14 @@ class booking_report_by_brand(osv.osv_memory):
                     "WHERE account_journal.type = 'purchase' "\
                     + date_from_qry \
                     + date_to_qry \
-                    + brand_qry + \
-                    "order by res_partner.name")
+                    + "and pbd.id = " + str(s['id']) + " " \
+                    + "order by res_partner.name")
                 slines = cr.dictfetchall()
 
                 total_price = brand_total_price = total_qty = 0.00
-                header = ""
                 if len(slines) > 0:
                     for result in slines:
+                        print result['default_code']
                         header += str(result['default_code'] or '') + ";" + str(round(((result['amount'] or 0.00) / (result['line_qty'] or 0.00)),6)) + ";" \
                         + str(result['line_qty'] or 1) + ";" + str(result['amount'] or 0.00) + ";" + str(result['line_date'] or '') + ";" \
                         + str(result['part_name'] or '') + ";" + str(result['line_ref'] or '') + "\n"
@@ -268,8 +265,8 @@ class booking_report_by_brand(osv.osv_memory):
                         brand_total_price += total_price
                 if len(slines) > 0:
                     header += ";;" + str(total_qty) + ";" + str(brand_total_price) + "\n"
-                all_content_line += header
-                csv_content = ''
+        all_content_line += header
+
 
         filename = 'Booking Report By Brand.csv'
         out = base64.encodestring(all_content_line)
