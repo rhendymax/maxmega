@@ -7,9 +7,9 @@
 			<field name="model">goods.received.from.supplier.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Booking Report By Brand">
-					<separator string="Booking Report By Brand" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Booking Report By Brand"/>
+				<form string="Goods Received From Supplier Report">
+					<separator string="Goods Received From Supplier Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Goods Received From Supplier Report"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Product Brand">
@@ -52,7 +52,7 @@
 		</record>
 
 		<menuitem icon="STOCK_PRINT" name="Goods Received From Supplier Report" parent="max_custom_report.menu_custom_purchase"
-			action="action_goods_received_from_supplier_report_menu" id="menu_goods_received_from_supplier_report" sequence="30"/>
+			action="action_goods_received_from_supplier_report_menu" id="menu_goods_received_from_supplier_report" sequence="4"/>
 
 		<record id="goods_received_from_supplier_result_data_view" model="ir.ui.view">
 			<field name="name">Goods Received From Supplier Report</field>
