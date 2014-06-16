@@ -14,6 +14,7 @@
 					<newline/>
 					<notebook colspan="4">
 						<page string="Account No">
+							<field name="account_search_vals" colspan="4"/>
 							<field name="account_selection" colspan="4"/>
 							<field name="account_default_from" attrs="{'invisible': [('account_selection','!=','def')], 'required': [('account_selection','=','def')]}"/>
 							<field name="account_default_to" attrs="{'invisible': [('account_selection','!=','def')], 'required': [('account_selection','=','def')]}"/>

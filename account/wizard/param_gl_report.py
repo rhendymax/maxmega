@@ -31,6 +31,7 @@ import copy
 from operator import itemgetter
 from report import report_sxw
 import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_gl_report(osv.osv_memory):
     _name = 'param.gl.report'
@@ -45,6 +46,7 @@ class param_gl_report(osv.osv_memory):
         'period_default_to':fields.many2one('account.period', 'Period To'),
         'period_input_from': fields.char('Period From', size=128),
         'period_input_to': fields.char('Period To', size=128),
+        'account_search_vals': fields.selection([('code','Account Code'),('name', 'Account Name')],'Account Search Values', required=True),
         'account_selection': fields.selection([('def','Default'),('input', 'Input'),('selection','Selection')],'Account Filter Selection', required=True),
         'account_default_from':fields.many2one('account.account', 'Account From', domain=[('type','!=','view')], required=False),
         'account_default_to':fields.many2one('account.account', 'Account To', domain=[('type','!=','view')], required=False),
@@ -54,7 +56,14 @@ class param_gl_report(osv.osv_memory):
         'data': fields.binary('Exported CSV', readonly=True),
         'filename': fields.char('File Name',size=64),
     }
-    
+
+    _defaults = {
+#            'fiscalyear_id': _get_fiscalyear,
+            'date_selection' : 'none_sel',
+            'account_search_vals': 'code',
+            'account_selection' : 'def',
+    }
+
     def check_report(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
@@ -62,10 +71,10 @@ class param_gl_report(osv.osv_memory):
         data['ids'] = context.get('active_ids', [])
         data['model'] = context.get('active_model', 'ir.ui.menu')
         data['form'] = self.read(cr, uid, ids, ['fiscalyear_id','date_selection', 'date_from', 'date_to','period_default_from','period_default_to', \
-                                                'period_filter_selection','period_input_from','period_input_to','account_selection','account_default_from','account_default_to', 'account_input_from','account_input_to','account_ids' \
+                                                'period_filter_selection','period_input_from','period_input_to','account_search_vals','account_selection','account_default_from','account_default_to', 'account_input_from','account_input_to','account_ids' \
                                                 ], context=context)[0]
         for field in ['fiscalyear_id','date_selection', 'date_from', 'date_to','period_default_from','period_default_to', \
-                                                'period_filter_selection','period_input_from','period_input_to','account_selection','account_default_from','account_default_to', 'account_input_from','account_input_to','account_ids' \
+                                                'period_filter_selection','period_input_from','period_input_to','account_search_vals','account_selection','account_default_from','account_default_to', 'account_input_from','account_input_to','account_ids' \
                                                 ]:
             if isinstance(data['form'][field], tuple):
                 data['form'][field] = data['form'][field][0]
@@ -99,8 +108,8 @@ class param_gl_report(osv.osv_memory):
         result['fiscal_year_name'] = fiscal_year_name
         qry_acc = ''
         val_acc = []
-        qry_acc = 'type <> view'
-        val_acc.append(('type','!=','view'))
+        qry_acc = "type <> 'view'"
+        val_acc.append(('type','<>','view'))
         partner_ids = False
         account_ids = False
         account_selection = False
@@ -111,56 +120,109 @@ class param_gl_report(osv.osv_memory):
         account_input_to = data['form']['account_input_to'] or False
         account_default_from_str = account_default_to_str = ''
         account_input_from_str = account_input_to_str= ''
-
-        if data['form']['account_selection'] == 'def':
-            data_found = False
-            if account_default_from and account_obj.browse(cr, uid, account_default_from) and account_obj.browse(cr, uid, account_default_from).name:
-                account_default_from_str = account_obj.browse(cr, uid, account_default_from).name
-                data_found = True
-                val_acc.append(('name', '>=', account_obj.browse(cr, uid, account_default_from).name))
-            if account_default_to and account_obj.browse(cr, uid, account_default_to) and account_obj.browse(cr, uid, account_default_to).name:
-                account_default_to_str = account_obj.browse(cr, uid, account_default_to).name
-                data_found = True
-                val_acc.append(('name', '<=', account_obj.browse(cr, uid, account_default_to).name))
-            account_selection = '"' + account_default_from_str + '" - "' + account_default_to_str + '"'
-            if data_found:
-                account_ids = account_obj.search(cr, uid, val_acc, order='name ASC')
-        elif data['form']['account_selection'] == 'input':
-            data_found = False
-            if account_input_from:
-                account_input_from_str = account_input_from
-                cr.execute("select name " \
-                                "from account_account "\
-                                "where " + qry_acc + " and " \
-                                "name ilike '" + str(account_input_from) + "%' " \
-                                "order by name limit 1")
-                qry = self.cr.dictfetchone()
-                if qry:
+        data_search = data['form']['account_search_vals']
+        
+        if data_search == 'code':
+            if data['form']['account_selection'] == 'def':
+                data_found = False
+                if account_default_from and account_obj.browse(cr, uid, account_default_from) and account_obj.browse(cr, uid, account_default_from).code:
+                    account_default_from_str = account_obj.browse(cr, uid, account_default_from).code
+                    data_found = True
+                    val_acc.append(('code', '>=', account_obj.browse(cr, uid, account_default_from).code))
+                if account_default_to and account_obj.browse(cr, uid, account_default_to) and account_obj.browse(cr, uid, account_default_to).code:
+                    account_default_to_str = account_obj.browse(cr, uid, account_default_to).code
+                    data_found = True
+                    val_acc.append(('code', '<=', account_obj.browse(cr, uid, account_default_to).code))
+                account_selection = '"' + account_default_from_str + '" - "' + account_default_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(cr, uid, val_acc, order='code ASC')
+            elif data['form']['account_selection'] == 'input':
+                data_found = False
+                if account_input_from:
+                    account_input_from_str = account_input_from
+                    cr.execute("select code " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "code ilike '" + str(account_input_from) + "%' " \
+                                    "order by code limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        account_input_to_str = account_input_to
+                        data_found = True
+                        val_acc.append(('code', '>=', qry['code']))
+                if account_input_to:
                     account_input_to_str = account_input_to
+                    cr.execute("select code " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "code ilike '" + str(account_input_to) + "%' " \
+                                    "order by code desc limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_acc.append(('code', '<=', qry['code']))
+                #print val_part
+                account_selection = '"' + account_input_from_str + '" - "' + account_input_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(cr, uid, val_acc, order='code ASC')
+            elif data['form']['account_selection'] == 'selection':
+                acc_ids = ''
+                if data['form']['account_ids']:
+                    for aco in  account_obj.browse(cr, uid, data['form']['account_ids']):
+                        acc_ids += '"' + str(aco.code) + '",'
+                    account_ids = data['form']['account_ids']
+                account_selection = '[' + acc_ids +']'
+        
+        elif data_search == 'name':
+            if data['form']['account_selection'] == 'def':
+                data_found = False
+                if account_default_from and account_obj.browse(cr, uid, account_default_from) and account_obj.browse(cr, uid, account_default_from).name:
+                    account_default_from_str = account_obj.browse(cr, uid, account_default_from).name
                     data_found = True
-                    val_acc.append(('name', '>=', qry['name']))
-            if account_input_to:
-                account_input_to_str = account_input_to
-                cr.execute("select name " \
-                                "from account_account "\
-                                "where " + qry_acc + " and " \
-                                "name ilike '" + str(account_input_to) + "%' " \
-                                "order by name desc limit 1")
-                qry = self.cr.dictfetchone()
-                if qry:
+                    val_acc.append(('name', '>=', account_obj.browse(cr, uid, account_default_from).name))
+                if account_default_to and account_obj.browse(cr, uid, account_default_to) and account_obj.browse(cr, uid, account_default_to).name:
+                    account_default_to_str = account_obj.browse(cr, uid, account_default_to).name
                     data_found = True
-                    val_acc.append(('name', '<=', qry['name']))
-            #print val_part
-            account_selection = '"' + account_input_from_str + '" - "' + account_input_to_str + '"'
-            if data_found:
-                account_ids = account_obj.search(cr, uid, val_acc, order='name ASC')
-        elif data['form']['account_selection'] == 'selection':
-            acc_ids = ''
-            if data['form']['account_ids']:
-                for aco in  account_obj.browse(cr, uid, data['form']['account_ids']):
-                    acc_ids += '"' + str(aco.name) + '",'
-                account_ids = data['form']['account_ids']
-            account_selection = '[' + acc_ids +']'
+                    val_acc.append(('name', '<=', account_obj.browse(cr, uid, account_default_to).name))
+                account_selection = '"' + account_default_from_str + '" - "' + account_default_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(cr, uid, val_acc, order='name ASC')
+            elif data['form']['account_selection'] == 'input':
+                data_found = False
+                if account_input_from:
+                    account_input_from_str = account_input_from
+                    cr.execute("select name " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "name ilike '" + str(account_input_from) + "%' " \
+                                    "order by name limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        account_input_to_str = account_input_to
+                        data_found = True
+                        val_acc.append(('name', '>=', qry['name']))
+                if account_input_to:
+                    account_input_to_str = account_input_to
+                    cr.execute("select name " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "name ilike '" + str(account_input_to) + "%' " \
+                                    "order by name desc limit 1")
+                    qry = cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_acc.append(('name', '<=', qry['name']))
+                #print val_part
+                account_selection = '"' + account_input_from_str + '" - "' + account_input_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(cr, uid, val_acc, order='name ASC')
+            elif data['form']['account_selection'] == 'selection':
+                acc_ids = ''
+                if data['form']['account_ids']:
+                    for aco in  account_obj.browse(cr, uid, data['form']['account_ids']):
+                        acc_ids += '"' + str(aco.name) + '",'
+                    account_ids = data['form']['account_ids']
+                account_selection = '[' + acc_ids +']'
         
         period_default_from = data['form']['period_default_from'] or False
         period_default_from = period_default_from and period_obj.browse(cr, uid, period_default_from) or False
@@ -319,8 +381,6 @@ class param_gl_report(osv.osv_memory):
 
         date_from_qry = date_from and "And l.date >= '" + str(date_from) + "' " or " "
         date_to_qry = date_to and "And l.date <= '" + str(date_to) + "' " or " "
-        
-        grand_total = 0.00
         cr.execute(
                 "SELECT DISTINCT l.account_id " \
                 "FROM account_move_line AS l, account_account AS account, " \
@@ -377,9 +437,9 @@ class param_gl_report(osv.osv_memory):
                          + period_ids_vals_qry \
                          + " order by ap.date_start")
                 qry4 = cr.dictfetchall()
-                balance = 0
-                closing = 0
-                closing_inv = 0
+                balance = 0.00
+                closing = 0.00
+                closing_inv = 0.00
                 if qry4:
                     for u in qry4:
                         opening_balance = balance
@@ -404,10 +464,12 @@ class param_gl_report(osv.osv_memory):
                             "order by aa.code, af.name, ap.date_start, aml.date")
                         qry5 = cr.dictfetchall()
                         val_ids2 = []
-                        debit_total = credit_total = 0.00
                         if qry5:
                             for v in qry5:
-                                balance += (v['aml_debit'] - v['aml_credit'])
+                                total_debit_credit = float_round((v['aml_debit'] - v['aml_credit']),2)
+
+                                balance += total_debit_credit
+
 #                                 closing += (v['home_amt'] * sign)
 #                                 closing_inv += (v['inv_amt'] * sign)
 
@@ -423,8 +485,6 @@ class param_gl_report(osv.osv_memory):
                                         'aml_debit' : v['aml_debit'],
                                         'aml_credit' : v['aml_credit'],
                                         })
-                                    debit_total += v['aml_debit']
-                                    credit_total += v['aml_credit']
                         val_ids2 = val_ids2 and sorted(val_ids2, key=lambda val_res: val_res['aml_date']) or []
 # 
                         if u['period_startdate'] < min_period.date_start:
@@ -446,9 +506,9 @@ class param_gl_report(osv.osv_memory):
                     'closing' : balance,
                     'val_ids' : val,
                     })
-                grand_total += balance
+                
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['acc_code']) or []
-        
+        debit_total = credit_total = grand_total = 0
         for rs1 in results1:
             header += '[' + str(rs1['acc_code']) + '] ' + str(rs1['acc_name']) + ' \n'
             total_home_amt = 0
@@ -457,14 +517,22 @@ class param_gl_report(osv.osv_memory):
                         + str(rs2['opening_balance']) + ' \n'
                 ttl_debit = ttl_credit = 0
                 for rs3 in rs2['val_ids2']:
-                    ttl_debit += rs3['aml_debit']
-                    ttl_credit += rs3['aml_credit']
+                    ttl_debit += float_round(rs3['aml_debit'],2)
+                    ttl_credit += float_round(rs3['aml_credit'],2)
                     header += str(rs3['aml_date']) + ';' + str(rs3['am_name']) + ';' + str(rs3['aml_ref']) + ';' \
                         + str(rs3['aml_name']) + ';' + str(rs3['aml_debit']) + ';' + str(rs3['aml_credit']) + ' \n'
+                debit_total += ttl_debit
+                credit_total += ttl_debit
                 header += 'Total For ' + str(rs1['acc_code']) + ';;;' + 'PERIOD CLOSING AS AT ' + str(rs2['period_end']) + ';' \
                 + str(ttl_debit) + ';' + str(ttl_credit) + ' \n'
-            header += 'Closing Balance For ' + str(rs1['acc_code']) + ';;;' + '     PERIOD CLOSING AS AT ' + str(rs1['period_end']) + ';;;' + str(rs1['closing']) + ' \n \n'
-        header += 'Report Total ;;;;' + str(debit_total) + ';' + str(debit_total) + ' \n'
+            grand_total += rs1['closing']
+            closing = rs1['closing']
+            if float_is_zero(closing, precision_digits=2):
+                closing = 0.00
+            header += 'Closing Balance For ' + str(rs1['acc_code']) + ';;;' + '     PERIOD CLOSING AS AT ' + str(rs1['period_end']) + ';;;' + str(closing) + ' \n \n'
+        header += 'Report Total ;;;;' + str(debit_total) + ';' + str(credit_total) + ' \n'
+        if float_is_zero(grand_total, precision_digits=2):
+            grand_total = 0.00
         header += ';;;Balance;;;' + str(grand_total) + ' \n'
         
         all_content_line += header
@@ -486,13 +554,6 @@ class param_gl_report(osv.osv_memory):
             'target':'new',
             'res_id':ids[0],
             }
-
-    _defaults = {
-#            'fiscalyear_id': _get_fiscalyear,
-            'date_selection' : 'none_sel',
-            'account_selection' : 'def',
-    }
-
 param_gl_report()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

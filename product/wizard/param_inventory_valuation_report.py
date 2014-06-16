@@ -131,7 +131,8 @@ class param_inventory_valuation_report(osv.osv_memory):
         elif data['form']['valid'] == 'non_valid':
             valid = 'Non Valid'
         result['valid_selection'] = valid
-            
+        result['valid'] = data['form']['valid'] or False
+        
 #product_product
         pp_default_from = data['form']['product_default_from'] or False
         pp_default_to = data['form']['product_default_to'] or False
@@ -295,10 +296,10 @@ class param_inventory_valuation_report(osv.osv_memory):
 #        if location_to and stock_location_obj.browse(cr, uid, location_to) and stock_location_obj.browse(cr, uid, location_to).name:
 #            val_location.append(('name', '<=', stock_location_obj.browse(cr, uid, location_to).name))
 
-        product_ids = product_product_obj.search(cr, uid, val_product,order='name')
-        location_ids = stock_location_obj.search(cr, uid, val_location)
+#        product_ids = product_product_obj.search(cr, uid, pp_ids,order='name')
+#        location_ids = stock_location_obj.search(cr, uid, sl_ids)
 #        purcs = purchase_order_line_obj.browse(self.cr, self.uid, line_ids)
-        for product_id in product_ids:
+        for product_id in pp_ids:
             pp = product_product_obj.browse(cr, uid, product_id)
             cpf_prod = cost_price_fifo_obj.stock_move_get(cr, uid, product_id)
 #            raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(cost_price_fifo_result, pp.name))
@@ -308,7 +309,7 @@ class param_inventory_valuation_report(osv.osv_memory):
                 vals_ids = []
                 total_cost = 0
                 total_qty = 0
-                for loc in stock_location_obj.browse(cr, uid, location_ids):
+                for loc in stock_location_obj.browse(cr, uid, sl_ids):
                     cpf_loc = cost_price_fifo_obj.stock_move_get(cr, uid, product_id, location_id=loc.id)
                     #print cpf_loc
                     if cpf_loc:
@@ -319,7 +320,7 @@ class param_inventory_valuation_report(osv.osv_memory):
                             document_date =  res_f1['document_date'] or  False
                             if document_date \
                                 and document_date >= date_from and document_date <= date_to \
-                                and res_f1['location_id'] in location_ids:
+                                and res_f1['location_id'] in sl_ids:
                                 location = stock_location_obj.browse(cr, uid, res_f1['location_id'])
                                 vals_ids2.append({
                                     'int_no' : res_f1['int_doc_no'] or '',
@@ -430,9 +431,9 @@ class param_inventory_valuation_report(osv.osv_memory):
                 results.append(res)
                 
                 for rs in results:
-                    header += str(rs['product_name'])
-                    for rs1 in rs:
-                        header += str(rs1['loc_name'])
+                    header += str(rs['product_name']) + ' \n'
+                    for rs1 in rs['pro_lines']:
+                        header += str(rs1['loc_name']) + ' \n'
                 
 
         all_content_line += header
