@@ -75,11 +75,11 @@ class param_receipt_deposit_bank_report(osv.osv_memory):
         if context is None:
             context = {}
         datas = {'ids': context.get('active_ids', [])}
-        datas['model'] = 'param.posted.receipt.check.list'
+        datas['model'] = 'param.receipt.deposit.report'
         datas['form'] = self.read(cr, uid, ids)[0]
         return {
             'type': 'ir.actions.report.xml',
-            'report_name': 'max.payment.report_landscape',
+            'report_name': 'deposit.bank_landscape',
             'datas': datas,
             'nodestroy':True,
         }

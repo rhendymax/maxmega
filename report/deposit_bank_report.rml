@@ -78,7 +78,7 @@
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['check_amt'] or 0, digits=2) ]]</font></para></td>
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['check_home'] or 0, digits=2) ]]</font></para></td>
 						<td><para style="terp_default_7"><font>[[ ln['part_name'] ]]</font></para></td>
-						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['exrate'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['exrate'] or 0, digits=6) ]]</font></para></td>
 						<td><para style="terp_default_7"><font>[[ ln['bank_draft'] ]]</font></para></td>
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['char'] or 0, digits=2) ]]</font></para></td>
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['char_home'] or 0, digits=2) ]]</font></para></td>

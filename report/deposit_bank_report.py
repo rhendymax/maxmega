@@ -405,19 +405,19 @@ class report(report_sxw.rml_parse):
                     for t in qry3:
                         inv = voucher_obj.browse(self.cr, self.uid, t['voucher_id'])
                         ttl_check += inv.writeoff_amount
-                        ttl_check_home += round(inv.writeoff_amount * inv.ex_rate,2)
+                        ttl_check_home += round(inv.writeoff_amount / inv.ex_rate,2)
                         ttl_char += inv.bank_charges_amount
-                        ttl_char_home += round(inv.bank_charges_amount * inv.ex_rate,2)
+                        ttl_char_home += round(inv.bank_charges_amount / inv.ex_rate,2)
                         val.append({
                                     "rec_no" : inv.number,
                                     "rec_date" :inv.date,
                                     "check_amt" : inv.writeoff_amount,
-                                    "check_home" : inv.writeoff_amount * inv.ex_rate,
+                                    "check_home" : round(inv.writeoff_amount / inv.ex_rate,2),
                                     "part_name" : (inv.partner_id and inv.partner_id.name) or '',
                                     "exrate" : inv.ex_rate or 0,
                                     "bank_draft" : inv.bank_draft_no or '',
                                     "char" : inv.bank_charges_amount,
-                                    "char_home" : inv.bank_charges_amount * inv.ex_rate,
+                                    "char_home" : round(inv.bank_charges_amount / inv.ex_rate, 2),
                                     })
                 val = val and sorted(val, key=lambda val_res: val_res['rec_date']) or []
                 
@@ -434,7 +434,7 @@ class report(report_sxw.rml_parse):
                     'ttl_char': ttl_char,
                     'ttl_char_home': ttl_char_home,
                     })
-        results = results and sorted(results, key=lambda val_res: results['journal_name']) or []
+        results = results and sorted(results, key=lambda val_res: val_res['journal_name']) or []
         return results
 
 report_sxw.report_sxw('report.deposit.bank_landscape', 'account.voucher',
