@@ -34,7 +34,7 @@
 					</notebook>
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
-						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+						<button name="create_vat" string="Print as PDF" colspan="1" type="object" icon="gtk-ok"/>
 					</group>
 				</form>
 			</field>
@@ -52,7 +52,7 @@
 
 		<menuitem
 			id="menu_param_monthly_pos_report"
-			name="Monthly POS Report"
+			name="Monthly POS Report with Brand"
 			action="action_param_monthly_pos_report"
 			parent="menu_custom_account" sequence="7"/>
 	</data>

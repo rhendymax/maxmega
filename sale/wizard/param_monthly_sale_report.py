@@ -353,7 +353,7 @@ class param_monthly_sale_report(osv.osv_memory):
         if qry:
             
             for s in qry:
-                header += str(s['name']) + ' \n'
+                header += '[' + s['ref'] + '] ' + str(s['name']) + ' \n'
                 cr.execute("select rp.name as cust_name, pt.name as inv_key, ail.price_unit as selling_price, " \
                        "ail.quantity as quantity, ail.price_unit * ail.quantity as total_selling, " \
                        "pb.name as brand_name, ai.date_invoice as inv_date, sz.name as sales_zone, rc.name as curr_name, ai.type as type from account_invoice ai " \
