@@ -280,7 +280,7 @@ class po_oustanding_report(report_sxw.rml_parse):
                 }
                 self.oustanding += (t['oustanding'] or 0)
                 results.append(res)
-        results = results and sorted(results, key=lambda val_res: val_res['s_name']) or []
+        results = results and sorted(results, key=lambda val_res: val_res['order_name']) or []
         return results
 report_sxw.report_sxw('report.po.oustanding.report_landscape', 'purchase.order',
     'addons/max_custom_report/purchase/report/po_oustanding_report.rml', parser=po_oustanding_report, header="internal landscape")

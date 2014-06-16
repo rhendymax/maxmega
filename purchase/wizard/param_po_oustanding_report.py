@@ -384,11 +384,13 @@ class param_po_oustanding_report(osv.osv_memory):
             + po_qry + \
             "order by po.name")
         qry3 = cr.dictfetchall()
-
         if qry3:
             for t in qry3:
                 pol = pol_obj.browse(cr, uid, t['line_id'])
-                header += str(t['rp_name'] or '') + ";" + str(t['rp_ref'] or '') + ";" + str(t['po_name'] or '') + ";" + str(t['prod_name'] or '') + ";" + str(pol.estimated_time_departure or '') + ";" + str(pol.product_qty or 0.00) + ";" + str(pol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) + "\n"
+                header += str(t['rp_ref'] or '') + ";" + str(t['rp_name'] or '') + ";" \
+                    + str(t['po_name'] or '') + ";" + str(t['prod_name'] or '') + ";" +  \
+                    str(pol.estimated_time_departure or '') + ";" + str(pol.product_qty or 0.00) + ";" + \
+                    str(pol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) + "\n"
 
                 oustanding += (t['oustanding'] or 0)
         header += "Report Total;;;;;;;" + str(oustanding)  + " \n"
