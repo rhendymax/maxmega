@@ -40,11 +40,11 @@
 							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 						</page>
 					</notebook>
-					<group col="8" colspan="4">
-						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2" />
-						<label colspan="2" nolabel="1" string=" "/>
-						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
-						<button name="create_vat" string="Print" colspan="2" type="object" icon="gtk-ok"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<!-- label colspan="2" nolabel="1" string=" "/ -->
+						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="1" default_focus="1" />
+						<!-- button name="create_vat" string="Print" colspan="2" type="object" icon="gtk-ok"/ -->
 					</group>
 				</form>
 			</field>
