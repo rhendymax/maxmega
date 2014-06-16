@@ -235,8 +235,6 @@ class general_ledger_report(report_sxw.rml_parse):
         period_obj      = self.pool.get('account.period')
         invoice_obj     = self.pool.get('account.invoice')
         aml_obj     = self.pool.get('account.move.line')
-        partner_obj     = self.pool.get('res.partner')
-
         results         = []
         results1        = []
         fiscal_year = self.fiscal_year
@@ -310,7 +308,6 @@ class general_ledger_report(report_sxw.rml_parse):
         period_qry2 = (qry_period_ids and ((len(qry_period_ids) == 1 and "and aml.period_id = " + str(qry_period_ids[0]) + " ") or "and aml.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND and aml.period_id IN (0) "
         date_from_qry2 = date_from and "And aml.date >= '" + str(date_from) + "' " or " "
         date_to_qry2 = date_to and "And aml.date <= '" + str(date_to) + "' " or " "
-        val = []
         cr.execute(
                 "SELECT id, code, name " \
                 "FROM account_account " \
@@ -319,6 +316,7 @@ class general_ledger_report(report_sxw.rml_parse):
         qry2 = cr.dictfetchall()
         if qry2:
             for s in qry2:
+                val = []
                 period_end = False
                 cr.execute("SELECT DISTINCT ap.id as period_id " \
                     "from account_move_line aml "\
@@ -350,6 +348,7 @@ class general_ledger_report(report_sxw.rml_parse):
                 closing_inv = 0
                 if qry4:
                     for u in qry4:
+                        val_ids2 = []
                         opening_balance = balance
                         cr.execute("select rp.id as period_id, aml.date as aml_date, " \
                             "aml.ref as aml_ref, " \
@@ -371,7 +370,7 @@ class general_ledger_report(report_sxw.rml_parse):
                             "and aml.account_id = " + str(s['id']) + " "\
                             "order by aa.code, af.name, ap.date_start, aml.date")
                         qry5 = cr.dictfetchall()
-                        val_ids2 = []
+                        
                         if qry5:
                             for v in qry5:
                                 balance += (v['aml_debit'] - v['aml_credit'])

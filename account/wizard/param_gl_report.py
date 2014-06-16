@@ -341,7 +341,7 @@ class param_gl_report(osv.osv_memory):
         period_qry2 = (qry_period_ids and ((len(qry_period_ids) == 1 and "and aml.period_id = " + str(qry_period_ids[0]) + " ") or "and aml.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND and aml.period_id IN (0) "
         date_from_qry2 = date_from and "And aml.date >= '" + str(date_from) + "' " or " "
         date_to_qry2 = date_to and "And aml.date <= '" + str(date_to) + "' " or " "
-        val = []
+        
         cr.execute(
                 "SELECT id, code, name " \
                 "FROM account_account " \
@@ -350,6 +350,7 @@ class param_gl_report(osv.osv_memory):
         qry2 = cr.dictfetchall()
         if qry2:
             for s in qry2:
+                val = []
                 period_end = False
                 cr.execute("SELECT DISTINCT ap.id as period_id " \
                     "from account_move_line aml "\
