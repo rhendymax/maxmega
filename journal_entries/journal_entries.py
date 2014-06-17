@@ -132,8 +132,8 @@ class max_journal_entries(osv.osv):
             context = {}
         '''Validation'''
         for voucher in self.browse(cr, uid, ids, context=context):
-            total_debit = 0.0
-            total_credit = 0.0
+            total_debit = 0.00
+            total_credit = 0.00
             for lines in voucher.line_id:
                 total_debit += lines.debit_home
                 total_credit += lines.credit_home
@@ -143,7 +143,7 @@ class max_journal_entries(osv.osv):
                     raise osv.except_osv(_('Error'), _('No Negatif Allowed for Credit'))
                 if lines.debit_home <= 0 and lines.credit_home <= 0:
                     raise osv.except_osv(_('Error'), _('Please remove lines with zero or below zero for debit and credit'))
-            if total_debit != total_credit:
+            if not float_is_zero(total_debit - total_credit, precision_digits=2):
                 raise osv.except_osv(_('Error'), _('Total Debit And Credit Not Balance'))
 #
         move_pool = self.pool.get('account.move')
