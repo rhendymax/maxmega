@@ -47,6 +47,15 @@
 							</field>
 						</page>
 					</notebook>
+					<!-- separator string="Date"  colspan="4"/>
+					<field name="date_from" attrs="{'required':1}"/>
+					<field name="date_to" attrs="{'required':1}"/>
+					<separator string="Product" colspan="4"/>
+					<field name="product_from"/>
+					<field name="product_to"/>
+					<separator string="Location" colspan="4"/>
+					<field name="location_from" domain="[('usage','=','internal')]"/>
+					<field name="location_to" domain="[('usage','=','internal')]"/ -->
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>

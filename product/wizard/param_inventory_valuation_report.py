@@ -33,18 +33,18 @@ class param_inventory_valuation_report(osv.osv_memory):
         'date_to': fields.date("To Date"),
         #Product Selection
         'product_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supplier Part No Filter Selection', required=True),
-        'product_default_from':fields.many2one('product.product', 'Supplier Part No From', domain=[], required=False),
-        'product_default_to':fields.many2one('product.product', 'Supplier Part No To', domain=[], required=False),
+        'product_default_from':fields.many2one('product.product', 'Supplier Part No From', domain=[]),
+        'product_default_to':fields.many2one('product.product', 'Supplier Part No To', domain=[]),
         'product_input_from': fields.char('Supplier Part No From', size=128),
         'product_input_to': fields.char('Supplier Part No To', size=128),
         'product_ids' :fields.many2many('product.product', 'report_inv_valdetail_product_rel', 'report_id', 'product_id', 'Product', domain=[]),
         #Location Selection
         'sl_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Location Filter Selection', required=True),
-        'sl_default_from':fields.many2one('stock.location', 'Location From', domain=[], required=False),
-        'sl_default_to':fields.many2one('stock.location', 'Location To', domain=[], required=False),
+        'sl_default_from':fields.many2one('stock.location', 'Location From', domain=[('usage', '=', 'internal')]),
+        'sl_default_to':fields.many2one('stock.location', 'Location To', domain=[('usage', '=', 'internal')]),
         'sl_input_from': fields.char('Location From', size=128),
         'sl_input_to': fields.char('Location To', size=128),
-        'sl_ids' :fields.many2many('stock.location', 'report_inv_valdetail_sl_rel', 'report_id', 'sl_id', 'Product', domain=[]),
+        'sl_ids' :fields.many2many('stock.location', 'report_inv_valdetail_sl_rel', 'report_id', 'sl_id', 'Location', domain=[('usage', '=', 'internal')]),
         'valid': fields.selection([('valid','Valid'),('non_valid','Non Valid'),],'Valid'),
         'data': fields.binary('Exported CSV', readonly=True),
         'filename': fields.char('File Name',size=64),
@@ -111,15 +111,17 @@ class param_inventory_valuation_report(osv.osv_memory):
 
         qry_pp = ''
         val_pp = []
-        qry_sl = ''
-        val_sl = []
+        qry_sl = "usage='internal'"
+        val_sl = ['usage', '=', 'internal']
         pp_ids = False
         sl_ids = False
 
         if data['form']['date_selection'] == 'none_sel':
+            result['dt_selection'] = 'none_sel'
             result['date_from'] = False
             result['date_to'] = False
         else:
+            result['dt_selection'] = 'date'
             result['date_selection'] = 'Date'
             result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
             result['date_from'] = data['form']['date_from']
@@ -263,13 +265,17 @@ class param_inventory_valuation_report(osv.osv_memory):
         val_product = []
         val_location = []
         valid_x = form['valid'] or False
+        
+        date_selection = form['dt_selection'] or False
         date_from = form['date_from'] or False
         date_to = form['date_to'] or False
 
         date_from_qry = date_from and "And sp.do_date >= '" + str(date_from) + "' " or " "
         date_to_qry = date_to and "And sp.do_date <= '" + str(date_to) + "' " or " "
+        
         pp_ids = form['pp_ids'] or False
         pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pt.id = " + str(pp_ids[0]) + " ") or "AND pt.id IN " + str(tuple(pp_ids)) + " ")) or "AND pt.id IN (0) "
+        
         sl_ids = form['sl_ids'] or False
         sl_qry = (sl_ids and ((len(sl_ids) == 1 and "AND sl.id = " + str(sl_ids[0]) + " ") or "AND sl.id IN " + str(tuple(sl_ids)) + " ")) or "AND sl.id IN (0) "
         
@@ -317,77 +323,98 @@ class param_inventory_valuation_report(osv.osv_memory):
                         total_loc_cost = 0
                         total_loc_qty = 0
                         for res_f1 in cpf_loc:
-                            document_date =  res_f1['document_date'] or  False
-                            if document_date \
-                                and document_date >= date_from and document_date <= date_to \
-                                and res_f1['location_id'] in sl_ids:
-                                location = stock_location_obj.browse(cr, uid, res_f1['location_id'])
-                                vals_ids2.append({
-                                    'int_no' : res_f1['int_doc_no'] or '',
-                                    'doc_no' : res_f1['document_no'] or '',
-                                    'date' : res_f1['document_date'] or False,
-                                    'location' : location and location.name or '',
-                                    'qty_on_hand' : res_f1['product_qty'] or 0.00,
-                                    'unit_cost' : res_f1['unit_cost_price'] or 0.00,
-                                    'total_cost' : res_f1['total_cost_price'] or 0.00,
-                                    })
-                                total_loc_cost += (res_f1['total_cost_price'] or 0.00)
-                                total_loc_qty += (res_f1['product_qty'] or 0.00)
-                                total_qty += (res_f1['product_qty'] or 0.00)
-                                total_cost += (res_f1['total_cost_price'] or 0.00)
-                                total_cost += (res_f1['total_cost_price'] or 0.00)
-                                total_qty += (res_f1['product_qty'] or 0.00)
-                            cr.execute('''SELECT sum(AA.product_qty) as sum_product_qty, aa.location_id FROM
-                            (SELECT min(m.id) as id, m.date as date, m.address_id as partner_id, m.location_id as location_id,
-                            m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id,
-                            m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(-pt.standard_price * m.product_qty)::decimal, 0.0) as value,
-                            CASE when pt.uom_id = m.product_uom
-                            THEN
-                                coalesce(sum(-m.product_qty)::decimal, 0.0)
-                            ELSE
-                                coalesce(sum(-m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty
-                            FROM
-                                stock_move m
-                                LEFT JOIN stock_picking p ON (m.picking_id=p.id)
-                                LEFT JOIN product_product pp ON (m.product_id=pp.id)
-                                LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id)
-                                LEFT JOIN product_uom pu ON (pt.uom_id=pu.id)
-                                LEFT JOIN product_uom u ON (m.product_uom=u.id)
-                                LEFT JOIN stock_location l ON (m.location_id=l.id)
-                            GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id,  m.location_dest_id,
-                                m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id
-                            UNION ALL
-                            SELECT -m.id as id, m.date as date, m.address_id as partner_id, m.location_dest_id as location_id,
-                            m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id,
-                            m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(pt.standard_price * m.product_qty )::decimal, 0.0) as value,
-                            CASE when pt.uom_id = m.product_uom
-                            THEN
-                                coalesce(sum(m.product_qty)::decimal, 0.0)
-                            ELSE
-                                coalesce(sum(m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty
-                            FROM
-                                stock_move m
-                                LEFT JOIN stock_picking p ON (m.picking_id=p.id)
-                                LEFT JOIN product_product pp ON (m.product_id=pp.id)
-                                LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id)
-                                LEFT JOIN product_uom pu ON (pt.uom_id=pu.id)
-                                LEFT JOIN product_uom u ON (m.product_uom=u.id)
-                                LEFT JOIN stock_location l ON (m.location_dest_id=l.id)
-                            GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id, m.location_dest_id,
-                                m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id
-                            ) AS AA
-                                INNER JOIN stock_location sl on sl.id = AA.location_id
-                                LEFT JOIN stock_location sl1 on sl1.id = sl.location_id
-                                LEFT JOIN stock_location sl2 on sl2.id = sl1.location_id
-                                LEFT JOIN stock_location sl3 on sl3.id = sl2.location_id
-                                LEFT JOIN stock_location sl4 on sl4.id = sl3.location_id
-                                LEFT JOIN stock_location sl5 on sl5.id = sl4.location_id
-                                LEFT JOIN stock_location sl6 on sl6.id = sl5.location_id
-                                LEFT JOIN stock_location sl7 on sl7.id = sl6.location_id
-                                WHERE sl.usage = 'internal' AND AA.state in ('done') AND AA.product_id = ''' + str(pp.id)
-                                + ''' AND AA.location_id = ''' + str(loc.id)
-                                + ''' GROUP BY ARRAY_TO_STRING(ARRAY[sl7.name, sl6.name, sl5.name, sl4.name, sl3.name,sl2.name, sl1.name, sl.name], '/') , aa.location_id
-                                HAVING sum(AA.product_qty) > 0''')
+                            if date_selection == 'date':
+                                document_date =  res_f1['document_date'] or  False
+                                if document_date \
+                                    and document_date >= date_from and document_date <= date_to \
+                                    and res_f1['location_id'] in sl_ids:
+                                    location = stock_location_obj.browse(cr, uid, res_f1['location_id'])
+                                    vals_ids2.append({
+                                        'int_no' : res_f1['int_doc_no'] or '',
+                                        'doc_no' : res_f1['document_no'] or '',
+                                        'date' : res_f1['document_date'] or False,
+                                        'location' : location and location.name or '',
+                                        'qty_on_hand' : res_f1['product_qty'] or 0.00,
+                                        'unit_cost' : res_f1['unit_cost_price'] or 0.00,
+                                        'total_cost' : res_f1['total_cost_price'] or 0.00,
+                                        })
+                                
+                                    total_loc_cost += (res_f1['total_cost_price'] or 0.00)
+                                    total_loc_qty += (res_f1['product_qty'] or 0.00)
+                                    total_qty += (res_f1['product_qty'] or 0.00)
+                                    total_cost += (res_f1['total_cost_price'] or 0.00)
+                            
+                            else:
+                                if res_f1['location_id'] in sl_ids:
+                                    location = stock_location_obj.browse(cr, uid, res_f1['location_id'])
+                                    vals_ids2.append({
+                                        'int_no' : res_f1['int_doc_no'] or '',
+                                        'doc_no' : res_f1['document_no'] or '',
+                                        'date' : res_f1['document_date'] or False,
+                                        'location' : location and location.name or '',
+                                        'qty_on_hand' : res_f1['product_qty'] or 0.00,
+                                        'unit_cost' : res_f1['unit_cost_price'] or 0.00,
+                                        'total_cost' : res_f1['total_cost_price'] or 0.00,
+                                        })
+                                
+                                    total_loc_cost += (res_f1['total_cost_price'] or 0.00)
+                                    total_loc_qty += (res_f1['product_qty'] or 0.00)
+                                    total_qty += (res_f1['product_qty'] or 0.00)
+                                    total_cost += (res_f1['total_cost_price'] or 0.00)
+#                                    _total_cost += (res_f1['total_cost_price'] or 0.00)
+#                                    _total_qty += (res_f1['product_qty'] or 0.00)
+                            
+                        cr.execute('''SELECT sum(AA.product_qty) as sum_product_qty, aa.location_id FROM
+                        (SELECT min(m.id) as id, m.date as date, m.address_id as partner_id, m.location_id as location_id,
+                        m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id,
+                        m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(-pt.standard_price * m.product_qty)::decimal, 0.0) as value,
+                        CASE when pt.uom_id = m.product_uom
+                        THEN
+                            coalesce(sum(-m.product_qty)::decimal, 0.0)
+                        ELSE
+                            coalesce(sum(-m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty
+                        FROM
+                            stock_move m
+                            LEFT JOIN stock_picking p ON (m.picking_id=p.id)
+                            LEFT JOIN product_product pp ON (m.product_id=pp.id)
+                            LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id)
+                            LEFT JOIN product_uom pu ON (pt.uom_id=pu.id)
+                            LEFT JOIN product_uom u ON (m.product_uom=u.id)
+                            LEFT JOIN stock_location l ON (m.location_id=l.id)
+                        GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id,  m.location_dest_id,
+                            m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id
+                        UNION ALL
+                        SELECT -m.id as id, m.date as date, m.address_id as partner_id, m.location_dest_id as location_id,
+                        m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id,
+                        m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(pt.standard_price * m.product_qty )::decimal, 0.0) as value,
+                        CASE when pt.uom_id = m.product_uom
+                        THEN
+                            coalesce(sum(m.product_qty)::decimal, 0.0)
+                        ELSE
+                            coalesce(sum(m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty
+                        FROM
+                            stock_move m
+                            LEFT JOIN stock_picking p ON (m.picking_id=p.id)
+                            LEFT JOIN product_product pp ON (m.product_id=pp.id)
+                            LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id)
+                            LEFT JOIN product_uom pu ON (pt.uom_id=pu.id)
+                            LEFT JOIN product_uom u ON (m.product_uom=u.id)
+                            LEFT JOIN stock_location l ON (m.location_dest_id=l.id)
+                        GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id, m.location_dest_id,
+                            m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id
+                        ) AS AA
+                            INNER JOIN stock_location sl on sl.id = AA.location_id
+                            LEFT JOIN stock_location sl1 on sl1.id = sl.location_id
+                            LEFT JOIN stock_location sl2 on sl2.id = sl1.location_id
+                            LEFT JOIN stock_location sl3 on sl3.id = sl2.location_id
+                            LEFT JOIN stock_location sl4 on sl4.id = sl3.location_id
+                            LEFT JOIN stock_location sl5 on sl5.id = sl4.location_id
+                            LEFT JOIN stock_location sl6 on sl6.id = sl5.location_id
+                            LEFT JOIN stock_location sl7 on sl7.id = sl6.location_id
+                            WHERE sl.usage = 'internal' AND AA.state in ('done') AND AA.product_id = ''' + str(pp.id)
+                            + ''' AND AA.location_id = ''' + str(loc.id)
+                            + ''' GROUP BY ARRAY_TO_STRING(ARRAY[sl7.name, sl6.name, sl5.name, sl4.name, sl3.name,sl2.name, sl1.name, sl.name], '/') , aa.location_id
+                            HAVING sum(AA.product_qty) > 0''')
                         cr_vals = cr.fetchone()
 #                        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(cr_vals[0], pp.name))
                         product_qty = cr_vals and cr_vals[0] or 0
@@ -430,18 +457,26 @@ class param_inventory_valuation_report(osv.osv_memory):
                 res['pro_lines'] = vals_ids
                 results.append(res)
                 
-                for rs in results:
-                    header += str(rs['product_name']) + ' \n'
-                    for rs1 in rs['pro_lines']:
-                        header += str(rs1['loc_name']) + ' \n'
-                
-
+        _total_cost = _total_qty = 0
+        for rs in results:
+            header += str(rs['product_name']) + ' \n'
+            for rs1 in rs['pro_lines']:
+                header += str(rs1['loc_name']) + ' \n'
+                for rs2 in rs1['lines']:
+                    _total_cost += (rs2['total_cost'] or 0.00)
+                    _total_qty += (rs2['qty_on_hand'] or 0.00)
+                    header += str(rs2['int_no']) + ';' + str(rs2['doc_no']) + ';' + str(rs2['date']) + ';' + str(rs2['location']) + ';' \
+                    + str(rs2['qty_on_hand']) + ';' + str(rs2['unit_cost']) + ';' + str(rs2['total_cost']) + ' \n'
+                    
+                header += str(rs1['loc_qty_real']) + ';;;;' + str(rs1['loc_qty']) + ';' + str(rs1['loc_cost']) + ';' + str(rs1['valid']) + ' \n'
+            header += ';;;;' + str(rs['total_qty']) + ';' + str(rs['total_cost']) + ' \n \n'
+        header += 'Report Total' + ';;;;' + str(_total_qty) + ';;' + str(_total_cost) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'
         csv_content = ''
 
-        filename = 'Inventory Valuation Report.csv'
+        filename = 'Inventory Valuation Report Checking.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
