@@ -259,7 +259,7 @@
       </tr>
       <tr>
         <td><para style="std8"><font color="white"> </font></para></td>
-        <td><para style="std8right">[[ formatLang(reduce(lambda x, line: x + (get_debit(line) - get_credit(line)), get_invoice(o), 0), digits=2) ]]</para></td>
+        <td><para style="std8right">[[ formatLang(get_oth_invoice(o, 0), digits=2) ]]</para></td>
         <td><para style="std8"><font color="white"> </font></para></td>
         <td><para style="std8right">[[ formatLang(get_oth_invoice(o, 1), digits=2) ]]</para></td>
         <td><para style="std8"><font color="white"> </font></para></td>

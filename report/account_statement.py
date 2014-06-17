@@ -77,12 +77,20 @@ class statement(report_sxw.rml_parse):
         cr          = self.cr
         uid         = self.uid
         invoice_obj = self.pool.get('account.invoice')
+        period_obj = self.pool.get('account.period')
         invoice     = []
-        
+        max_period = self.period.id or False
+        date_start_max_period = max_period and period_obj.browse(cr, uid, max_period).date_start or False
+        val_period = []
+        if date_start_max_period:
+            val_period.append(('date_start', '<=', date_start_max_period))
+
+        qry_period_ids = period_obj.search(cr, uid, val_period)
+
         invoice_ids = invoice_obj.search(cr, uid, [
                         ('partner_id','=',partner.id),
                         ('state','=','open'),
-                        ('period_id','=',self.period.id),
+                        ('period_id','in',qry_period_ids),
                         ], order="date_invoice ASC")
         if invoice_ids:
             invoice = [inv for inv in invoice_obj.browse(cr, uid, invoice_ids)]

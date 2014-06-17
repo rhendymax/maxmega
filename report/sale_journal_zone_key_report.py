@@ -334,6 +334,8 @@ class report(report_sxw.rml_parse):
                 cr.execute(
                         "SELECT l.id as inv_id " \
                         "FROM account_invoice AS l " \
+                        "inner join res_partner rp on l.partner_id = rp.id " \
+                        "inner join res_currency rc on l.currency_id = rc.id " \
                         "WHERE l.sales_zone_id IS NOT NULL " \
                         "AND l.state IN ('open', 'paid') " \
                         "and l.type in ('out_invoice', 'out_refund') " \
@@ -343,16 +345,28 @@ class report(report_sxw.rml_parse):
                         + period_qry \
                         + sale_zone_qry + \
                         "and l.sales_zone_id = " + str(s['id']) + " "\
-                        "order by l.date_invoice")
+                        "order by rp.id, rp.name, rc.id, rc.name, l.date_invoice")
                 val = []
                 qry3 = cr.dictfetchall()
+                part_cur_vals = {}
                 if qry3:
                     for t in qry3:
                         sign = 1
                         inv = invoice_obj.browse(self.cr, self.uid, t['inv_id'])
                         if inv.type in ('in_refund', 'out_refund'):
                             sign = -1
-                        val.append({
+                        combine = str(inv.partner_id.id) + '-' + str(inv.currency_id.id)
+                        if combine in part_cur_vals:
+                            val_in_data = part_cur_vals[combine]
+                            val_in_data['pre_tax'] += (inv.amount_untaxed or 0) * sign
+                            val_in_data['sale_tax'] += (inv.amount_tax or 0) * sign
+                            val_in_data['after_tax'] += (inv.amount_total or 0) * sign
+                            val_in_data['pre_tax_home'] += (inv.amount_untaxed_home or 0) * sign
+                            val_in_data['sale_tax_home'] += (inv.amount_tax_home or 0) * sign
+                            val_in_data['sale_tax_home'] += (inv.amount_total_home or 0) * sign
+                            part_cur_vals[combine] = val_in_data
+                        else:
+                            part_cur_vals[combine] = {
                                'cust_key' : inv.partner_id and inv.partner_id.ref or '',
                                'cust_name' : inv.partner_id and inv.partner_id.name or '',
                                'curr' : inv.currency_id and inv.currency_id.name or '',
@@ -362,7 +376,21 @@ class report(report_sxw.rml_parse):
                                'pre_tax_home': (inv.amount_untaxed_home or 0) * sign,
                                'sale_tax_home': (inv.amount_tax_home or 0) * sign,
                                'after_tax_home': (inv.amount_total_home or 0) * sign,
-                               })
+                                    }
+                if part_cur_vals:
+                    for pr in part_cur_vals:
+                        val.append(part_cur_vals[pr])
+#                         val.append({
+#                                'cust_key' : inv.partner_id and inv.partner_id.ref or '',
+#                                'cust_name' : inv.partner_id and inv.partner_id.name or '',
+#                                'curr' : inv.currency_id and inv.currency_id.name or '',
+#                                'pre_tax': (inv.amount_untaxed or 0) * sign,
+#                                'sale_tax': (inv.amount_tax or 0) * sign,
+#                                'after_tax': (inv.amount_total or 0) * sign,
+#                                'pre_tax_home': (inv.amount_untaxed_home or 0) * sign,
+#                                'sale_tax_home': (inv.amount_tax_home or 0) * sign,
+#                                'after_tax_home': (inv.amount_total_home or 0) * sign,
+#                                })
                 val = val and sorted(val, key=lambda val_res: val_res['cust_name']) or []
                 results.append({
                     'zone_name' : s['name'],
@@ -385,6 +413,8 @@ class report(report_sxw.rml_parse):
             cr.execute(
                     "SELECT l.id as inv_id " \
                     "FROM account_invoice AS l " \
+                    "inner join res_partner rp on l.partner_id = rp.id " \
+                    "inner join res_currency rc on l.currency_id = rc.id " \
                     "WHERE l.sales_zone_id IS NULL " \
                     "AND l.state IN ('open', 'paid') " \
                     "and l.type in ('out_invoice', 'out_refund') " \
@@ -392,16 +422,28 @@ class report(report_sxw.rml_parse):
                     + date_from_qry \
                     + date_to_qry \
                     + period_qry + \
-                    "order by l.date_invoice")
+                    "order by rp.id, rp.name, rc.id, rc.name, l.date_invoice")
             val2 = []
             qry11 = cr.dictfetchall()
+            part_cur_vals2 = {}
             if qry11:
                 for u in qry11:
                     sign = 1
                     inv2 = invoice_obj.browse(self.cr, self.uid, u['inv_id'])
                     if inv2.type in ('in_refund', 'out_refund'):
                         sign = -1
-                    val2.append({
+                    combine2 = str(inv2.partner_id.id) + '-' + str(inv2.currency_id.id)
+                    if combine2 in part_cur_vals2:
+                        val_in_data2 = part_cur_vals2[combine2]
+                        val_in_data2['pre_tax'] += (inv2.amount_untaxed or 0) * sign
+                        val_in_data2['sale_tax'] += (inv2.amount_tax or 0) * sign
+                        val_in_data2['after_tax'] += (inv2.amount_total or 0) * sign
+                        val_in_data2['pre_tax_home'] += (inv2.amount_untaxed_home or 0) * sign
+                        val_in_data2['sale_tax_home'] += (inv2.amount_tax_home or 0) * sign
+                        val_in_data2['sale_tax_home'] += (inv2.amount_total_home or 0) * sign
+                        part_cur_vals2[combine2] = val_in_data2
+                    else:
+                        part_cur_vals2[combine2] = {
                            'cust_key' : inv2.partner_id and inv2.partner_id.ref or '',
                            'cust_name' : inv2.partner_id and inv2.partner_id.name or '',
                            'curr' : inv2.currency_id and inv2.currency_id.name or '',
@@ -411,13 +453,27 @@ class report(report_sxw.rml_parse):
                            'pre_tax_home': (inv2.amount_untaxed_home or 0) * sign,
                            'sale_tax_home': (inv2.amount_tax_home or 0) * sign,
                            'after_tax_home': (inv2.amount_total_home or 0) * sign,
-                           })
+                                }
+            if part_cur_vals2:
+                for pr2 in part_cur_vals2:
+                    val2.append(part_cur_vals2[pr2])
+#                     val2.append({
+#                            'cust_key' : inv2.partner_id and inv2.partner_id.ref or '',
+#                            'cust_name' : inv2.partner_id and inv2.partner_id.name or '',
+#                            'curr' : inv2.currency_id and inv2.currency_id.name or '',
+#                            'pre_tax': (inv2.amount_untaxed or 0) * sign,
+#                            'sale_tax': (inv2.amount_tax or 0) * sign,
+#                            'after_tax': (inv2.amount_total or 0) * sign,
+#                            'pre_tax_home': (inv2.amount_untaxed_home or 0) * sign,
+#                            'sale_tax_home': (inv2.amount_tax_home or 0) * sign,
+#                            'after_tax_home': (inv2.amount_total_home or 0) * sign,
+#                            })
             val2 = val2 and sorted(val2, key=lambda val_res: val_res['cust_name']) or []
             results.append({
                 'zone_name' : 'No Sales Zone Defined !!',
                 'val': val2,
                 })
-        print "done"
+
         return results
 
 
