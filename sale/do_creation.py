@@ -80,6 +80,7 @@ class do_creation(osv.osv):
                             'product_uom' : lines.product_uom.id,
                             'qty_delivery' : qty_delivery,
                             'product_uom_qty' : lines.product_uom_qty,
+                            'price_unit' : lines.price_unit,
                             'product_id' : lines.product_id.id,
                             'qty_onhand_count' : lines.qty_onhand_count,
                             'order_line_id' : lines.id,
@@ -257,6 +258,7 @@ class do_creation_lines(osv.osv_memory):
         'uom_id': fields.many2one('product.uom', 'UoM', readonly=True),
         'location_id': fields.many2one('stock.location', 'Source Location', ondelete='cascade', readonly=True, help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations."),
         'spq': fields.float('SPQ', help="Standard Packaging Qty", readonly=True),
+        'price_unit': fields.float('Unit Price', digits_compute= dp.get_precision('Sale Price'), readonly=True),
     }
 
     def onchange_qty_order(self, cr, uid, ids, product_id, product_uom_qty, product_uom_id, qty_delivery, product_uom2,

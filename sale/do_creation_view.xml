@@ -70,6 +70,7 @@
 					<field name="product_id"/>
 					<field name="product_uom_qty"/>
 					<field name="product_uom" widget="selection"/>
+					<field name="price_unit"/>
 					<field name="qty_delivery"/>
 					<field name="product_uom2" widget="selection"/>
 					<field name="qty_onhand_count"/>

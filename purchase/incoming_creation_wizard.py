@@ -77,6 +77,7 @@ class incoming_creation_wizard(osv.osv):
                             'product_id' : lines.product_id.id,
                             'product_uom_qty' : lines.product_qty,
                             'product_uom' : lines.product_uom.id,
+                            'price_unit' : lines.price_unit,
                             'qty_delivery' : qty_delivery,
                             'product_uom2' : lines.product_id.uom_id.id,
                             'qty_order' : qty_order,
@@ -248,6 +249,7 @@ class incoming_creation_lines(osv.osv_memory):
         'qty_order': fields.float('Qty (Incoming Shipment)',),
         'uom_id': fields.many2one('product.uom', 'UoM', readonly=True, ondelete='cascade',),
         'location_dest_id': fields.many2one('stock.location', 'Destination Location', ondelete='cascade', readonly=True, help="Location where the system will stock the finished products."),
+        'price_unit': fields.float('Unit Price', readonly=True, digits_compute= dp.get_precision('Purchase Price')),
     }
 
     def onchange_qty_order(self, cr, uid, ids, product_id, product_uom_qty, product_uom_id, qty_delivery, product_uom2,
