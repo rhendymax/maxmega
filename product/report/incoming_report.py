@@ -151,13 +151,13 @@ class incoming_report(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context=None):
         super(incoming_report, self).__init__(cr, uid, name, context=context)
-        self.total_cost = 0.00
         self.total_qty = 0.00
 #      
         self.localcontext.update({
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
+            'grand_total' : self._get_grand_total,
 #            'total_cost' : self._total_cost,
 #            'total_qty' : self._total_qty,
 #            'product_from': self._get_product_from,
@@ -165,6 +165,9 @@ class incoming_report(report_sxw.rml_parse):
 #            'location_from': self._get_location_from,
 #            'location_to': self._get_location_to,
             })
+
+    def _get_grand_total(self):
+        return self.total_qty
 
     def _get_lines(self):
         results = []
@@ -215,6 +218,7 @@ class incoming_report(report_sxw.rml_parse):
                                 'location': s['location'],
                                 'sm_id' : s['sm_id'],
                                  })
+                self.total_qty += s['qty'] or 0.00
 #        results = results and sorted(results, key=lambda val_res: val_res['spn']) or []
 #        results = results and sorted(results, key=lambda val_res: val_res['inc_no']) or []
 #        results = results and sorted(results, key=lambda val_res: val_res['date']) or []

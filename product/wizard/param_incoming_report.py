@@ -282,12 +282,14 @@ class param_incoming_report(osv.osv_memory):
                         " order by date, inc_no, spn")
 
         qry = cr.dictfetchall()
+        _gt_qty = 0
         if qry:
             for s in qry:
+                _gt_qty += s['qty'] or 0
                 header += str(s['date'] or '') + ";" + str(s['inc_no'] or '') + ";" \
                 + str(s['spn'] or '') + ";" + str(s['sn'] or '') + ";" + str(s['in'] or '') + ";" \
                 + str(s['qty'] or 0) + ";" + str(s['po'] or '')+ ";" + str(s['location'] or '') + "\n"
-
+            header += 'Grand Total :;' + ';' + ';' + ';' + ';' + str(_gt_qty) + ' \n'
 
         all_content_line += header
         all_content_line += ' \n'

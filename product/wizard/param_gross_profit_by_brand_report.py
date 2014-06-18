@@ -205,8 +205,7 @@ class param_gross_profit_by_brand_report(osv.osv_memory):
         WHERE ai.state in ('open', 'paid') AND ai.type = 'out_invoice' "\
         + pb_qry \
         + date_from_qry \
-        + date_to_qry  +\
-        "order by pb.name")
+        + date_to_qry)
 
         brnd_ids = []
         qry2 = cr.dictfetchall()

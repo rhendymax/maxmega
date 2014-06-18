@@ -87,6 +87,13 @@
 				</tr>
 			</blockTable>
 		</section>
+		<blockTable colWidths="500.0,100.0,200.0">
+			<tr>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>Grand Total:</font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>[[ formatLang(grand_total() or 0, digits=2) ]]</font></para></td>
+			</tr>
+		</blockTable>
 		<blockTable colWidths="420.0,120.0,120.0,120.0" style="TableEnd">
 			<tr>
 				<td>

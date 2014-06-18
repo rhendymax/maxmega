@@ -166,7 +166,8 @@ class param_inventory_valuation_report(osv.osv_memory):
                 pp_input_from_str = pp_input_from
                 cr.execute("select name " \
                                 "from product_template "\
-                                "where name ilike '" + str(pp_input_from) + "%' " \
+                                 "where " + qry_sl + " and " \
+                                 "name ilike '" + str(pp_input_from) + "%' " \
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
@@ -176,7 +177,8 @@ class param_inventory_valuation_report(osv.osv_memory):
                 pp_input_to_str = pp_input_to
                 cr.execute("select name " \
                                 "from product_template "\
-                                "where name ilike '" + str(pp_input_to) + "%' " \
+                                "where " + qry_sl + " and " \
+                                "name ilike '" + str(pp_input_to) + "%' " \
                                 "order by name desc limit 1")
                 qry = self.cr.dictfetchone()
                 if qry:
@@ -224,7 +226,8 @@ class param_inventory_valuation_report(osv.osv_memory):
                 sl_input_from_str = sl_input_from
                 cr.execute("select name " \
                                 "from stock_location "\
-                                "where name ilike '" + str(sl_input_from) + "%' " \
+                                "where " + qry_sl + " and " \
+                                "name ilike '" + str(sl_input_from) + "%' " \
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
@@ -234,7 +237,8 @@ class param_inventory_valuation_report(osv.osv_memory):
                 sl_input_to_str = sl_input_to
                 cr.execute("select name " \
                                 "from stock_location "\
-                                "where name ilike '" + str(sl_input_to) + "%' " \
+                                "where " + qry_sl + " and " \
+                                "name ilike '" + str(sl_input_to) + "%' " \
                                 "order by name desc limit 1")
                 qry = cr.dictfetchone()
                 if qry:

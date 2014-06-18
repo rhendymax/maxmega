@@ -284,12 +284,16 @@ class param_outgoing_report(osv.osv_memory):
                         " order by date, inc_no, spn")
 
         qry = cr.dictfetchall()
+        _gt_qty = _gt_price = _gt_total = 0
         if qry:
             for s in qry:
+                _gt_qty += s['qty'] or 0
+                _gt_price += s['price'] or 0
+                _gt_total += s['grand_total'] or 0
                 header += str(s['date'] or '') + ";" + str(s['inc_no'] or '') + ";" \
                 + str(s['spn'] or '') + ";" + str(s['sn'] or '') + ";" + str(s['in'] or '') + ";" \
                 + str(s['qty'] or 0) + ";" + str(s['price'] or 0) + ";" + str(s['grand_total'] or 0) + ";" + str(s['so'] or '')+ ";" + str(s['location_name'] or '') + "\n"
-        
+            header += 'Grand Total :;' + ';' + ';' + ';' + ';' + str(_gt_qty) + ';' + str(_gt_price) + ';' + str(_gt_total) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'
