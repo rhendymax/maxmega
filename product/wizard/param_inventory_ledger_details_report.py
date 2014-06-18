@@ -21,6 +21,8 @@
 
 from osv import fields, osv
 import time
+import pooler
+import base64
 
 class param_inventory_ledger_details_report(osv.osv_memory):
     _name = 'param.inventory.ledger.details.report'
@@ -85,11 +87,11 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                     ]:
             if isinstance(data['form'][field], tuple):
                 data['form'][field] = data['form'][field][0]
-        used_context = self._build_contexts(cr, uid, ids, data,  context=context)
+        used_context = self._build_contexts(cr, uid, ids, data, context=context)
 
-        return self._get_tplines(cr, uid, ids, used_context, 'payable', context=context)
+        return self._get_tplines(cr, uid, ids, used_context, context=context)
 
-    def _build_contexts(self, cr, uid, ids, data, report_type, context=None):
+    def _build_contexts(self, cr, uid, ids, data, context=None):
         if context is None:
             context = {}
         result = {}
@@ -99,6 +101,14 @@ class param_inventory_ledger_details_report(osv.osv_memory):
 #         account_journal_obj = self.pool.get('account.journal')
 #         period_obj = self.pool.get('account.period')
 #         account_fiscalyear_obj = self.pool.get('account.fiscalyear')
+        result['date_selection'] = data['form']['date_selection']
+        if data['form']['date_selection'] == 'none_sel':
+            result['date_from'] = False
+            result['date_to'] = False
+        else:
+            result['date_showing'] = '"' + data['form']['date_from'] + '" - "' + data['form']['date_to'] + '"'
+            result['date_from'] = data['form']['date_from']
+            result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
         qry_prod = ''
         val_prod = []
@@ -115,28 +125,28 @@ class param_inventory_ledger_details_report(osv.osv_memory):
         prod_default_to = data['form']['product_default_to'] or False
         prod_input_from = data['form']['product_input_from'] or False
         prod_input_to = data['form']['product_input_to'] or False
-#         partner_default_from_str = partner_default_to_str = ''
-#         partnet_input_from_str = partner_input_to_str= ''
+        pp_default_from_str = pp_default_to_str = ''
+        pp_input_from_str = pp_input_to_str= ''
         if data['form']['product_selection'] == 'all_vall':
             product_ids = product_obj.search(cr, uid, val_prod, order='name ASC')
         elif data['form']['product_selection'] == 'def':
             data_found = False
             if prod_default_from and product_obj.browse(cr, uid, prod_default_from) and \
                 product_obj.browse(cr, uid, prod_default_from).name:
-#                 partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).ref
+                pp_default_from_str = product_obj.browse(cr, uid, prod_default_from).name
                 data_found = True
                 val_prod.append(('name', '>=', product_obj.browse(cr, uid, prod_default_from).name))
             if prod_default_to and product_obj.browse(cr, uid, prod_default_to) and product_obj.browse(cr, uid, prod_default_to).name:
-#                 partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).ref
+                pp_default_to_str = product_obj.browse(cr, uid, prod_default_to).name
                 data_found = True
                 val_prod.append(('name', '<=', product_obj.browse(cr, uid, prod_default_to).name))
-#             result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
             if data_found:
                 product_ids = product_obj.search(cr, uid, val_prod, order='name ASC')
+            result['pp_selection'] = '"' + pp_default_from_str + '" - "' + pp_default_to_str + '"'
         elif data['form']['product_selection'] == 'input':
             data_found = False
             if prod_input_from:
-#                 partner_input_from_str = prod_input_from
+                pp_input_from_str = prod_input_from
                 cr.execute("select name " \
                     "from product_template "\
                     "where " \
@@ -147,7 +157,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                     data_found = True
                     val_prod.append(('name', '>=', qry['name']))
             if prod_input_to:
-#                 partner_input_to_str = partner_input_to
+                pp_input_to_str = prod_input_to
                 cr.execute("select name " \
                     "from product_template "\
                     "where " \
@@ -158,7 +168,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                     data_found = True
                     val_prod.append(('name', '<=', qry['name']))
 
-#             result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
+            result['pp_selection'] = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
 
             if data_found:
                 product_ids = product_obj.search(cr, uid, val_prod, order='name ASC')
@@ -168,7 +178,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                 for pp in  product_obj.browse(cr, uid, data['form']['product_ids']):
                     pp_ids += '"' + str(pp.name) + '",'
                 product_ids = data['form']['product_ids']
-#             result['filter_selection'] = '[' + pp_ids +']'
+            result['pp_selection'] = '[' + pp_ids +']'
 
         result['product_ids'] = product_ids
 
@@ -176,29 +186,29 @@ class param_inventory_ledger_details_report(osv.osv_memory):
         sl_default_to = data['form']['sl_default_to'] or False
         sl_input_from = data['form']['sl_input_from'] or False
         sl_input_to = data['form']['sl_input_to'] or False
-#         partner_default_from_str = partner_default_to_str = ''
-#         partnet_input_from_str = partner_input_to_str= ''
+        sl_default_from_str = sl_default_to_str = ''
+        sl_input_from_str = sl_input_to_str= ''
         if data['form']['sl_selection'] == 'all_vall':
             location_ids = location_obj.search(cr, uid, val_loc, order='name ASC')
         elif data['form']['sl_selection'] == 'def':
             data_found = False
             if sl_default_from and location_obj.browse(cr, uid, sl_default_from) and \
                 location_obj.browse(cr, uid, sl_default_from).name:
-#                 partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).ref
+                sl_default_from_str = location_obj.browse(cr, uid, sl_default_from).name
                 data_found = True
                 val_loc.append(('name', '>=', location_obj.browse(cr, uid, sl_default_from).name))
             if sl_default_to and location_obj.browse(cr, uid, sl_default_to) and \
                 location_obj.browse(cr, uid, sl_default_to).name:
-#                 partner_default_to_str = res_partner_obj.browse(cr, uid, partner_default_to).ref
+                sl_default_to_str = location_obj.browse(cr, uid, sl_default_to).name
                 data_found = True
                 val_loc.append(('name', '<=', location_obj.browse(cr, uid, sl_default_to).name))
-#             result['filter_selection'] = '"' + partner_default_from_str + '" - "' + partner_default_to_str + '"'
+            result['sl_selection'] = '"' + sl_default_from_str + '" - "' + sl_default_to_str + '"'
             if data_found:
                 location_ids = location_obj.search(cr, uid, val_loc, order='name ASC')
         elif data['form']['sl_selection'] == 'input':
             data_found = False
             if sl_input_from:
-#                 partner_input_from_str = prod_input_from
+                sl_input_from_str = sl_input_from
                 cr.execute("select name " \
                     "from stock_location " \
                     "where " + qry_loc + " and " \
@@ -209,7 +219,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                     data_found = True
                     val_loc.append(('name', '>=', qry['name']))
             if sl_input_to:
-#                 partner_input_to_str = partner_input_to
+                sl_input_to_str = sl_input_to
                 cr.execute("select name " \
                     "from stock_location "\
                     "where " + qry_loc + " and " \
@@ -220,21 +230,79 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                     data_found = True
                     val_loc.append(('name', '<=', qry['name']))
 
-#             result['filter_selection'] = '"' + partner_input_from_str + '" - "' + partner_input_to_str + '"'
+            result['sl_selection'] = '"' + sl_input_from_str + '" - "' + sl_input_to_str + '"'
 
             if data_found:
                 location_ids = location_obj.search(cr, uid, val_loc, order='name ASC')
         elif data['form']['sl_selection'] == 'selection':
             sl_ids = ''
-            if data['form']['location_ids']:
-                for sl in  location_obj.browse(cr, uid, data['form']['location_ids']):
+            if data['form']['sl_ids']:
+                for sl in  location_obj.browse(cr, uid, data['form']['sl_ids']):
                     sl_ids += '"' + str(sl.name) + '",'
-                location_ids = data['form']['location_ids']
-#             result['filter_selection'] = '[' + pp_ids +']'
+                location_ids = data['form']['sl_ids']
+            result['sl_selection'] = '[' + sl_ids +']'
 
         result['location_ids'] = location_ids
-
         return result
+
+    def _get_tplines(self, cr, uid, ids, data, context):
+        form = data
+        if not ids:
+            ids = data['ids']
+        if not ids:
+            return []
+        
+        count = 0
+        results = []
+        val_product = []
+        val_location = []
+        
+#         date_selection = form['dt_selection'] or False
+#         date_from = form['date_from'] or False
+#         date_to = form['date_to'] or False
+
+#         date_from_qry = date_from and "And sp.do_date >= '" + str(date_from) + "' " or " "
+#         date_to_qry = date_to and "And sp.do_date <= '" + str(date_to) + "' " or " "
+#         
+        pp_ids = form['product_ids'] or False
+        pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pt.id = " + str(pp_ids[0]) + " ") or "AND pt.id IN " + str(tuple(pp_ids)) + " ")) or "AND pt.id IN (0) "
+        
+        sl_ids = form['location_ids'] or False
+        sl_qry = (sl_ids and ((len(sl_ids) == 1 and "AND sl.id = " + str(sl_ids[0]) + " ") or "AND sl.id IN " + str(tuple(sl_ids)) + " ")) or "AND sl.id IN (0) "
+        
+        product_product_obj = self.pool.get('product.product')
+        cost_price_fifo_obj = self.pool.get('cost.price.fifo')
+        stock_location_obj = self.pool.get('stock.location')
+
+        all_content_line = ''
+        header = 'sep=;' + " \n"
+        header += 'Inventory Valuation Report' + " \n"
+        header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
+        header += ('date_showing' in form and 'Date : ' + str(form['date_showing']) + " \n") or ''
+        header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
+        header += 'Source Internal No;Document No;Date;Location;Qty On Hand(PCS);Unit Cost;Total Cost' + " \n"
+
+        all_content_line += header
+        all_content_line += ' \n'
+        all_content_line += 'End of Report'
+        csv_content = ''
+
+        filename = 'Inventory Ledger Details Report.csv'
+        out = base64.encodestring(all_content_line)
+        self.write(cr, uid, ids,{'data':out, 'filename':filename})
+        obj_model = self.pool.get('ir.model.data')
+        model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','inventory_ledger_result_csv_view')])
+        resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
+        return {
+                'name':'Inventory Ledger Details Report',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'param.inventory.ledger.details.report',
+                'views': [(resource_id,'form')],
+                'type': 'ir.actions.act_window',
+                'target':'new',
+                'res_id':ids[0],
+                }
 
 param_inventory_ledger_details_report()
 
