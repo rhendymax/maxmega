@@ -23,6 +23,7 @@ from osv import fields, osv
 import time
 import pooler
 import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_inventory_valuation_report(osv.osv_memory):
     _name = 'param.inventory.valuation.report'
@@ -468,11 +469,11 @@ class param_inventory_valuation_report(osv.osv_memory):
                     _total_cost += (rs2['total_cost'] or 0.00)
                     _total_qty += (rs2['qty_on_hand'] or 0.00)
                     header += str(rs2['int_no']) + ';' + str(rs2['doc_no']) + ';' + str(rs2['date']) + ';' + str(rs2['location']) + ';' \
-                    + str(rs2['qty_on_hand']) + ';' + str(rs2['unit_cost']) + ';' + str(rs2['total_cost']) + ' \n'
+                    + str(float_round(rs2['qty_on_hand'],0)) + ';' + str(float_round(rs2['unit_cost'],5)) + ';' + str(float_round(rs2['total_cost'],5)) + ' \n'
                     
-                header += str(rs1['loc_qty_real']) + ';;;;' + str(rs1['loc_qty']) + ';' + str(rs1['loc_cost']) + ';' + str(rs1['valid']) + ' \n'
-            header += ';;;;' + str(rs['total_qty']) + ';' + str(rs['total_cost']) + ' \n \n'
-        header += 'Report Total' + ';;;;' + str(_total_qty) + ';;' + str(_total_cost) + ' \n'
+                header += str(float_round(rs1['loc_qty_real'],0)) + ';;;;' + str(float_round(rs1['loc_qty'],5)) + ';' + str(float_round(rs1['loc_cost'],5)) + ';' + str(rs1['valid']) + ' \n'
+            header += ';;;;' + str(float_round(rs['total_qty'],0)) + ';' + str(float_round(rs['total_cost'],5)) + ' \n \n'
+        header += 'Report Total' + ';;;;' + str(float_round(_total_qty,0)) + ';;' + str(float_round(_total_cost,5)) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'

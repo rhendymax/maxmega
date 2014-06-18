@@ -21,6 +21,9 @@
 
 from osv import fields, osv
 import time
+import pooler
+import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_inventory_valuation_report_max(osv.osv_memory):
     _name = 'param.inventory.valuation.report.max'
@@ -251,14 +254,9 @@ class param_inventory_valuation_report_max(osv.osv_memory):
         results = []
         val_product = []
         val_location = []
-        valid_x = form['valid'] or False
-        
         date_selection = form['dt_selection'] or False
         date_from = form['date_from'] or False
         date_to = form['date_to'] or False
-
-        date_from_qry = date_from and "And sp.do_date >= '" + str(date_from) + "' " or " "
-        date_to_qry = date_to and "And sp.do_date <= '" + str(date_to) + "' " or " "
         
         pp_ids = form['pp_ids'] or False
         pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pt.id = " + str(pp_ids[0]) + " ") or "AND pt.id IN " + str(tuple(pp_ids)) + " ")) or "AND pt.id IN (0) "
@@ -270,15 +268,92 @@ class param_inventory_valuation_report_max(osv.osv_memory):
         cost_price_fifo_obj = self.pool.get('cost.price.fifo')
         stock_location_obj = self.pool.get('stock.location')
         
-        valid_selection = form['valid_selection'] or False
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'Inventory Valuation Report' + " \n"
         header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + " \n") or ''
         header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
-        header += (valid_selection and 'Valid Selection : ' + str(valid_selection) + " \n") or ''
         header += 'Source Internal No;Document No;Date;Location;Qty On Hand(PCS);Unit Cost;Total Cost' + " \n"
+        
+        for location_id in sl_ids:
+            sl = stock_location_obj.browse(cr, uid, location_id)
+            sl_checking = stock_location_obj.search(cr, uid, [('location_id','=',sl.id)])
+            if sl_checking:
+                continue
+            res = {}
+
+            vals_ids = []
+            total_cost = 0
+            total_qty = 0
+            for product_id in product_product_obj.browse(cr, uid, pp_ids):
+                cpf_loc = cost_price_fifo_obj.stock_move_get(cr, uid, product_id.id, location_id=location_id)
+                if cpf_loc:
+                    vals_ids2 = []
+                    total_prod_cost = 0.00
+                    total_prod_qty = 0.00
+                    for res_f1 in cpf_loc:
+                        if date_selection == 'date':
+                            document_date =  res_f1['document_date'] or  False
+                            if document_date \
+                                and document_date >= date_from and document_date <= date_to:
+                                vals_ids2.append({
+                                    'int_no' : res_f1['int_doc_no'] or '',
+                                    'doc_no' : res_f1['document_no'] or '',
+                                    'date' : res_f1['document_date'] or False,
+                                    'location' : sl.name or '',
+                                    'qty_on_hand' : res_f1['product_qty'] or 0.00,
+                                    'unit_cost' : res_f1['unit_cost_price'] or 0.00,
+                                    'total_cost' : res_f1['total_cost_price'] or 0.00,
+                                    })
+                                total_prod_cost += (res_f1['total_cost_price'] or 0.00)
+                                total_prod_qty += (res_f1['product_qty'] or 0.00)
+                                total_cost += (res_f1['total_cost_price'] or 0.00)
+                                total_qty += (res_f1['product_qty'] or 0.00)
+                        else:
+                            vals_ids2.append({
+                                    'int_no' : res_f1['int_doc_no'] or '',
+                                    'doc_no' : res_f1['document_no'] or '',
+                                    'date' : res_f1['document_date'] or False,
+                                    'location' : sl.name or '',
+                                    'qty_on_hand' : res_f1['product_qty'] or 0.00,
+                                    'unit_cost' : res_f1['unit_cost_price'] or 0.00,
+                                    'total_cost' : res_f1['total_cost_price'] or 0.00,
+                                    })
+                            total_prod_cost += res_f1['total_cost_price'] or 0.00
+                            total_prod_qty += res_f1['product_qty'] or 0.00
+                            total_cost += (res_f1['total_cost_price'] or 0.00)
+                            total_qty += (res_f1['product_qty'] or 0.00)
+    #                            total_cost += (res_f1['total_cost_price'] or 0.00)
+    #                            total_qty += (res_f1['product_qty'] or 0.00)
+                    vals_ids.append({
+                    'prod_name' : product_id.name,
+                    'lines' : vals_ids2,
+                    'loc_cost' : total_prod_cost,
+                    'loc_qty' : total_prod_qty,
+                    })
+            if not vals_ids:
+                continue
+            res['total_cost'] = total_cost
+            res['total_qty'] = total_qty
+            res['pro_lines'] = vals_ids
+            res['loc_name'] = sl.name or ''
+            results.append(res)
+            
+        _total_cost = _total_qty = 0
+        for rs in results:
+            header += str(rs['loc_name']) + ' \n'
+            for rs1 in rs['pro_lines']:
+                header += str(rs1['prod_name']) + ' \n'
+                for rs2 in rs1['lines']:
+                    _total_cost += rs2['total_cost'] or 0.00
+                    _total_qty += rs2['qty_on_hand'] or 0.00
+                    header += str(rs2['int_no']) + ';' + str(rs2['doc_no']) + ';' + str(rs2['date']) + ';' + str(rs2['location']) + ';' \
+                    + str(float_round(rs2['qty_on_hand'],0)) + ';' + str(float_round(rs2['unit_cost'],5)) + ';' + str(float_round(rs2['total_cost'],2)) + ' \n'
+                    
+                header += 'Total Of ' + str(rs1['prod_name']) + ';;;;' + str(rs1['loc_qty']) + ';' + ';' + str(rs1['loc_cost']) + ' \n'
+            header += 'Total Of : ' + str(rs['loc_name']) + ';;;;' + str(float_round(rs['total_qty'],0)) + ';' + ';' + str(float_round(rs['total_cost'],2)) + ' \n \n'
+        header += 'Report Total' + ';;;;' + str(float_round(_total_qty,0)) + ';;' + str(float_round(_total_cost,2)) + ' \n'
         
         all_content_line += header
         all_content_line += ' \n'

@@ -183,6 +183,7 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
                 + " order by pt.name")
         qry1 = cr.dictfetchall()
         if qry1:
+            _gt_qty = 0
             for s in qry1:
                 cr.execute("select sol.product_id, \
                     pb.name as brand_name, \
@@ -216,16 +217,18 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
 
                 #Print Group By
                 header += str('[' + s['brand_name'] + ']' + s['name'],)  + " \n"
-                totalQty = 0
                 qry3 = cr.dictfetchall()
                 val = []
                 if qry3:
+                    totalQty = 0
                     for t in qry3:
                         header += str(t['so_name'] or '') + ";" + '[' + str(t['customer_ref']) + '] ' + str(t['customer_name']) + ";" \
                         + str(t['cpn'] or '') + ";" + str(t['location_name'] or '') + ";" + str(t['qty'] or '0') + ";" + str(t['uom'] or '')+ "\n"
                         totalQty += (t['qty'] or 0)
-                header += "Total for " + str('[' + s['brand_name'] + ']' + s['name'],)  + ";;;; " + str(totalQty or '0')  + " \n"
-                header += " \n"
+                    _gt_qty += totalQty or 0
+                    print totalQty
+                    header += "Total for " + str('[' + s['brand_name'] + ']' + s['name'],)  + ";;;; " + str(totalQty or '0')  + " \n"
+            header += 'Grand Total' + ';' + ';' + ';' + ';' + str(_gt_qty) + ' \n \n'
 
         all_content_line += header
         all_content_line += ' \n'
