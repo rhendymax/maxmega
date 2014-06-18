@@ -87,7 +87,7 @@ class param_so_oustanding_report(osv.osv_memory):
         so_ids = False
         data_search = data['form']['customer_search_vals']
         
-        qry_supp = 'customer = True'
+        qry_cust = 'customer = True'
         val_part.append(('customer', '=', True))
 
         partner_default_from = data['form']['partner_default_from'] or False
@@ -95,7 +95,7 @@ class param_so_oustanding_report(osv.osv_memory):
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
         partner_default_from_str = partner_default_to_str = ''
-        partnet_input_from_str = partner_input_to_str= ''
+        partner_input_from_str = partner_input_to_str= ''
         if data_search == 'code':
             result['data_search'] = 'Customer Code'
             if data['form']['filter_selection'] == 'all_vall':

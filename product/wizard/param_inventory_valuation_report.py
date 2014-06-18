@@ -112,7 +112,7 @@ class param_inventory_valuation_report(osv.osv_memory):
         qry_pp = ''
         val_pp = []
         qry_sl = "usage='internal'"
-        val_sl = ['usage', '=', 'internal']
+        val_sl = [('usage', '=', 'internal')]
         pp_ids = False
         sl_ids = False
 
@@ -164,10 +164,9 @@ class param_inventory_valuation_report(osv.osv_memory):
             data_found = False
             if pp_input_from:
                 pp_input_from_str = pp_input_from
-                cr.execute("select name " \
+                cr.execute("select namqry_sle " \
                                 "from product_template "\
-                                 "where " + qry_sl + " and " \
-                                 "name ilike '" + str(pp_input_from) + "%' " \
+                                 "where name ilike '" + str(pp_input_from) + "%' " \
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
@@ -177,8 +176,7 @@ class param_inventory_valuation_report(osv.osv_memory):
                 pp_input_to_str = pp_input_to
                 cr.execute("select name " \
                                 "from product_template "\
-                                "where " + qry_sl + " and " \
-                                "name ilike '" + str(pp_input_to) + "%' " \
+                                "where name ilike '" + str(pp_input_to) + "%' " \
                                 "order by name desc limit 1")
                 qry = self.cr.dictfetchone()
                 if qry:

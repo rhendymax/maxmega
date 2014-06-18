@@ -43,7 +43,9 @@ class param_inventory_valuation_report_max(osv.osv_memory):
         'sl_input_from': fields.char('Location From', size=128),
         'sl_input_to': fields.char('Location To', size=128),
         'sl_ids' :fields.many2many('stock.location', 'report_inv_valmax_sl_rel', 'report_id', 'sl_id', 'Location', domain=[('usage', '=', 'internal')]),
-#        
+        'data': fields.binary('Exported CSV', readonly=True),
+        'filename': fields.char('File Name',size=64),
+        
 #        'date_from': fields.date("From Date", required=True),
 #        'date_to': fields.date("To Date", required=True),
 #        'product_from':fields.many2one('product.product', 'Supplier Part No From', required=False),
@@ -103,7 +105,7 @@ class param_inventory_valuation_report_max(osv.osv_memory):
         qry_pp = ''
         val_pp = []
         qry_sl = "usage='internal'"
-        val_sl = ['usage', '=', 'internal']
+        val_sl = [('usage', '=', 'internal')]
         pp_ids = False
         sl_ids = False
 
@@ -207,7 +209,8 @@ class param_inventory_valuation_report_max(osv.osv_memory):
                 sl_input_from_str = sl_input_from
                 cr.execute("select name " \
                                 "from stock_location "\
-                                "where name ilike '" + str(sl_input_from) + "%' " \
+                                "where " + qry_sl + " and " \
+                                "name ilike '" + str(sl_input_from) + "%' " \
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
@@ -217,7 +220,8 @@ class param_inventory_valuation_report_max(osv.osv_memory):
                 sl_input_to_str = sl_input_to
                 cr.execute("select name " \
                                 "from stock_location "\
-                                "where name ilike '" + str(sl_input_to) + "%' " \
+                                "where " + qry_sl + " and " \
+                                "name ilike '" + str(sl_input_to) + "%' " \
                                 "order by name desc limit 1")
                 qry = cr.dictfetchone()
                 if qry:

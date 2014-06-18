@@ -87,6 +87,7 @@
 			<field name="res_model">param.inventory.valuation.report.max</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_inventory_valuation_report_max"/>
 			<field name="target">new</field>
 			<field name="help">This menu print Inventory Valuation Report.</field>
 		</record>

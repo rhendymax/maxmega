@@ -177,7 +177,7 @@ class param_posted_payment_check_list(osv.osv_memory):
         partner_input_from = data['form']['partner_input_from'] or False
         partner_input_to = data['form']['partner_input_to'] or False
         partner_default_from_str = partner_default_to_str = ''
-        partnet_input_from_str = partner_input_to_str= ''
+        partner_input_from_str = partner_input_to_str= ''
         
         if data_search == 'code':
             if report_type =='payable':
