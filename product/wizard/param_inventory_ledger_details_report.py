@@ -280,7 +280,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
         header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
         header += ('date_showing' in form and 'Date : ' + str(form['date_showing']) + " \n") or ''
         header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
-        header += 'Source Internal No;Document No;Date;Location;Qty On Hand(PCS);Unit Cost;Total Cost' + " \n"
+        header += 'Supplier Part No;Date;Condition;Mode;Cust/Supp Key;Cust/Supp Name;Qty;Cost;Balance Qty;Total Cost' + " \n"
 
         all_content_line += header
         all_content_line += ' \n'
