@@ -226,7 +226,6 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
                         + str(t['cpn'] or '') + ";" + str(t['location_name'] or '') + ";" + str(t['qty'] or '0') + ";" + str(t['uom'] or '')+ "\n"
                         totalQty += (t['qty'] or 0)
                     _gt_qty += totalQty or 0
-                    print totalQty
                     header += "Total for " + str('[' + s['brand_name'] + ']' + s['name'],)  + ";;;; " + str(totalQty or '0')  + " \n"
             header += 'Grand Total' + ';' + ';' + ';' + ';' + str(_gt_qty) + ' \n \n'
 
