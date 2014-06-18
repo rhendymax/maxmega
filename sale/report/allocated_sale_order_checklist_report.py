@@ -95,12 +95,17 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context=None):
         super(allocated_sale_order_checklist_report, self).__init__(cr, uid, name, context=context)
+        self.grand_total = 0
         self.localcontext.update({
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
+            'grand_total' : self._grand_total,
             })
 
+    def _grand_total(self):
+        return self.grand_total
+    
     def _get_lines(self):
         results = []
         cr              = self.cr
@@ -181,7 +186,7 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
                                  'qty' : t['qty'],
                                  'uom' : t['uom']
                                     })
-
+                        self.grand_total += t['qty'] or 0
                 results.append({
                     'name' : '[' + s['brand_name'] + ']' + s['name'],
                     'vals' : val,
