@@ -180,7 +180,6 @@ class booking_report_by_brand(osv.osv_memory):
         
         cr = cr
         uid = uid
-        
         res={}
         pool = pooler.get_pool(cr.dbname)
 
@@ -196,6 +195,8 @@ class booking_report_by_brand(osv.osv_memory):
 #        code_to = form['partner_code_to']
         brand_ids = form['brand_ids']
         res_partner_obj = self.pool.get('res.partner')
+        
+        gt_total_price = gt_brand_total = gt_total_qty = 0
         
         all_content_line = ''
         header = 'sep=;' + " \n"
@@ -251,20 +252,24 @@ class booking_report_by_brand(osv.osv_memory):
                     + "and pbd.id = " + str(s['id']) + " " \
                     + "order by res_partner.name")
                 slines = cr.dictfetchall()
-
-                total_price = brand_total_price = total_qty = 0.00
+                total_price = total_amount = brand_total_price = total_qty = 0
                 if len(slines) > 0:
                     for result in slines:
                         print result['default_code']
-                        header += str(result['default_code'] or '') + ";" + str(round(((result['amount'] or 0.00) / (result['line_qty'] or 0.00)),6)) + ";" \
-                        + str(result['line_qty'] or 1) + ";" + str(result['amount'] or 0.00) + ";" + str(result['line_date'] or '') + ";" \
+                        header += str(result['default_code'] or '') + ";" + str(round(((result['amount'] or 0) / (result['line_qty'] or 0)),6)) + ";" \
+                        + str(result['line_qty'] or 1) + ";" + str(result['amount'] or 0) + ";" + str(result['line_date'] or '') + ";" \
                         + str(result['part_name'] or '') + ";" + str(result['line_ref'] or '') + "\n"
                         qty = result['line_qty'] or 1
                         total_qty += qty or 1
-                        total_price = result['amount'] or 0.00
-                        brand_total_price += total_price
+                        total_price = round(((result['amount'] or 0) / (result['line_qty'] or 0)),6)
+                        total_amount = result['amount'] or 0
+                        brand_total_price += total_amount
+                        gt_total_price += total_price
+                    gt_total_qty += total_qty
+                    gt_brand_total += brand_total_price
                 if len(slines) > 0:
                     header += ";;" + str(total_qty) + ";" + str(brand_total_price) + "\n"
+        header += "Grand Total" + ";" + str(gt_total_price) + ";" + str(gt_total_qty) + ";" + str(gt_brand_total) + "\n"
         all_content_line += header
 
 
