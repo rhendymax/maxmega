@@ -219,14 +219,23 @@ class po_oustanding_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context=None):
         super(po_oustanding_report, self).__init__(cr, uid, name, context=context)
         
+        self.qty = 0
+        self.price_unit = 0.00000
         self.oustanding = 0.00
-        
         self.localcontext.update({
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
+            'total_qty': self._total_qty,
+            'total_price_unit': self._total_price_unit,
             'total_oustanding': self._total_oustanding,
             })
+
+    def _total_qty(self):
+        return self.qty
+
+    def _total_price_unit(self):
+        return self.price_unit
 
     def _total_oustanding(self):
         return self.oustanding
@@ -278,6 +287,8 @@ class po_oustanding_report(report_sxw.rml_parse):
                     'unit_price': pol.price_unit,
                     'oustanding': t['oustanding'] or 0,
                 }
+                self.qty += pol.product_qty or 0
+                self.price_unit += pol.price_unit or 0.00000
                 self.oustanding += (t['oustanding'] or 0)
                 results.append(res)
         results = results and sorted(results, key=lambda val_res: val_res['order_name']) or []

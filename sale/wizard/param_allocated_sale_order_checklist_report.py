@@ -23,6 +23,7 @@ from osv import fields, osv
 import time
 import pooler
 import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_allocated_sale_order_checklist_report(osv.osv_memory):
     _name = 'param.allocated.sale.order.checklist.report'
@@ -227,7 +228,8 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
                         totalQty += (t['qty'] or 0)
                     _gt_qty += totalQty or 0
                     header += "Total for " + str('[' + s['brand_name'] + ']' + s['name'],)  + ";;;; " + str(totalQty or '0')  + " \n"
-            header += 'Grand Total' + ';' + ';' + ';' + ';' + str(_gt_qty) + ' \n \n'
+            header += ' \n'
+            header += 'Grand Total' + ';' + ';' + ';' + ';' + str(float_round(_gt_qty,0)) + ' \n \n'
 
         all_content_line += header
         all_content_line += ' \n'

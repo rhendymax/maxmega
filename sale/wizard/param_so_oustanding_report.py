@@ -303,7 +303,7 @@ class param_so_oustanding_report(osv.osv_memory):
             ids = data['ids']
         if not ids:
             return []
-        oustanding = 0
+        order_qty = oustanding = 0
         res_partner_obj = self.pool.get('res.partner')
         voucher_obj = self.pool.get('account.voucher')
         sol_obj = self.pool.get('sale.order.line')
@@ -351,9 +351,10 @@ class param_so_oustanding_report(osv.osv_memory):
                 header += str(t['rp_name'] or '') + ";" + str(t['rp_ref'] or '') + ";" + str(t['so_name'] or '') + ";" \
                 + str(t['prod_name'] or '') + ";" + str(sol.product_uom_qty or 0.00) \
                 + ";" + str(sol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) + " \n"
-
+                
+                order_qty += sol.product_uom_qty or 0.00
                 oustanding += (t['oustanding'] or 0)
-        header += "Report Total;;;;;;;" + str(oustanding)  + " \n"
+        header += "Grand Total;;;;" + str(order_qty) + ";" + ";" + str(oustanding)  + " \n"
 
         all_content_line += header
         all_content_line += ' \n'

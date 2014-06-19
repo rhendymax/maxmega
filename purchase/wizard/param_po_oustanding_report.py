@@ -24,6 +24,7 @@ import time
 import pooler
 import base64
 from tools.translate import _
+from tools import float_round, float_is_zero, float_compare
 
 class param_po_oustanding_report(osv.osv_memory):
     _name = 'param.po.oustanding.report'
@@ -384,16 +385,18 @@ class param_po_oustanding_report(osv.osv_memory):
             + po_qry + \
             "order by po.name")
         qry3 = cr.dictfetchall()
+        gt_qty = gt_price_unit = 0
         if qry3:
             for t in qry3:
                 pol = pol_obj.browse(cr, uid, t['line_id'])
                 header += str(t['rp_ref'] or '') + ";" + str(t['rp_name'] or '') + ";" \
                     + str(t['po_name'] or '') + ";" + str(t['prod_name'] or '') + ";" +  \
-                    str(pol.estimated_time_departure or '') + ";" + str(pol.product_qty or 0.00) + ";" + \
-                    str(pol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) + "\n"
-
+                    str(pol.estimated_time_departure or '') + ";" + str(pol.product_qty or 0) + ";" + \
+                    str(pol.price_unit or 0.00000)+ ";" + str(t['oustanding'] or 0.00) + "\n"
+                gt_qty += pol.product_qty or 0
+                gt_price_unit += pol.price_unit or 0.00000
                 oustanding += (t['oustanding'] or 0)
-        header += "Report Total;;;;;;;" + str(oustanding)  + " \n"
+        header += "Grand Total;;;;;" + str(float_round(gt_qty,0)) + ";" + str(float_round(gt_price_unit,5)) + ";" + str(float_round(oustanding,0))  + " \n"
 
         all_content_line += header
         all_content_line += ' \n'

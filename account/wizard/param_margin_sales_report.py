@@ -173,6 +173,10 @@ class param_margin_sales_report(osv.osv_memory):
             return []
         cr = cr
         uid = uid
+        
+        gt_qty = gt_sales_total = gt_qty_cost = gt_cost_total = gt_margin = 0.00
+        gt_sell_price = gt_cost_price = 0.00000
+        
         date_from = form['date_from'] or False
         date_to = form['date_to'] or False
         date_from_qry = date_from and "And l.date_invoice >= '" + str(date_from) + "' " or " "
@@ -186,7 +190,7 @@ class param_margin_sales_report(osv.osv_memory):
         header += 'Margin Sales' + " \n"
         header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
-        header += 'Inventory Key;Inv Date;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
+        header += 'Inventory Key;Inv Date;Inv No;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
 
         cr.execute("select  DISTINCT l.partner_id " \
                         "from account_invoice l " \
@@ -283,14 +287,25 @@ class param_margin_sales_report(osv.osv_memory):
                                     margin_percent = 0
                                 first_val = True
                                 header += str(val_lines['inventory_key'] or '') + ";" + str(val_lines['inv_date'] or '') + ";" + str(val_lines['invoice_no'] or '') + ";" \
-                                + str(val_lines['quantity'] or 0) + ";" + str(val_lines['selling_price'] or 0) + ";" + str(val_lines['total'] or 0) + ";" + str(cost_lines['qty'] or 0) + ";" \
+                                + str(val_lines['quantity'] or 0) + ";" + str(val_lines['selling_price'] or 0.00000) + ";" + str(val_lines['total'] or 0) + ";" + str(cost_lines['qty'] or 0) + ";" \
                                 + str(cost_lines['cost_price'] or 0) + ";" + str(res_val['test'] or 0) + ";" + str(margin or 0) + ";" + str(float_round(margin_percent, 2) or 0) + "% \n"
-
+                                gt_qty += val_lines['quantity'] or 0.00
+                                gt_sell_price += val_lines['selling_price'] or 0.0000
+                                gt_sales_total += val_lines['total'] or 0.00
+                                gt_qty_cost += cost_lines['qty'] or 0.00
+                                gt_cost_price += cost_lines['cost_price'] or 0.00000
+                                gt_cost_total += res_val['test'] or 0.00
+                                gt_margin += margin or 0.00
                             else:
                                 header += str('') + ";" + str('') + ";" + str('') + ";" \
                                 + str('') + ";" + str('') + ";" + str('') + ";" + str(cost_lines['qty'] or 0) + ";" \
                                 + str(cost_lines['cost_price'] or 0) + ";" + str('') + ";" + str('') + ";" + str('') + " \n"
-
+                                gt_qty_cost += cost_lines['qty'] or 0.00
+                                gt_cost_price += cost_lines['cost_price'] or 0.00000
+        header += ' \n' + 'Grand Total' + ';' + ';' + ';' + str(float_round(gt_qty,2)) + ';' + str(float_round(gt_sell_price,5)) + ';' \
+        + str(float_round(gt_sales_total,2)) + ';' + str(float_round(gt_qty_cost,2)) + ';' + str(float_round(gt_cost_price,5)) + ';' \
+        + str(float_round(gt_cost_total,2)) + ';' + str(float_round(gt_margin,2)) + ' \n'
+        
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'

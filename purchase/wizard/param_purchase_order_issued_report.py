@@ -23,6 +23,7 @@ from osv import fields, osv
 import pooler
 import base64
 import time
+from tools import float_round, float_is_zero, float_compare
 
 class param_purchase_order_issued_report(osv.osv_memory):
     _name = 'param.purchase.order.issued.report'
@@ -263,12 +264,16 @@ class param_purchase_order_issued_report(osv.osv_memory):
                         + partner_qry + \
                         " order by po.name")
         qry3 = cr.dictfetchall()
+        gt_unit_price = gt_qty = gt_total = 0
         if qry3:
             for t in qry3:
-                header += str(t['po_no'] or '') + ";" + str(t['po_date'] or '') + ";" + str(t['supplier_po_no'] or '') + ";" + str(t['unit_price'] or 0.00) + ";"\
-                        + str(t['qty'] or 0.00) + ";"  + str(t['total'] or 0.00) + ";" + str(t['location'] or '') + ";" + str(t['partner_ref'] or '') + ";"\
+                header += str(t['po_no'] or '') + ";" + str(t['po_date'] or '') + ";" + str(t['supplier_po_no'] or '') + ";" + str(t['unit_price'] or 0) + ";"\
+                        + str(t['qty'] or 0) + ";"  + str(t['total'] or 0) + ";" + str(t['location'] or '') + ";" + str(t['partner_ref'] or '') + ";"\
                         + str(t['partner_name'] or '') + ";" + str(t['part_no'] or '') + ";" + str(t['brand'] or '') + "\n"
-
+                gt_unit_price += t['unit_price'] or 0
+                gt_qty += t['qty'] or 0
+                gt_total += t['total'] or 0
+            header += ' \n' + 'Grand Total' + ';' + ';' + ';' + str(float_round(gt_unit_price,5)) + ';' + str(gt_qty) + ';' + str(float_round(gt_total,5)) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'

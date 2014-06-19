@@ -23,6 +23,7 @@ from osv import fields, osv
 import time
 import pooler
 import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_monthly_pos_with_sale_order_report(osv.osv_memory):
     _name = 'param.monthly.pos.with.sale.order.report'
@@ -217,13 +218,18 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
                         "order by ai.date_invoice, invoice_no, brand_name")
 
         results = cr.dictfetchall()
+        gt_selling_price = gt_qty = gt_total = 0
         if results:
             for t in results:
                 header += str(t['date_inv'] or '') + ";" + str(t['invoice_no']) + ";" + str(t['so_no'] or '') + ";'" \
                         + str(t['customer_po_no']) + ";" + str(t['customer_name'] or '') + ";" + str(t['location'] or '') + ";" \
-                        + str(t['cpn'] or '') + ";" + str(t['mpn'] or '') + str(t['selling_price'] or '') + ";" + str(t['quantity'] or '') + ";"\
-                        + str(t['total'] or '')+ ";" + str(t['brand_name'] or '') + " \n"
-
+                        + str(t['cpn'] or '') + ";" + str(t['mpn'] or '') + ";" + str(t['selling_price'] or 0.00000) + ";" + str(t['quantity'] or 0) + ";"\
+                        + str(t['total'] or 0)+ ";" + str(t['brand_name'] or '') + " \n"
+                gt_selling_price += t['selling_price'] or 0.00000
+                gt_qty += t['quantity'] or 0
+                gt_total += t['total'] or 0
+            header += ' \n' + 'Grand Total' + ';' + ';' + ';' + ';' + ';' + ';' + ';' + ';' + str(float_round(gt_selling_price,5)) + ';' + str(float_round(gt_qty,0)) \
+            + ';' + str(float_round(gt_total,0)) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'

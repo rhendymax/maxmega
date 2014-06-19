@@ -100,6 +100,18 @@
 				</tr>
 			</blockTable>
 		</section>
+		
+		<blockTable colWidths="400.0,80.0,80.0,80.0,80.0,80.0">
+			<tr>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>Grand Total:</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['selling_price']), get_lines(), 0 ), digits=5) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['quantity']), get_lines(), 0 ), digits=0) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['total']), get_lines(), 0 ), digits=0) ]]</font></para></td>
+				<td><para style="terp_default_7"></para></td>
+			</tr>
+		</blockTable>
+		
 		<blockTable colWidths="720.0, 80.0" style="TableEnd">
 			<tr>
 				<td>

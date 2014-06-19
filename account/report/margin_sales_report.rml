@@ -92,6 +92,23 @@
 				</blockTable>
 			</section>
 		</section>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_grand_total(),'gt') ]]</font></para>
+			<blockTable colWidths="160.0,160.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0">
+				<tr>
+					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_ItalicBold_7"><font>Grand Total:</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['quantity'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['selling_price'],digits=5) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['total'],digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['qty_cost'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['cost_price'], digits=5) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['total_cost'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(gt['margin'], digits=2) ]]</font></para></td>
+					<td><para style="terp_default_7"></para></td>
+				</tr>
+			</blockTable>
+		</section>
 		<blockTable colWidths="720.0, 80.0" style="TableEnd">
 			<tr>
 				<td>

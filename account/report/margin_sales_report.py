@@ -115,19 +115,38 @@ class margin_sales_report(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context=None):
         super(margin_sales_report, self).__init__(cr, uid, name, context=context)
+        self.quantity = 0.00
+        self.selling_price = 0.00000
+        self.total = 0.00
+        self.qty_cost = 0.00
+        self.cost_price = 0.00000
+        self.total_cost = 0.00
+        self.margin = 0.00
         self.localcontext.update({
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
+            'get_grand_total' : self._get_grand_total,
             })
+
+    def _get_grand_total(self):
+        result = []
+        result.append({
+                       'quantity' : self.quantity,
+                       'selling_price' : self.selling_price,
+                       'total' : self.total,
+                       'qty_cost' : self.qty_cost,
+                       'cost_price' : self.cost_price,
+                       'total_cost' : self.total_cost,
+                       'margin' : self.margin,
+        })
+        return result
 
     def _get_lines(self):
         results = []
         # partner
         cr              = self.cr
         uid             = self.uid
-
-
 
         date_from = self.date_from
         date_to = self.date_to
@@ -257,6 +276,13 @@ class margin_sales_report(report_sxw.rml_parse):
                                     'margin' : '',
                                     'margin_percent' : '',
                                     })
+                            self.qty_cost += cost_lines['qty'] or 0.00
+                            self.cost_price += cost_lines['cost_price'] or 0.00000
+                        self.quantity += val_lines['quantity'] or 0.00
+                        self.selling_price += val_lines['selling_price'] or 0.00
+                        self.total += val_lines['total'] or 0.00
+                        self.total_cost += res_val['test'] or 0.00
+                        self.margin += margin or 0.00
                 results.append({
                     'part_name' : s['name'],
                     'part_ref' : s['ref'],
