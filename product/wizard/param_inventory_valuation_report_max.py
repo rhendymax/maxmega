@@ -270,7 +270,7 @@ class param_inventory_valuation_report_max(osv.osv_memory):
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Inventory Valuation Report' + " \n"
+        header += 'Inventory Valuation Report Max' + " \n"
         header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + " \n") or ''
         header += ('sl_selection' in form and 'Location Filter Selection : ' + form['sl_selection'] + " \n") or ''
@@ -360,14 +360,14 @@ class param_inventory_valuation_report_max(osv.osv_memory):
         all_content_line += 'End of Report'
         csv_content = ''
 
-        filename = 'Inventory Valuation Report Checking.csv'
+        filename = 'Inventory Valuation Report Max.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','inventory_valuation_report_max_result_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Inventory Valuation Report',
+                'name':'Inventory Valuation Report Max',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.inventory.valuation.report.max',
