@@ -250,6 +250,8 @@ class stock_picking(osv.osv):
         return True
 
     def action_process2(self, cr, uid, ids, context=None):
+#         raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %('a','b'))
+
         """ Makes partial picking and moves done.
         @param partial_datas : Dictionary containing details of partial picking
                           like partner_id, address_id, delivery_date,
@@ -342,8 +344,10 @@ class stock_picking(osv.osv):
                                                 },
                                                 context=context)
                               #check her
+                    
                     if qty_pick > 0:
                         result_x = cost_price_fifo_obj.stock_move_get(cr, uid, move.product_id.id, move.location_id.id, context=context)
+#                         print result_x
                         for res1 in result_x:
                             qty_fifo = 0.00
                             if qty_pick > res1['qty_onhand_free']:
@@ -351,7 +355,7 @@ class stock_picking(osv.osv):
                             else:
                                 qty_fifo = qty_pick
                             qty_pick = qty_pick - qty_fifo
-#                            raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(qty_fifo, res1['move_id']))
+#                             raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(qty_fifo, res1['move_id']))
                             fifo_control_obj.create(cr, uid, {
                                 'int_in_move_id' : res1['int_move_id'],
                                 'in_move_id': res1['move_id'],
@@ -1578,10 +1582,14 @@ class stock_inventory(osv.osv):
         move_obj = self.pool.get('stock.move')
         uom_obj = self.pool.get('product.uom')
         fifo_control_obj = self.pool.get('fifo.control')
+
         for inv in self.browse(cr, uid, ids, context=context):
             for sm in inv.move_ids:
                 if (sm.location_usage == 'internal'):
                     result1 = cost_price_fifo_obj.stock_move_get(cr, uid, sm.product_id.id, sm.location_id.id, context=context)
+#                     print result1
+#                     raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %('a','b'))
+
                     qty_pick = uom_obj._compute_qty(cr, uid, sm.product_uom.id, sm.product_qty, sm.product_id.uom_id.id)
                     for res1 in result1:
                         qty_fifo = 0.00
@@ -1591,8 +1599,9 @@ class stock_inventory(osv.osv):
                             else:
                                 qty_fifo = qty_pick
                             qty_pick = qty_pick - qty_fifo
-#                            raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(qty_fifo, res1['move_id']))
+
                             fifo_control_obj.create(cr, uid, {
+                                'int_in_move_id' : res1['int_move_id'],
                                 'in_move_id': res1['move_id'],
                                 'out_move_id': sm.id,
                                 'quantity': qty_fifo,

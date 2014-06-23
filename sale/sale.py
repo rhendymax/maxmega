@@ -2640,6 +2640,8 @@ class sale_order_line(osv.osv):
         location_ids = []
         default_location_id = False
 #        raise osv.except_osv(_('Debug !'), _(' \'%s\'!') %(res,))
+        if not product_customer_id:
+            return res
         if product:
             if 'product_uom' in res['value']:
                 uom = res['value']['product_uom']

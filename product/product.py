@@ -438,6 +438,174 @@ class product_product(osv.osv):
             res[prod_id] -= amount
         return res
 
+    def get_product_available2(self, cr, uid, ids, context=None):
+        """ Finds whether product is available or not in particular warehouse.
+        @return: Dictionary of values
+        """
+        if context is None:
+            context = {}
+
+        if not ids:
+            ids = self.search(cr, uid, [])
+        what = context.get('what',())
+        res = {}.fromkeys(ids, 0.0)
+        if not ids:
+            return res
+
+
+        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+
+        results = results2 = []
+        if 'incoming_booked' in what:
+            cr.execute("select coalesce( \
+                (select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty \
+                from sale_allocated sa \
+                inner join purchase_order_line pol on sa.purchase_line_id = pol.id \
+                where coalesce(sa.quantity,0) > coalesce(sa.received_qty,0) \
+                and sa.product_id = pp_o.id) \
+                ,0) as qty_incoming_booked, \
+                pp_o.id as prod_id from product_product pp_o \
+                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+                " + pp_qry + "order by pt_o.name")
+            results = cr.fetchall()
+
+        if 'incoming_non_booked' in what:
+        
+            cr.execute("select coalesce( \
+                (select sum( \
+                (pol.product_qty -  \
+                coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
+                coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+                where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
+                ,0)) \
+                from purchase_order_line pol \
+                where pol.product_id = pp_o.id and state not in ('draft', 'cancel')) \
+                ,0) as qty_incoming_non_booked, \
+                pp_o.id as prod_id from product_product pp_o \
+                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+                " + pp_qry + "order by pt_o.name")
+            results = cr.fetchall()
+        if 'booked' in what:
+            cr.execute("select coalesce(( \
+               select sum( \
+               (sol.product_uom_qty -  \
+               coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
+               from sale_order_line sol \
+               where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
+               ),0) as qty_booked, \
+               pp_o.id as prod_id from product_product pp_o \
+               inner join product_template pt_o on pp_o.id = pt_o.id where  \
+               " + pp_qry + "order by pt_o.name")
+            results = cr.fetchall()
+        if 'allocated' in what:
+            cr.execute("select coalesce(( \
+                select sum( \
+                sol.qty_onhand_allocated +  \
+                coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+                where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
+                coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
+                where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
+                ),0) as qty_allocated, \
+                pp_o.id as prod_id from product_product pp_o \
+                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+                " + pp_qry + "order by pt_o.name")
+            results = cr.fetchall()
+        for amount, prod_id in results:
+            res[prod_id] += amount
+
+        return res
+
+    def get_product_available3(self, cr, uid, ids, context=None, context2=None):
+        """ Finds whether product is available or not in particular warehouse.
+        @return: Dictionary of values
+        """
+        if context is None:
+            context = {}
+        if context2 is None:
+            context2 = {}
+        if not ids:
+            ids = self.search(cr, uid, [])
+        what = context.get('what',())
+        res = {}.fromkeys(ids, 0.0)
+        if not ids:
+            return res
+
+
+        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+
+        results = results2 = []
+        if 'incoming_non_booked' in what:
+            cr.execute("select coalesce( \
+                (select sum( \
+                (pol.product_qty -  \
+                coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
+                coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+                where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
+                ,0)) \
+                from purchase_order_line pol \
+                where pol.product_id = pp_o.id and state not in ('draft', 'cancel')) \
+                ,0) as qty_incoming_non_booked, \
+                pp_o.id as prod_id from product_product pp_o \
+                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+                " + pp_qry + "order by pt_o.name")
+            results = cr.fetchall()
+        if 'allocated' in what:
+            cr.execute("select coalesce(( \
+                select sum( \
+                sol.qty_onhand_allocated +  \
+                coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+                where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
+                coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
+                where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
+                ),0) as qty_allocated, \
+                pp_o.id as prod_id from product_product pp_o \
+                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+                " + pp_qry + "order by pt_o.name")
+            results2 = cr.fetchall()
+        for amount, prod_id in results:
+            qty_available = self.browse(cr, uid, prod_id, context=None).qty_available
+            res[prod_id] += (qty_available + amount)
+        for amount, prod_id in results2:
+            res[prod_id] -= amount
+        return res
+
+    def get_product_available4(self, cr, uid, ids, context=None, context2=None):
+        """ Finds whether product is available or not in particular warehouse.
+        @return: Dictionary of values
+        """
+        if context is None:
+            context = {}
+        if context2 is None:
+            context2 = {}
+        if not ids:
+            ids = self.search(cr, uid, [])
+        what = context.get('what',())
+        res = {}.fromkeys(ids, 0.0)
+        if not ids:
+            return res
+
+
+        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+
+        results = []
+        if 'booked' in what:
+            cr.execute("select coalesce(( \
+               select sum( \
+               (sol.product_uom_qty -  \
+               coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
+               from sale_order_line sol \
+               where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
+               ),0) as qty_booked, \
+               pp_o.id as prod_id from product_product pp_o \
+               inner join product_template pt_o on pp_o.id = pt_o.id where  \
+               " + pp_qry + "order by pt_o.name")
+            results = cr.fetchall()
+
+        for amount, prod_id in results:
+            qty_available = self.browse(cr, uid, prod_id, context=None).qty_available
+            res[prod_id] += (qty_available - amount)
+        return res
+
     def _product_available(self, cr, uid, ids, field_names=None, arg=False, context=None):
         """ Finds the incoming and outgoing quantity of product.
         @return: Dictionary of values
@@ -449,9 +617,9 @@ class product_product(osv.osv):
         res = {}
         for id in ids:
             res[id] = {}.fromkeys(field_names, 0.0)
-
         for f in field_names:
             c = context.copy()
+            d = context.copy()
             if f == 'qty_available':
                 c.update({ 'states': ('done',), 'what': ('in', 'out') })
                 stock = self.get_product_available(cr, uid, ids, context=c)
@@ -465,78 +633,29 @@ class product_product(osv.osv):
                 c.update({ 'states': ('confirmed','waiting','assigned'), 'what': ('out',) })
                 stock = self.get_product_available(cr, uid, ids, context=c)
             if f == 'qty_incoming_booked':
-                stock = self.get_incoming_booked(cr, uid, ids, context=None)
+                d.update({'what': ('incoming_booked',) })
+                stock = self.get_product_available2(cr, uid, ids, context=d)
             if f == 'qty_incoming_non_booked':
-                stock = self.get_incoming_non_booked(cr, uid, ids, context=None)
+                d.update({'what': ('incoming_non_booked',) })
+                stock = self.get_product_available2(cr, uid, ids, context=d)
             if f == 'qty_booked':
-                stock = self._qty_booked(cr, uid, ids, context=None)
+                d.update({'what': ('booked',) })
+                stock = self.get_product_available2(cr, uid, ids, context=d)
             if f == 'qty_free':
-                stock = self._qty_free(cr, uid, ids, context=None)
+                d.update({'what': ('booked',) })
+                stock = self.get_product_available4(cr, uid, ids, context=d)
             if f == 'qty_allocated':
-                stock = self._qty_allocated(cr, uid, ids, context=None)
+                d.update({'what': ('allocated',) })
+                stock = self.get_product_available2(cr, uid, ids, context=d)
             if f == 'qty_free_balance':
-                stock = self._qty_free_balance(cr, uid, ids, context=None)
+                d.update({'what': ('incoming_non_booked','allocated',) })
+                c.update({ 'states': ('done',), 'what': ('in', 'out') })
+                stock =  self.get_product_available3(cr, uid, ids, context=d, context2=c)
             for id in ids:
+                if f == 'qty_free_balance':
+                    stock.get(id, 0.0)
                 res[id][f] = stock.get(id, 0.0)
-
-#             pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
-#     
-#             cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_booked_p(integer) RETURNS numeric AS $$ \
-#                 select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty \
-#                 from sale_allocated sa \
-#                 inner join purchase_order_line pol on sa.purchase_line_id = pol.id \
-#                 where coalesce(sa.quantity,0) > coalesce(sa.received_qty,0) \
-#                 and sa.product_id = $1; \
-#                 $$ LANGUAGE SQL; \
-#                 CREATE OR REPLACE FUNCTION qty_incoming_non_booked_p(integer) RETURNS numeric AS $$ \
-#                 select sum( \
-#                 (pol.product_qty -  \
-#                 coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
-#                 coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-#                 where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
-#                 ,0)) \
-#                 from purchase_order_line pol \
-#                 where pol.product_id = $1 and state not in ('draft', 'cancel') \
-#                 $$ LANGUAGE SQL; \
-#                 CREATE OR REPLACE FUNCTION qty_booked_p(integer) RETURNS numeric AS $$ \
-#                 select sum( \
-#                 (sol.product_uom_qty -  \
-#                 coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
-#                 from sale_order_line sol \
-#                 where sol.product_id = $1 and state not in ('draft', 'cancel') \
-#                 $$ LANGUAGE SQL; \
-#                 CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
-#                 select sum( \
-#                 sol.qty_onhand_allocated +  \
-#                 coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-#                 where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
-#                 coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
-#                 where sol.product_id = $1 and state not in ('draft', 'cancel') \
-#                 $$ LANGUAGE SQL; \
-#                 select coalesce(qty_incoming_booked_p(pp_o.id),0) as qty_incoming_booked, \
-#                 coalesce(qty_incoming_non_booked_p(pp_o.id),0) as qty_incoming_non_booked, \
-#                 coalesce(qty_booked_p(pp_o.id),0) as qty_booked, \
-#                 coalesce(qty_allocated_p(pp_o.id),0) as qty_allocated, \
-#                 coalesce(qty_incoming_non_booked_p(pp_o.id),0) - coalesce(qty_allocated_p(pp_o.id),0) as qty_free_balance, \
-#                 pp_o.id as prod_id from product_product pp_o \
-#                 inner join product_template pt_o on pp_o.id = pt_o.id where  \
-#                 " + pp_qry + "order by pt_o.name")
-#             qry3 = cr.dictfetchall()
-#             if qry3:
-#                 for s in qry3:
-#                     qty_avb = self.browse(cr, uid, s['prod_id'], context=context).qty_available
-#                     if f == 'qty_incoming_booked':
-#                         res[s['prod_id']][f] = s['qty_incoming_booked']
-#                     if f == 'qty_incoming_non_booked':
-#                         res[s['prod_id']][f] = s['qty_incoming_non_booked']
-#                     if f == 'qty_booked':
-#                         res[s['prod_id']][f] = s['qty_booked']
-#                     if f == 'qty_free':
-#                         res[s['prod_id']][f] = qty_avb - s['qty_allocated']
-#                     if f == 'qty_allocated':
-#                         res[s['prod_id']][f] = s['qty_allocated']
-#                     if f == 'qty_free_balance':
-#                         res[s['prod_id']][f] = qty_avb + s['qty_free_balance']
+            
         return res
 
 #     def _product_available(self, cr, uid, ids, field_names=None, arg=False, context=None):
@@ -582,191 +701,6 @@ class product_product(osv.osv):
 #                 res[id][f] = stock.get(id, 0.0)
 #         return res
 
-    def get_incoming_booked(self, cr, uid, ids, context=None):
-        if context is None:
-            context = {}
-        if not ids:
-            ids = self.search(cr, uid, [])
-        res = {}.fromkeys(ids, 0.0)
-        if not ids:
-            return res
-
-        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
-
-        cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_booked_p(integer) RETURNS numeric AS $$ \
-            select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty \
-            from sale_allocated sa \
-            inner join purchase_order_line pol on sa.purchase_line_id = pol.id \
-            where coalesce(sa.quantity,0) > coalesce(sa.received_qty,0) \
-            and sa.product_id = $1; \
-            $$ LANGUAGE SQL; \
-            select coalesce(qty_incoming_booked_p(pp_o.id),0) as qty_incoming_booked, \
-            pp_o.id as prod_id from product_product pp_o \
-            inner join product_template pt_o on pp_o.id = pt_o.id where  \
-            " + pp_qry + "order by pt_o.name")
-        qry3 = cr.dictfetchall()
-        if qry3:
-            for s in qry3:
-                res[s['prod_id']] = s['qty_incoming_booked']
-        return res
-
-    def get_incoming_non_booked(self, cr, uid, ids, context=None):
-        context = None
-        if not ids:
-            ids = self.search(cr, uid, [])
-        res = {}.fromkeys(ids, 0.0)
-        if not ids:
-            return res
-        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
- 
-        cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_non_booked_p(integer) RETURNS numeric AS $$ \
-            select sum( \
-            (pol.product_qty -  \
-            coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
-            coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-            where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
-            ,0)) \
-            from purchase_order_line pol \
-            where pol.product_id = $1 and state not in ('draft', 'cancel') \
-            $$ LANGUAGE SQL; \
-            select coalesce(qty_incoming_non_booked_p(pp_o.id),0) as qty_incoming_non_booked, \
-            pp_o.id as prod_id from product_product pp_o \
-            inner join product_template pt_o on pp_o.id = pt_o.id where  \
-            " + pp_qry + "order by pt_o.name")
-        qry3 = cr.dictfetchall()
-        if qry3:
-            for s in qry3:
-                res[s['prod_id']] = s['qty_incoming_non_booked']
-        return res
-
-    def _qty_booked(self, cr, uid, ids, context=None):
-
-        context = None
-        if not ids:
-            ids = self.search(cr, uid, [])
-        res = {}.fromkeys(ids, 0.0)
-        if not ids:
-            return res
-
-        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
-        cr.execute("CREATE OR REPLACE FUNCTION qty_booked_p(integer) RETURNS numeric AS $$ \
-           select sum( \
-           (sol.product_uom_qty -  \
-           coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
-           from sale_order_line sol \
-           where sol.product_id = $1 and state not in ('draft', 'cancel') \
-           $$ LANGUAGE SQL; \
-           select coalesce(qty_booked_p(pp_o.id),0) as qty_booked, \
-           pp_o.id as prod_id from product_product pp_o \
-           inner join product_template pt_o on pp_o.id = pt_o.id where  \
-           " + pp_qry + "order by pt_o.name")
-        qry3 = cr.dictfetchall()
-        if qry3:
-            for s in qry3:
-                res[s['prod_id']] = s['qty_booked']
-
-        return res
-
-    def _qty_free(self, cr, uid, ids, context=None):
-
-        context = None
-        if not ids:
-            ids = self.search(cr, uid, [])
-        res = {}.fromkeys(ids, 0.0)
-        if not ids:
-            return res
-
-        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
- 
-        cr.execute("CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
-            select sum( \
-            sol.qty_onhand_allocated +  \
-            coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-            where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
-            coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
-            where sol.product_id = $1 and state not in ('draft', 'cancel') \
-            $$ LANGUAGE SQL; \
-            select coalesce(qty_allocated_p(pp_o.id),0) as qty_allocated, \
-            pp_o.id as prod_id from product_product pp_o \
-            inner join product_template pt_o on pp_o.id = pt_o.id where  \
-            " + pp_qry + "order by pt_o.name")
-        qry3 = cr.dictfetchall()
-        if qry3:
-            for s in qry3:
-                qty_avb = self.browse(cr, uid, s['prod_id'], context=context).qty_available
-                res[s['prod_id']] = qty_avb - s['qty_allocated']
-        return res
-
-    def _qty_allocated(self, cr, uid, ids, context=None):
-
-        context = None
-        if not ids:
-            ids = self.search(cr, uid, [])
-        res = {}.fromkeys(ids, 0.0)
-        if not ids:
-            return res
-
-        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
- 
-        cr.execute("CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
-            select sum( \
-            sol.qty_onhand_allocated +  \
-            coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-            where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
-            coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
-            where sol.product_id = $1 and state not in ('draft', 'cancel') \
-            $$ LANGUAGE SQL; \
-            select coalesce(qty_allocated_p(pp_o.id),0) as qty_allocated, \
-            pp_o.id as prod_id from product_product pp_o \
-            inner join product_template pt_o on pp_o.id = pt_o.id where  \
-            " + pp_qry + "order by pt_o.name")
-        qry3 = cr.dictfetchall()
-        if qry3:
-            for s in qry3:
-                res[s['prod_id']] = s['qty_allocated']
-        return res
-
-    def _qty_free_balance(self, cr, uid, ids, context=None):
-
-        context = None
-        if not ids:
-            ids = self.search(cr, uid, [])
-        res = {}.fromkeys(ids, 0.0)
-        if not ids:
-            return res
-
-        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
-
-        cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_non_booked_p(integer) RETURNS numeric AS $$ \
-            select sum( \
-            (pol.product_qty -  \
-            coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
-            coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-            where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
-            ,0)) \
-            from purchase_order_line pol \
-            where pol.product_id = $1 and state not in ('draft', 'cancel') \
-            $$ LANGUAGE SQL; \
-            CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
-            select sum( \
-            sol.qty_onhand_allocated +  \
-            coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
-            where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
-            coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
-            where sol.product_id = $1 and state not in ('draft', 'cancel') \
-            $$ LANGUAGE SQL; \
-            select coalesce(qty_incoming_non_booked_p(pp_o.id),0) - coalesce(qty_allocated_p(pp_o.id),0) as qty_free_balance, \
-            pp_o.id as prod_id from product_product pp_o \
-            inner join product_template pt_o on pp_o.id = pt_o.id where  \
-            " + pp_qry + "order by pt_o.name")
-
-        qry3 = cr.dictfetchall()
-        if qry3:
-            for s in qry3:
-                qty_avb = self.browse(cr, uid, s['prod_id'], context=context).qty_available
-                res[s['prod_id']] = qty_avb + s['qty_free_balance']
-        return res
-
 #     def get_incoming_booked(self, cr, uid, ids, context=None):
 #         if context is None:
 #             context = {}
@@ -776,28 +710,25 @@ class product_product(osv.osv):
 #         if not ids:
 #             return res
 # 
-#         sale_allocated_obj = self.pool.get("sale.allocated")
-#         purchase_line_ids = []
-#         qty_purchases = {}
-#         qty_arrives = {}
+#         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
 # 
-#         for obj in self.browse(cr, uid, ids, context=context):
-#             purchase_qty = 0.00
-# #            product_id = obj.id
-# #            sale_allocated_ids = sale_allocated_obj.search(cr, uid, [('product_id','=',product_id),('receive','=',False)], order='purchase_line_id ASC')
-# #            val_sale_allocated = ''
-# #            if sale_allocated_ids:
-# #                val_sale_allocated = ','.join(map(str, sale_allocated_ids))
-#             cr.execute("select coalesce(sum(COALESCE( quantity, 0) - COALESCE( received_qty, 0)),0) as purchase_qty " \
-#                             "from sale_allocated where COALESCE( quantity, 0) > COALESCE(received_qty, 0) " \
-#                             "and product_id = " + str(obj.id))
-#             res_general = cr.dictfetchall()
-#             if res_general:
-#                 for val in res_general:
-#                     purchase_qty = val['purchase_qty']
-#             res[obj.id] = purchase_qty
+#         cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_booked_p(integer) RETURNS numeric AS $$ \
+#             select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty \
+#             from sale_allocated sa \
+#             inner join purchase_order_line pol on sa.purchase_line_id = pol.id \
+#             where coalesce(sa.quantity,0) > coalesce(sa.received_qty,0) \
+#             and sa.product_id = $1; \
+#             $$ LANGUAGE SQL; \
+#             select coalesce(qty_incoming_booked_p(pp_o.id),0) as qty_incoming_booked, \
+#             pp_o.id as prod_id from product_product pp_o \
+#             inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#             " + pp_qry + "order by pt_o.name")
+#         qry3 = cr.dictfetchall()
+#         if qry3:
+#             for s in qry3:
+#                 res[s['prod_id']] = s['qty_incoming_booked']
 #         return res
-
+# 
 #     def get_incoming_non_booked(self, cr, uid, ids, context=None):
 #         context = None
 #         if not ids:
@@ -805,193 +736,385 @@ class product_product(osv.osv):
 #         res = {}.fromkeys(ids, 0.0)
 #         if not ids:
 #             return res
-#         purchase_qty = 0.00
-#         for obj in self.browse(cr, uid, ids, context=context):
-#             cr.execute("select COALESCE(sum((pol.product_qty / " \
-#                        "(CASE WHEN pu_po.uom_type = 'reference' THEN pu_po.factor " \
-#                        "WHEN pu_po.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_po.category_id and uom_type = 'reference' limit 1) / pu_po.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_po.category_id and uom_type = 'reference' limit 1) * pu_po.factor) END) * " \
-#                        "(CASE WHEN pu_pt.uom_type = 'reference' THEN pu_pt.factor " \
-#                        "WHEN pu_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) / pu_pt.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) * pu_pt.factor) END)" \
-#                        ") - (" \
-#                        "(COALESCE(" \
-#                        "(select sum((sm.product_qty / " \
-#                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
-#                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
-#                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
-#                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
-#                        "from stock_move sm " \
-#                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
-#                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
-#                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
-#                        "where sm.purchase_line_id = pol.id and sm.state = 'done' " \
-#                        ") " \
-#                        ", 0)) - " \
-#                        "COALESCE((select sum(COALESCE(received_qty, 0)) as qty_received from sale_allocated where sale_allocated.purchase_line_id = pol.id and id in (select id from sale_allocated so where so.product_id = " + str(obj.id) + " and (coalesce(so.quantity,0) - coalesce(so.received_qty,0)) != 0)), 0)" \
-#                        ")),0) as qtyp " \
-#                        "from purchase_order_line pol " \
-#                        "left join product_template pt on pol.product_id = pt.id " \
-#                        "left join product_uom pu_po on pol.product_uom = pu_po.id " \
-#                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
-#                        "where pol.product_id = " + str(obj.id) + " and pol.state not in ('done', 'draft', 'cancel')")
-#             res_general = cr.dictfetchall()
-#             if res_general:
-#                 for val in res_general:
-#                     purchase_qty = val['qtyp']
-#             res[obj.id] = purchase_qty
+#         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+#  
+#         cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_non_booked_p(integer) RETURNS numeric AS $$ \
+#             select sum( \
+#             (pol.product_qty -  \
+#             coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
+#             coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+#             where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
+#             ,0)) \
+#             from purchase_order_line pol \
+#             where pol.product_id = $1 and state not in ('draft', 'cancel') \
+#             $$ LANGUAGE SQL; \
+#             select coalesce(qty_incoming_non_booked_p(pp_o.id),0) as qty_incoming_non_booked, \
+#             pp_o.id as prod_id from product_product pp_o \
+#             inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#             " + pp_qry + "order by pt_o.name")
+#         qry3 = cr.dictfetchall()
+#         if qry3:
+#             for s in qry3:
+#                 res[s['prod_id']] = s['qty_incoming_non_booked']
 #         return res
-
+# 
 #     def _qty_booked(self, cr, uid, ids, context=None):
 # 
-#         if not ids: return {}
-#         res = {}
-#         sale_order_line_obj = self.pool.get("sale.order.line")
-#         stock_move_obj = self.pool.get("stock.move")
-#         uom_obj = self.pool.get("product.uom")
-#         purchase_qty = 0.00
-#         for obj in self.browse(cr, uid, ids, context=context):
-#             cr.execute("select COALESCE(sum((sol.product_uom_qty / " \
-#                        "(CASE WHEN pu_sol.uom_type = 'reference' THEN pu_sol.factor " \
-#                        "WHEN pu_sol.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sol.category_id and uom_type = 'reference' limit 1) / pu_sol.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sol.category_id and uom_type = 'reference' limit 1) * pu_sol.factor) END) * " \
-#                        "(CASE WHEN pu_pt.uom_type = 'reference' THEN pu_pt.factor " \
-#                        "WHEN pu_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) / pu_pt.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) * pu_pt.factor) END)" \
-#                        ") - " \
-#                        "(COALESCE(" \
-#                        "(select sum((sm.product_qty / " \
-#                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
-#                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
-#                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
-#                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
-#                        "from stock_move sm " \
-#                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
-#                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
-#                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
-#                        "where sm.sale_line_id = sol.id and sm.state = 'done' " \
-#                        ") " \
-#                        ", 0))" \
-#                        "),0) as qtyp "\
-#                        "from sale_order_line sol " \
-#                        "left join product_template pt on sol.product_id = pt.id " \
-#                        "left join product_uom pu_sol on sol.product_uom = pu_sol.id " \
-#                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
-#                        "where sol.product_id = " + str(obj.id) + " and sol.state not in ('done', 'draft', 'cancel')")
-#             res_general = cr.dictfetchall()
-#             if res_general:
-#                 for val in res_general:
-#                     purchase_qty = val['qtyp']
-#             res[obj.id] = purchase_qty
+#         context = None
+#         if not ids:
+#             ids = self.search(cr, uid, [])
+#         res = {}.fromkeys(ids, 0.0)
+#         if not ids:
+#             return res
+# 
+#         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+#         cr.execute("CREATE OR REPLACE FUNCTION qty_booked_p(integer) RETURNS numeric AS $$ \
+#            select sum( \
+#            (sol.product_uom_qty -  \
+#            coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
+#            from sale_order_line sol \
+#            where sol.product_id = $1 and state not in ('draft', 'cancel') \
+#            $$ LANGUAGE SQL; \
+#            select coalesce(qty_booked_p(pp_o.id),0) as qty_booked, \
+#            pp_o.id as prod_id from product_product pp_o \
+#            inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#            " + pp_qry + "order by pt_o.name")
+#         qry3 = cr.dictfetchall()
+#         if qry3:
+#             for s in qry3:
+#                 res[s['prod_id']] = s['qty_booked']
+# 
 #         return res
-
+# 
 #     def _qty_free(self, cr, uid, ids, context=None):
 # 
-#         if not ids: return {}
-#         res = {}
-#         for obj in self.browse(cr, uid, ids, context=context):
-#             qty_p = 0.00
-#             cr.execute("select COALESCE(sum((sol.qty_onhand_allocated + " \
-#                        "COALESCE((select sum(COALESCE(received_qty, 0)) as qty_received from sale_allocated where sale_allocated.sale_line_id = sol.id), 0)" \
-#                         ") - " \
-#                        "(COALESCE(" \
-#                        "(select sum((sm.product_qty / " \
-#                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
-#                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
-#                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
-#                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
-#                        "from stock_move sm " \
-#                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
-#                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
-#                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
-#                        "where sm.sale_line_id = sol.id and sm.state = 'done' " \
-#                        ") " \
-#                        ", 0))" \
-#                        "),0) as qtyp "\
-#                        "from sale_order_line sol " \
-#                        "left join product_template pt on sol.product_id = pt.id " \
-#                        "left join product_uom pu_sol on sol.product_uom = pu_sol.id " \
-#                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
-#                        "where sol.product_id = " + str(obj.id) + " and sol.state not in ('done', 'draft', 'cancel')")
-#             res_general = cr.dictfetchall()
-#             for val in res_general:
-#                 qty_p = val['qtyp']
-#             res[obj.id] = obj.qty_available - qty_p
+#         context = None
+#         if not ids:
+#             ids = self.search(cr, uid, [])
+#         res = {}.fromkeys(ids, 0.0)
+#         if not ids:
+#             return res
+# 
+#         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+#  
+#         cr.execute("CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
+#             select sum( \
+#             sol.qty_onhand_allocated +  \
+#             coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+#             where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
+#             coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
+#             where sol.product_id = $1 and state not in ('draft', 'cancel') \
+#             $$ LANGUAGE SQL; \
+#             select coalesce(qty_allocated_p(pp_o.id),0) as qty_allocated, \
+#             pp_o.id as prod_id from product_product pp_o \
+#             inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#             " + pp_qry + "order by pt_o.name")
+#         qry3 = cr.dictfetchall()
+#         if qry3:
+#             for s in qry3:
+#                 qty_avb = self.browse(cr, uid, s['prod_id'], context=context).qty_available
+#                 res[s['prod_id']] = qty_avb - s['qty_allocated']
 #         return res
-
+# 
 #     def _qty_allocated(self, cr, uid, ids, context=None):
 # 
-#         if not ids: return {}
-#         res = {}
-#         for obj in self.browse(cr, uid, ids, context=context):
-#             qty_p = 0.00
-#             cr.execute("select COALESCE(sum((sol.qty_onhand_allocated + " \
-#                        "COALESCE((select sum(COALESCE(received_qty, 0)) as qty_received from sale_allocated where sale_allocated.sale_line_id = sol.id), 0)" \
-#                         ") - " \
-#                        "(COALESCE(" \
-#                        "(select sum((sm.product_qty / " \
-#                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
-#                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
-#                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
-#                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
-#                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
-#                        "from stock_move sm " \
-#                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
-#                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
-#                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
-#                        "where sm.sale_line_id = sol.id and sm.state = 'done' " \
-#                        ") " \
-#                        ", 0))" \
-#                        "),0) as qtyp "\
-#                        "from sale_order_line sol " \
-#                        "left join product_template pt on sol.product_id = pt.id " \
-#                        "left join product_uom pu_sol on sol.product_uom = pu_sol.id " \
-#                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
-#                        "where sol.product_id = " + str(obj.id) + " and sol.state not in ('done', 'draft', 'cancel')")
-#             res_general = cr.dictfetchall()
-#             for val in res_general:
-#                 qty_p = val['qtyp']
-#             res[obj.id] = qty_p
-#         return res
-
-#     def _qty_free_balance(self, cr, uid, ids, context=None):
+#         context = None
+#         if not ids:
+#             ids = self.search(cr, uid, [])
+#         res = {}.fromkeys(ids, 0.0)
+#         if not ids:
+#             return res
 # 
-#         if not ids: return {}
-#         res = {}
-#         for obj in self.browse(cr, uid, ids, context=context):
-#             res[obj.id] = obj.qty_incoming_non_booked + obj.qty_free
+#         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+#  
+#         cr.execute("CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
+#             select sum( \
+#             sol.qty_onhand_allocated +  \
+#             coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+#             where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
+#             coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
+#             where sol.product_id = $1 and state not in ('draft', 'cancel') \
+#             $$ LANGUAGE SQL; \
+#             select coalesce(qty_allocated_p(pp_o.id),0) as qty_allocated, \
+#             pp_o.id as prod_id from product_product pp_o \
+#             inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#             " + pp_qry + "order by pt_o.name")
+#         qry3 = cr.dictfetchall()
+#         if qry3:
+#             for s in qry3:
+#                 res[s['prod_id']] = s['qty_allocated']
 #         return res
-
-#    def _product_available2(self, cr, uid, ids, field_names=None, arg=False, context=None):
-#        """ Finds the incoming and outgoing quantity of product.
-#        @return: Dictionary of values
-#        """
-#        if not field_names:
-#            field_names = []
-#        if context is None:
-#            context = {}
-#        res = {}
-#        for id in ids:
-#            res[id] = {}.fromkeys(field_names, 0.0)
-#        for f in field_names:
-#            c = context.copy()
-#            #print f
-#            if f == 'qty_incoming_booked':
-#                stock = self.get_incoming_booked(cr, uid, ids, context=None)
-#                #print stock
-#            if f == 'qty_incoming_non_booked':
-#                stock = self.get_incoming_non_booked(cr, uid, ids, context=None)
-#            for id in ids:
-#                res[id][f] = stock.get(id, 0.0)
-#        print 'res'
-#        return res
+# 
+#     def _qty_free_balance(self, cr, uid, ids, context=None):
+#  
+#         context = None
+#         if not ids:
+#             ids = self.search(cr, uid, [])
+#         res = {}.fromkeys(ids, 0.0)
+#         if not ids:
+#             return res
+#  
+# #         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+# # 
+# #         cr.execute("CREATE OR REPLACE FUNCTION qty_incoming_non_booked_p(integer) RETURNS numeric AS $$ \
+# #             select sum( \
+# #             (pol.product_qty -  \
+# #             coalesce((select sum(sm.product_qty) from stock_move sm where sm.purchase_line_id = pol.id and sm.state = 'done'),0)) - \
+# #             coalesce((select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+# #             where sa.purchase_line_id = pol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)) \
+# #             ,0)) \
+# #             from purchase_order_line pol \
+# #             where pol.product_id = $1 and state not in ('draft', 'cancel') \
+# #             $$ LANGUAGE SQL; \
+# #             CREATE OR REPLACE FUNCTION qty_allocated_p(integer) RETURNS numeric AS $$ \
+# #             select sum( \
+# #             sol.qty_onhand_allocated +  \
+# #             coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+# #             where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
+# #             coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
+# #             where sol.product_id = $1 and state not in ('draft', 'cancel') \
+# #             $$ LANGUAGE SQL; \
+# #             select coalesce(qty_incoming_non_booked_p(pp_o.id),0) - coalesce(qty_allocated_p(pp_o.id),0) as qty_free_balance, \
+# #             pp_o.id as prod_id from product_product pp_o \
+# #             inner join product_template pt_o on pp_o.id = pt_o.id where  \
+# #             " + pp_qry + "order by pt_o.name")
+# # 
+# #         qry3 = cr.dictfetchall()
+# #         if qry3:
+# #             for s in qry3:
+#         for prod in ids:
+#             pp = self.browse(cr, uid, prod, context=context)
+#             qty_avb = pp.qty_available
+#             qty_incoming_non_booked = pp.qty_incoming_non_booked
+#             qty_allocated = pp.qty_allocated
+#             res[prod] = qty_avb + (qty_incoming_non_booked - qty_allocated)
+#         return res
+#  
+# #     def get_incoming_booked(self, cr, uid, ids, context=None):
+# #         if context is None:
+# #             context = {}
+# #         if not ids:
+# #             ids = self.search(cr, uid, [])
+# #         res = {}.fromkeys(ids, 0.0)
+# #         if not ids:
+# #             return res
+# # 
+# #         sale_allocated_obj = self.pool.get("sale.allocated")
+# #         purchase_line_ids = []
+# #         qty_purchases = {}
+# #         qty_arrives = {}
+# # 
+# #         for obj in self.browse(cr, uid, ids, context=context):
+# #             purchase_qty = 0.00
+# # #            product_id = obj.id
+# # #            sale_allocated_ids = sale_allocated_obj.search(cr, uid, [('product_id','=',product_id),('receive','=',False)], order='purchase_line_id ASC')
+# # #            val_sale_allocated = ''
+# # #            if sale_allocated_ids:
+# # #                val_sale_allocated = ','.join(map(str, sale_allocated_ids))
+# #             cr.execute("select coalesce(sum(COALESCE( quantity, 0) - COALESCE( received_qty, 0)),0) as purchase_qty " \
+# #                             "from sale_allocated where COALESCE( quantity, 0) > COALESCE(received_qty, 0) " \
+# #                             "and product_id = " + str(obj.id))
+# #             res_general = cr.dictfetchall()
+# #             if res_general:
+# #                 for val in res_general:
+# #                     purchase_qty = val['purchase_qty']
+# #             res[obj.id] = purchase_qty
+# #         return res
+#  
+# #     def get_incoming_non_booked(self, cr, uid, ids, context=None):
+# #         context = None
+# #         if not ids:
+# #             ids = self.search(cr, uid, [])
+# #         res = {}.fromkeys(ids, 0.0)
+# #         if not ids:
+# #             return res
+# #         purchase_qty = 0.00
+# #         for obj in self.browse(cr, uid, ids, context=context):
+# #             cr.execute("select COALESCE(sum((pol.product_qty / " \
+# #                        "(CASE WHEN pu_po.uom_type = 'reference' THEN pu_po.factor " \
+# #                        "WHEN pu_po.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_po.category_id and uom_type = 'reference' limit 1) / pu_po.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_po.category_id and uom_type = 'reference' limit 1) * pu_po.factor) END) * " \
+# #                        "(CASE WHEN pu_pt.uom_type = 'reference' THEN pu_pt.factor " \
+# #                        "WHEN pu_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) / pu_pt.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) * pu_pt.factor) END)" \
+# #                        ") - (" \
+# #                        "(COALESCE(" \
+# #                        "(select sum((sm.product_qty / " \
+# #                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
+# #                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
+# #                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
+# #                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
+# #                        "from stock_move sm " \
+# #                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
+# #                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
+# #                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
+# #                        "where sm.purchase_line_id = pol.id and sm.state = 'done' " \
+# #                        ") " \
+# #                        ", 0)) - " \
+# #                        "COALESCE((select sum(COALESCE(received_qty, 0)) as qty_received from sale_allocated where sale_allocated.purchase_line_id = pol.id and id in (select id from sale_allocated so where so.product_id = " + str(obj.id) + " and (coalesce(so.quantity,0) - coalesce(so.received_qty,0)) != 0)), 0)" \
+# #                        ")),0) as qtyp " \
+# #                        "from purchase_order_line pol " \
+# #                        "left join product_template pt on pol.product_id = pt.id " \
+# #                        "left join product_uom pu_po on pol.product_uom = pu_po.id " \
+# #                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
+# #                        "where pol.product_id = " + str(obj.id) + " and pol.state not in ('done', 'draft', 'cancel')")
+# #             res_general = cr.dictfetchall()
+# #             if res_general:
+# #                 for val in res_general:
+# #                     purchase_qty = val['qtyp']
+# #             res[obj.id] = purchase_qty
+# #         return res
+#  
+# #     def _qty_booked(self, cr, uid, ids, context=None):
+# # 
+# #         if not ids: return {}
+# #         res = {}
+# #         sale_order_line_obj = self.pool.get("sale.order.line")
+# #         stock_move_obj = self.pool.get("stock.move")
+# #         uom_obj = self.pool.get("product.uom")
+# #         purchase_qty = 0.00
+# #         for obj in self.browse(cr, uid, ids, context=context):
+# #             cr.execute("select COALESCE(sum((sol.product_uom_qty / " \
+# #                        "(CASE WHEN pu_sol.uom_type = 'reference' THEN pu_sol.factor " \
+# #                        "WHEN pu_sol.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sol.category_id and uom_type = 'reference' limit 1) / pu_sol.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sol.category_id and uom_type = 'reference' limit 1) * pu_sol.factor) END) * " \
+# #                        "(CASE WHEN pu_pt.uom_type = 'reference' THEN pu_pt.factor " \
+# #                        "WHEN pu_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) / pu_pt.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_pt.category_id and uom_type = 'reference' limit 1) * pu_pt.factor) END)" \
+# #                        ") - " \
+# #                        "(COALESCE(" \
+# #                        "(select sum((sm.product_qty / " \
+# #                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
+# #                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
+# #                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
+# #                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
+# #                        "from stock_move sm " \
+# #                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
+# #                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
+# #                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
+# #                        "where sm.sale_line_id = sol.id and sm.state = 'done' " \
+# #                        ") " \
+# #                        ", 0))" \
+# #                        "),0) as qtyp "\
+# #                        "from sale_order_line sol " \
+# #                        "left join product_template pt on sol.product_id = pt.id " \
+# #                        "left join product_uom pu_sol on sol.product_uom = pu_sol.id " \
+# #                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
+# #                        "where sol.product_id = " + str(obj.id) + " and sol.state not in ('done', 'draft', 'cancel')")
+# #             res_general = cr.dictfetchall()
+# #             if res_general:
+# #                 for val in res_general:
+# #                     purchase_qty = val['qtyp']
+# #             res[obj.id] = purchase_qty
+# #         return res
+#  
+# #     def _qty_free(self, cr, uid, ids, context=None):
+# # 
+# #         if not ids: return {}
+# #         res = {}
+# #         for obj in self.browse(cr, uid, ids, context=context):
+# #             qty_p = 0.00
+# #             cr.execute("select COALESCE(sum((sol.qty_onhand_allocated + " \
+# #                        "COALESCE((select sum(COALESCE(received_qty, 0)) as qty_received from sale_allocated where sale_allocated.sale_line_id = sol.id), 0)" \
+# #                         ") - " \
+# #                        "(COALESCE(" \
+# #                        "(select sum((sm.product_qty / " \
+# #                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
+# #                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
+# #                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
+# #                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
+# #                        "from stock_move sm " \
+# #                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
+# #                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
+# #                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
+# #                        "where sm.sale_line_id = sol.id and sm.state = 'done' " \
+# #                        ") " \
+# #                        ", 0))" \
+# #                        "),0) as qtyp "\
+# #                        "from sale_order_line sol " \
+# #                        "left join product_template pt on sol.product_id = pt.id " \
+# #                        "left join product_uom pu_sol on sol.product_uom = pu_sol.id " \
+# #                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
+# #                        "where sol.product_id = " + str(obj.id) + " and sol.state not in ('done', 'draft', 'cancel')")
+# #             res_general = cr.dictfetchall()
+# #             for val in res_general:
+# #                 qty_p = val['qtyp']
+# #             res[obj.id] = obj.qty_available - qty_p
+# #         return res
+#  
+# #     def _qty_allocated(self, cr, uid, ids, context=None):
+# # 
+# #         if not ids: return {}
+# #         res = {}
+# #         for obj in self.browse(cr, uid, ids, context=context):
+# #             qty_p = 0.00
+# #             cr.execute("select COALESCE(sum((sol.qty_onhand_allocated + " \
+# #                        "COALESCE((select sum(COALESCE(received_qty, 0)) as qty_received from sale_allocated where sale_allocated.sale_line_id = sol.id), 0)" \
+# #                         ") - " \
+# #                        "(COALESCE(" \
+# #                        "(select sum((sm.product_qty / " \
+# #                        "(CASE WHEN pu_sm.uom_type = 'reference' THEN pu_sm.factor " \
+# #                        "WHEN pu_sm.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) / pu_sm.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm.category_id and uom_type = 'reference' limit 1) * pu_sm.factor) END) * " \
+# #                        "(CASE WHEN pu_sm_pt.uom_type = 'reference' THEN pu_sm_pt.factor " \
+# #                        "WHEN pu_sm_pt.uom_type = 'bigger' THEN ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) / pu_sm_pt.factor) " \
+# #                        "ELSE ((select factor from product_uom where category_id = pu_sm_pt.category_id and uom_type = 'reference' limit 1) * pu_sm_pt.factor) END))) " \
+# #                        "from stock_move sm " \
+# #                        "left join product_template pt_sm on sm.product_id = pt_sm.id " \
+# #                        "left join product_uom pu_sm on sm.product_uom = pu_sm.id " \
+# #                        "left join product_uom pu_sm_pt on pt_sm.uom_id = pu_sm_pt.id " \
+# #                        "where sm.sale_line_id = sol.id and sm.state = 'done' " \
+# #                        ") " \
+# #                        ", 0))" \
+# #                        "),0) as qtyp "\
+# #                        "from sale_order_line sol " \
+# #                        "left join product_template pt on sol.product_id = pt.id " \
+# #                        "left join product_uom pu_sol on sol.product_uom = pu_sol.id " \
+# #                        "left join product_uom pu_pt on pt.uom_id = pu_pt.id " \
+# #                        "where sol.product_id = " + str(obj.id) + " and sol.state not in ('done', 'draft', 'cancel')")
+# #             res_general = cr.dictfetchall()
+# #             for val in res_general:
+# #                 qty_p = val['qtyp']
+# #             res[obj.id] = qty_p
+# #         return res
+#  
+# #     def _qty_free_balance(self, cr, uid, ids, context=None):
+# # 
+# #         if not ids: return {}
+# #         res = {}
+# #         for obj in self.browse(cr, uid, ids, context=context):
+# #             res[obj.id] = obj.qty_incoming_non_booked + obj.qty_free
+# #         return res
+#  
+# #    def _product_available2(self, cr, uid, ids, field_names=None, arg=False, context=None):
+# #        """ Finds the incoming and outgoing quantity of product.
+# #        @return: Dictionary of values
+# #        """
+# #        if not field_names:
+# #            field_names = []
+# #        if context is None:
+# #            context = {}
+# #        res = {}
+# #        for id in ids:
+# #            res[id] = {}.fromkeys(field_names, 0.0)
+# #        for f in field_names:
+# #            c = context.copy()
+# #            #print f
+# #            if f == 'qty_incoming_booked':
+# #                stock = self.get_incoming_booked(cr, uid, ids, context=None)
+# #                #print stock
+# #            if f == 'qty_incoming_non_booked':
+# #                stock = self.get_incoming_non_booked(cr, uid, ids, context=None)
+# #            for id in ids:
+# #                res[id][f] = stock.get(id, 0.0)
+# #        print 'res'
+# #        return res
 
     _columns = {
         'product_temp1': fields.char('Temporary 1', size=128),
