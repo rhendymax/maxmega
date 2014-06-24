@@ -2,13 +2,13 @@
 <openerp>
 	<data>
 		<record id="view_param_inventory_valuation_report_max" model="ir.ui.view">
-			<field name="name">Inventory Valuation Report Max</field>
+			<field name="name">view.param.inventory.valuation.reportt.max</field>
 			<field name="model">param.inventory.valuation.report.max</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Inventory Valuation Report Max">
-					<separator string="Inventory Valuation Report Max" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Inventory Valuation Report Max(it's take long time to generate)"/>
+				<form string="Inventory Valuation Report">
+					<separator string="Inventory Valuation Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Inventory Valuation Report"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Supplier Part No">
@@ -47,15 +47,6 @@
 							</field>
 						</page>
 					</notebook>
-					<!-- separator string="Date"  colspan="4"/>
-					<field name="date_from" attrs="{'required':1}"/>
-					<field name="date_to" attrs="{'required':1}"/>
-					<separator string="Product" colspan="4"/>
-					<field name="product_from"/>
-					<field name="product_to"/>
-					<separator string="Location" colspan="4"/>
-					<field name="location_from" domain="[('usage','=','internal')]"/>
-					<field name="location_to" domain="[('usage','=','internal')]"/ -->
 					<group col="2" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" />
 						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="1" />
@@ -66,7 +57,7 @@
 		</record>
 
 		<record id="inventory_valuation_report_max_result_csv_view" model="ir.ui.view">
-			<field name="name">Inventory Valuation Report Max</field>
+			<field name="name">Inventory Valuation Report</field>
 			<field name="model">param.inventory.valuation.report.max</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
@@ -82,7 +73,7 @@
 		</record>
 
 		<record id="action_param_inventory_valuation_report_max" model="ir.actions.act_window">
-			<field name="name">Inventory Valuation Report Max</field>
+			<field name="name">Inventory Valuation Report</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">param.inventory.valuation.report.max</field>
 			<field name="view_type">form</field>

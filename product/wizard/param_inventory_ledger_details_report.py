@@ -332,7 +332,9 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                 "And sp.do_date  <= '" +str(date_from_minus) + "' "\
                 + pp_qry + sl_qry + \
                 "order by sm.product_id ")
+
             incoming_list = cr.dictfetchall()
+
             #Physical
 
             cr.execute(
@@ -351,7 +353,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                 "from stock_move sm " \
                 "left join stock_location sld on sld.id = sm.location_dest_id " \
                 "left join stock_location sl on sl.id = sm.location_id " \
-                "left join stock_inventory si on si.id = (select inventory_id from stock_inventory_move_rel where move_id = sm.id)" \
+                "left join stock_inventory si on si.id = (select inventory_id from stock_inventory_move_rel where move_id = sm.id) " \
                 "where sm.state = 'done' and sld.usage = 'internal' and (sm.product_qty- coalesce((select sum(fc.quantity) from fifo_control fc " \
                 "left join stock_move sm_out on fc.out_move_id = sm_out.id " \
                 "left join stock_picking sp_out on sp_out.id = sm_out.picking_id " \
@@ -376,6 +378,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                     product_combine_ids[ls['product_id']] = {'oustanding_qty' : ls['oustanding_qty'],
                                                              'total_cost' : ls['total_cost']
                                                              }
+
             #Internal
             cr.execute(
                 "select sm.product_id as product_id, sm.id as id "
@@ -477,11 +480,7 @@ class param_inventory_ledger_details_report(osv.osv_memory):
                                     x_total_unit_cost_price = currency_obj.compute(cr, uid, x_p_curr_id, x_ptype_src, (int_qty_sisa * int_temp2['unit_cost_price']), round=False)
                                 x_total_unit_cost_price = product_product_obj.round_p(cr, uid, x_total_unit_cost_price, 'Purchase Price',)
 
-                                internal_list.append({
-                                    'product_id' : product_id,
-                                    'oustanding_qty' : int_qty_sisa,
-                                    'total_cost' : x_total_unit_cost_price,
-                                    })
+
 
                                 if product_id in product_combine_ids:
                                     ls_vals = product_combine_ids[product_id]

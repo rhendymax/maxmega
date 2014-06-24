@@ -101,10 +101,10 @@
 			<field name="help">This menu print Inventory Valuation Report.</field>
 		</record>
 
-		<menuitem
+		<!--menuitem
 			id="menu_inventory_valuation_report"
 			name="Inventory Valuation Report Checking"
 			action="action_param_inventory_valuation_report"
-			parent="menu_custom_stock" sequence="1"/>
+			parent="menu_custom_stock" sequence="1"/-->
 	</data>
 </openerp>
