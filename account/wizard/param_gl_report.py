@@ -123,6 +123,7 @@ class param_gl_report(osv.osv_memory):
         data_search = data['form']['account_search_vals']
         
         if data_search == 'code':
+            result['data_search_output'] = 'Code'
             if data['form']['account_selection'] == 'def':
                 data_found = False
                 if account_default_from and account_obj.browse(cr, uid, account_default_from) and account_obj.browse(cr, uid, account_default_from).code:
@@ -174,6 +175,7 @@ class param_gl_report(osv.osv_memory):
                 account_selection = '[' + acc_ids +']'
         
         elif data_search == 'name':
+            result['data_search_output'] = 'Name'
             if data['form']['account_selection'] == 'def':
                 data_found = False
                 if account_default_from and account_obj.browse(cr, uid, account_default_from) and account_obj.browse(cr, uid, account_default_from).name:
@@ -328,7 +330,7 @@ class param_gl_report(osv.osv_memory):
         header = 'sep=;' + " \n"
         
         header += 'General Ledger Report' + " \n"
-        header += ('account_selection' in form and 'Account Search : ' + form['account_selection'] + " \n") or ''
+        header += ('account_selection' in form and 'Account ' + form['data_search_output'] + ' Search : ' + form['account_selection'] + " \n") or ''
         
         fiscal_year_name = form['fiscal_year_name'] or False
         header += (fiscal_year_name and 'Fiscal Year : ' + str(fiscal_year_name) + " \n") or ''
@@ -443,7 +445,7 @@ class param_gl_report(osv.osv_memory):
                 if qry4:
                     for u in qry4:
                         opening_balance = balance
-                        cr.execute("select rp.id as period_id, aml.date as aml_date, " \
+                        cr.execute("select av.cheque_no as cheque_no, rp.name as part_name, aj.type as jour_type, aj.name as jour_name, ap.id as period_id, aml.date as aml_date, " \
                             "aml.ref as aml_ref, " \
                             "aml.name as aml_name, " \
                             "aml.debit as aml_debit, " \
@@ -451,6 +453,7 @@ class param_gl_report(osv.osv_memory):
                             "am.name as am_name " \
                             "from account_move_line aml "\
                             "left join account_move am on aml.move_id = am.id "\
+                            "left join account_voucher av on am.id = av.move_id "\
                             "left join account_account aa on aml.account_id = aa.id "\
                             "left join res_partner rp on aml.partner_id = rp.id "\
                             "left join account_period ap on aml.period_id = ap.id "\
@@ -477,10 +480,19 @@ class param_gl_report(osv.osv_memory):
                                     continue
 # 
                                 else:
+                                    part_name = (v['part_name'] and  '@Partner : ' + v['part_name'] + ' ') or ''
+                                    ref = (v['aml_ref'] and  '@Ref : ' + v['aml_ref'] + ' ') or ''
+                                    jour_type = v['jour_type'] or False
+                                    
+                                    if jour_type and jour_type in ('bank', 'cash'):
+                                        jour_name = (v['jour_name'] and  '@Payment Method : ' + v['jour_name'] + ' ') or ''
+                                    else:
+                                        jour_name = ''
+                                    cheque_no = (v['cheque_no'] and  '@Cheque No : ' + v['cheque_no'] + ' ') or ''
                                     val_ids2.append({
                                         'aml_date' : v['aml_date'],
                                         'am_name' : v['am_name'],
-                                        'aml_ref' : v['aml_ref'],
+                                        'aml_ref' : part_name + jour_name + cheque_no + ref,
                                         'aml_name' : v['aml_name'],
                                         'aml_debit' : v['aml_debit'],
                                         'aml_credit' : v['aml_credit'],

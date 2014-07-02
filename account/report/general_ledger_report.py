@@ -65,56 +65,110 @@ class general_ledger_report(report_sxw.rml_parse):
         account_input_to = data['form']['account_input_to'] or False
         account_default_from_str = account_default_to_str = ''
         account_input_from_str = account_input_to_str= ''
+        data_search = data['form']['account_search_vals']
 
-        if data['form']['account_selection'] == 'def':
-            data_found = False
-            if account_default_from and account_obj.browse(self.cr, self.uid, account_default_from) and account_obj.browse(self.cr, self.uid, account_default_from).name:
-                account_default_from_str = account_obj.browse(self.cr, self.uid, account_default_from).name
-                data_found = True
-                val_acc.append(('name', '>=', account_obj.browse(self.cr, self.uid, account_default_from).name))
-            if account_default_to and account_obj.browse(self.cr, self.uid, account_default_to) and account_obj.browse(self.cr, self.uid, account_default_to).name:
-                account_default_to_str = account_obj.browse(self.cr, self.uid, account_default_to).name
-                data_found = True
-                val_acc.append(('name', '<=', account_obj.browse(self.cr, self.uid, account_default_to).name))
-            account_selection = '"' + account_default_from_str + '" - "' + account_default_to_str + '"'
-            if data_found:
-                account_ids = account_obj.search(self.cr, self.uid, val_acc, order='name ASC')
-        elif data['form']['account_selection'] == 'input':
-            data_found = False
-            if account_input_from:
-                account_input_from_str = account_input_from
-                self.cr.execute("select name " \
-                                "from account_account "\
-                                "where " + qry_acc + " and " \
-                                "name ilike '" + str(account_input_from) + "%' " \
-                                "order by name limit 1")
-                qry = self.cr.dictfetchone()
-                if qry:
+        if data_search == 'code':
+            self.data_search_output = 'Code'
+            if data['form']['account_selection'] == 'def':
+                data_found = False
+                if account_default_from and account_obj.browse(self.cr, self.uid, account_default_from) and account_obj.browse(self.cr, self.uid, account_default_from).code:
+                    account_default_from_str = account_obj.browse(self.cr, self.uid, account_default_from).code
+                    data_found = True
+                    val_acc.append(('code', '>=', account_obj.browse(self.cr, self.uid, account_default_from).code))
+                if account_default_to and account_obj.browse(self.cr, self.uid, account_default_to) and account_obj.browse(self.cr, self.uid, account_default_to).code:
+                    account_default_to_str = account_obj.browse(self.cr, self.uid, account_default_to).code
+                    data_found = True
+                    val_acc.append(('code', '<=', account_obj.browse(self.cr, self.uid, account_default_to).code))
+                account_selection = '"' + account_default_from_str + '" - "' + account_default_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(self.cr, self.uid, val_acc, order='code ASC')
+            elif data['form']['account_selection'] == 'input':
+                data_found = False
+                if account_input_from:
+                    account_input_from_str = account_input_from
+                    self.cr.execute("select code " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "code ilike '" + str(account_input_from) + "%' " \
+                                    "order by code limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        account_input_to_str = account_input_to
+                        data_found = True
+                        val_acc.append(('code', '>=', qry['code']))
+                if account_input_to:
                     account_input_to_str = account_input_to
+                    self.cr.execute("select code " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "code ilike '" + str(account_input_to) + "%' " \
+                                    "order by code desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_acc.append(('code', '<=', qry['code']))
+                #print val_part
+                account_selection = '"' + account_input_from_str + '" - "' + account_input_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(self.cr, self.uid, val_acc, order='code ASC')
+            elif data['form']['account_selection'] == 'selection':
+                acc_ids = ''
+                if data['form']['account_ids']:
+                    for aco in  account_obj.browse(self.cr, self.uid, data['form']['account_ids']):
+                        acc_ids += '"' + str(aco.name) + '",'
+                    account_ids = data['form']['account_ids']
+                account_selection = '[' + acc_ids +']'
+        elif data_search == 'name':
+            self.data_search_output = 'Code'
+            if data['form']['account_selection'] == 'def':
+                data_found = False
+                if account_default_from and account_obj.browse(self.cr, self.uid, account_default_from) and account_obj.browse(self.cr, self.uid, account_default_from).name:
+                    account_default_from_str = account_obj.browse(self.cr, self.uid, account_default_from).name
                     data_found = True
-                    val_acc.append(('name', '>=', qry['name']))
-            if account_input_to:
-                account_input_to_str = account_input_to
-                self.cr.execute("select name " \
-                                "from account_account "\
-                                "where " + qry_acc + " and " \
-                                "name ilike '" + str(account_input_to) + "%' " \
-                                "order by name desc limit 1")
-                qry = self.cr.dictfetchone()
-                if qry:
+                    val_acc.append(('name', '>=', account_obj.browse(self.cr, self.uid, account_default_from).name))
+                if account_default_to and account_obj.browse(self.cr, self.uid, account_default_to) and account_obj.browse(self.cr, self.uid, account_default_to).name:
+                    account_default_to_str = account_obj.browse(self.cr, self.uid, account_default_to).name
                     data_found = True
-                    val_acc.append(('name', '<=', qry['name']))
-            #print val_part
-            account_selection = '"' + account_input_from_str + '" - "' + account_input_to_str + '"'
-            if data_found:
-                account_ids = account_obj.search(self.cr, self.uid, val_acc, order='name ASC')
-        elif data['form']['account_selection'] == 'selection':
-            acc_ids = ''
-            if data['form']['account_ids']:
-                for aco in  account_obj.browse(self.cr, self.uid, data['form']['account_ids']):
-                    acc_ids += '"' + str(aco.name) + '",'
-                account_ids = data['form']['account_ids']
-            account_selection = '[' + acc_ids +']'
+                    val_acc.append(('name', '<=', account_obj.browse(self.cr, self.uid, account_default_to).name))
+                account_selection = '"' + account_default_from_str + '" - "' + account_default_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(self.cr, self.uid, val_acc, order='name ASC')
+            elif data['form']['account_selection'] == 'input':
+                data_found = False
+                if account_input_from:
+                    account_input_from_str = account_input_from
+                    self.cr.execute("select name " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "name ilike '" + str(account_input_from) + "%' " \
+                                    "order by name limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        account_input_to_str = account_input_to
+                        data_found = True
+                        val_acc.append(('name', '>=', qry['name']))
+                if account_input_to:
+                    account_input_to_str = account_input_to
+                    self.cr.execute("select name " \
+                                    "from account_account "\
+                                    "where " + qry_acc + " and " \
+                                    "name ilike '" + str(account_input_to) + "%' " \
+                                    "order by name desc limit 1")
+                    qry = self.cr.dictfetchone()
+                    if qry:
+                        data_found = True
+                        val_acc.append(('name', '<=', qry['name']))
+                #print val_part
+                account_selection = '"' + account_input_from_str + '" - "' + account_input_to_str + '"'
+                if data_found:
+                    account_ids = account_obj.search(self.cr, self.uid, val_acc, order='name ASC')
+            elif data['form']['account_selection'] == 'selection':
+                acc_ids = ''
+                if data['form']['account_ids']:
+                    for aco in  account_obj.browse(self.cr, self.uid, data['form']['account_ids']):
+                        acc_ids += '"' + str(aco.name) + '",'
+                    account_ids = data['form']['account_ids']
+                account_selection = '[' + acc_ids +']'
         
         period_default_from = data['form']['period_default_from'] and data['form']['period_default_from'][0] or False
         period_default_from = period_default_from and period_obj.browse(self.cr, self.uid, period_default_from) or False
@@ -211,7 +265,7 @@ class general_ledger_report(report_sxw.rml_parse):
     def _get_search_by_account(self):
         header = False
         if self.account_selection:
-            header = 'Account Search : ' + self.account_selection
+            header = 'Account '+ self.data_search_output  +' Search : ' + self.account_selection
         return header
     
     def _get_fiscal_year(self):
@@ -350,7 +404,7 @@ class general_ledger_report(report_sxw.rml_parse):
                     for u in qry4:
                         val_ids2 = []
                         opening_balance = balance
-                        cr.execute("select rp.id as period_id, aml.date as aml_date, " \
+                        cr.execute("select av.cheque_no as cheque_no, rp.name as part_name, aj.type as jour_type, aj.name as jour_name, ap.id as period_id, aml.date as aml_date, " \
                             "aml.ref as aml_ref, " \
                             "aml.name as aml_name, " \
                             "aml.debit as aml_debit, " \
@@ -359,6 +413,7 @@ class general_ledger_report(report_sxw.rml_parse):
                             "from account_move_line aml "\
                             "left join account_move am on aml.move_id = am.id "\
                             "left join account_account aa on aml.account_id = aa.id "\
+                            "left join account_voucher av on am.id = av.move_id "\
                             "left join res_partner rp on aml.partner_id = rp.id "\
                             "left join account_period ap on aml.period_id = ap.id "\
                             "left join account_fiscalyear af on ap.fiscalyear_id = af.id "\
@@ -381,11 +436,20 @@ class general_ledger_report(report_sxw.rml_parse):
                                     continue
 # 
                                 else:
+                                    part_name = (v['part_name'] and  '@Partner : ' + v['part_name'] + ' ') or ''
+                                    name = (v['aml_name'] and  '@Other : ' + v['aml_name'] + ' ') or ''
+                                    jour_type = v['jour_type'] or False
+                                    
+                                    if jour_type and jour_type in ('bank', 'cash'):
+                                        jour_name = (v['jour_name'] and  '@Payment Method : ' + v['jour_name'] + ' ') or ''
+                                    else:
+                                        jour_name = ''
+                                    cheque_no = (v['cheque_no'] and  '@Cheque No : ' + v['cheque_no'] + ' ') or ''
                                     val_ids2.append({
                                         'aml_date' : v['aml_date'],
                                         'am_name' : v['am_name'],
                                         'aml_ref' : v['aml_ref'],
-                                        'aml_name' : v['aml_name'],
+                                        'aml_name' : part_name + jour_name + cheque_no + name,
                                         'aml_debit' : v['aml_debit'],
                                         'aml_credit' : v['aml_credit'],
                                         })
