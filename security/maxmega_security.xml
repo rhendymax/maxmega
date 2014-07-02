@@ -63,7 +63,7 @@
 		</record>
 
 		<record model='ir.ui.menu' id='menu_sale_product_product'>
-			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_user')])]"/>
 		</record>
 
 		<record model='ir.ui.menu' id='menu_sale_config_sales_shop'>
@@ -158,8 +158,12 @@
 		</record>
 
 		<record model='ir.ui.menu' id='menu_purchase_prod_prod'>
-			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
 		</record>
+
+		<!--record model='ir.ui.menu' id='menu_purchase_prod_prod'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
+		</record-->
 
 		<record model='ir.ui.menu' id='menu_purchase_config_contact'>
 			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
@@ -241,6 +245,14 @@
 		</record>
 
 	<!-- Menu -->
+		<record model='ir.ui.menu' id='menu_warehouse_enquiry_product_supplier'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_enquiry_product_customer'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
+		</record>
+
 		<record model='ir.ui.menu' id='menu_warehouse_product_product'>
 			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_manager')])]"/>
 		</record>
