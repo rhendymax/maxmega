@@ -45,10 +45,41 @@ class product_product(osv.osv):
     _inherit = "product.product"
     _description = "Product"
 
+    def _get_supplier_lines(self, cr, uid, ids, name, arg, context=None):
+        res = {}
+        for prod in self.browse(cr, uid, ids, context=context):
+            id = prod.id
+            res[id] = []
+            price_ids = []
+            if prod.supplierm_ids:
+                for supplierm_ids in prod.supplierm_ids:
+                     if supplierm_ids.supplierprice_ids:
+                         for supplierprice_ids in supplierm_ids.supplierprice_ids:
+                             price_ids.append(supplierprice_ids.id)
+                res[id] = price_ids
+        return res
+
+    def _get_customer_lines(self, cr, uid, ids, name, arg, context=None):
+        res = {}
+        for prod in self.browse(cr, uid, ids, context=context):
+            id = prod.id
+            res[id] = []
+            price_ids = []
+            if prod.customerm_ids:
+                for customerm_ids in prod.customerm_ids:
+                     if customerm_ids.customerprice_ids:
+                         for customerprice_ids in customerm_ids.customerprice_ids:
+                             price_ids.append(customerprice_ids.id)
+                res[id] = price_ids
+        return res
+
     _columns = {
         'default_code' : fields.char('Internal Part No', size=64, select=True, required=True),
         'supplierm_ids' : fields.one2many('product.supplier', 'product_id', 'Supplier Detail'),
         'customerm_ids' : fields.one2many('product.customer', 'product_id', 'Customer Detail'),
+        'suppplier_methodology_ids':fields.function(_get_supplier_lines, type='many2many', relation='product.supplier.price', string='Supplier Price Methodology'),
+        'customer_methodology_ids':fields.function(_get_customer_lines, type='many2many', relation='product.customer.price', string='Customer Price Methodology'),
+
     }
 
     def round_p(self, cr, uid, move_price, name, context=None):
@@ -147,7 +178,7 @@ class product_product(osv.osv):
 #1 = edit
         if 'supplierm_ids' in vals:
 #            raise osv.except_osv(_('No Customer Part No Added!'), _(str(vals['supplierm_ids'])))
-            print vals['supplierm_ids']
+#             print vals['supplierm_ids']
 #            vehicle_ids = []
 #            vehicle_time = {}
 #            so_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
@@ -202,7 +233,7 @@ class product_product(osv.osv):
                     val_branch_name = ('partner_child_id' in lines[2] and self.pool.get('res.partner.child').browse(cr, uid, lines[2]['partner_child_id'], context=None).name)
                 if not val_supplierprice_ids:
                     branchname.append(val_branch_name)
-                print val_supplier_key
+#                 print val_supplier_key
                 if val_supplier_key == True:
                     supplier_key += 1
             if supplier_key == 0:
@@ -389,6 +420,15 @@ class product_customer_price(osv.osv):
     _description = "Product Customer Price"
 
     _columns = {
+        'header_name': fields.related('product_customer_id', 'name', type='char', relation='product.customer', readonly=True, string="Customer Part No.",),
+        'partner_id' : fields.related('product_customer_id', 'partner_id', type='many2one', relation="res.partner",
+                                        string="Customer",
+                                        store=False, readonly=True),
+        'supplier_key_id' : fields.related('product_customer_id', 'supplier_key_id', type='many2one', relation="product.supplier",
+                                        string="Supplier Key",store=False, readonly=True),
+        'currency_id' : fields.related('product_customer_id', 'currency_id', type='many2one', relation="res.currency",
+                                        string="Currency",
+                                        store=False, readonly=True),
         'name': fields.char('Remark', size=64),
         'product_customer_id' : fields.many2one('product.customer', 'Product Customer Id', select=1, required=True, ondelete='cascade'),
         'effective_date': fields.date('Effective Date', help="Date of Effective", select=True),
@@ -488,6 +528,13 @@ class product_supplier_price(osv.osv):
     _description = "Product Supplier Price"
 
     _columns = {
+        'partner_child_id' : fields.related('product_supplier_id', 'partner_child_id', type='many2one', relation="res.partner.child",
+                                        string="Supplier Branch",
+                                        store=False, readonly=True),
+        'default_key': fields.related('product_supplier_id', 'default_key', type='boolean', relation='product.supplier', readonly=True, string="Default Supplier Key"),
+        'currency_id' : fields.related('product_supplier_id', 'currency_id', type='many2one', relation="res.currency",
+                                        string="Currency",
+                                        store=False, readonly=True),
         'name': fields.char('Remark', size=64),
         'product_supplier_id' : fields.many2one('product.supplier', 'Product Supplier Id', select=1, required=True, ondelete='cascade'),
         'effective_date': fields.date('Effective Date', help="Date of Effective", select=True),

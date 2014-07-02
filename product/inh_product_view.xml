@@ -30,8 +30,31 @@
 							</tree>
 						</field>
 					</page>
+
 					<page string="Price Methodology (View Only)">
 						<separator colspan="4" string="Supplier Price Methodology"/>
+						<field colspan="4" name="suppplier_methodology_ids" nolabel="1">
+							<tree string="Supplier Price Methodology">
+								<field name="partner_child_id"/>
+								<field name="default_key"/>
+								<field name="currency_id"/>
+								<field name="effective_date"/>
+								<field name="name"/>
+								<field name="unit_cost"/>
+							</tree>
+						</field>
+						<separator colspan="4" string="Customer Price Methodology"/>
+						<field colspan="4" name="customer_methodology_ids" nolabel="1">
+							<tree string="Customer Price Methodology">
+								<field name="header_name"/>
+								<field name="partner_id"/>
+								<field name="supplier_key_id"/>
+								<field name="currency_id"/>
+								<field name="effective_date"/>
+								<field name="name"/>
+								<field name="unit_cost"/>
+							</tree>
+						</field>
 					</page>
 				</page>
 			</field>
