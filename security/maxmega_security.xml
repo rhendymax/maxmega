@@ -45,6 +45,11 @@
 			<field name="groups_id" eval="[(6,0,[ref('group_sale_user')])]"/>
 		</record>
 
+		<!-- Enquiry -->
+		<record model='ir.ui.menu' id='menu_sale_enquiry_product_product'>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_user')])]"/>
+		</record>
+
 <!-- Sale Manager -->
 		<record id="group_sale_manager" model="res.groups">
 			<field name="name">Manager</field>
@@ -63,7 +68,7 @@
 		</record>
 
 		<record model='ir.ui.menu' id='menu_sale_product_product'>
-			<field name="groups_id" eval="[(6,0,[ref('group_sale_user')])]"/>
+			<field name="groups_id" eval="[(6,0,[ref('group_sale_manager')])]"/>
 		</record>
 
 		<record model='ir.ui.menu' id='menu_sale_config_sales_shop'>
@@ -145,6 +150,10 @@
 			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
 		</record>
 
+		<record model='ir.ui.menu' id='menu_purchase_enquiry_product_product'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
+		</record>
+
 <!-- Purchase Manager -->
 		<record id="group_max_purchase_manager" model="res.groups">
 			<field name="name">Manager</field>
@@ -158,7 +167,7 @@
 		</record>
 
 		<record model='ir.ui.menu' id='menu_purchase_prod_prod'>
-			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_user')])]"/>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_purchase_manager')])]"/>
 		</record>
 
 		<!--record model='ir.ui.menu' id='menu_purchase_prod_prod'>
@@ -234,6 +243,10 @@
 		</record>
 
 		<record model='ir.ui.menu' id='menu_warehouse_inventory_control_pi'>
+			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
+		</record>
+
+		<record model='ir.ui.menu' id='menu_warehouse_enquiry_product_product'>
 			<field name="groups_id" eval="[(6,0,[ref('group_max_stock_user')])]"/>
 		</record>
 

@@ -30,10 +30,16 @@
 			sequence="30"/>
 
 		<menuitem
+			name="Enquiry"
+			id="menu_sale_enquiry"
+			parent="menu_sale_root"
+			sequence="40"/>
+		
+		<menuitem
 			name="Configuration"
 			id="menu_sale_config"
 			parent="menu_sale_root"
-			sequence="40"/>
+			sequence="50"/>
 
 <!--1.1.1-->
 
@@ -74,6 +80,14 @@
 			id="menu_sale_product_product"
 			parent="menu_sale_product"
 			action="product.product_normal_action_sell"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			id="menu_sale_enquiry_product_product"
+			parent="menu_sale_enquiry"
+			action="so_workflowchange.product_normal_action2"
 			sequence="10"/>
 <!-- -->
 

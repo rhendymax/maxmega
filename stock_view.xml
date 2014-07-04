@@ -83,17 +83,22 @@
 			parent="menu_warehouse_product"
 			action="product.product_normal_action"
 			sequence="10"/>
-<!-- -->
-
-<!-- -->
-		<menuitem action="price_methodology.action_product_supplier"
-			id="menu_warehouse_enquiry_product_supplier"
-			parent="menu_warehouse_enquiry" sequence="10"/>
 
 		<menuitem action="price_methodology.action_product_customer"
 			id="menu_warehouse_enquiry_product_customer"
+			parent="menu_warehouse_product"
+			sequence="30"/>
+		
+		<menuitem action="price_methodology.action_product_supplier"
+			id="menu_warehouse_enquiry_product_supplier"
+			parent="menu_warehouse_product" sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem action="so_workflowchange.product_normal_action2"
+			id="menu_warehouse_enquiry_product_product"
 			parent="menu_warehouse_enquiry"
-			sequence="20"/>
+			sequence="10"/>
 <!-- -->
 
 <!-- -->
