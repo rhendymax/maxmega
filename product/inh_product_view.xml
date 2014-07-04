@@ -1,6 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
+		<record id="product_normal_form_view2" model="ir.ui.view">
+			<field name="name">product.normal.form2</field>
+			<field name="model">product.product</field>
+			<field name="type">form</field>
+			<field eval="8" name="priority"/>
+			<field name="arch" type="xml">
+				<form string="Product">
+					<group colspan="4" col="8">
+						<group colspan="4" col="2">
+							<separator string="Name" colspan="2"/>
+							<field name="name" readonly="1"/>
+							<field name="default_code" readonly="1"/>
+						</group>
+						<group colspan="1" col="2">
+							<separator string="Codes" colspan="2"/>
+							<field name="ean13" readonly="1"/>
+						</group>
+						<group colspan="1" col="2">
+							<separator string="Characteristics" colspan="2"/>
+							<field name="sale_ok" readonly="1"/>
+							<field name="purchase_ok" readonly="1"/>
+						</group>
+						<group colspan="1" col="1">
+							<field name="product_image" widget='image' nolabel="1" readonly="1"/>
+						</group> 
+					</group>
+
+					<notebook colspan="4">
+						<page string="Information">
+							<group colspan="2" col="2">
+								<separator string="Procurement" colspan="2"/>
+								<field name="brand_id" readonly="1"/>
+								<field name="max_categ_id" readonly="1"/>
+								<field name="spq" readonly="1"/>
+								<field name="categ_id" readonly="1"/>
+								<field name="product_manager" readonly="1"/>
+								<field name="lead_time" readonly="1"/>
+								<field name="brand_name" invisible="1"/>
+							</group>
+							<group colspan="2" col="3">
+								<separator string="Stocks" colspan="4"/>
+									<field name="qty_available"/>
+									<newline/>
+									<field name="virtual_available" groups="so_workflowchange.group_non_user"/>
+									<newline/>
+									<field name="qty_incoming_booked"/>
+									<newline/>
+									<field name="qty_incoming_non_booked"/>
+									<newline/>
+									<field name="qty_booked"/>
+									<newline/>
+									<field name="qty_free"/>
+									<newline/>
+									<field name="qty_allocated"/>
+									<newline/>
+									<field name="qty_free_balance"/>
+									<newline/>
+									<separator colspan="4"/>
+									<newline/>
+									<button name="%(product_location_wizard_action)d" string="Show Location Qty" type="action" icon="terp-gtk-go-back-rtl" />
+									<button name="%(cost_price_fifo_action)d" string="Show Fifo Cost Price" type="action" icon="terp-gtk-go-back-rtl" />
+									<newline/>
+							</group>
+						</page>
+
+						<page string="Price Methodology (View Only)">
+							<separator colspan="4" string="Supplier Price Methodology"/>
+							<field colspan="4" name="suppplier_methodology_ids" nolabel="1">
+								<tree string="Supplier Price Methodology">
+									<field name="partner_child_id"/>
+									<field name="default_key"/>
+									<field name="currency_id"/>
+									<field name="effective_date"/>
+									<field name="name"/>
+									<field name="unit_cost"/>
+								</tree>
+							</field>
+							<separator colspan="4" string="Customer Price Methodology"/>
+							<field colspan="4" name="customer_methodology_ids" nolabel="1">
+								<tree string="Customer Price Methodology">
+									<field name="header_name"/>
+									<field name="partner_id"/>
+									<field name="supplier_key_id"/>
+									<field name="currency_id"/>
+									<field name="effective_date"/>
+									<field name="name"/>
+									<field name="unit_cost"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+				</form>
+			</field>
+		</record>
+
+		<record id="product_normal_action2" model="ir.actions.act_window">
+			<field name="name">Products</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">product.product</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="product.product_product_tree_view"/>
+			<field name="search_view_id" ref="product.product_search_form_view"/>
+			<field name="help">You must define a Product for everything you buy or sell. Products can be raw materials, stockable products, consumables or services. The Product form contains detailed information about your products related to procurement logistics, sales price, product category, suppliers and so on.</field>
+		</record>
+
+		<record id="product_normal_action2_tree" model="ir.actions.act_window.view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="act_window_id" ref="product_normal_action2"/>
+		</record>
+
+		<record id="product_normal_action2_form" model="ir.actions.act_window.view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="product_normal_form_view2"/>
+			<field name="act_window_id" ref="product_normal_action2"/>
+		</record>
+
 		<record id="product_view_max" model="ir.ui.view">
 			<field name="name">product.view.max</field>
 			<field name="model">product.product</field>

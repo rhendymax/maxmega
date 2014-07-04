@@ -66,6 +66,7 @@ class product_location_wizard(osv.osv_memory):
         qry2 = cr.dictfetchall()
         if qry2:
             for r in qry2:
+#                 store_prod = {}
                 cr.execute("CREATE OR REPLACE FUNCTION qty_available(integer,integer) RETURNS numeric AS $$ \
                     SELECT sum(AA.product_qty) as sum_product_qty FROM \
                     (SELECT min(m.id) as id, m.date as date, m.address_id as partner_id, m.location_id as location_id, \
@@ -184,6 +185,174 @@ class product_location_wizard(osv.osv_memory):
                             'qty_allocated': s['qty_allocated'],
                             'qty_free_balance' : s['qty_free_balance'],
                             })
+#                 cr.execute("select coalesce((\
+#                     SELECT sum(AA.product_qty) as sum_product_qty FROM \
+#                     (SELECT min(m.id) as id, m.date as date, m.address_id as partner_id, m.location_id as location_id, \
+#                     m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id, \
+#                     m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(-pt.standard_price * m.product_qty)::decimal, 0.0) as value, \
+#                     CASE when pt.uom_id = m.product_uom \
+#                     THEN \
+#                     coalesce(sum(-m.product_qty)::decimal, 0.0) \
+#                     ELSE \
+#                     coalesce(sum(-m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty \
+#                     FROM \
+#                     stock_move m \
+#                     LEFT JOIN stock_picking p ON (m.picking_id=p.id) \
+#                     LEFT JOIN product_product pp ON (m.product_id=pp.id) \
+#                     LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id) \
+#                     LEFT JOIN product_uom pu ON (pt.uom_id=pu.id) \
+#                     LEFT JOIN product_uom u ON (m.product_uom=u.id) \
+#                     LEFT JOIN stock_location l ON (m.location_id=l.id) \
+#                     GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id,  m.location_dest_id, \
+#                     m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id \
+#                     UNION ALL \
+#                     SELECT -m.id as id, m.date as date, m.address_id as partner_id, m.location_dest_id as location_id, \
+#                     m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id, \
+#                     m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(pt.standard_price * m.product_qty )::decimal, 0.0) as value, \
+#                     CASE when pt.uom_id = m.product_uom \
+#                     THEN \
+#                     coalesce(sum(m.product_qty)::decimal, 0.0) \
+#                     ELSE \
+#                     coalesce(sum(m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty \
+#                     FROM \
+#                     stock_move m \
+#                     LEFT JOIN stock_picking p ON (m.picking_id=p.id) \
+#                     LEFT JOIN product_product pp ON (m.product_id=pp.id) \
+#                     LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id) \
+#                     LEFT JOIN product_uom pu ON (pt.uom_id=pu.id) \
+#                     LEFT JOIN product_uom u ON (m.product_uom=u.id) \
+#                     LEFT JOIN stock_location l ON (m.location_dest_id=l.id) \
+#                     GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id, m.location_dest_id, \
+#                     m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id \
+#                     ) \
+#                     AS AA \
+#                     INNER JOIN stock_location sl on sl.id = AA.location_id \
+#                     LEFT JOIN stock_location sl1 on sl1.id = sl.location_id \
+#                     LEFT JOIN stock_location sl2 on sl2.id = sl1.location_id \
+#                     LEFT JOIN stock_location sl3 on sl3.id = sl2.location_id \
+#                     LEFT JOIN stock_location sl4 on sl4.id = sl3.location_id \
+#                     LEFT JOIN stock_location sl5 on sl5.id = sl4.location_id \
+#                     LEFT JOIN stock_location sl6 on sl6.id = sl5.location_id \
+#                     LEFT JOIN stock_location sl7 on sl7.id = sl6.location_id \
+#                     WHERE sl.usage = 'internal' AND AA.state in ('done') AND AA.product_id = pp_o.id and aa.location_id = " + str(r['sl_id']) + " \
+#                     GROUP BY ARRAY_TO_STRING(ARRAY[sl7.name, sl6.name, sl5.name, sl4.name, sl3.name,sl2.name, sl1.name, sl.name], '/') , aa.location_id \
+#                     HAVING sum(AA.product_qty) > 0 \
+#                     ),0) as qty_available, \
+#                     pt_o.id as prod_id, \
+#                     pt_o.name as prod_name from product_product pp_o \
+#                     inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#                     (coalesce((\
+#                     SELECT sum(AA.product_qty) as sum_product_qty FROM \
+#                     (SELECT min(m.id) as id, m.date as date, m.address_id as partner_id, m.location_id as location_id, \
+#                     m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id, \
+#                     m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(-pt.standard_price * m.product_qty)::decimal, 0.0) as value, \
+#                     CASE when pt.uom_id = m.product_uom \
+#                     THEN \
+#                     coalesce(sum(-m.product_qty)::decimal, 0.0) \
+#                     ELSE \
+#                     coalesce(sum(-m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty \
+#                     FROM \
+#                     stock_move m \
+#                     LEFT JOIN stock_picking p ON (m.picking_id=p.id) \
+#                     LEFT JOIN product_product pp ON (m.product_id=pp.id) \
+#                     LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id) \
+#                     LEFT JOIN product_uom pu ON (pt.uom_id=pu.id) \
+#                     LEFT JOIN product_uom u ON (m.product_uom=u.id) \
+#                     LEFT JOIN stock_location l ON (m.location_id=l.id) \
+#                     GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id,  m.location_dest_id, \
+#                     m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id \
+#                     UNION ALL \
+#                     SELECT -m.id as id, m.date as date, m.address_id as partner_id, m.location_dest_id as location_id, \
+#                     m.product_id as product_id, pt.categ_id as product_categ_id, l.usage as location_type, m.company_id, \
+#                     m.state as state, m.prodlot_id as prodlot_id, coalesce(sum(pt.standard_price * m.product_qty )::decimal, 0.0) as value, \
+#                     CASE when pt.uom_id = m.product_uom \
+#                     THEN \
+#                     coalesce(sum(m.product_qty)::decimal, 0.0) \
+#                     ELSE \
+#                     coalesce(sum(m.product_qty * pu.factor/u.factor)::decimal, 0.0) END as product_qty \
+#                     FROM \
+#                     stock_move m \
+#                     LEFT JOIN stock_picking p ON (m.picking_id=p.id) \
+#                     LEFT JOIN product_product pp ON (m.product_id=pp.id) \
+#                     LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id) \
+#                     LEFT JOIN product_uom pu ON (pt.uom_id=pu.id) \
+#                     LEFT JOIN product_uom u ON (m.product_uom=u.id) \
+#                     LEFT JOIN stock_location l ON (m.location_dest_id=l.id) \
+#                     GROUP BY m.id, m.product_id, m.product_uom, pt.categ_id, m.address_id, m.location_id, m.location_dest_id, \
+#                     m.prodlot_id, m.date, m.state, l.usage, m.company_id,pt.uom_id \
+#                     ) \
+#                     AS AA \
+#                     INNER JOIN stock_location sl on sl.id = AA.location_id \
+#                     LEFT JOIN stock_location sl1 on sl1.id = sl.location_id \
+#                     LEFT JOIN stock_location sl2 on sl2.id = sl1.location_id \
+#                     LEFT JOIN stock_location sl3 on sl3.id = sl2.location_id \
+#                     LEFT JOIN stock_location sl4 on sl4.id = sl3.location_id \
+#                     LEFT JOIN stock_location sl5 on sl5.id = sl4.location_id \
+#                     LEFT JOIN stock_location sl6 on sl6.id = sl5.location_id \
+#                     LEFT JOIN stock_location sl7 on sl7.id = sl6.location_id \
+#                     WHERE sl.usage = 'internal' AND AA.state in ('done') AND AA.product_id = pp_o.id and aa.location_id = " + str(r['sl_id']) + " \
+#                     GROUP BY ARRAY_TO_STRING(ARRAY[sl7.name, sl6.name, sl5.name, sl4.name, sl3.name,sl2.name, sl1.name, sl.name], '/') , aa.location_id \
+#                     HAVING sum(AA.product_qty) > 0 \
+#                     ),0) > 0) \
+#                     " + pp_qry + "order by pt_o.name, pt_o.id")
+#                 qry_available = cr.dictfetchall()
+#                 if qry_available:
+#                     for s_available in qry_available:
+#                         if s_available['prod_id'] in store_prod:
+#                             data_prod = store_prod[s_available['prod_id']]
+#                             data_prod['qty_available'] += s_available['qty_available']
+#                             store_prod[s_available['prod_id']] = data_prod
+#                         else:
+#                             store_prod[s_available['prod_id']] = {
+#                             'location_id': r['sl_id'],
+#                             'location_name': r['sl_name'],
+#                             'prod_id': s_available['prod_id'],
+#                             'prod_name': s_available['prod_name'],
+#                             'qty_available' : s_available['qty_available'],
+#                             'qty_incoming_booked' : 0,
+#                             'qty_incoming_non_booked' : 0,
+#                             'qty_booked' : 0,
+#                             'qty_allocated': 0,
+#                             }
+# 
+#                 cr.execute("select coalesce((\
+#                     select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty \
+#                     from sale_allocated sa \
+#                     inner join purchase_order_line pol on sa.purchase_line_id = pol.id \
+#                     where coalesce(sa.quantity,0) > coalesce(sa.received_qty,0) and pol.location_dest_id = " + str(r['sl_id']) + " \
+#                     and sa.product_id = pp_o.id \
+#                     ),0) as qty_incoming_booked, \
+#                     pt_o.id as prod_id, \
+#                     pt_o.name as prod_name from product_product pp_o \
+#                     inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#                     (coalesce((\
+#                     select sum(coalesce(sa.quantity,0) - coalesce(sa.received_qty,0)) as qty \
+#                     from sale_allocated sa \
+#                     inner join purchase_order_line pol on sa.purchase_line_id = pol.id \
+#                     where coalesce(sa.quantity,0) > coalesce(sa.received_qty,0) and pol.location_dest_id = " + str(r['sl_id']) + " \
+#                     and sa.product_id = pp_o.id \
+#                     ),0) > 0) \
+#                     " + pp_qry + "order by pt_o.name, pt_o.id")
+#                 qry_incoming_booked= cr.dictfetchall()
+#                 if qry_incoming_booked:
+#                     for s_incoming_booked in qry_incoming_booked:
+#                         if s_incoming_booked['prod_id'] in store_prod:
+#                             data_prod = store_prod[s_incoming_booked['prod_id']]
+#                             data_prod['qty_incoming_booked'] += s_incoming_booked['qty_incoming_booked']
+#                             store_prod[s_incoming_booked['prod_id']] = data_prod
+#                         else:
+#                             store_prod[s_incoming_booked['prod_id']] = {
+#                             'location_id': r['sl_id'],
+#                             'location_name': r['sl_name'],
+#                             'prod_id': s_incoming_booked['prod_id'],
+#                             'prod_name': s_incoming_booked['prod_name'],
+#                             'qty_available' : 0,
+#                             'qty_incoming_booked' : s_incoming_booked['qty_incoming_booked'],
+#                             'qty_incoming_non_booked' : 0,
+#                             'qty_booked' : 0,
+#                             'qty_allocated': 0,
+#                             }
+#                 print store_prod
         return result1
 
 #     def stock_location_get(self, cr, uid, product_id, context=None):

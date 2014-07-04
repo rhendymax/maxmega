@@ -2502,7 +2502,6 @@ class sale_order_line(osv.osv):
                 total_qty_reallocated = o.qty_onhand_allocated + qty_free - incoming_qty
             else:
                 total_qty_reallocated = qty_order_allocated - incoming_qty
-            
             qty_delivery = 0.00
             move_ids = stock_move_obj.search(cr, uid, [('sale_line_id','=',o.id),('state','=','assigned')])
             if move_ids:
