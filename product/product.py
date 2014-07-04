@@ -588,17 +588,29 @@ class product_product(osv.osv):
         pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
 
         results = []
-        if 'booked' in what:
+#         if 'booked' in what:
+#             cr.execute("select coalesce(( \
+#                select sum( \
+#                (sol.product_uom_qty -  \
+#                coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
+#                from sale_order_line sol \
+#                where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
+#                ),0) as qty_booked, \
+#                pp_o.id as prod_id from product_product pp_o \
+#                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+#                " + pp_qry + "order by pt_o.name")
+        if 'allocated' in what:
             cr.execute("select coalesce(( \
-               select sum( \
-               (sol.product_uom_qty -  \
-               coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0))) \
-               from sale_order_line sol \
-               where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
-               ),0) as qty_booked, \
-               pp_o.id as prod_id from product_product pp_o \
-               inner join product_template pt_o on pp_o.id = pt_o.id where  \
-               " + pp_qry + "order by pt_o.name")
+                select sum( \
+                sol.qty_onhand_allocated +  \
+                coalesce((select sum(coalesce(sa.received_qty,0)) as qty from sale_allocated sa \
+                where sa.sale_line_id = sol.id and COALESCE(sa.quantity, 0) > COALESCE(sa.received_qty, 0)),0) -  \
+                coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id and sm.state = 'done'),0)) from sale_order_line sol \
+                where sol.product_id = pp_o.id and state not in ('draft', 'cancel') \
+                ),0) as qty_allocated, \
+                pp_o.id as prod_id from product_product pp_o \
+                inner join product_template pt_o on pp_o.id = pt_o.id where  \
+                " + pp_qry + "order by pt_o.name")
             results = cr.fetchall()
 
         for amount, prod_id in results:
@@ -642,7 +654,7 @@ class product_product(osv.osv):
                 d.update({'what': ('booked',) })
                 stock = self.get_product_available2(cr, uid, ids, context=d)
             if f == 'qty_free':
-                d.update({'what': ('booked',) })
+                d.update({'what': ('allocated',) })
                 stock = self.get_product_available4(cr, uid, ids, context=d)
             if f == 'qty_allocated':
                 d.update({'what': ('allocated',) })
@@ -652,8 +664,6 @@ class product_product(osv.osv):
                 c.update({ 'states': ('done',), 'what': ('in', 'out') })
                 stock =  self.get_product_available3(cr, uid, ids, context=d, context2=c)
             for id in ids:
-                if f == 'qty_free_balance':
-                    stock.get(id, 0.0)
                 res[id][f] = stock.get(id, 0.0)
             
         return res
