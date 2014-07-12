@@ -67,11 +67,6 @@ access_do_creation_sale_user,do.creation sale_user,so_workflowchange.model_do_cr
 access_do_creation_lines_sale_user,do.creation.lines sale_user,so_workflowchange.model_do_creation_lines,group_sale_user,1,1,1,1
 access_stock_warehouse_orderpoint_sale_user,stock.warehouse.orderpoint sale_user,procurement.model_stock_warehouse_orderpoint,group_sale_user,1,0,0,0
 ,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
-,,,,,,,
 access_res_partner_address_sale_manager,res.partner.address sale_manager,base.model_res_partner_address,group_sale_manager,1,1,1,1
 access_product_template_sale_manager,product.template sale_manager,product.model_product_template,group_sale_manager,1,1,1,1
 access_product_product_sale_manager,product.product sale_manager,product.model_product_product,group_sale_manager,1,1,1,1
@@ -201,3 +196,4 @@ access_email_template_max_account_manager,email.template max_account_manager,ema
 access_ir_property_max_account_manager,ir.property max_account_manager,base.model_ir_property,group_max_account_manager,1,1,1,1
 access_res_partner_sales_zone_max_account_manager,res.partner.sales.zone max_account_manager,so_workflowchange.model_res_partner_sales_zone,group_max_account_manager,1,1,1,1
 access_res_currency_rate2_max_account_manager,res.currency.rate2 max_account_manager,so_workflowchange.model_res_currency_rate2,group_max_account_manager,1,1,1,1
+access_res_currency_rate_max_account_manager,res.currency.rate max_account_manager,base.model_res_currency_rate,group_max_account_manager,1,1,1,1
