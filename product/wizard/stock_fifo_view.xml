@@ -32,6 +32,7 @@
 					<field name="int_doc_no"/>
 					<field name="document_no"/>
 					<field name="document_date"/>
+					<field name="purchase_no"/>
 					<field name="location_id"/>
 					<field name="product_qty"/>
 					<field name="product_uom"/>
@@ -56,6 +57,7 @@
 					<field name="int_doc_no"/>
 					<field name="document_no"/>
 					<field name="document_date"/>
+					<field name="purchase_no"/>
 					<field name="location_id" colspan="4"/>
 					<field name="product_qty"/>
 					<field name="product_uom"/>
