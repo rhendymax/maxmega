@@ -211,7 +211,7 @@
 				</tr>
 			</blockTable>
 		</section>
-		<blockTable colWidths="400.0, 400.0">
+		<!--blockTable colWidths="400.0, 400.0">
 			<tr>
 				<td>
 					<para style="terp_default_Bold_7"><font>Report Total</font></para>
@@ -301,6 +301,78 @@
 				<td>
 					<para style="terp_default_7"><font></font></para>
 				</td>
+			</tr>
+		</blockTable!-->
+		
+		<blockTable colWidths="100.0,100.0,100.0,100.0,100.0,100.0,200.0">
+			<tr>
+				<td>
+					<para style="terp_default_7"><font>Currency</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>Cheque</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>Bank Charges</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>Deposit</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font>Credit Note</font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7">Alloc Inv<font></font></para>
+				</td>
+				<td>
+					<para style="terp_default_Right_7"><font></font></para>
+				</td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[ repeatIn(get_balance_by_cur(), 'bal') ]]</font></para>
+			<blockTable colWidths="100.0,100.0,100.0,100.0,100.0,100.0,200.0">
+				<tr>
+					<td><para style="terp_default_7"><font>[[ bal['cur_name'] ]] Home</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['cheque_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['bank_charges_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['deposit_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['credit_note_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['alloc_inv_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font></font></para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_7"><font>[[ bal['cur_name'] ]] </font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['cheque'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['bank_charges'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['deposit'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['credit_note'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['alloc_inv'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<blockTable colWidths="100.0,100.0,100.0,100.0,100.0,100.0,200.0">
+			<tr>
+				<td><para style="terp_default_7"><font>Total Home :</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_cheque_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_bank_charges_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_deposit_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_credit_note_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_alloc_inv_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"></para></td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="100.0,100.0,600.0">
+			<tr>
+				<td><para style="terp_default_7"><font>Alloc Realize Ex :</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_gain_loss_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"></para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_7"><font>No. of Payment Vouchers :</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(payment_count(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"></para></td>
 			</tr>
 		</blockTable>
 		<blockTable colWidths="720.0, 80.0" style="TableEnd">

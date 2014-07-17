@@ -269,6 +269,7 @@ class max_payment_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context=None):
         super(max_payment_report, self).__init__(cr, uid, name, context=context)
         self.payment_count = 0.00
+        self.balance_by_cur = {}
         self.footer_credit_note_home = 0.00
         self.footer_cheque_home = 0.00
         self.footer_alloc_inv_home = 0.00
@@ -280,6 +281,7 @@ class max_payment_report(report_sxw.rml_parse):
             'locale': locale,
             'get_lines': self._get_lines,
             'get_header_title': self._get_header,
+            'get_balance_by_cur': self._get_balance_by_cur,
             'payment_count' : self._payment_count,
             'footer_credit_note_home' : self._footer_credit_note_home,
             'footer_cheque_home' : self._footer_cheque_home,
@@ -288,7 +290,27 @@ class max_payment_report(report_sxw.rml_parse):
             'footer_gain_loss_home' : self._footer_gain_loss_home,
             'footer_deposit_home' : self._footer_deposit_home,
             })
-        
+
+    def _get_balance_by_cur(self):
+        result = []
+        currency_obj    = self.pool.get('res.currency')
+        for item in self.balance_by_cur.items():
+            result.append({
+                'cur_name' : currency_obj.browse(self.cr, self.uid, item[0]).name,
+                'cheque' : item[1]['cheque'],
+                'cheque_home' : item[1]['cheque_home'],
+                'bank_charges' : item[1]['bank_charges'],
+                'bank_charges_home' : item[1]['bank_charges_home'],
+                'deposit' : item[1]['deposit'],
+                'deposit_home' : item[1]['deposit_home'],
+                'credit_note' : item[1]['credit_note'],
+                'credit_note_home' : item[1]['credit_note_home'],
+                'alloc_inv' : item[1]['alloc_inv'],
+                'alloc_inv_home' : item[1]['alloc_inv_home'],
+            })
+        result = result and sorted(result, key=lambda val_res: val_res['cur_name']) or []
+        return result
+
     def _get_header(self):
         if self.report_type == 'payable':
             header = 'Posted Payment Check List Report'
@@ -377,7 +399,7 @@ class max_payment_report(report_sxw.rml_parse):
 
 
         cr.execute(
-                "SELECT l.id as voucher_id " \
+                "SELECT l.id as voucher_id, l.partner_id " \
                 "FROM account_voucher AS l " \
                 "WHERE l.partner_id IS NOT NULL " \
                 "AND l.state IN ('posted') " \
@@ -389,6 +411,7 @@ class max_payment_report(report_sxw.rml_parse):
                 + journal_qry + \
                 "order by l.date")
         qry3 = cr.dictfetchall()
+        cheque = cheque_home = bank_charges = bank_charges_home = deposit = deposit_home = credit_note = credit_note_home = alloc_inv = alloc_inv_home = 0.00
         if qry3:
             for t in qry3:
                 inv = voucher_obj.browse(self.cr, self.uid, t['voucher_id'])
@@ -403,7 +426,10 @@ class max_payment_report(report_sxw.rml_parse):
                 alloc_inv_amt_debit = 0.00
                 alloc_inv_home_debit = 0.00
 
+                cur_name = 'False'
                 if type == 'payable':
+                    cur_name = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist_purchase.currency_id.name
+                    cur_id = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist_purchase.currency_id.id
                     for lines in inv.line_dr_ids:
                         if lines.amount > 0:
                             amount_all += lines.amount
@@ -445,6 +471,8 @@ class max_payment_report(report_sxw.rml_parse):
                                 'gain_loss': gain_loss,
                                 })
                 elif type == 'receivable':
+                    cur_name = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist.currency_id.name
+                    cur_id = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist.currency_id.id
                     for lines in inv.line_cr_ids:
                         if lines.amount > 0:
                             amount_all += lines.amount
@@ -469,7 +497,6 @@ class max_payment_report(report_sxw.rml_parse):
                             sign = -1
                             amount_all -= lines.amount
                             credit_inv_amt_credit += (sign * lines.amount)
-        
                             amount_home = lines.amount_home or 0.00
                             amount_home_all -= amount_home
                             amount_inv_home = lines.amount_inv_home or 0.00
@@ -485,6 +512,7 @@ class max_payment_report(report_sxw.rml_parse):
                                 'credit_inv_home': (sign * amount_inv_home),
                                 'gain_loss': gain_loss,
                                 })
+
                 self.payment_count += 1
                 res['voucher_no'] = inv.number
                 res['part_header'] = (type == 'payable' and 'Supplier' or 'Customer')
@@ -498,24 +526,63 @@ class max_payment_report(report_sxw.rml_parse):
                 ctx = {'date':inv.date}
                 res['cur_exrate'] = self.pool.get('res.currency').browse(self.cr, self.uid, inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.id or inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.id, context=ctx).rate or 0.00
                 res['cheq_amount'] = amount_all
+                cheque = amount_all
                 res['cheq_amount_home'] = amount_home_all
+                cheque_home = amount_home_all
                 self.footer_cheque_home += amount_home_all
                 res['gain_loss'] = gain_loss_all
                 self.footer_gain_loss_home += gain_loss_all
                 res['credit_inv_amt'] = credit_inv_amt_credit
+                credit_note = credit_inv_amt_credit
                 res['credit_inv_home'] = credit_inv_home_credit
+                credit_note_home = credit_inv_home_credit
                 self.footer_credit_note_home += credit_inv_home_credit
                 res['alloc_inv_amt'] = alloc_inv_amt_debit
+                alloc_inv = alloc_inv_amt_debit
                 res['alloc_inv_home'] = alloc_inv_home_debit
+                alloc_inv_home = alloc_inv_home_debit
                 self.footer_alloc_inv_home += alloc_inv_home_debit
                 res['bank_draft'] = inv.bank_draft_no or ''
                 res['bank_chrgs'] = inv.bank_charges_amount or 0.00
+                bank_charges = inv.bank_charges_amount or 0.00
                 res['bank_chrgs_home'] = inv.bank_charges_in_company_currency or 0.00
+                bank_charges_home = inv.bank_charges_in_company_currency or 0.00
                 self.footer_bank_charges_home += inv.bank_charges_in_company_currency or 0.00
                 res['deposit_amt'] = inv.writeoff_amount or 0.00
+                deposit = inv.writeoff_amount or 0.00
                 res['deposit_amt_home'] = inv.writeoff_amount_home or 0.00
+                deposit_home = inv.writeoff_amount_home or 0.00
                 self.footer_deposit_home += inv.writeoff_amount_home or 0.00
                 res['lines'] = lines_ids
+
+                #RT 20140716
+                if cur_id not in self.balance_by_cur:
+                    self.balance_by_cur.update({cur_id : {
+                             'cheque' : cheque,
+                             'cheque_home' : cheque_home,
+                             'bank_charges' : bank_charges,
+                             'bank_charges_home' : bank_charges_home,
+                             'deposit' : deposit,
+                             'deposit_home' : deposit_home,
+                             'credit_note' : credit_note,
+                             'credit_note_home' : credit_note_home,
+                             'alloc_inv' : alloc_inv,
+                             'alloc_inv_home' : alloc_inv_home,
+                             }
+                        })
+                else:
+                    res_currency_grouping = self.balance_by_cur[cur_id].copy()
+                    res_currency_grouping['cheque'] += cheque
+                    res_currency_grouping['cheque_home'] += cheque_home
+                    res_currency_grouping['bank_charges'] += bank_charges_home
+                    res_currency_grouping['bank_charges_home'] += bank_charges_home
+                    res_currency_grouping['deposit'] += deposit
+                    res_currency_grouping['deposit_home'] += deposit_home
+                    res_currency_grouping['credit_note'] += credit_note
+                    res_currency_grouping['credit_note_home'] += credit_note_home
+                    res_currency_grouping['alloc_inv'] += alloc_inv
+                    res_currency_grouping['alloc_inv_home'] += alloc_inv_home
+                    self.balance_by_cur[cur_id] = res_currency_grouping
                 results.append(res)
         results = results and sorted(results, key=lambda val_res: val_res['cheque_date']) or []
         return results
