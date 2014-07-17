@@ -480,10 +480,18 @@ class stock_picking(osv.osv):
                 if taxes_id:
                     for c in self.pool.get('account.tax').compute_all(cr, uid, taxes_id, line.price_unit, line.product_qty, order.address_id.id, line.product_id.id, order.partner_id)['taxes']:
                         val += c.get('amount', 0.0)
-            res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
-#                raise osv.except_osv(_('Debug !'),_(str(val1)))
-            res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
-            res[order.id]['amount_total']=res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
+            if not order.pricelist_id:
+                res[order.id]['amount_tax']=val
+    #                raise osv.except_osv(_('Debug !'),_(str(val1)))
+                res[order.id]['amount_untaxed']=val1
+                res[order.id]['amount_total']=res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
+
+            else:
+                
+                res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
+    #                raise osv.except_osv(_('Debug !'),_(str(val1)))
+                res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
+                res[order.id]['amount_total']=res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
         return res
 
     def _account_receivable(self, cr, uid, ids, prop, arg, context=None):
