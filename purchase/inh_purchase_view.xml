@@ -4,6 +4,176 @@
 
 		<!--menuitem action="action_purchase_make_incoming2" id="menu_action_purchase_make_incoming2" parent="purchase.menu_procurement_management" /-->
 
+        <record id="purchase_order_form2" model="ir.ui.view">
+            <field name="name">purchase.order.form2</field>
+            <field name="model">purchase.order</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Purchase Order">
+                    <group col="6" colspan="4">
+                        <field name="name" readonly="1"/>
+                        <field name="date_order" readonly="1"/>
+                        <field name="invoiced" readonly="1"/>
+                        <newline/>
+                        <field name="warehouse_id" on_change="onchange_warehouse_id(warehouse_id)" widget="selection" readonly="1"/>
+                        <field name="partner_ref" readonly="1"/>
+                        <field name="shipped" readonly="1"/>
+                        <field name="company_id" groups="base.group_multi_company" widget="selection" readonly="1"/>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Purchase Order">
+                            <field name="partner_id" on_change="onchange_partner_id(partner_id)" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"  options='{"quick_create": false}' readonly="1"/>
+                            <field name="partner_address_id" options='{"quick_create": false}' readonly="1"/>
+                            <field domain="[('type','=','purchase')]" name="pricelist_id" groups="base.group_extended" readonly="1"/>
+                            <field name="origin" groups="base.group_extended" readonly="1"/>
+                            <newline/>
+                            <field colspan="4" name="order_line" readonly="1" nolabel="1" mode="tree,form">
+                                <tree string="Purchase Order Lines">
+                                    <field name="date_planned"/>
+                                    <field name="name"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                </tree>
+                                <form>
+                                	<notebook>
+                                		<page string="Order Line">
+											<group colspan="4" col="10">
+												<field name="product_id" string = "Part Number" colspan="6" attrs="{'readonly': [('qty_allocated_onorder','>',0)]}"
+													on_change="onchange_product_id3(location_dest_id, qty_allocated_onorder,parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)" required="1"/>
+													<field name="spq" on_change="spq_onchange(product_id,context)"/>
+													<field name="moq" on_change="moq_onchange(product_id, parent.partner_child_id, context)"/>
+												</group>
+												<newline/>
+											<field name="product_qty" on_change="onchange_product_id3(location_dest_id, qty_allocated_onorder,parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)"/>
+											<field name="product_uom" string="Product UOM (*)" on_change="onchange_product_uom3(location_dest_id, qty_allocated_onorder,parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)"/>
+											<field name="name" readonly="1"/>
+											<field name="price_unit" string="Unit Price (*)" on_change="onchange_product_id3(location_dest_id, qty_allocated_onorder,parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)" readonly="1"/>
+											<field name="location_dest_id" domain="[('usage','=','internal')]" colspan="4" attrs="{'readonly': [('qty_allocated_onorder','>',0)]}" readonly="1"/>
+											<separator colspan="4" string="Date"/>
+											<field colspan="4" name="original_request_date"/>
+											<field colspan="4" name="original_request_date2"/>
+											<field colspan="4" name="estimated_time_departure"/>
+											<field colspan="4" name="estimated_time_arrive"/>
+											<separator colspan="4" string="Notes"/>
+											<field colspan="4" name="notes" nolabel="1"/>
+											<group colspan="4" col="4" groups="base.group_extended">
+												<separator colspan="4" string="Taxes"/>
+												<field colspan="4" nolabel="1" name="taxes_id"
+													domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+											</group>
+											<separator string="States" colspan="4"/>
+											<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done" statusbar_colors='{"cancel":"red"}'/>
+										</page>
+										<page string="Allocated">
+											<separator string="Sales Order Allocated Lines" colspan="4"/>
+											<field name="qty_allocated_onorder"/>
+											<field colspan="4" name="allocated_ids" nolabel="1" widget="many2many">
+												<tree string="Sale Allocated List">
+													<field name="sale_id"/>
+													<field name="product_id"/>
+													<field name="quantity"/>
+													<field name="product_uom"/>
+													<field name="received_qty"/>
+													<field name="receive"/>
+												</tree>
+											</field>
+											<label string="" colspan="2"/>
+										</page>
+										<page string="History">
+											<separator colspan="4" string="Change Effective History"/>
+											<field colspan="4" name="effective_ids" nolabel="1">
+												<tree string="Change Effective History">
+													<field name="change_date" string="Effective Date"/>
+													<field name="create_uid"/>
+													<field name="create_date"/>
+													<field name="reason" colspan="4"/>
+												</tree>
+												<form string="Change Effective History">
+													<field name="change_date"/>
+													<field name="create_uid"/>
+													<field name="create_date"/>
+													<field name="reason" colspan="4"/>
+												</form>
+											</field>
+											<separator colspan="4" string="Stock Moves"/>
+											<field colspan="4" name="move_ids" nolabel="1" widget="many2many"/>
+										</page>
+									</notebook>
+								</form>
+                            </field>
+                            <group col="7" colspan="4">
+                                <field name="amount_untaxed" readonly="1" sum="Untaxed amount"/>
+                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_total" readonly="1" sum="Total amount"/>
+                                <!--button name="button_dummy" states="draft" string="Compute" type="object" icon="gtk-execute"/!-->
+                            </group>
+                            <group col="11" colspan="4">
+                                <field name="state" widget="statusbar" statusbar_visible="draft,approved,done" statusbar_colors='{"except_picking":"red","except_invoice":"red","confirmed":"blue","wait":"blue"}' readonly="1"/>
+                                <!--button name="purchase_cancel" states="draft,confirmed,wait_auth" string="Cancel" icon="gtk-cancel"/>
+                                <button name="action_cancel_draft" states="cancel" string="Set to Draft" type="object" icon="gtk-convert"/>
+                                <button name="action_cancel" states="approved,except_picking,except_invoice,wait" string="Cancel Purchase Order" type="object" icon="gtk-cancel"/>
+                                <button name="picking_ok" states="except_picking" string="Manually Corrected" icon="gtk-convert"/>
+                                <button name="invoice_ok" states="except_invoice" string="Manually Corrected" icon="gtk-convert"/>
+                                <button name="purchase_confirm" states="draft" string="Convert to Purchase Order" icon="gtk-go-forward"/>
+                                <button name="purchase_appbuyer" states="wait_auth" string="Approve Purchase" icon="gtk-ok"/>
+                                <button name="purchase_approve" states="confirmed" string="Approved" icon="gtk-go-forward"/>
+                                <button name="%(purchase.report_purchase_order)d" string="Print" states="approved" type="action" icon="gtk-print"/!-->
+                            </group>
+                        </page>
+                        <page string="Delivery &amp; Invoicing" groups="base.group_extended">
+                            <group colspan="2" col="2">
+                                <separator string="Delivery" colspan="2"/>
+                                <field name="dest_address_id" on_change="onchange_dest_address_id(dest_address_id)" readonly="1"/>
+                                <field name="minimum_planned_date" readonly="1"/>
+                                <field name="location_id" readonly="1"/>
+                            </group>
+                            <group colspan="2" col="2">
+                                <separator string="Invoice Control" colspan="2"/>
+                                <field name="invoice_method" readonly="1"/>
+                                <field name="fiscal_position" widget="selection" readonly="1"/>
+                            </group>
+                            <newline/>
+                            <separator string="Purchase Control" colspan="4"/>
+                            <field name="validator" readonly="1"/>
+                            <field name="date_approve" readonly="1"/>
+                            <separator string="Invoices" colspan="4"/>
+                            <newline/>
+                            <field name="invoice_ids" groups="base.group_extended" nolabel="1" colspan="4" context="{'type':'in_invoice', 'journal_type':'purchase'}" readonly="1"/>
+                        </page>
+                        <page string="Notes">
+                            <field colspan="4" name="notes" nolabel="1" readonly="1"/>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+		<record id="purchase_form_action2" model="ir.actions.act_window">
+			<field name="name">Purchase Orders</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">purchase.order</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">{'search_default_approved': 1}</field>
+			<field name="view_id" ref="purchase.purchase_order_line_tree"/>
+			<field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+			<field name="help">Use this menu to search within your purchase orders by references, supplier, products, etc. For each purchase order, you can track the products received, and control the supplier invoices.</field>
+		</record>
+
+		<record id="purchase_form_action2_tree" model="ir.actions.act_window.view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="act_window_id" ref="purchase_form_action2"/>
+		</record>
+
+		<record id="purchase_form_action2_form" model="ir.actions.act_window.view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="purchase_order_form2"/>
+			<field name="act_window_id" ref="purchase_form_action2"/>
+		</record>
+
 		<record id="purchase_view_inherit3" model="ir.ui.view">
 			<field name="name">purchase.view.inherit3</field>
 			<field name="model">purchase.order</field>
