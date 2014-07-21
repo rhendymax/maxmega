@@ -6,9 +6,9 @@
 			<field name="model">param.margin.sales.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Margin Sales Report">
-					<separator string="Margin Sales Report" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Margin Sales Report"/>
+				<form string="Gross Margin Report by Invoice Number">
+					<separator string="Gross Margin Report by Invoice Number" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Gross Margin Report by Invoice Number"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Invoice No">
@@ -43,7 +43,7 @@
 		</record>
 
 		<record id="margin_sales_csv_view" model="ir.ui.view">
-			<field name="name">Monthly Pos With Sale Oder</field>
+			<field name="name">Gross Margin Report by Invoice Number</field>
 			<field name="model">param.margin.sales.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
@@ -59,7 +59,7 @@
 		</record>
 
 		<record id="action_param_margin_sales_report" model="ir.actions.act_window">
-			<field name="name">Margin Sales Report</field>
+			<field name="name">Gross Margin Report by Invoice Number</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">param.margin.sales.report</field>
 			<field name="view_type">form</field>
@@ -71,7 +71,7 @@
 
 		<menuitem
 			id="menu_param_margin_sales_report"
-			name="Margin Sales Report"
+			name="Gross Margin Report by Invoice Number"
 			action="action_param_margin_sales_report"
 			parent="menu_custom_sale" sequence="7"/>
 	</data>

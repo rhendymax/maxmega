@@ -105,9 +105,20 @@
 			</section>
 			<blockTable colWidths="480.0,80.0,80.0,160.0" style="TableTop">
 				<tr>
-					<td><para style="terp_default_Right_Bold_7">Sub-Total:</para></td>
+					<td><para style="terp_default_Right_Bold_7">Sub-Total   [[ cn['part_ref'] ]]:</para></td>
 					<td><para style="terp_default_Right_Bold_7">[[ formatLang(cn['qty'], digits=2) ]]</para></td>
 					<td><para style="terp_default_Right_Bold_7">[[ formatLang(cn['total'], digits=2) ]]</para></td>
+					<td><para style="terp_default_7"></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<section>
+			<para style="terp_default_7"><font>[[ repeatIn(get_grand_total(), 'gt') ]]</font></para>
+			<blockTable colWidths="480.0,80.0,80.0,160.0" style="TableTop">
+				<tr>
+					<td><para style="terp_default_Right_Bold_7">Grand-Total:</para></td>
+					<td><para style="terp_default_Right_Bold_7">[[ formatLang(gt['qty'], digits=2) ]]</para></td>
+					<td><para style="terp_default_Right_Bold_7">[[ formatLang(gt['total'], digits=2) ]]</para></td>
 					<td><para style="terp_default_7"></para></td>
 				</tr>
 			</blockTable>

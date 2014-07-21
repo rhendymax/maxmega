@@ -112,11 +112,22 @@ class monthly_pos_report(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context=None):
         super(monthly_pos_report, self).__init__(cr, uid, name, context=context)
+        self.total = 0.00
+        self.qty = 0.00
         self.localcontext.update({
             'time': time,
             'locale': locale,
             'get_lines': self._get_lines,
+            'get_grand_total' : self._get_grand_total,
             })
+
+    def _get_grand_total(self):
+        result = []
+        result.append({
+                       'qty' : self.qty,
+                       'total' : self.total,
+        })
+        return result
 
     def _get_lines(self):
         results = []
@@ -227,6 +238,8 @@ class monthly_pos_report(report_sxw.rml_parse):
                                       })
                     qty += brand_qty
                     total += brand_total
+                    self.qty += qty
+                    self.total += total
                 results.append({
                         'part_name' : s['name'],
                         'part_ref' : s['ref'],

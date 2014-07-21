@@ -93,7 +93,6 @@ class general_ledger_report(report_sxw.rml_parse):
                                     "order by code limit 1")
                     qry = self.cr.dictfetchone()
                     if qry:
-                        account_input_to_str = account_input_to
                         data_found = True
                         val_acc.append(('code', '>=', qry['code']))
                 if account_input_to:

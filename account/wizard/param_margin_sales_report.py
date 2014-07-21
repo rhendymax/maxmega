@@ -187,7 +187,7 @@ class param_margin_sales_report(osv.osv_memory):
 
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Margin Sales' + " \n"
+        header += 'Gross Margin Report by Invoice Number' + " \n"
         header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         header += 'Inventory Key;Inv Date;Inv No;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
@@ -311,14 +311,14 @@ class param_margin_sales_report(osv.osv_memory):
         all_content_line += 'End of Report'
         csv_content = ''
     
-        filename = 'Margin Sales Report.csv'
+        filename = 'Gross Margin Report by Invoice Number.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','margin_sales_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Margin Sales Report',
+                'name':'Gross Margin Report by Invoice Number',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.margin.sales.report',
