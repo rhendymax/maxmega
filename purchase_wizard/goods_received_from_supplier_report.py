@@ -101,8 +101,8 @@ class goods_received_from_supplier_report(osv.osv_memory):
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
 #Product Brand
-        brand_default_from = data['form']['brand_default_from'] and data['form']['brand_default_from'][0] or False
-        brand_default_to = data['form']['brand_default_to'] and data['form']['brand_default_to'][0] or False
+        brand_default_from = data['form']['brand_default_from'] and data['form']['brand_default_from'] or False
+        brand_default_to = data['form']['brand_default_to'] and data['form']['brand_default_to'] or False
         brand_input_from = data['form']['brand_input_from'] or False
         brand_input_to = data['form']['brand_input_to'] or False
         brand_default_from_str = brand_default_to_str = ''
@@ -129,8 +129,7 @@ class goods_received_from_supplier_report(osv.osv_memory):
                 brand_input_from_str = brand_input_from
                 cr.execute("select name " \
                                 "from product_brand "\
-                                "where " + qry_pb + " and " \
-                                "name ilike '" + str(brand_input_from) + "%' " \
+                                "where name ilike '" + str(brand_input_from) + "%' " \
                                 "order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
@@ -140,8 +139,7 @@ class goods_received_from_supplier_report(osv.osv_memory):
                 brand_input_to_str = brand_input_to
                 cr.execute("select name " \
                                 "from product_brand "\
-                                "where " + qry_pb + " and " \
-                                "name ilike '" + str(brand_input_to) + "%' " \
+                                "where name ilike '" + str(brand_input_to) + "%' " \
                                 "order by name desc limit 1")
                 qry = cr.dictfetchone()
                 if qry:
