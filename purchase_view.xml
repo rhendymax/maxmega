@@ -83,6 +83,12 @@
 			parent="menu_purchase_enquiry"
 			action="so_workflowchange.product_normal_action2"
 			sequence="10"/>
+			
+		<menuitem
+			id="menu_purchase_enquiry_purchase_order"
+			parent="menu_purchase_enquiry"
+			action="so_workflowchange.purchase_form_action2"
+			sequence="20"/>
 <!-- -->
 
 <!-- -->
