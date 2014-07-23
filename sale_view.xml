@@ -89,6 +89,12 @@
 			parent="menu_sale_enquiry"
 			action="so_workflowchange.product_normal_action2"
 			sequence="10"/>
+
+		<menuitem
+			id="menu_sale_enquiry_sale_order"
+			parent="menu_sale_enquiry"
+			action="so_workflowchange.action_sale_order_form2"
+			sequence="20"/>
 <!-- -->
 
 <!-- -->
