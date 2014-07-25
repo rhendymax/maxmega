@@ -48,6 +48,7 @@ class statement(report_sxw.rml_parse):
             'get_debit': self.get_debit,
             'get_credit': self.get_credit,
             'get_oth_invoice': self.get_oth_invoice,
+            'get_cust_po': self.get_cust_po,
         })
 
     def to_upper(self, s):
@@ -102,6 +103,28 @@ class statement(report_sxw.rml_parse):
         if invoice.type == 'in_refund': return 'IN'
         if invoice.type == 'out_refund': return 'IN'
         return 'IN'
+    
+    def get_cust_po(self, invoice):
+        cust_po_no = False
+        picking_id = invoice.picking_id.id
+        picking_qry = ''
+        if picking_id:
+            picking_qry = "AND ai.picking_id = %s "%picking_id
+        else:
+            picking_qry = "AND ai.picking_id IN (0) "
+        #print picking_qry
+        self.cr.execute("select so.client_order_ref from account_invoice ai inner join " \
+                        "sale_order_picking_rel sopr on sopr.picking_id = ai.picking_id " \
+                        "inner join sale_order so on so.id = sopr.order_id where ai.type = 'out_invoice' " + picking_qry)
+
+        qry = self.cr.dictfetchall()
+        if qry:
+            for s in qry:
+                if cust_po_no == False:
+                    cust_po_no = str(s['client_order_ref'])
+                else:
+                    cust_po_no += ', %s'%s['client_order_ref']
+        return cust_po_no
 
     def get_debit(self, invoice):
         res = 0

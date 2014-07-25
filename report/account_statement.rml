@@ -190,7 +190,7 @@
       <tr>
         <td><para style="std8">[[ line.number ]]</para></td>
         <td><para style="std8">[[ get_type(line) ]]</para></td>
-        <td><para style="std8">[[ line.document ]]</para></td>
+        <td><para style="std8">[[ get_cust_po(line) ]]</para></td>
         <td><para style="std8"></para></td>
         <td><para style="std8">[[ format_date(line.date_invoice) ]]</para></td>
         <td><para style="std8">[[ get_due(line.date_invoice, line) ]]</para></td>
