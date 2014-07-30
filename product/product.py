@@ -79,7 +79,6 @@ class product_product(osv.osv):
         'customerm_ids' : fields.one2many('product.customer', 'product_id', 'Customer Detail'),
         'suppplier_methodology_ids':fields.function(_get_supplier_lines, type='many2many', relation='product.supplier.price', string='Supplier Price Methodology'),
         'customer_methodology_ids':fields.function(_get_customer_lines, type='many2many', relation='product.customer.price', string='Customer Price Methodology'),
-
     }
 
     def round_p(self, cr, uid, move_price, name, context=None):
@@ -377,6 +376,23 @@ class product_customer(osv.osv):
         res['value'].update({'supplier_key_id': supplier_key_id})
         return res
 
+    def _get_supplier_key(self, cr, uid, ids, name, args, context=None):
+        '''
+        This function returns the currency id of a voucher line. It's either the currency of the 
+        associated move line (if any) or the currency of the voucher or the company currency.
+        '''
+        res = {}
+        prod_supp_obj = self.pool.get('product.supplier')
+        for prod_cust in self.browse(cr, uid, ids, context=context):
+            if prod_cust.supplier_key_id:
+                res[prod_cust.id] = prod_cust.supplier_key_id.id
+            else:
+                prod_supp_ids = False
+                if prod_cust.product_id:
+                    prod_supp_ids = prod_supp_obj.search(cr, uid, [('product_id','=',prod_cust.product_id.id),('default_key','=',True)])
+                res[prod_cust.id] = prod_supp_ids and prod_supp_ids[0] or None
+        return res
+
     _columns = {
         'moq': fields.float('Minimum Order Qty',required=True),
         'pricelist_id' : fields.related('partner_id', 'property_product_pricelist', type='many2one', relation="product.pricelist",
@@ -391,6 +407,7 @@ class product_customer(osv.osv):
         'supplier_key_id':fields.many2one('product.supplier', 'Supplier Key'),
         'customerprice_ids' : fields.one2many('product.customer.price', 'product_customer_id', 'Customer Price'),
         'sale_ok': fields.related('product_id', 'sale_ok', type='boolean', relation='product.template', readonly=True),
+        'supplier_key_funct': fields.function(_get_supplier_key, string='Supplier Key', type='many2one', relation='product.supplier', readonly=True),
     }
 
     _sql_constraints = [

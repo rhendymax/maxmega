@@ -25,7 +25,8 @@
 							<tree string="Customer Price Methodology Detail">
 								<field name="name"/>
 								<field name="partner_id"/>
-								<field name="supplier_key_id"/>
+								<!--field name="supplier_key_id"/-->
+								<field name="supplier_key_funct"/>
 								<field name="currency_id"/>
 							</tree>
 						</field>
