@@ -330,13 +330,28 @@ class param_payable_aging_report(osv.osv_memory):
                 "and aa.type = '" + type + "' " \
                 "And not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
                 "and abs((aml.debit - aml.credit) - (abs(coalesce ( " \
-                "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id), " \
-                "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id), 0 " \
+                "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id and aml2.date  <= '" +str(date_to) + "'), " \
+                "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id and aml3.date  <= '" +str(date_to) + "'), 0 " \
                 ")) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END))) > 0 " \
                 "And aml.date  <= '" +str(date_to) + "' "\
                 "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
                 + partner_qry)
-        
+#         print "select DISTINCT aml.partner_id " \
+#                 "from account_move_line aml " \
+#                 "left join account_move am on aml.move_id = am.id left join account_invoice ai on am.id = ai.move_id " \
+#                 "left join account_account aa on aml.account_id = aa.id left join account_journal aj on am.journal_id = aj.id " \
+#                 "left join res_users rs on rs.id = ai.user_id where aml.partner_id IS NOT NULL " \
+#                 "and am.state IN ('draft', 'posted')  " \
+#                 "and aa.type = '" + type + "' " \
+#                 "And not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
+#                 "and abs((aml.debit - aml.credit) - (abs(coalesce ( " \
+#                 "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id), " \
+#                 "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id), 0 " \
+#                 ")) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END))) > 0 " \
+#                 "And aml.date  <= '" +str(date_to) + "' "\
+#                 "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
+#                 + partner_qry
+#         raise osv.except_osv(_('Invalid action !'), _('test'))
         partner_ids_vals = []
         qry2 = cr.dictfetchall()
         if qry2:
@@ -385,8 +400,8 @@ class param_payable_aging_report(osv.osv_memory):
                         "and aa.type = '" + type + "' " \
                         "And not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
                         "and abs((aml.debit - aml.credit) - (abs(coalesce ( " \
-                        "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id), " \
-                        "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id), 0 " \
+                        "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id and aml2.date  <= '" +str(date_to) + "'), " \
+                        "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id and aml3.date  <= '" +str(date_to) + "'), 0 " \
                         ")) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END))) > 0 " \
                         "And aml.date  <= '" +str(date_to) + "' "\
                         "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
