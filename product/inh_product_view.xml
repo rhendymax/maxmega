@@ -52,6 +52,8 @@
 									<newline/>
 									<field name="qty_booked"/>
 									<newline/>
+									<field name="qty_do"/>
+									<newline/>
 									<field name="qty_free"/>
 									<newline/>
 									<field name="qty_allocated"/>
@@ -342,6 +344,8 @@
 					<field name="qty_incoming_non_booked"/>
 					<newline/>
 					<field name="qty_booked"/>
+					<newline/>
+					<field name="qty_do"/>
 					<newline/>
 					<field name="qty_free"/>
 					<newline/>

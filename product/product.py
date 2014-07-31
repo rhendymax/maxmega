@@ -618,6 +618,38 @@ class product_product(osv.osv):
             res[prod_id] += (qty_available - amount)
         return res
 
+    def get_product_available5(self, cr, uid, ids, context=None, context2=None):
+        """ Finds whether product is available or not in particular warehouse.
+        @return: Dictionary of values
+        """
+        if context is None:
+            context = {}
+        if context2 is None:
+            context2 = {}
+        if not ids:
+            ids = self.search(cr, uid, [])
+        
+        res = {}.fromkeys(ids, 0.0)
+        if not ids:
+            return res
+
+
+        pp_qry = (ids and ((len(ids) == 1 and "pp_o.id = " + str(ids[0]) + " ") or "pp_o.id IN " + str(tuple(ids)) + " ")) or "pp_o.id IN (0) "
+
+        results = []
+        cr.execute("select coalesce((select sum(sm.product_qty) from stock_move sm inner join " \
+            "stock_picking sp on sp.id = sm.picking_id where sm.picking_id is not null and sp.type='out' and sp.state <> 'done' " \
+            "),0) as qty_do, " \
+            "pp_o.id as prod_id from product_product pp_o " \
+            "inner join product_template pt_o on pp_o.id = pt_o.id where " \
+            + pp_qry + "order by pt_o.name")
+
+        results = cr.fetchall()
+
+        for amount, prod_id in results:
+             res[prod_id] += amount
+        return res
+
     def _product_available(self, cr, uid, ids, field_names=None, arg=False, context=None):
         """ Finds the incoming and outgoing quantity of product.
         @return: Dictionary of values
@@ -663,6 +695,8 @@ class product_product(osv.osv):
                 d.update({'what': ('incoming_non_booked','allocated',) })
                 c.update({ 'states': ('done',), 'what': ('in', 'out') })
                 stock =  self.get_product_available3(cr, uid, ids, context=d, context2=c)
+            if f == 'qty_do':
+                stock = self.get_product_available5(cr, uid, ids, context=None)
             for id in ids:
                 res[id][f] = stock.get(id, 0.0)
             
@@ -1207,6 +1241,10 @@ class product_product(osv.osv):
         'qty_free_balance': fields.function(_product_available, multi='qty_available',
             type='float', string='Quantity Free Balance',
             help='the summary of quantity Incoming Un-Allocated plus Quantity on Hand Free'),
+        # RT
+        'qty_do': fields.function(_product_available, multi='qty_available',
+            type='float', string='Do Quantity',
+            help='the summary of Do Quantity'),
         'location_ids' : fields.one2many('product.location', 'product_id', 'Location Detail'),
         'brand_id': fields.many2one('product.brand','Product Brand', required=True),
         'brand_name': fields.related('brand_id','name', type='char', readonly=True, size=64, relation='product.brand', string='Brand Name'),
