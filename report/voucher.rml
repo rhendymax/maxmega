@@ -111,7 +111,7 @@
         <td><para style="std9">: [[ to_upper(o.journal_id.name) ]]</para></td>
         <td><para style="std9">CHEQUE AMT</para></td>
         <td><para style="std9">: [[ to_upper(o.journal_id.currency and o.journal_id.currency.name or company.currency_id.name) ]]</para></td>
-        <td><para style="std9">[[ formatLang(get_total_amount(o) or 0, digits=2) ]]</para></td>
+        <td><para style="std9">[[ formatLang(o.amount or 0, digits=2) ]]</para></td>
         <td><para style="std9">BANK CHARGES</para></td>
         <td><para style="std9">: [[ formatLang(o.bank_charges_amount or 0, digits=2) ]]</para></td>
       </tr>
@@ -140,8 +140,8 @@
       <tr>
         <td><para style="std9">[[ to_upper(split_word(line.move_line_id.invoice.number)) ]]</para></td>
         <td><para style="std9">[[ to_upper(line.name) ]]</para></td>
-        <td><para style="std9_right">[[ formatLang(_get_total_amount, digits=2) ]]</para></td>
-        <td><para style="std9_right">[[ formatLang(line.amount_home or 0, digits=2) ]]</para></td>
+        <td><para style="std9_right">[[ formatLang(get_line_amount(o.type, line.type, line.amount) or 0, digits=2) ]]</para></td>
+        <td><para style="std9_right">[[ formatLang(get_line_amount(o.type, line.type, line.amount_home) or 0, digits=2) ]]</para></td>
       </tr>
     </blockTable>
     </section>
@@ -152,7 +152,7 @@
         <td><para style="std9_bold">BANK CHARGES</para></td>
         <td><para style="std9_bold">:</para></td>
         <td><para style="std9_boldright">[[ formatLang(o.bank_charges_amount or 0, digits=2) ]]</para></td>
-        <td><para style="std9_boldright">[[ formatLang(o.bank_charges_amount * o.ex_rate or 0, digits=2) ]]</para></td>
+        <td><para style="std9_boldright">[[ formatLang(o.bank_charges_amount / o.ex_rate or 0, digits=2) ]]</para></td>
       </tr>
       <tr>
         <td><para style="std8"><font color="white"> </font></para></td>

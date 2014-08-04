@@ -21,6 +21,7 @@
 
 import time
 from report import report_sxw
+#from tools.translate import _
 
 class voucher(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context=None):
@@ -31,28 +32,31 @@ class voucher(report_sxw.rml_parse):
             'to_upper': self.to_upper,
             'get_partner_address': self.get_partner_address,
             'split_word': self.split_word,
-            'get_total_amount': self._get_total_amount,
+            'get_line_amount': self._get_line_amount,
         })
 
     def to_upper(self, s):
         return s.upper()
 
-    def _get_total_amount(self, voucher):
+    def _get_line_amount(self, voucher_type, line_type, amount):
         cr          = self.cr
         uid         = self.uid
-#
-        total_amount = 0
-        for r in voucher:
-            if r.type == '"receipt"':
-                sign = 1
-                for lines in r.line_ids:
-                    if lines.type == 'dr':
-                        total_amount = round(line.amount or 0, 2)
-    
-        return total_amount
+##
+#        print voucher_type
+#        print line_type
+#        print amount
+#        sign = 1
+#        raise osv.except_osv(_('Invalid action !'), _('Test'))
+        if voucher_type == 'payment' and line_type == 'cr':
+            amount = amount * -1
+        elif voucher_type == 'receipt' and line_type == 'dr':
+            amount = amount * -1
+#        print amount
+        return amount
 
     def get_partner_address(self, partner, add=False):
         result = ''
+#        raise osv.except_osv(_('Invalid action !'), _('Test'))
         if partner.address:
             address = partner.address[0]
             result = address.street and address.street + ' ' or '' + \
