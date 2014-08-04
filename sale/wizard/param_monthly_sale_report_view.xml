@@ -2,13 +2,13 @@
 <openerp>
 	<data>
 		<record id="view_param_monthly_sale_report" model="ir.ui.view">
-			<field name="name">Monthly Sales Report</field>
+			<field name="name">Monthly Sales Detail Report</field>
 			<field name="model">param.monthly.sale.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Monthly Sales Report">
-					<separator string="Monthly Sales Report" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Monthly Sales Report"/>
+				<form string="Monthly Sales Detail Report">
+					<separator string="Monthly Sales Detail Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Monthly Sales Detail Report"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Customer">
@@ -63,7 +63,7 @@
 		</record>
 
 		<record id="monthly_sale_result_csv_view" model="ir.ui.view">
-			<field name="name">Monthly Sales Report</field>
+			<field name="name">Monthly Sales Detail Report</field>
 			<field name="model">param.monthly.sale.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
@@ -79,7 +79,7 @@
 		</record>
 
 		<record id="action_param_monthly_sale_report" model="ir.actions.act_window">
-			<field name="name">Monthly Sales Report</field>
+			<field name="name">Monthly Sales Detail Report</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">param.monthly.sale.report</field>
 			<field name="view_type">form</field>
@@ -91,7 +91,7 @@
 
 		<menuitem
 			id="menu_monthly_sale_report"
-			name="Monthly Sales Report"
+			name="Monthly Sales Detail Report"
 			action="action_param_monthly_sale_report"
 			parent="menu_custom_sale" sequence="4"/>
 	</data>

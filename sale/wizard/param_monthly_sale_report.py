@@ -81,7 +81,6 @@ class param_monthly_sale_report(osv.osv_memory):
         period_obj = self.pool.get('account.period')
         qry_cust = ''
         val_part = []
-        qry_pb = ''
         val_pb = []
     
         partner_ids = False
@@ -243,23 +242,19 @@ class param_monthly_sale_report(osv.osv_memory):
             if pb_input_from:
                 cr.execute("select name " \
                                 "from product_brand "\
-                                "where " + qry_pb + " and " \
-                                "name ilike '" + str(pb_input_from) + "%' " \
-                                "order by name limit 1")
+                                "where name ilike '" + str(pb_input_from) + "%' order by name limit 1")
                 qry = cr.dictfetchone()
                 if qry:
-                    pb_input_from_str = product_brand_obj.browse(cr, uid, pb_input_from).name
+                    pb_input_from_str = pb_input_from
                     data_found = True
                     val_pb.append(('name', '>=', qry['name']))
             if pb_input_to:
                 cr.execute("select name " \
                                 "from product_brand "\
-                                "where " + qry_pb + " and " \
-                                "name ilike '" + str(pb_input_to) + "%' " \
-                                "order by name desc limit 1")
+                                "where name ilike '" + str(pb_input_to) + "%' order by name desc limit 1")
                 qry = cr.dictfetchone()
                 if qry:
-                    pb_input_to_str = product_brand_obj.browse(cr, uid, pb_input_to).name
+                    pb_input_to_str = pb_input_to
                     data_found = True
                     val_pb.append(('name', '<=', qry['name']))
             if data_found:
@@ -317,12 +312,12 @@ class param_monthly_sale_report(osv.osv_memory):
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Monthly Sale Report' + " \n"
+        header += 'Monthly Sale Detail Report' + " \n"
         header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         
         header += ('pb_selection' in form and 'Product Brand : ' + form['pb_selection'] + "\n") or ''
-        header += 'CUSTOMER;CUST LINE ITEM;INVENTORY KEY;CURRENCY;SELLING PRICE US$;QTY;BRAND;TOTAL SELLING US$;INV. DATE;SALES ZONES' + " \n"
+        header += 'CUSTOMER;CUST LINE ITEM;INVENTORY KEY;S/P US$;QTY;TOTAL SELLING US$;BRAND;INV DATE;SALES ZONES' + " \n"
         
         cr.execute("select distinct rp.id as partner_id from account_invoice ai " \
                 "inner join account_invoice_line ail on ail.invoice_id = ai.id " \
@@ -354,7 +349,30 @@ class param_monthly_sale_report(osv.osv_memory):
             
             for s in qry:
                 header += '[' + s['ref'] + '] ' + str(s['name']) + ' \n'
-                cr.execute("select rp.name as cust_name, pt.name as inv_key, ail.price_unit as selling_price, " \
+                
+                print "select rp.name as cust_name, pt.name as inv_key, " \
+                       "ail.price_unit / (select rate from res_currency_rate where currency_id = ai.currency_id " \
+                       "and name <= ai.cur_date order by name desc limit 1) as selling_price, " \
+                       "ail.quantity as quantity, ail.price_unit * ail.quantity as total_selling, " \
+                       "pb.name as brand_name, ai.date_invoice as inv_date, sz.name as sales_zone, rc.name as curr_name, ai.type as type from account_invoice ai " \
+                       "inner join account_invoice_line ail on ail.invoice_id = ai.id " \
+                       "left join res_currency rc on rc.id = ai.currency_id " \
+                       "left join res_partner rp on ai.partner_id = rp.id " \
+                       "left join product_template pt on pt.id = ail.product_id " \
+                       "left join product_product pp on pp.id = ail.product_id " \
+                       "left join product_brand pb on pp.brand_id = pb.id " \
+                       "left join res_partner_sales_zone sz on sz.id = ai.sales_zone_id " \
+                       "where ai.type in ('out_invoice', 'out_refund') and ai.state in ('open', 'paid') and ail.product_id is not null " \
+                       + partner_qry \
+                       + date_from_qry \
+                       + date_to_qry \
+                       + pb_qry \
+                       + "and rp.id = " + str(s['id']) + " "\
+                       + "order by cust_name, inv_date, brand_name"
+                       
+                cr.execute("select rp.name as cust_name, pt.name as inv_key, " \
+                       "ail.price_unit / (select rate from res_currency_rate where currency_id = ai.currency_id " \
+                       "and name <= ai.cur_date order by name desc limit 1) as selling_price, " \
                        "ail.quantity as quantity, ail.price_unit * ail.quantity as total_selling, " \
                        "pb.name as brand_name, ai.date_invoice as inv_date, sz.name as sales_zone, rc.name as curr_name, ai.type as type from account_invoice ai " \
                        "inner join account_invoice_line ail on ail.invoice_id = ai.id " \
@@ -387,7 +405,7 @@ class param_monthly_sale_report(osv.osv_memory):
                         sub_qty += qty
                         sub_total_selling_price +=  total_selling_price
 
-                        header += str(rs['cust_name'] or '') + ';;' + str(rs['inv_key'] or '') + ';' + str(rs['curr_name'] or '') + ';' + str(selling_price) + ';' \
+                        header += str(rs['cust_name'] or '') + ';;' + str(rs['inv_key'] or '') + ';' + str(selling_price) + ';' \
                          + str(qty) + ';' + str("%.2f" % total_selling_price) + ';' + str(rs['brand_name'] or '') + ';' + str(rs['inv_date'] or '') + ';' \
                          + str(rs['sales_zone']) + ' \n'
                     header += ';;;;' + 'Sub Total :;' + str(sub_qty or 0.00) + ';' + str(sub_total_selling_price or 0.00) + ' \n'
@@ -399,14 +417,14 @@ class param_monthly_sale_report(osv.osv_memory):
         all_content_line += 'End of Report'
         csv_content = ''
 
-        filename = 'Monthly Sale Report.csv'
+        filename = 'Monthly Sale Detail Report.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','monthly_sale_result_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Monthly Sale Report',
+                'name':'Monthly Sale Detail Report',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.monthly.sale.report',
