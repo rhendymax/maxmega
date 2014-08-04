@@ -349,27 +349,6 @@ class param_monthly_sale_report(osv.osv_memory):
             
             for s in qry:
                 header += '[' + s['ref'] + '] ' + str(s['name']) + ' \n'
-                
-                print "select rp.name as cust_name, pt.name as inv_key, " \
-                       "ail.price_unit / (select rate from res_currency_rate where currency_id = ai.currency_id " \
-                       "and name <= ai.cur_date order by name desc limit 1) as selling_price, " \
-                       "ail.quantity as quantity, ail.price_unit * ail.quantity as total_selling, " \
-                       "pb.name as brand_name, ai.date_invoice as inv_date, sz.name as sales_zone, rc.name as curr_name, ai.type as type from account_invoice ai " \
-                       "inner join account_invoice_line ail on ail.invoice_id = ai.id " \
-                       "left join res_currency rc on rc.id = ai.currency_id " \
-                       "left join res_partner rp on ai.partner_id = rp.id " \
-                       "left join product_template pt on pt.id = ail.product_id " \
-                       "left join product_product pp on pp.id = ail.product_id " \
-                       "left join product_brand pb on pp.brand_id = pb.id " \
-                       "left join res_partner_sales_zone sz on sz.id = ai.sales_zone_id " \
-                       "where ai.type in ('out_invoice', 'out_refund') and ai.state in ('open', 'paid') and ail.product_id is not null " \
-                       + partner_qry \
-                       + date_from_qry \
-                       + date_to_qry \
-                       + pb_qry \
-                       + "and rp.id = " + str(s['id']) + " "\
-                       + "order by cust_name, inv_date, brand_name"
-                       
                 cr.execute("select rp.name as cust_name, pt.name as inv_key, " \
                        "ail.price_unit / (select rate from res_currency_rate where currency_id = ai.currency_id " \
                        "and name <= ai.cur_date order by name desc limit 1) as selling_price, " \
