@@ -3,13 +3,13 @@
 <openerp>
 	<data>
 		<record id="booking_report_by_brand_view" model="ir.ui.view">
-			<field name="name">Booking Report By Brand</field>
+			<field name="name">Supplier Booking Report By Brand</field>
 			<field name="model">booking.report.by.brand</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Booking Report By Brand">
-					<separator string="Booking Report By Brand" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Booking Report By Brand"/>
+				<form string="Supplier Booking Report By Brand">
+					<separator string="Supplier Booking Report By Brand" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Supplier Booking Report By Brand"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Product Brand">
@@ -42,7 +42,7 @@
 		</record>
 
 		<record id="action_booking_report_by_brand_menu" model="ir.actions.act_window">
-			<field name="name">Booking Report By Brand</field>
+			<field name="name">Supplier Booking Report By Brand</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">booking.report.by.brand</field>
 			<field name="view_type">form</field>
@@ -51,11 +51,11 @@
 			<field name="target">new</field>
 		</record>
 
-		<menuitem icon="STOCK_PRINT" name="Booking Report By Brand" parent="max_custom_report.menu_custom_purchase"
+		<menuitem icon="STOCK_PRINT" name="Supplier Booking Report By Brand" parent="max_custom_report.menu_custom_purchase"
 			action="action_booking_report_by_brand_menu" id="menu_booking_report_by_brand" sequence="3"/>
 
 	<record id="booking_report_by_brand_result_data_view" model="ir.ui.view">
-		<field name="name">Booking Report By Brand</field>
+		<field name="name">Supplier Booking Report By Brand</field>
 		<field name="model">booking.report.by.brand</field>
 		<field name="type">form</field>
 		<field name="arch" type="xml">

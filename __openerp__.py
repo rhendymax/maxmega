@@ -40,6 +40,7 @@ Customise report
         'sale_wizard/so_outstanding_report_view.xml',
         'sale_wizard/booking_report_by_salesperson_view.xml',
         'sale_wizard/credit_note_report_view.xml',
+        'sale_wizard/customer_booking_report_by_brand_view.xml',
         'general_wizard/account_report_trial_balance_view.xml',
         'general_wizard/account_gl_report_view.xml',
         'general_report_view.xml',
