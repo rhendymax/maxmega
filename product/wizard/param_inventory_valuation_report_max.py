@@ -142,7 +142,7 @@ class param_inventory_valuation_report_max(osv.osv_memory):
             data_found = False
             if pp_input_from:
                 pp_input_from_str = pp_input_from
-                cr.execute("select namqry_sle " \
+                cr.execute("select name " \
                                 "from product_template "\
                                  "where name ilike '" + str(pp_input_from) + "%' " \
                                 "order by name limit 1")

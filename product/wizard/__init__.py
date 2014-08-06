@@ -8,3 +8,4 @@ import param_outgoing_report
 import param_gross_profit_by_brand_report
 import param_inventory_free_balance_report
 import param_inventory_stock_aging_report
+import param_gross_margin_product_report

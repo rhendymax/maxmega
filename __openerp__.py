@@ -52,6 +52,7 @@ Customise report
         'product/wizard/param_inventory_stock_aging_report_view.xml',
         #RT 20140630
         'product/wizard/param_outgoing_report_view.xml',
+        'product/wizard/param_gross_margin_product_report_view.xml',
         #
         'account/wizard/param_sales_journal_by_customer_report_view.xml',
         'account/wizard/param_purchase_journal_by_supplier_report_view.xml',
