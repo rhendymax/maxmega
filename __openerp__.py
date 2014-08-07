@@ -37,6 +37,7 @@ Customise report
         'purchase_wizard/booking_report_by_brand_view.xml',
         'purchase_wizard/po_issued_report_view.xml',
         'purchase_wizard/goods_received_from_supplier_report_view.xml',
+        'purchase_wizard/goods_received_report_by_brand_view.xml',
         'sale_wizard/so_outstanding_report_view.xml',
         'sale_wizard/booking_report_by_salesperson_view.xml',
         'sale_wizard/credit_note_report_view.xml',
