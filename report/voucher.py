@@ -33,10 +33,17 @@ class voucher(report_sxw.rml_parse):
             'get_partner_address': self.get_partner_address,
             'split_word': self.split_word,
             'get_line_amount': self._get_line_amount,
+            'get_payment_option' : self._get_payment_option,
         })
 
     def to_upper(self, s):
         return s.upper()
+
+    def _get_payment_option(self, payment_option):
+        payment = False
+        if payment_option == 'without_writeoff' or payment_option == 'with_writeoff':
+            payment = True
+        return payment
 
     def _get_line_amount(self, voucher_type, line_type, amount):
         cr          = self.cr

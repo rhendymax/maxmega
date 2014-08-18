@@ -111,7 +111,7 @@
         <td><para style="std9">: [[ to_upper(o.journal_id.name) ]]</para></td>
         <td><para style="std9">CHEQUE AMT</para></td>
         <td><para style="std9">: [[ to_upper(o.journal_id.currency and o.journal_id.currency.name or company.currency_id.name) ]]</para></td>
-        <td><para style="std9">[[ formatLang(o.amount or 0, digits=2) ]]</para></td>
+        <td><para style="std9">[[ formatLang(o.total_payment_amount or 0, digits=2) ]]</para></td>
         <td><para style="std9">BANK CHARGES</para></td>
         <td><para style="std9">: [[ formatLang(o.bank_charges_amount or 0, digits=2) ]]</para></td>
       </tr>
@@ -120,7 +120,8 @@
         <td><para style="std9">: [[ formatLang(o.ex_rate or 0, digits=7) ]]</para></td>
         <td><para style="std9">CHEQUE HOME</para></td>
         <td><para style="std9">: [[ to_upper(company.currency_id.name) ]]</para></td>
-        <td><para style="std9">[[ formatLang(reduce(lambda x, line: x + (line.amount_home or 0), o.line_ids, 0), digits=2) ]]</para></td>
+        <td><para style="std9">[[ formatLang(o.total_payment_amount / o.ex_rate or 0, digits=2) ]]</para></td>
+        <!--td><para style="std9">[[ formatLang(reduce(lambda x, line: x + (line.amount_home or 0), o.line_ids, 0), digits=2) ]]</para></td-->
         <td><para style="std9">BANK DRAFT NO</para></td>
         <td><para style="std9">: [[ to_upper(o.bank_draft_no) ]]</para></td>
       </tr>
@@ -139,7 +140,8 @@
     <blockTable style="TableHeader4" colWidths="100,228,100,100">
       <tr>
         <td><para style="std9">[[ to_upper(split_word(line.move_line_id.invoice.number)) ]]</para></td>
-        <td><para style="std9">[[ to_upper(line.name) ]]</para></td>
+       <td><para style="std8"><font color="white"> </font></para></td>
+        <!--td><para style="std9">[[ to_upper(line.name) ]]</para></td-->
         <td><para style="std9_right">[[ formatLang(get_line_amount(o.type, line.type, line.amount) or 0, digits=2) ]]</para></td>
         <td><para style="std9_right">[[ formatLang(get_line_amount(o.type, line.type, line.amount_home) or 0, digits=2) ]]</para></td>
       </tr>
@@ -152,14 +154,23 @@
         <td><para style="std9_bold">BANK CHARGES</para></td>
         <td><para style="std9_bold">:</para></td>
         <td><para style="std9_boldright">[[ formatLang(o.bank_charges_amount or 0, digits=2) ]]</para></td>
-        <td><para style="std9_boldright">[[ formatLang(o.bank_charges_amount / o.ex_rate or 0, digits=2) ]]</para></td>
+        <td><para style="std9_boldright">[[ formatLang(o.bank_charges_in_company_currency or 0, digits=2) ]]</para></td>
+      </tr>
+      <tr>
+	      [[ get_payment_option(o.payment_option) == True or removeParentNode('tr') and '' ]]
+		<td><para style="std9_bold"><font color="white"> </font></para></td>
+		<td><para style="std9_bold">DEPOSIT [[ (o.payment_option=='without_writeoff' or removeParentNode('td')) and '' ]]</para></td>
+		<td><para style="std9_bold">RECONCILE PAYMENT [[ (o.payment_option=='with_writeoff' or removeParentNode('td')) and '' ]]</para></td>
+		<td><para style="std9_bold">:</para></td>
+		<td><para style="std9_boldright">[[ formatLang(o.writeoff_amount or 0, digits=2) ]]</para></td>
+		<td><para style="std9_boldright">[[ formatLang(o.writeoff_amount / o.ex_rate or 0, digits=2) ]]</para></td>
       </tr>
       <tr>
         <td><para style="std8"><font color="white"> </font></para></td>
         <td><para style="std9_bold">ALLOCATED TOTAL</para></td>
         <td><para style="std9_bold">:</para></td>
-        <td><para style="std9_boldright">[[ formatLang(o.total_payment_amount or 0, digits=2) ]]</para></td>
-        <td><para style="std9_boldright">[[ formatLang(o.total_in_home_currency or 0, digits=2) ]]</para></td>
+        <td><para style="std9_boldright">[[ formatLang(((o.total_payment_amount + o.writeoff_amount) - o.bank_charges_amount) or 0, digits=2) ]]</para></td>
+        <td><para style="std9_boldright">[[ formatLang((((o.total_payment_amount + o.writeoff_amount) - o.bank_charges_amount) / o.ex_rate or 0) or 0, digits=2) ]]</para></td>
       </tr>
     </blockTable>
     
