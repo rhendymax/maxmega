@@ -73,7 +73,7 @@
 		</record>
 
 		<record id="gross_margin_product_csv_view" model="ir.ui.view">
-			<field name="name">Gross Margin Report by Product</field>
+			<field name="name">Gross Margin Report by Product Brand</field>
 			<field name="model">param.gross.margin.product.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
@@ -101,8 +101,8 @@
 
 		<menuitem
 			id="menu_param_gross_margin_product_report"
-			name="Gross Margin Report by Product"
+			name="Gross Margin Report by Product Brand"
 			action="action_param_gross_margin_product_report"
-			parent="menu_custom_stock" sequence="7"/>
+			parent="menu_custom_sale" sequence="8"/>
 	</data>
 </openerp>

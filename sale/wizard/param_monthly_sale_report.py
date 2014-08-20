@@ -387,10 +387,10 @@ class param_monthly_sale_report(osv.osv_memory):
                         header += str(rs['cust_name'] or '') + ';;' + str(rs['inv_key'] or '') + ';' + str(selling_price) + ';' \
                          + str(qty) + ';' + str("%.2f" % total_selling_price) + ';' + str(rs['brand_name'] or '') + ';' + str(rs['inv_date'] or '') + ';' \
                          + str(rs['sales_zone']) + ' \n'
-                    header += ';;;;' + 'Sub Total :;' + str(sub_qty or 0.00) + ';' + str(sub_total_selling_price or 0.00) + ' \n'
+                    header += ';;;' + 'Sub Total :;' + str(sub_qty or 0.00) + ';' + str(sub_total_selling_price or 0.00) + ' \n'
                     grand_qty += sub_qty
                     grand_total_selling_price += round(sub_total_selling_price,6)
-            header += ';;;;' + 'Grand Total :;' + str(grand_qty or 0.00) + ';' + str(grand_total_selling_price or 0.00) + ' \n'
+            header += ';;;' + 'Grand Total :;' + str(grand_qty or 0.00) + ';' + str(grand_total_selling_price or 0.00) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'

@@ -539,14 +539,14 @@ class param_gross_margin_product_report(osv.osv_memory):
         all_content_line += 'End of Report'
         csv_content = ''
     
-        filename = 'Gross Margin Report by Product.csv'
+        filename = 'Gross Margin Report by Product Brand.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','gross_margin_product_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Gross Margin Report by Product',
+                'name':'Gross Margin Report by Product Brand',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.gross.margin.product.report',
