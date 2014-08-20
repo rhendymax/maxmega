@@ -52,7 +52,7 @@
 		</record>
 
 		<menuitem icon="STOCK_PRINT" name="Customer Booking Report By Brand" parent="max_custom_report.menu_custom_sale"
-			action="action_customer_booking_report_by_brand_menu" id="menu_customer_booking_report_by_brand" sequence="9"/>
+			action="action_customer_booking_report_by_brand_menu" id="menu_customer_booking_report_by_brand" sequence="10"/>
 
 	<record id="customer_booking_report_by_brand_result_data_view" model="ir.ui.view">
 		<field name="name">Customer Booking Report By Brand</field>

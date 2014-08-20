@@ -180,6 +180,9 @@ class booking_report_by_brand(osv.osv_memory):
         uid = uid
         res={}
         pool = pooler.get_pool(cr.dbname)
+        #Check Date For Using (INV DATE, GRN DATE, PO DATE)
+
+
 
         date_from = form['date_from'] or False
         date_to =  form['date_to'] or False
@@ -245,6 +248,7 @@ class booking_report_by_brand(osv.osv_memory):
                 + brand_ids_vals_qry \
                 + " order by name")
         qry = cr.dictfetchall()
+        date = None
         if qry:
             for s in qry:
                 header += "INV Brank Key : " + str(s['name']) + "\n"
@@ -267,24 +271,46 @@ class booking_report_by_brand(osv.osv_memory):
 #                    + date_to_qry \
 #                    + "and pbd.id = " + str(s['id']) + " " \
 #                    + "order by rp.name")
-
                 cr.execute("select pol.product_qty as qty, rp.name as part_name, rp.ref as ref_partner, " \
-                    "po.name as po_name, po.date_order as po_date, " \
-                    "pbd.name as pbd_name, pp.default_code as default_code, " \
-                    "(select currency_id from product_pricelist where id = po.pricelist_id) as currency_id, " \
-                    "pol.price_unit / (select rate from res_currency_rate where currency_id = currency_id " \
-                    "and name <= po.date_order order by name desc limit 1) as price_unit " \
-                    "from purchase_order_line pol " \
-                    "inner join product_template pt on pt.id = pol.product_id " \
-                    "left join purchase_order as po on po.id = pol.order_id " \
-                    "left join res_partner rp on rp.id = po.partner_id " \
-                    "left join product_product as pp on pp.id= pt.id " \
-                    "left join product_brand as pbd on pbd.id= pp.brand_id " \
-                    "where po.state in ('approved') " \
-                    + date_from_qry \
-                    + date_to_qry \
-                    + "and pbd.id = " + str(s['id']) + " " \
-                    + "order by rp.name")
+                            "po.name as po_name, po.date_order as po_date, " \
+                            "pbd.name as pbd_name, pp.default_code as default_code, " \
+                                "(select currency_id from product_pricelist where id = po.pricelist_id) as currency_id, " \
+                                "pol.price_unit / (select rate from res_currency_rate where currency_id = currency_id " \
+                                "and name <=  coalesce((select date_invoice from account_invoice where id = ai.id and state in ('open','paid')), " \
+                                        "(select do_date from stock_picking where id = sp.id and state = 'done'), " \
+                                        "po.date_order) order by name desc limit 1) as price_unit " \
+                            "from purchase_order_line pol " \
+                            "left join purchase_order po on pol.order_id = po.id " \
+                            "left join product_product as pp on pp.id = pol.product_id " \
+                            "left join product_template pt on pt.id = pp.product_tmpl_id " \
+                            "left join res_partner rp on rp.id = po.partner_id " \
+                            "left join product_brand as pbd on pbd.id= pp.brand_id " \
+                            "left join stock_move sm on sm.purchase_line_id = pol.id " \
+                            "left join stock_picking sp on sm.picking_id = sp.id " \
+                            "left join account_invoice_line ail on ail.stock_move_id = sm.id " \
+                            "left join account_invoice ai on ail.invoice_id = ai.id " \
+                            "where po.state in ('approved') " \
+                            + date_from_qry \
+                            + date_to_qry \
+                            + "and pbd.id = " + str(s['id']) + " " \
+                            + "order by rp.name")
+#                cr.execute("select pol.product_qty as qty, rp.name as part_name, rp.ref as ref_partner, " \
+#                    "po.name as po_name, po.date_order as po_date, " \
+#                    "pbd.name as pbd_name, pp.default_code as default_code, " \
+#                    "(select currency_id from product_pricelist where id = po.pricelist_id) as currency_id, " \
+#                    "pol.price_unit / (select rate from res_currency_rate where currency_id = currency_id " \
+#                    "and name <= '" + str(date) + "' order by name desc limit 1) as price_unit " \
+#                    "from purchase_order_line pol " \
+#                    "inner join product_template pt on pt.id = pol.product_id " \
+#                    "left join purchase_order as po on po.id = pol.order_id " \
+#                    "left join res_partner rp on rp.id = po.partner_id " \
+#                    "left join product_product as pp on pp.id= pt.id " \
+#                    "left join product_brand as pbd on pbd.id= pp.brand_id " \
+#                    "where po.state in ('approved') " \
+#                    + date_from_qry \
+#                    + date_to_qry \
+#                    + "and pbd.id = " + str(s['id']) + " " \
+#                    + "order by rp.name")
                 slines = cr.dictfetchall()
                 total_price = total_amount = brand_total_price = total_qty = 0
                 if len(slines) > 0:

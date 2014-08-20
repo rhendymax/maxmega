@@ -202,7 +202,7 @@ class customer_booking_report_by_brand(osv.osv_memory):
         header += ('pb_selection' in form and 'Product Brand Filter Selection : ' + form['pb_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + form['date_showing'] + "\n") or ''
         #header += 'Date,Customer Name,PO NO,ITEM GROUP,MANUFACTURING PART NUMBER,CUSTOMER PART NO,QUANTITY,SELLING PRICE US$,DELIVERY DATE,TOTAL AMOUNT' + " \n"
-        header += 'CUSTOMER PART NO;INVENTORY KEY;SALE US$;QUANTITY;TOTAL SALE;PURCHASE ORDER DATE;SUPPLIER;SO NO' + " \n"
+        header += 'CUSTOMER PART NO;INVENTORY KEY;SALE US$;QUANTITY;TOTAL SALE;PURCHASE ORDER DATE;CUSTOMER;SO NO' + " \n"
 
         cr.execute("SELECT DISTINCT pbd.id as brand_id "\
             "from sale_order_line sol " \
@@ -236,16 +236,22 @@ class customer_booking_report_by_brand(osv.osv_memory):
                 cr.execute("select pc.name as cust_part_no, sol.product_uom_qty as qty, rp.name as part_name, rp.ref as ref_partner, " \
                     "so.name as so_name, so.date_order as so_date, " \
                     "pbd.name as pbd_name, pp.default_code as default_code, " \
-                    "(select currency_id from product_pricelist where id = so.pricelist_id) as currency_id, " \
-                    "sol.price_unit / (select rate from res_currency_rate where currency_id = currency_id " \
-                    "and name <= so.date_order order by name desc limit 1) as price_unit " \
+                        "(select currency_id from product_pricelist where id = so.pricelist_id) as currency_id, " \
+                        "sol.price_unit / (select rate from res_currency_rate where currency_id = currency_id " \
+                        "and name <= coalesce((select date_invoice from account_invoice where id = ai.id and state in ('open','paid')), " \
+                                        "(select do_date from stock_picking where id = sp.id and state = 'done'), " \
+                                        "so.date_order) order by name desc limit 1) as price_unit " \
                     "from sale_order_line sol " \
-                    "inner join product_template pt on pt.id = sol.product_id " \
                     "left join sale_order as so on so.id = sol.order_id " \
+                    "left join product_product as pp on pp.id= sol.product_id " \
+                    "left join product_template pt on pt.id = pp.product_tmpl_id " \
                     "left join res_partner rp on rp.id = so.partner_id " \
-                    "left join product_product as pp on pp.id= pt.id " \
                     "left join product_customer pc on pc.id = sol.product_customer_id " \
                     "left join product_brand as pbd on pbd.id= pp.brand_id " \
+                    "left join stock_move sm on sm.sale_line_id = sol.id " \
+                    "left join stock_picking sp on sm.picking_id = sp.id " \
+                    "left join account_invoice_line ail on ail.stock_move_id = sm.id " \
+                    "left join account_invoice ai on ail.invoice_id = ai.id " \
                     "where so.state in ('progress') " \
                     + date_from_qry \
                     + date_to_qry \
