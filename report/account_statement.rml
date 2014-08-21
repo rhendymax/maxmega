@@ -84,9 +84,10 @@
     <images/>
   </stylesheet>
   <story>
+  <pto>
     <para style="std8">[[ repeatIn(objects,'o')]]</para>
     <para style="std8">[[ setLang(o.lang) ]]</para>
-
+	<pto_header>
     <para style="std12boldcenter">Statement of Account</para>
 
     <para style="std8">
@@ -171,13 +172,111 @@
       <font color="white"> </font>
     </para>
     
-    <blockTable style="TableHeader4" colWidths="70,20,74,65,58,58,61,61,61">
+    <blockTable style="TableHeader4" colWidths="70,20,74,65,65,65,41,61,61">
       <tr>
         <td><para style="std8">Invoice No.</para></td>
         <td><para style="std8">TP</para></td>
         <td><para style="std8">Cust PO No</para></td>
-        <td><para style="std8">Voucher No</para></td>
-        <td><para style="std8">Vch Date</para></td>
+        <td><para style="std8">Deposit No</para></td>
+        <td><para style="std8">Invoice Date</para></td>
+        <td><para style="std8">Due Date</para></td>
+        <td><para style="std8"><font color="white"> </font></para></td>
+        <td><para style="std8right">Debit</para></td>
+        <td><para style="std8right">Credit</para></td>
+      </tr>
+    </blockTable>
+    </pto_header>
+    <para style="std12boldcenter">Statement of Account</para>
+
+    <para style="std8">
+      <font color="white"> </font>
+    </para>
+
+    <blockTable style="TableHeader1" colWidths="308,100,120">
+      <tr>
+        <td>
+          <para style="std9">[[ to_upper(o.ref) ]]</para>
+          <para style="std9">[[ to_upper(o.name) ]]</para>
+          <para style="std9">[[ to_upper(o.address and o.address[0].street or '') ]]</para>
+          <para style="std9">[[ to_upper(o.address and o.address[0].street2 or '') ]]</para>
+          <para style="std9">[[ to_upper(o.address and o.address[0].zip + ' ' + o.address[0].city or '') ]]</para>
+          <para style="std9">[[ to_upper(o.address and (o.address[0].country_id and o.address[0].country_id.name) or '') ]]</para>
+        </td>
+        <td><para style="std9">Page</para></td>
+        <td>
+        <para style="std9">:</para>
+        <illustration width="1" height="1">
+          <setFont name="Helvetica" size="11"/>
+          <drawRightString x="0.5cm" y="0.05cm"> <pageNumber/> </drawRightString>
+        </illustration>
+        </td>
+      </tr>
+      <tr>
+        <td><para style="std8"><font color="white"> </font></para></td>
+        <td><para style="std9">Payment Terms</para></td>
+        <td><para style="std9">: [[ o.sale_term_id and o.sale_term_id.name or '' ]]</para></td>
+      </tr>
+      <tr>
+        <td><spacer length="20"/><para style="std8"><font color="white"> </font></para></td>
+        <td><spacer length="20"/><para style="std8"><font color="white"> </font></para></td>
+        <td><spacer length="20"/>
+        <blockTable style="TableHeader2" colWidths="15,10,95">
+          <tr>
+            <td><para style="std9">IN</para></td>
+            <td><para style="std9">-</para></td>
+            <td><para style="std9bold">Invoice</para></td>
+          </tr>
+          <tr>
+            <td><para style="std9">CN</para></td>
+            <td><para style="std9">-</para></td>
+            <td><para style="std9bold">Credit Note</para></td>
+          </tr>
+          <tr>
+            <td><para style="std9">RC</para></td>
+            <td><para style="std9">-</para></td>
+            <td><para style="std9bold">Receipt</para></td>
+          </tr>
+          <tr>
+            <td><para style="std9">CT</para></td>
+            <td><para style="std9">-</para></td>
+            <td><para style="std9bold">Contra</para></td>
+          </tr>
+          <tr>
+            <td><para style="std9">RF</para></td>
+            <td><para style="std9">-</para></td>
+            <td><para style="std9bold">Refund</para></td>
+          </tr>
+        </blockTable>
+        </td>
+      </tr>
+    </blockTable>
+    
+    <para style="std8">
+      <font color="white"> </font>
+    </para>
+    
+    <blockTable style="TableHeader3" colWidths="94,98,60,108,60,108">
+      <tr>
+        <td><para style="std8">Statement As At :</para></td>
+        <td><para style="std8bold">[[ format_date(get_statement_date()) ]]</para></td>
+        <td><para style="std8">Deposit : </para></td>
+        <td><para style="std8bold">[[ formatLang(o.depo_credit - o.depo_debit, digits=2) ]]</para></td>
+        <td><para style="std8">Currency :</para></td>
+        <td><para style="std8bold">[[ company.currency_id.name + company.currency_id.symbol ]]</para></td>
+      </tr>
+    </blockTable>
+    
+    <para style="std8">
+      <font color="white"> </font>
+    </para>
+    
+    <blockTable style="TableHeader4" colWidths="70,20,74,65,65,65,41,61,61">
+      <tr>
+        <td><para style="std8">Invoice No.</para></td>
+        <td><para style="std8">TP</para></td>
+        <td><para style="std8">Cust PO No</para></td>
+        <td><para style="std8">Deposit No</para></td>
+        <td><para style="std8">Invoice Date</para></td>
         <td><para style="std8">Due Date</para></td>
         <td><para style="std8"><font color="white"> </font></para></td>
         <td><para style="std8right">Debit</para></td>
@@ -186,7 +285,7 @@
     </blockTable>
     <section>
     <para style="std8">[[ repeatIn(get_invoice(o), 'line') ]]</para>
-    <blockTable style="TableHeader5" colWidths="70,20,74,65,58,58,61,61,61">
+    <blockTable style="TableHeader5" colWidths="70,20,74,65,65,65,41,61,61">
       <tr>
         <td><para style="std8">[[ line.number ]]</para></td>
         <td><para style="std8">[[ get_type(line) ]]</para></td>
@@ -282,5 +381,6 @@
         <td><para style="std8"><font color="white"> </font></para></td>
       </tr>
     </blockTable>
+    </pto>
   </story>
 </document>

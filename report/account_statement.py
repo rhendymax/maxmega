@@ -101,7 +101,7 @@ class statement(report_sxw.rml_parse):
         if invoice.type == 'in_invoice': return 'IN'
         if invoice.type == 'out_invoice': return 'IN'
         if invoice.type == 'in_refund': return 'IN'
-        if invoice.type == 'out_refund': return 'IN'
+        if invoice.type == 'out_refund': return 'OUT'
         return 'IN'
     
     def get_cust_po(self, invoice):
