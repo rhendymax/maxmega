@@ -198,6 +198,22 @@
 				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(get_tax_home() or 0, digits=2) ]]</font></para></td>
 			</tr>
 		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[ repeatIn(get_balance_by_cur(), 'bal') ]]</font></para>
+			<blockTable colWidths="140.0,270.0,65.0,65.0,65.0,65.0,65.0,65.0">
+				<tr>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ bal['cur_name'] ]]</font></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['taxable_amt'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['taxable_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<!--td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['sup_tax'] or 0, digits=2) ]]</font></para></td-->
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['tax_amt'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(bal['tax_home'] or 0, digits=2) ]]</font></para></td>
+				</tr>
+			</blockTable>
+		</section>
 		<para><font color="white"> </font></para>
 		<para><font color="white"> </font></para>
 		<blockTable colWidths="220,100,160,100,220">
