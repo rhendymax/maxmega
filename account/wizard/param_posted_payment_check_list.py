@@ -539,8 +539,8 @@ class param_posted_payment_check_list(osv.osv_memory):
                 alloc_inv_amt_debit = 0.00
                 alloc_inv_home_debit = 0.00
                 
-                reconcile_title_amt = ' '
-                reconcile_title_home = ' '
+                reconcile_title_amt = False
+                reconcile_title_home = False
 
                 if inv.payment_option == 'without_writeoff':
                     reconcile_title_amt = 'Deposit Amt : '
@@ -653,12 +653,18 @@ class param_posted_payment_check_list(osv.osv_memory):
                 
                 header += str(res['supp_name'] or '') + ';Ex Rate : ' + str("%.5f" % res['cur_exrate'] or 0.00000) + ";Cheque Amt : " + str("%.2f" % res['cheq_amount'] or 0.00) + \
                 ';Bank Draft No.;' + str(res['bank_draft']) + " \n" 
-                
-                header += str(reconcile_title_amt) + str("%.2f" % res['deposit_amt'] or 0.00 and '') + ";Cheque Home : " + str("%.2f" % res['cheq_amount_home'] or 0.00) + \
-                ';Bank chrgs Amt : ' + str("%.2f" % res['bank_chrgs'] or 0.00) + "; \n"
-                
-                header += str(reconcile_title_home) + str("%.2f" % res['deposit_amt_home'] or 0.00 and '') + ';Bank chrgs Home : ' + str("%.2f" % res['bank_chrgs'] or  0.00) + "; \n"
 
+                if reconcile_title_amt:
+                    header += str(reconcile_title_amt) + str("%.2f" % res['deposit_amt'] or 0.00) + ";Cheque Home : " + str("%.2f" % res['cheq_amount_home'] or 0.00) + \
+                    ';Bank chrgs Amt : ' + str("%.2f" % res['bank_chrgs'] or 0.00) + "; \n"
+                    header += str(reconcile_title_home) + str("%.2f" % res['deposit_amt_home'] or 0.00) + ';Bank chrgs Home : ' + str("%.2f" % res['bank_chrgs'] or  0.00) + "; \n"
+
+                else:
+                    header += ";Cheque Home : " + str("%.2f" % res['cheq_amount_home'] or 0.00) + \
+                    ';Bank chrgs Amt : ' + str("%.2f" % res['bank_chrgs'] or 0.00) + "; \n"
+                    header += ';Bank chrgs Home : ' + str("%.2f" % res['bank_chrgs'] or  0.00) + "; \n"
+
+                
                 cur_name = 'False'
                 if type == 'payable':
                     #20140716
