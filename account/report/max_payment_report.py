@@ -339,8 +339,6 @@ class max_payment_report(report_sxw.rml_parse):
     def _footer_deposit_home(self):
         return self.footer_deposit_home
 
-    
-
     def _get_lines(self):
         results = []
         # partner
@@ -425,6 +423,16 @@ class max_payment_report(report_sxw.rml_parse):
     
                 alloc_inv_amt_debit = 0.00
                 alloc_inv_home_debit = 0.00
+                
+                reconcile_title_amt = ' '
+                reconcile_title_home = ' '
+
+                if inv.payment_option == 'without_writeoff':
+                    reconcile_title_amt = 'Deposit Amt'
+                    reconcile_title_home = 'Deposit Home'
+                if inv.payment_option == 'with_writeoff':
+                    reconcile_title_amt = 'Reconcile Amt'
+                    reconcile_title_home = 'Reconcile Home'
 
                 cur_name = 'False'
                 if type == 'payable':
@@ -525,10 +533,14 @@ class max_payment_report(report_sxw.rml_parse):
                 res['bank_glan'] = inv.journal_id and inv.journal_id.property_bank_charges and inv.journal_id.property_bank_charges.code or ''
                 ctx = {'date':inv.date}
                 res['cur_exrate'] = self.pool.get('res.currency').browse(self.cr, self.uid, inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.id or inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.id, context=ctx).rate or 0.00
-                res['cheq_amount'] = amount_all
-                cheque = amount_all
-                res['cheq_amount_home'] = amount_home_all
-                cheque_home = amount_home_all
+#                res['cheq_amount'] = amount_all
+#                cheque = amount_all
+#                res['cheq_amount_home'] = amount_home_all
+#                cheque_home = amount_home_all
+                res['cheq_amount'] = inv.amount
+                cheque = inv.amount
+                res['cheq_amount_home'] = inv.total_in_home_currency
+                cheque_home = inv.total_in_home_currency
                 self.footer_cheque_home += amount_home_all
                 res['gain_loss'] = gain_loss_all
                 self.footer_gain_loss_home += gain_loss_all
@@ -548,10 +560,10 @@ class max_payment_report(report_sxw.rml_parse):
                 res['bank_chrgs_home'] = inv.bank_charges_in_company_currency or 0.00
                 bank_charges_home = inv.bank_charges_in_company_currency or 0.00
                 self.footer_bank_charges_home += inv.bank_charges_in_company_currency or 0.00
-                res['deposit_amt'] = inv.writeoff_amount or 0.00
-                deposit = inv.writeoff_amount or 0.00
-                res['deposit_amt_home'] = inv.writeoff_amount_home or 0.00
-                deposit_home = inv.writeoff_amount_home or 0.00
+                res['deposit_amt'] = inv.writeoff_amount or ' '
+                res['deposit_amt_home'] = inv.writeoff_amount_home or ' '
+                res['reconcile_title_amt'] = reconcile_title_amt
+                res['reconcile_title_home'] = reconcile_title_home
                 self.footer_deposit_home += inv.writeoff_amount_home or 0.00
                 res['lines'] = lines_ids
 

@@ -23,6 +23,7 @@ from osv import fields, osv
 import time
 import pooler
 import base64
+from tools import float_round, float_is_zero, float_compare
 
 class param_payable_report(osv.osv_memory):
     _name = 'param.payable.ledger.report'
@@ -652,9 +653,12 @@ class param_payable_report(osv.osv_memory):
         total_home = 0
         result_currency = result_currency and sorted(result_currency, key=lambda val_res: val_res['cur_name']) or []
         header += 'Closing Balance By Currency'
+        
         for rs_curr in result_currency:
-            total_home += rs_curr['home'] or 0
+            if float_is_zero(rs_curr['home'], precision_digits=5):
+                rs_curr['home'] = 0.00000
             header += ';;;' + str(rs_curr['cur_name']) + ';;;' + str(rs_curr['inv']) + ';' + str(rs_curr['home']) + ' \n'
+            total_home += rs_curr['home'] or 0
         header += ';;;;;;' + 'Total Home :;' + str(total_home) + ' \n'
         all_content_line += header
         all_content_line += ' \n'

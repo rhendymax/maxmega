@@ -145,7 +145,7 @@
 				<para style="terp_default_8"><font>[[ repeatIn(ln['credit_vals'], 'cl') ]]</font></para>
 				<blockTable colWidths="170.0,90.0,90.0,90.0,90.0,90.0,90.0,90.0">
 					<tr>
-						<td><para style="terp_default_7"><font>[[il['number'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[cl['number'] ]]</font></para></td>
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['total'] or 0, digits=2) ]]</font></para></td>
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['tax'] or 0, digits=2) ]]</font></para></td>
 						<td><para style="terp_default_Right_7"><font>[[ formatLang(cl['rate'] or 0, digits=6) ]]</font></para></td>

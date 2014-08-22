@@ -84,11 +84,11 @@
 						</blockTable>
 						<blockTable colWidths="70.0,180.0">
 							<tr>
-								<td><para style="terp_default_7"><font>Deposit Amt</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['reconcile_title_amt'] or '' ]]</font></para></td>
 								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['deposit_amt'], digits=2) ]]</font></para></td>
 							</tr>
 							<tr>
-								<td><para style="terp_default_7"><font>Deposit Home</font></para></td>
+								<td><para style="terp_default_7"><font>[[ln['reconcile_title_home'] or '' ]]</font></para></td>
 								<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['deposit_amt_home'], digits=2) ]]</font></para></td>
 							</tr>
 						</blockTable>
