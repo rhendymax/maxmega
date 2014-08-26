@@ -122,6 +122,9 @@
 				<field name="move_id" position="after">
 					<field name="inv_rate"/>
 				</field>
+				<field name="period_id" position="after">
+					<field name="period_id" domain="[('state', '=', 'draft')]" widget="selection"/>
+				</field>
 			</field>
 		</record>
 
