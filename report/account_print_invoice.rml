@@ -99,15 +99,15 @@
     <para style="terp_default_8">[[ repeatIn(objects,'o') ]]</para>
     <para style="terp_default_8">[[ setLang(o.partner_id.lang) ]]</para>
     <pto_header><!-- Must be after setLang() -->
-    <blockTable colWidths="202.0,87.0,71.0,50.0,40.0,70.0" style="Table7">
-    <tr>
-        <td> <para style="terp_tblheader_Details">Description</para> </td>
-        <td> <para style="terp_tblheader_Details_Centre">Taxes</para> </td>
-        <td> <para style="terp_tblheader_Details_Centre">Quantity</para> </td>
-        <td> <para style="terp_tblheader_Details_Right">Unit Price </para> </td>
-        <td> <para style="terp_tblheader_Details_Right">Disc.(%)</para> </td>
-        <td> <para style="terp_tblheader_Details_Right">Price</para> </td>
-    </tr>
+    <blockTable colWidths="20.0,155.0,100.0,80.0,65.0,100.0" style="Table7">
+      <tr>
+         <td><para style="terp_tblheader_General_Centre">No</para></td>
+         <td><para style="terp_tblheader_General_Centre">ITEM DESCRIPTION</para></td>
+         <td><para style="terp_tblheader_General_Centre">CUSTOMER P/O NO</para></td>
+         <td><para style="terp_tblheader_General_Centre">QTY</para></td>
+         <td><para style="terp_tblheader_General_Centre">UNIT PRICE [[ o.currency_id.name or '' ]]</para></td>
+         <td><para style="terp_tblheader_General_Centre">TOTAL AMOUNT [[ o.currency_id.name or '' ]]</para></td>
+      </tr>
     </blockTable>
     </pto_header>
     <para style="terp_default_8"><seqReset/></para>	
@@ -121,12 +121,12 @@
 								<font color="white"> </font>
 							</para>
 							<para style="terp_default_Bold_9">BILL TO:</para>
-							<para style="terp_default_9">[[ picking.address_id and picking.address_id.title.name or '' ]] [[ picking.address_id and picking.address_id.name or '' ]]</para>
-							<para style="terp_default_9">[[ picking.address_id and display_address(picking.address_id) ]] </para>
-							<para style="terp_default_9">Tél. : [[ (picking.address_id and picking.address_id.phone) or removeParentNode('para') ]]</para>
-							<para style="terp_default_9">Fax : [[ (picking.address_id and picking.address_id.fax) or removeParentNode('para') ]]</para>
-							<para style="terp_default_9">Attn : [[ (picking.address_id and picking.address_id.name) or removeParentNode('para') ]]</para>
-							<para style="terp_default_9">Email : [[ (picking.address_id and picking.address_id.email) or removeParentNode('para') ]]</para>
+							<para style="terp_default_9">[[ o.partner_id and o.partner_id.title and o.partner_id.title.name or '' ]] [[ o.partner_id and o.partner_id.name or '' ]]</para>
+							<para style="terp_default_9">[[ display_address(o.address_invoice_id) ]] </para>
+							<para style="terp_default_9">Tél. : [[ (o.address_invoice_id.phone) or removeParentNode('para') ]]</para>
+							<para style="terp_default_9">Fax : [[ (o.address_invoice_id.fax) or removeParentNode('para') ]]</para>
+							<para style="terp_default_9">Attn : [[ (o.address_invoice_id.name) or removeParentNode('para') ]]</para>
+							<para style="terp_default_9">Email : [[ (o.address_invoice_id and o.address_invoice_id.email) or removeParentNode('para') ]]</para>
 						</td>
 					</tr>
 						<para style="terp_default_9">
@@ -134,13 +134,13 @@
 						</para>
 					<tr>
 						<td>
-							<para style="terp_default_Bold_9">SHIP TO :</para>
-							<para style="terp_default_9">[[ (picking.address_id and picking.address_id.partner_id and picking.address_id.partner_id.title.name) or '' ]] [[ picking.address_id and picking.address_id.partner_id and picking.address_id.partner_id.name ]]</para>
-							<para style="terp_default_9">[[ picking.address_id and display_address(picking.address_id) ]]</para>
-							<para style="terp_default_9">Tél. : [[ (picking.address_id and picking.address_id.phone) or removeParentNode('para') ]]</para>
-							<para style="terp_default_9">Fax : [[ (picking.address_id and picking.address_id.fax) or removeParentNode('para') ]]</para>
-							<para style="terp_default_9">Attn : [[ (picking.address_id and picking.address_id.name) or removeParentNode('para') ]]</para>
-							<para style="terp_default_9">Email : [[ (picking.address_id and picking.address_id.email) or removeParentNode('para') ]]</para>
+							<para style="terp_default_Bold_9"><font>SHIP TO :</font></para>
+							<para style="terp_default_9"><font>[[ (o.picking_id and o.picking_id.partner_id and o.picking_id.partner_id.title and o.picking_id.partner_id.title.name) or ' ' ]] [[ (o.picking_id and o.picking_id.partner_id and o.picking_id.partner_id.name) or ' ']]</font></para>
+							<para style="terp_default_9"><font>[[ (o.picking_id and o.picking_id.partner_shipping_id and display_address(o.picking_id.partner_shipping_id)) or ' ']]</font></para>
+							<para style="terp_default_9"><font>Tél. : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.phone) or removeParentNode('para') ]]</font></para>
+							<para style="terp_default_9"><font>Fax : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.fax) or removeParentNode('para') ]]</font></para>
+							<para style="terp_default_9"><font>Attn : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.name) or removeParentNode('para') ]]</font></para>
+							<para style="terp_default_9"><font>Email : [[ (o.picking_id and o.picking_id.partner_shipping_id o.picking_id.partner_shipping_id.email) or removeParentNode('para') ]]</font></para>
 						</td>
 					</tr>
 					</blockTable>
@@ -151,7 +151,7 @@
 					</para>
 				</td>
 				<td>
-					<blockTable colWidths="110.0,130.0" style="Table8">
+					<blockTable colWidths="120.0,5.0,120.0" style="Table8">
 					<tr>
 						<td>
 							<para style="terp_default_10_Italic_Bold">TAX INVOICE</para>
@@ -178,14 +178,26 @@
 						<td>
 							<para style="terp_default_8_Left">:</para>
 							<para style="terp_default_8_Left">:</para>
-							<para style="terp_default_8_Left">:[[ formatLang(o.date_invoice,date= True) ]]</para>
 							<para style="terp_default_8_Left">:</para>
 							<para style="terp_default_8_Left">:</para>
 							<para style="terp_default_8_Left">:</para>
 							<para style="terp_default_8_Left">:</para>
 							<para style="terp_default_8_Left">:</para>
-							<para style="terp_default_8_Left">:[[o.sale_term_id or '']]</para>
-							<para style="terp_default_8_left">:</para>
+							<para style="terp_default_8_Left">:</para>
+							<para style="terp_default_8_Left">:</para>
+							<para style="terp_default_8_Left">:</para>
+						</td>
+						<td>
+							<para style="terp_default_8_Left"><font> </font></para>
+							<para style="terp_default_8_Left"><font>[[ o.number or ' ']]</font></para>
+							<para style="terp_default_8_Left"><font>[[ formatLang(o.date_invoice,date= True) ]]</font></para>
+							<para style="terp_default_8_Left"><font>[[ (o.picking_id and o.picking_id.name) or ' ' ]]</font></para>
+							<para style="terp_default_8_Left"><font>[[ o.document or ' ' ]]</font></para>
+							<para style="terp_default_8_Left"><font>[[ (o.partner_id and o.partner_id.ref) or ' ' ]] </font></para>
+							<para style="terp_default_8_Left"><font>[[ (o.ship_method_id and o.ship_method_id.name) or ' ' ]]</font></para>
+							<para style="terp_default_8_Left"><font>[[ (o.picking_id and o.picking_id.fob_id and o.picking_id.fob_id.name) or ' ' ]]</font></para>
+							<para style="terp_default_8_Left"><font>[[ (o.sale_term_id and o.sale_term_id.name) or ' ' ]]</font></para>
+							<para style="terp_default_8_Left"><font>[[ (o.user_id and o.user_id.name) or ' ' ]]</font></para>
 						</td>
 					</tr>
 					</blockTable>
@@ -227,16 +239,16 @@
             <para style="terp_default_9">[[ l.name ]]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">PO NO??</para>
+            <para style="terp_default_Centre_9"></para>
           </td>
           <td>
             <para style="terp_default_Right_9">[[ formatLang(l.quantity)]] [[ (l.uos_id and l.uos_id.name) or '' ]]</para>
           </td>
           <td>
-            <para style="terp_default_Right_9">[[ locale.format('%.2f',l.price_unit,True) ]]</para>
+            <para style="terp_default_Right_9">[[ formatLang(l.price_unit, digits=2) ]]</para>
           </td>
           <td>
-            <para style="terp_default_Right_9">[[ locale.format('%.2f',l.price_subtotal,True)]][[o.currency_id.symbol ]]</para>
+            <para style="terp_default_Right_9">[[ formatLang(l.price_subtotal, digits=2, currency_obj=o.currency_id) ]]</para>
           </td>
         </tr>
 
@@ -248,13 +260,13 @@
 		<blockTable colWidths="110.0,20.0,120.0,20.0,110.0,20.0,120.0" style="Table_Account_Detail">
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">SGD EXCHANGE RATE</para>
+				<para style="terp_default_Bold_8">USD EXCHANGE RATE</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">@</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[o.rate or '']]</para>
+				<para style="terp_default_8">[[formatLang(o.cur_rate, digits=2 )or '']]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8"> </para>
@@ -271,13 +283,13 @@
 		</tr>
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">TOTAL IN SGD</para>
+				<para style="terp_default_Bold_8">TOTAL IN USD</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ locale.format('%.2f',o.amount_untaxed,True ) ]]</para>
+				<para style="terp_default_8">[[ formatLang(o.amount_untaxed * o.cur_rate,digits=2 ) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8"> </para>
@@ -289,7 +301,7 @@
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ locale.format('%.2f',o.amount_untaxed,True ) ]]</para>
+				<para style="terp_default_8">[[formatLang(o.amount_untaxed, digits=2) ]]</para>
 			</td>
 		</tr>
 		<tr>
@@ -300,7 +312,7 @@
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ locale.format('%.2f',o.amount_tax,True ) ]]</para>
+				<para style="terp_default_8">[[ formatLang(o.amount_tax * o.cur_rate, digits=2) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8"> </para>
@@ -312,18 +324,18 @@
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ locale.format('%.2f',o.amount_tax,True ) ]]</para>
+				<para style="terp_default_8">[[ formatLang(o.amount_tax, digits=2) ]]</para>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">TOTAL AMOUNT SGD</para>
+				<para style="terp_default_Bold_8">TOTAL AMOUNT USD</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_Bold_Right_9">[[ locale.format('%.2f',o.residual,True ) ]]</para>
+				<para style="terp_default_Bold_Right_9">[[ formatLang((o.amount_untaxed + o.amount_tax) * o.cur_rate, digits=2) ]]</para>
 				<illustration width="150" height="8">
 				<lineMode width ="1.0"/>
 				<lines>-6 5 115 5</lines>
@@ -341,13 +353,36 @@
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_Bold_Right_9">[[ locale.format('%.2f',o.residual,True ) ]]</para>
+				<para style="terp_default_Bold_Right_9">[[ formatLang(o.amount_untaxed + o.amount_tax, digits=2) ]]</para>
 				<illustration width="150" height="8">
 				<lineMode width ="1.0"/>
 				<lines>-6 5 115 5</lines>
 				<lineMode width ="1.0"/>
 				<lines>-6 3.2 115 3.2</lines>
 				</illustration>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<para style="terp_default_Bold_8"><font color="white"> </font></para>
+			</td>
+			<td>
+				<para style="terp_default_Bold_8"><font color="white"> </font></para>
+			</td>
+			<td>
+				<para style="terp_default_8"><font color="white"> </font></para>
+			</td>
+			<td>
+				<para style="terp_default_Bold_8"><font color="white"> </font></para>
+			</td>
+			<td>
+				<para style="terp_default_Bold_8"><font color="white"> </font></para>
+			</td>
+			<td>
+				<para style="terp_default_Bold_8"><font color="white"> </font></para>
+			</td>
+			<td>
+				<para style="terp_default_8">E.&amp;.O.E</para>
 			</td>
 		</tr>
 		</blockTable>

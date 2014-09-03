@@ -6,8 +6,9 @@
             id="account.account_invoices"
             model="account.invoice"
             name="max.maxmega.invoice"
-            string="Invoices 1"
+            rml="max_report_addons/report/account_print_invoice.rml"
+            string="Invoices"
             usage="default"
-            header="False"/>
+            header="True"/>
     </data>
 </openerp>
