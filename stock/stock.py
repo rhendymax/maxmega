@@ -249,6 +249,19 @@ class stock_picking(osv.osv):
 
         return True
 
+    def find_date_done(self, cr, uid, move_id, context=None):
+        date_done = False
+        stock_move_obj = self.pool.get("stock.move")
+        if move_id:
+            move = stock_move_obj.browse(cr, uid, move_id, context=context)
+            if move.picking_id:
+                date_done = move.picking_id.do_date
+            else:
+                if move.stock_inventory_ids:
+                    for si in move.stock_inventory_ids:
+                        date_done = si.date_done
+        return date_done
+
     def action_process2(self, cr, uid, ids, context=None):
 #         raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %('a','b'))
 
@@ -303,15 +316,18 @@ class stock_picking(osv.osv):
                             date_done = {}
                             for move_a in move_allocated_control_ids:
                                 number = number + 1
+#                                 print self.find_date_done(cr, uid, move_a.move_id.id)
+#                                 print find_date_done(move_a)
+#                                 print move_a.date_done
                                 res_temp.append({
                                                  'number': number,
-                                                 'date_done': move_a.date_done,
+                                                 'date_done': self.find_date_done(cr, uid, move_a.move_id.id),
                                                  'int_move_id': (move_a.int_move_id and move_a.int_move_id.id) or False,
                                                  'move_id' : move_a.move_id.id,
                                                  're_qty' : move_a.quantity - move_a.rec_quantity,
                                                  }
                                                 )
-                                date_done[number] = move_a.date_done
+                                date_done[number] = self.find_date_done(cr, uid, move_a.move_id.id)
                             if res_temp:
                                 for key, value in sorted(date_done.iteritems(), key=lambda (k,v): (v,k)):
                                     for temp in res_temp:
