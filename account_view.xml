@@ -320,11 +320,17 @@
 			action="max_custom_report.action_param_gl_report"
 			sequence="40"/>
 
-		<menuitem icon="STOCK_PRINT" name="Trial Balance"
+		<!--menuitem icon="STOCK_PRINT" name="Trial Balance"
 			id="menu_account_max_report_gr_general_trial"
 			parent="menu_account_max_report_gr"
 			action="maxmega_reports.action_maxmega_trial_balance_menu"
-			sequence="50"/>
+			sequence="50"/-->
+
+		<menuitem icon="STOCK_PRINT" name="Trial Balance"
+			id="menu_account_max_report_gr_trial_balance"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_trial_balance_report"
+			sequence="60"/>
 
 <!-- -->
 
