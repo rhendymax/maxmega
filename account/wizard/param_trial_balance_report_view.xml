@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_trial_balance_report" model="ir.ui.view">
+			<field name="name">view.param.trial.balance.report</field>
+			<field name="model">param.trial.balance.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Trial Balance Report">
+					<separator string="Trial Balance Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Trial Balance Report"/>
+					<newline/>
+					<field name="chart_account_id"/>
+					<field name="target_move"/>
+					<notebook colspan="4">
+						<page string="Account">
+							<field name="acc_search_vals"
+								colspan="4"/>
+							<field name="filter_selection" colspan="4"/>
+							<field name="account_default_from" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'/>
+							<field name="account_default_to" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'/>
+							<field name="account_input_from"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"
+								/>
+							<field name="account_input_to"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="account_ids"
+								attrs="{'invisible': [('filter_selection','!=','selection')], 'required': [('filter_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+									<field name="code"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" on_change="onchange_date_selection(date_selection)" colspan="4"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="period_filter_selection" colspan="4" attrs="{'invisible': [('date_selection','!=','period_sel')], 'required': [('date_selection','=','period_sel')]}"/>
+							<field name="period_default_to"
+								attrs="{'invisible': ['|', ('date_selection','!=','period_sel'),('period_filter_selection','!=','def')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','def')]}"/>
+							<field name="period_input_to"
+								attrs="{'invisible': ['|',('date_selection','!=','period_sel'),('period_filter_selection','!=','input')], 'required': [('date_selection','=','period_sel'),('period_filter_selection','=','input')]}"/>
+						</page>
+					</notebook>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" />
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_trial_balance_report" model="ir.actions.act_window">
+			<field name="name">Trial Balance Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.trial.balance.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_trial_balance_report"/>
+			<field name="target">new</field>
+			<field name="help">This menu print Trial Balance Report.</field>
+		</record>
+
+	</data>
+</openerp>

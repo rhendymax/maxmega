@@ -118,7 +118,7 @@ class general_ledger_report(report_sxw.rml_parse):
                     account_ids = data['form']['account_ids']
                 account_selection = '[' + acc_ids +']'
         elif data_search == 'name':
-            self.data_search_output = 'Code'
+            self.data_search_output = 'Name'
             if data['form']['account_selection'] == 'def':
                 data_found = False
                 if account_default_from and account_obj.browse(self.cr, self.uid, account_default_from) and account_obj.browse(self.cr, self.uid, account_default_from).name:
@@ -143,7 +143,6 @@ class general_ledger_report(report_sxw.rml_parse):
                                     "order by name limit 1")
                     qry = self.cr.dictfetchone()
                     if qry:
-                        account_input_to_str = account_input_to
                         data_found = True
                         val_acc.append(('name', '>=', qry['name']))
                 if account_input_to:

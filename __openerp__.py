@@ -71,6 +71,8 @@ Customise report
         'account/wizard/param_receivable_aging_report_view.xml',
         # 11-06-2014
         'account/wizard/param_gl_report_view.xml',
+        #03-09-2014
+        'account/wizard/param_trial_balance_report_view.xml',
     ],
 
     'demo_xml': [],

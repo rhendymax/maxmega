@@ -11,3 +11,4 @@ import sales_tax_report
 import max_journal_report
 import max_payment_report
 import general_ledger_report
+import trial_balance_report

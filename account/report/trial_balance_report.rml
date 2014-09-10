@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<document filename="Pre Post Trial Balance Report.pdf">
+	<template pageSize="(842.0,595.0)" title="Pre Post Trial Balance Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+
+  <stylesheet>
+      <blockTableStyle id="TableTop">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000"/>
+    </blockTableStyle>
+     <blockTableStyle id="TableBottom">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000"/>
+    </blockTableStyle>
+    <blockTableStyle id="TableMiddle">
+     <blockAlignment value="LEFT"/>
+	<blockValign value="TOP"/>
+	<lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+	<lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="10,0"/>
+    </blockTableStyle>
+    <blockTableStyle id="TableEnd">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="-1,0"/>
+    </blockTableStyle>
+    
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicRight_7" fontName="Helvetica-Oblique" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicBoldRight_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+    <images/>
+  </stylesheet>
+	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">Pre Post Trial Balance Report</para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_chart_account() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_target_move() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_search_by_account() ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_date() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		
+		<blockTable colWidths="100.0,150.0,100.0,150.0,100.0,100.0,100.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_Bold_8">GL Acct No</para></td>
+				<td><para style="terp_default_Bold_8">Account Description</para></td>
+				<td><para style="terp_default_Bold_8">Opening Bal.</para></td>
+				<td><para style="terp_default_Bold_8">Current Debit</para></td>
+				<td><para style="terp_default_Right_Bold_8">Balance</para></td>
+				<td><para style="terp_default_Right_Bold_8">New Debit</para></td>
+				<td><para style="terp_default_Bold_8">Pre Post Balance</para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_Bold_8"></para></td>
+				<td><para style="terp_default_Bold_8"></para></td>
+				<td><para style="terp_default_Bold_8"></para></td>
+				<td><para style="terp_default_Bold_8">Current Credit</para></td>
+				<td><para style="terp_default_Right_Bold_8"></para></td>
+				<td><para style="terp_default_Right_Bold_8">New Credit</para></td>
+				<td><para style="terp_default_Bold_8"></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
+			<blockTable colWidths="100.0,150.0,100.0,150.0,100.0,100.0,100.0">
+				<tr>
+					<td><para style="terp_default_7"><font>[[ ln['code'] ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[ ln['name'] ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[ formatLang(ln['opening_balance'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[ formatLang(ln['debit'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[ formatLang(ln['balance'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_Right_7"><font></font></para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_7"><font>[[ formatLang(ln['credit'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_7"><font></font></para></td>
+					<td><para style="terp_default_Right_7"><font></font></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<blockTable colWidths="100.0,150.0,100.0,150.0,100.0,100.0,100.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_ItalicBold_7"><font>Report Total</font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>[[ formatLang(get_open_balance_total(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>[[ formatLang(get_debit_total(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>[[ formatLang(get_balance_total(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_7"></para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>[[ formatLang(get_credit_total(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
+				<td><para style="terp_default_7"></para></td>
+			</tr>
+		</blockTable>
+		<!--blockTable colWidths="500,220,80.0">
+			<tr>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>Balance:</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(get_total() or 0, digits=2) ]]</font></para></td>
+			</tr>
+		</blockTable-->
+	</story>
+</document>
