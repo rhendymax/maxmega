@@ -53,7 +53,7 @@ class param_trial_balance_report(osv.osv_memory):
         'acc_search_vals': 'code',
         'filter_selection': 'all_vall',
         'chart_account_id': _get_account,
-        'target_move': 'posted',
+        'target_move': 'all',
         
     }
 
