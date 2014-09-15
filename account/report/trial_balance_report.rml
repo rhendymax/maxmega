@@ -80,15 +80,13 @@
 			</tr>
 		</blockTable>
 		
-		<blockTable colWidths="100.0,150.0,100.0,150.0,100.0,100.0,100.0" style="TableMiddle">
+		<blockTable colWidths="150.0,200.0,150.0,150.0,150.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_Bold_8">GL Acct No</para></td>
 				<td><para style="terp_default_Bold_8">Account Description</para></td>
 				<td><para style="terp_default_Right_Bold_8">Opening Bal.</para></td>
 				<td><para style="terp_default_Right_Bold_8">Current Debit</para></td>
 				<td><para style="terp_default_Right_Bold_8">Balance</para></td>
-				<td><para style="terp_default_Right_Bold_8">New Debit</para></td>
-				<td><para style="terp_default_Right_Bold_8">Pre Post Balance</para></td>
 			</tr>
 			<tr>
 				<td><para style="terp_default_Bold_8"></para></td>
@@ -96,21 +94,17 @@
 				<td><para style="terp_default_Bold_8"></para></td>
 				<td><para style="terp_default_Right_Bold_8">Current Credit</para></td>
 				<td><para style="terp_default_Right_Bold_8"></para></td>
-				<td><para style="terp_default_Right_Bold_8">New Credit</para></td>
-				<td><para style="terp_default_Bold_8"></para></td>
 			</tr>
 		</blockTable>
 		<section>
 			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
-			<blockTable colWidths="100.0,150.0,100.0,150.0,100.0,100.0,100.0">
+			<blockTable colWidths="150.0,200.0,150.0,150.0,150.0">
 				<tr>
 					<td><para style="terp_default_7"><font>[[ ln['code'] ]]</font></para></td>
 					<td><para style="terp_default_7"><font>[[ ln['name'] ]]</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['opening_balance'] or 0, digits=2) ]]</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['debit'] or 0, digits=2) ]]</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['balance'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_7"><font></font></para></td>
-					<td><para style="terp_default_Right_7"><font></font></para></td>
 				</tr>
 				<tr>
 					<td><para style="terp_default_7"><font></font></para></td>
@@ -118,20 +112,16 @@
 					<td><para style="terp_default_7"><font></font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['credit'] or 0, digits=2) ]]</font></para></td>
 					<td><para style="terp_default_7"><font></font></para></td>
-					<td><para style="terp_default_7"><font></font></para></td>
-					<td><para style="terp_default_Right_7"><font></font></para></td>
 				</tr>
 			</blockTable>
 		</section>
-		<blockTable colWidths="100.0,150.0,100.0,150.0,100.0,100.0,100.0" style="TableMiddle">
+		<blockTable colWidths="150.0,200.0,150.0,150.0,150.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_ItalicBold_7"><font>Report Total</font></para></td>
 				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
 				<td><para style="terp_default_ItalicBoldRight_7"><font>[[ formatLang(get_open_balance_total(), digits=2) ]]</font></para></td>
 				<td><para style="terp_default_ItalicBoldRight_7"><font>[[ formatLang(get_debit_total(), digits=2) ]]</font></para></td>
 				<td><para style="terp_default_ItalicBoldRight_7"><font>[[ formatLang(get_balance_total(), digits=2) ]]</font></para></td>
-				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
-				<td><para style="terp_default_7"></para></td>
 			</tr>
 			<tr>
 				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
@@ -139,8 +129,6 @@
 				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
 				<td><para style="terp_default_ItalicBoldRight_7"><font>[[ formatLang(get_credit_total(), digits=2) ]]</font></para></td>
 				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
-				<td><para style="terp_default_ItalicBold_7"><font></font></para></td>
-				<td><para style="terp_default_7"></para></td>
 			</tr>
 		</blockTable>
 		<!--blockTable colWidths="500,220,80.0">

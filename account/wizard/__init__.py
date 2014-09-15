@@ -15,3 +15,4 @@ import param_payable_aging_report
 import param_receivable_aging_report
 import param_gl_report
 import param_trial_balance_report
+import param_sales_journal_by_voucher_report
