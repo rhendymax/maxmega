@@ -413,27 +413,34 @@
 			parent="menu_account_max_report_ar"
 			action="max_custom_report.action_param_sales_journal_by_customer_report"
 			sequence="50"/>
+		
+		<menuitem
+			name="Sales Journal Report By Voucher"
+			id="menu_account_max_report_ar_sales_journal_by_voucher"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_sales_journal_by_voucher_report"
+			sequence="60"/>
 			
 		<menuitem
 			name="Sale Journal by Sales Zone Report"
 			id="menu_account_max_report_ar_sales_journal_by_sales_zone"
 			parent="menu_account_max_report_ar"
 			action="max_report.action_param_sale_journal_zone"
-			sequence="60"/>
+			sequence="70"/>
 			
 			<menuitem
 			name="Sale Journal by Sales Zone, Customer Key Report"
 			id="menu_account_max_report_ar_sales_journal_by_sales_zone_customer"
 			parent="menu_account_max_report_ar"
 			action="max_report.action_param_sale_journal_zone_key"
-			sequence="70"/>	
+			sequence="80"/>	
 			
 		<menuitem
 			name="Receipt Deposit Bank Report"
 			id="menu_account_max_report_ar_receipt_deposit_bank"
 			parent="menu_account_max_report_ar"
 			action="max_report.action_param_receipt_deposit_bank"
-			sequence="80"/>	
+			sequence="90"/>	
 
 <!-- -->
 
