@@ -284,10 +284,30 @@ class cost_price_fifo(osv.osv_memory):
 
 
                         if internal_move_control_ids:
+                            internal_move_ids_2 = {}
+                            for int2 in internal_move_control_ids:
+                                if int2['move_id'] not in internal_move_ids_2:
+                                    internal_move_ids_2.update({int2['move_id'] : {
+                                         'document_date' : int2['document_date'],
+                                         'move_id' : int2['move_id'],
+                                         'product_qty' : int2['product_qty'],
+                                         }
+                                        })
+                                else:
+                                    internal_move_ids_2_grouping = internal_move_ids_2[int2['move_id']].copy()
+                                    internal_move_ids_2_grouping['product_qty'] += int2['product_qty']
+                                    internal_move_ids_2[int2['move_id']] = internal_move_ids_2_grouping
+                            imc_ids = []
+                            for item in internal_move_ids_2.items():
+                                imc_ids.append({
+                                    'document_date' : item[1]['document_date'],
+                                    'move_id' : item[1]['move_id'],
+                                    'product_qty' : item[1]['product_qty'],
+                                })
                             int_res = []
 #                            raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(internal_move_control_ids, 'xxxxx'))
                             #print str(sm.id) + 'xxxx' + str(real_qty) + 'yyyy' + str(internal_move_control_ids)
-                            for int in internal_move_control_ids:
+                            for int in imc_ids:
                                 int_sm = stock_move_obj.browse(cr, uid, int['move_id'], context=context)
                                 if int_sm.picking_id:
                                     int_number = int_number + 1
