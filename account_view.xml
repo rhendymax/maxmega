@@ -376,6 +376,13 @@
 			parent="menu_account_max_report_ap"
 			action="max_report.action_param_payment_deposit_bank"
 			sequence="60"/>	
+
+		<menuitem
+			name="Payment Register By Deposit Bank Report"
+			id="menu_account_max_report_ap_payment_register_by_deposit_bank"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_payment_register_by_deposit_bank"
+			sequence="70"/>	
 <!-- -->
 
 <!-- -->
@@ -441,6 +448,13 @@
 			parent="menu_account_max_report_ar"
 			action="max_report.action_param_receipt_deposit_bank"
 			sequence="90"/>	
+
+		<menuitem
+			name="Receipt Register By Deposit Bank Report"
+			id="menu_account_max_report_ap_receipt_register_by_deposit_bank"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_receipt_register_by_deposit_bank"
+			sequence="100"/>	
 
 <!-- -->
 
