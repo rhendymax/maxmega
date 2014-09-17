@@ -16,3 +16,5 @@ import param_receivable_aging_report
 import param_gl_report
 import param_trial_balance_report
 import param_sales_journal_by_voucher_report
+import param_payment_register_by_deposit_bank
+import param_receipt_register_by_deposit_bank

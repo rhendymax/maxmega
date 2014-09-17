@@ -74,6 +74,9 @@ Customise report
         #03-09-2014
         'account/wizard/param_trial_balance_report_view.xml',
         'account/wizard/param_sales_journal_by_voucher_report_view.xml',
+        'account/wizard/param_payment_register_by_deposit_bank_view.xml',
+        'account/wizard/param_receipt_register_by_deposit_bank_view.xml',
+
     ],
 
     'demo_xml': [],
