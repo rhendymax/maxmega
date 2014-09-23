@@ -303,11 +303,14 @@ class param_payable_aging_report(osv.osv_memory):
             header += 'Account Payable Aging Report' + " \n"
             header += 'Supplier : ' + supp_selection + " (" + data_search + "); \n"
             header += ('filter_selection' in form and 'Supplier search : ' + form['filter_selection'] + " \n") or ''
+            deposit_qry = 'and not (aml.credit > 0 and aml.is_depo = True) '
             sign = -1
+            
         elif type == 'receivable':
             header += 'Account Receivable Aging Report' + " \n"
             header += 'Customer : ' + supp_selection + " (" + data_search + "); \n"
             header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
+            deposit_qry = 'and not (aml.debit > 0 and aml.is_depo = True) '
             sign = 1
         
         header += ('date_to_header' in form and 'Age Reference Date : ' + form['date_to_header'] + ' \n') or ''
@@ -328,7 +331,8 @@ class param_payable_aging_report(osv.osv_memory):
                 "left join res_users rs on rs.id = ai.user_id where aml.partner_id IS NOT NULL " \
                 "and am.state IN ('draft', 'posted')  " \
                 "and aa.type = '" + type + "' " \
-                "And not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
+                "and not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
+                + deposit_qry + \
                 "and abs((aml.debit - aml.credit) - (abs(coalesce ( " \
                 "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id and aml2.date  <= '" +str(date_to) + "'), " \
                 "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id and aml3.date  <= '" +str(date_to) + "'), 0 " \
@@ -399,6 +403,7 @@ class param_payable_aging_report(osv.osv_memory):
                         "and am.state IN ('draft', 'posted')  " \
                         "and aa.type = '" + type + "' " \
                         "And not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
+                        + deposit_qry + \
                         "and abs((aml.debit - aml.credit) - (abs(coalesce ( " \
                         "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id and aml2.date  <= '" +str(date_to) + "'), " \
                         "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id and aml3.date  <= '" +str(date_to) + "'), 0 " \
@@ -406,6 +411,33 @@ class param_payable_aging_report(osv.osv_memory):
                         "And aml.date  <= '" +str(date_to) + "' "\
                         "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
                         "and aml.partner_id = " + str(s['id']) + " order by aml.date")
+#                 print "select sp.id as picking_id, ai.sale_term_id as term_id, aml.id as aml_id, am.name as inv_name, aml.date as inv_date, ai.ref_no as inv_ref, rs.name as sales_name, aml.debit - aml.credit as home_amt, " \
+#                         "abs(CASE WHEN (aml.currency_id is not null) and (aml.cur_date is not null) THEN amount_currency ELSE aml.debit - aml.credit END) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) " \
+#                         "as inv_amt, " \
+#                         "abs(coalesce ( " \
+#                         "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id and aml2.date  <= '" +str(date_to) + "'), " \
+#                         "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id and aml3.date  <= '" +str(date_to) + "'), " \
+#                         "0)) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) as paid_home, " \
+#                         "abs(coalesce ( " \
+#                         "(select sum(CASE WHEN (aml4.currency_id is not null) and (aml4.cur_date is not null) THEN amount_currency ELSE aml4.debit - aml4.credit END) from account_move_line aml4 where aml4.reconcile_partial_id = aml.reconcile_partial_id and aml4.id != aml.id and aml4.date  <= '" +str(date_to) + "'), " \
+#                         "(select sum(CASE WHEN (aml5.currency_id is not null) and (aml5.cur_date is not null) THEN amount_currency ELSE aml5.debit - aml5.credit END) from account_move_line aml5 where aml5.reconcile_id = aml.reconcile_id and aml5.id != aml.id and aml5.date  <= '" +str(date_to) + "'), " \
+#                         "0)) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) as paid " \
+#                         "from account_move_line aml " \
+#                         "left join account_move am on aml.move_id = am.id left join account_invoice ai on am.id = ai.move_id " \
+#                         "left join account_account aa on aml.account_id = aa.id left join account_journal aj on am.journal_id = aj.id " \
+#                         "left join res_users rs on rs.id = ai.user_id left join stock_picking sp on ai.picking_id = sp.id where aml.partner_id IS NOT NULL " \
+#                         "and am.state IN ('draft', 'posted')  " \
+#                         "and aa.type = '" + type + "' " \
+#                         "And not (aml.debit > 0 and aml.is_depo = False and aj.type in ('cash', 'bank')) " \
+#                         "and abs((aml.debit - aml.credit) - (abs(coalesce ( " \
+#                         "(select sum(aml2.debit - aml2.credit) from account_move_line aml2 where aml2.reconcile_partial_id = aml.reconcile_partial_id and aml2.id != aml.id and aml2.date  <= '" +str(date_to) + "'), " \
+#                         "(select sum(aml3.debit - aml3.credit) from account_move_line aml3 where aml3.reconcile_id = aml.reconcile_id and aml3.id != aml.id and aml3.date  <= '" +str(date_to) + "'), 0 " \
+#                         ")) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END))) > 0 " \
+#                         "And aml.date  <= '" +str(date_to) + "' "\
+#                         "and not (aj.type in ('bank', 'cash') and aml.is_depo = False) " \
+#                         "and aml.partner_id = " + str(s['id']) + " order by aml.date"
+#                 raise osv.except_osv(_('Invalid action !'), _('test'))
+                
                 qry3 = cr.dictfetchall()
                 val = []
                 total_amt1 = total_amt2= total_amt3 = total_amt4 = total_home_amt1 = total_home_amt2 = total_home_amt3 = total_home_amt4 = 0.00
