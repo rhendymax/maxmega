@@ -276,6 +276,7 @@ class max_payment_report(report_sxw.rml_parse):
         self.footer_bank_charges_home = 0.00
         self.footer_gain_loss_home = 0.00
         self.footer_deposit_home = 0.00
+        self.footer_reconcile_home = 0.00
         self.localcontext.update({
             'time': time,
             'locale': locale,
@@ -289,6 +290,7 @@ class max_payment_report(report_sxw.rml_parse):
             'footer_bank_charges_home' : self._footer_bank_charges_home,
             'footer_gain_loss_home' : self._footer_gain_loss_home,
             'footer_deposit_home' : self._footer_deposit_home,
+            'footer_reconcile_home' : self._footer_reconcile_home,
             })
 
     def _get_balance_by_cur(self):
@@ -303,6 +305,8 @@ class max_payment_report(report_sxw.rml_parse):
                 'bank_charges_home' : item[1]['bank_charges_home'],
                 'deposit' : item[1]['deposit'],
                 'deposit_home' : item[1]['deposit_home'],
+                'reconcile' : item[1]['reconcile'],
+                'reconcile_home' : item[1]['reconcile_home'],
                 'credit_note' : item[1]['credit_note'],
                 'credit_note_home' : item[1]['credit_note_home'],
                 'alloc_inv' : item[1]['alloc_inv'],
@@ -338,6 +342,9 @@ class max_payment_report(report_sxw.rml_parse):
 
     def _footer_deposit_home(self):
         return self.footer_deposit_home
+
+    def _footer_reconcile_home(self):
+        return self.footer_reconcile_home
 
     def _get_lines(self):
         results = []
@@ -409,9 +416,9 @@ class max_payment_report(report_sxw.rml_parse):
                 + journal_qry + \
                 "order by l.date")
         qry3 = cr.dictfetchall()
-        cheque = cheque_home = bank_charges = bank_charges_home = deposit = deposit_home = credit_note = credit_note_home = alloc_inv = alloc_inv_home = 0.00
         if qry3:
             for t in qry3:
+                cheque = cheque_home = bank_charges = bank_charges_home = deposit = deposit_home = reconcile = reconcile_home = credit_note = credit_note_home = alloc_inv = alloc_inv_home = 0.00
                 inv = voucher_obj.browse(self.cr, self.uid, t['voucher_id'])
                 res = {}
                 lines_ids = []
@@ -436,8 +443,8 @@ class max_payment_report(report_sxw.rml_parse):
 
                 cur_name = 'False'
                 if type == 'payable':
-                    cur_name = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist_purchase.currency_id.name
-                    cur_id = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist_purchase.currency_id.id
+                    cur_name = (inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.name) or (inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.name) or ''
+                    cur_id = (inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.id) or (inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.id) or ''
                     for lines in inv.line_dr_ids:
                         if lines.amount > 0:
                             amount_all += lines.amount
@@ -564,7 +571,15 @@ class max_payment_report(report_sxw.rml_parse):
                 res['deposit_amt_home'] = inv.writeoff_amount_home or ' '
                 res['reconcile_title_amt'] = reconcile_title_amt
                 res['reconcile_title_home'] = reconcile_title_home
-                self.footer_deposit_home += inv.writeoff_amount_home or 0.00
+                if inv.payment_option == 'without_writeoff':
+                    deposit = inv.writeoff_amount or 0.00
+                    deposit_home += inv.writeoff_amount_home or 0.00
+                    self.footer_deposit_home += inv.writeoff_amount_home or 0.00
+                if inv.payment_option == 'with_writeoff':
+                    reconcile = inv.writeoff_amount or 0.00
+                    reconcile_home += inv.writeoff_amount_home or 0.00
+                    self.footer_reconcile_home += inv.writeoff_amount_home or 0.00
+                
                 res['lines'] = lines_ids
 
                 #RT 20140716
@@ -576,6 +591,8 @@ class max_payment_report(report_sxw.rml_parse):
                              'bank_charges_home' : bank_charges_home,
                              'deposit' : deposit,
                              'deposit_home' : deposit_home,
+                             'reconcile' : reconcile,
+                             'reconcile_home' : reconcile_home,
                              'credit_note' : credit_note,
                              'credit_note_home' : credit_note_home,
                              'alloc_inv' : alloc_inv,
@@ -590,6 +607,8 @@ class max_payment_report(report_sxw.rml_parse):
                     res_currency_grouping['bank_charges_home'] += bank_charges_home
                     res_currency_grouping['deposit'] += deposit
                     res_currency_grouping['deposit_home'] += deposit_home
+                    res_currency_grouping['reconcile'] += reconcile
+                    res_currency_grouping['reconcile_home'] += reconcile_home
                     res_currency_grouping['credit_note'] += credit_note
                     res_currency_grouping['credit_note_home'] += credit_note_home
                     res_currency_grouping['alloc_inv'] += alloc_inv
