@@ -322,7 +322,7 @@ class report(report_sxw.rml_parse):
                 inv = invoice_obj.browse(self.cr, self.uid, t['inv_id'])
                 if inv.type in ('in_refund', 'out_refund'):
                     sign = -1
-                results.append(inv)
+#                results.append(inv)
                 results.append({
                                 'sz_name' : (inv.sales_zone_id and inv.sales_zone_id.name) or '',
                                 'cust_name' : (inv.partner_id and inv.partner_id.name) or '',
@@ -358,6 +358,7 @@ class report(report_sxw.rml_parse):
                                 'inv_no' : inv2.number or '',
                                 'sales_name' : (inv2.user_id and inv2.user_id.name) or '',
                                 })
+        print results
         results = results and sorted(results, key=lambda val_res: val_res['inv_date']) or []
         results = results and sorted(results, key=lambda val_res: val_res['sz_name']) or []
         return results
