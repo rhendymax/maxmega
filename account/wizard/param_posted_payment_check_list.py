@@ -524,9 +524,9 @@ class param_posted_payment_check_list(osv.osv_memory):
                 + journal_qry + \
                 "order by l.date")
         qry3 = cr.dictfetchall()
-        cheque = cheque_home = bank_charges = bank_charges_home = deposit = deposit_home = credit_note = credit_note_home = alloc_inv = alloc_inv_home = 0.00
         if qry3:
             for t in qry3:
+                cheque = cheque_home = bank_charges = bank_charges_home = deposit = deposit_home = reconcile = reconcile_home = credit_note = credit_note_home = alloc_inv = alloc_inv_home = 0.00
                 inv = voucher_obj.browse(cr, uid, t['voucher_id'])
                 res = {}
                 lines_ids = []
@@ -642,6 +642,16 @@ class param_posted_payment_check_list(osv.osv_memory):
                 res['deposit_amt_home'] = inv.writeoff_amount_home or 0.00
                 res['reconcile_title_amt'] = reconcile_title_amt
                 res['reconcile_title_home'] = reconcile_title_home
+                
+                if inv.payment_option == 'without_writeoff':
+                    deposit = inv.writeoff_amount or 0.00
+                    deposit_home += inv.writeoff_amount_home or 0.00
+#                    self.footer_deposit_home += inv.writeoff_amount_home or 0.00
+                if inv.payment_option == 'with_writeoff':
+                    reconcile = inv.writeoff_amount or 0.00
+                    reconcile_home += inv.writeoff_amount_home or 0.00
+#                    self.footer_reconcile_home += inv.writeoff_amount_home or 0.00
+                
                 footer_deposit_home += inv.writeoff_amount_home or 0.00
                 res['lines'] = lines_ids
                 
@@ -668,8 +678,8 @@ class param_posted_payment_check_list(osv.osv_memory):
                 cur_name = 'False'
                 if type == 'payable':
                     #20140716
-                    cur_name = res_partner_obj.browse(cr, uid, t['partner_id']).property_product_pricelist_purchase.currency_id.name
-                    cur_id = res_partner_obj.browse(cr, uid, t['partner_id']).property_product_pricelist_purchase.currency_id.id
+                    cur_name = (inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.name) or (inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.name) or ''
+                    cur_id = (inv.journal_id and inv.journal_id.currency and inv.journal_id.currency.id) or (inv.company_id and inv.company_id.currency_id and inv.company_id.currency_id.id) or ''
                     for lines in inv.line_dr_ids:
                         if lines.amount > 0:
                             amount_inv_home = lines.amount_inv_home or 0.00
@@ -704,8 +714,8 @@ class param_posted_payment_check_list(osv.osv_memory):
                                       str("%.2f" % (gain_loss))+ " \n"
                 elif type == 'receivable':
                     #20140716
-                    cur_name = res_partner_obj.browse(cr, uid, t['partner_id']).property_product_pricelist.currency_id.name
-                    cur_id = res_partner_obj.browse(cr, uid, t['partner_id']).property_product_pricelist.currency_id.id
+                    cur_name = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist.currency_id.name
+                    cur_id = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist.currency_id.id
                     for lines in inv.line_cr_ids:
                         if lines.amount > 0:
                             amount_inv_home = lines.amount_inv_home or 0.00
@@ -747,6 +757,8 @@ class param_posted_payment_check_list(osv.osv_memory):
                              'bank_charges_home' : bank_charges_home,
                              'deposit' : deposit,
                              'deposit_home' : deposit_home,
+                             'reconcile' : reconcile,
+                             'reconcile_home' : reconcile_home,
                              'credit_note' : credit_note,
                              'credit_note_home' : credit_note_home,
                              'alloc_inv' : alloc_inv,
@@ -761,6 +773,8 @@ class param_posted_payment_check_list(osv.osv_memory):
                     res_currency_grouping['bank_charges_home'] += bank_charges_home
                     res_currency_grouping['deposit'] += deposit
                     res_currency_grouping['deposit_home'] += deposit_home
+                    res_currency_grouping['reconcile'] += reconcile
+                    res_currency_grouping['reconcile_home'] += reconcile_home
                     res_currency_grouping['credit_note'] += credit_note
                     res_currency_grouping['credit_note_home'] += credit_note_home
                     res_currency_grouping['alloc_inv'] += alloc_inv
@@ -792,26 +806,30 @@ class param_posted_payment_check_list(osv.osv_memory):
                 'bank_charges_home' : item[1]['bank_charges_home'],
                 'deposit' : item[1]['deposit'],
                 'deposit_home' : item[1]['deposit_home'],
+                'reconcile' : item[1]['reconcile'],
+                'reconcile_home' : item[1]['reconcile_home'],
                 'credit_note' : item[1]['credit_note'],
                 'credit_note_home' : item[1]['credit_note_home'],
                 'alloc_inv' : item[1]['alloc_inv'],
                 'alloc_inv_home' : item[1]['alloc_inv_home'],
             })
-        total_home = total_bank_charges_home =  total_deposit_home = total_credit_note_home = total_alloc_inv_home = 0
+        total_home = total_bank_charges_home =  total_deposit_home = total_reconcile_home = total_credit_note_home = total_alloc_inv_home = 0
         result_currency = result_currency and sorted(result_currency, key=lambda val_res: val_res['cur_name']) or []
-        header += 'Currency ' + ';' + 'Cheque' + ';' + 'Bank Charges' + ';' + 'Deposit' + ';' + 'Credit Note' + ';' + 'Alloc Inv' + ';' + ' \n'
+        header += 'Currency ' + ';' + 'Cheque' + ';' + 'Bank Charges' + ';' + 'Deposit' + ';' + 'Reconcile' + ';' + 'Credit Note' + ';' + 'Alloc Inv' + ';' + ' \n'
         for rs_curr in result_currency:
             total_home += rs_curr['cheque_home'] or 0.00
             total_bank_charges_home += rs_curr['bank_charges_home'] or 0.00
             total_deposit_home += rs_curr['deposit_home'] or 0.00
+            total_reconcile_home += rs_curr['reconcile_home'] or 0.00
             total_credit_note_home += rs_curr['credit_note_home'] or 0.00
             total_alloc_inv_home += rs_curr['alloc_inv_home'] or 0.00
-            header += str(rs_curr['cur_name']) + ' Home;' + str(rs_curr['cheque_home']) + ';' + str(rs_curr['bank_charges_home']) + \
-                        ';' + str(rs_curr['deposit_home']) + ';' + str(rs_curr['credit_note_home']) + ';' + str(rs_curr['alloc_inv_home']) + ' \n'
             header += str(rs_curr['cur_name']) + ';' + str(rs_curr['cheque']) + ';' + str(rs_curr['bank_charges']) + \
-                        ';' + str(rs_curr['deposit']) + ';' + str(rs_curr['credit_note']) + ';' + str(rs_curr['alloc_inv']) + ';' + str(rs_curr['alloc_inv']) + ' \n'
+                        ';' + str(rs_curr['deposit']) + ';' + str(rs_curr['reconcile']) + ';' + str(rs_curr['credit_note']) + ';' + str(rs_curr['alloc_inv']) + ' \n'
+
+            header += str(rs_curr['cur_name']) + ' Home;' + str(rs_curr['cheque_home']) + ';' + str(rs_curr['bank_charges_home']) + \
+                        ';' + str(rs_curr['deposit_home']) + ';' + str(rs_curr['reconcile_home']) + ';' + str(rs_curr['credit_note_home']) + ';' + str(rs_curr['alloc_inv_home']) + ' \n'
         header += ' \n' + 'Total Home:' + ';' + str("%.2f" % total_home) + \
-                  ';' + str("%.2f" % total_bank_charges_home) + ';' + str("%.2f" % total_deposit_home) + ';' + str("%.2f" % total_credit_note_home) + ';' + str("%.2f" % total_alloc_inv_home) + ' \n \n'
+                  ';' + str("%.2f" % total_bank_charges_home) + ';' + str("%.2f" % total_deposit_home) + ';' + str("%.2f" % total_reconcile_home) + ';' + str("%.2f" % total_credit_note_home) + ';' + str("%.2f" % total_alloc_inv_home) + ' \n \n'
         
         header += 'Alloc Realize Ex :' + ';' + str("%.2f" % footer_gain_loss_home or 0.00) + ' \n'
         header += 'No. of Payment Vouchers :' + ';' + str("%.2f" % payment_count or '') + ' \n'
