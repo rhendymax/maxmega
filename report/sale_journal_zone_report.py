@@ -358,7 +358,6 @@ class report(report_sxw.rml_parse):
                                 'inv_no' : inv2.number or '',
                                 'sales_name' : (inv2.user_id and inv2.user_id.name) or '',
                                 })
-        print results
         results = results and sorted(results, key=lambda val_res: val_res['inv_date']) or []
         results = results and sorted(results, key=lambda val_res: val_res['sz_name']) or []
         return results
