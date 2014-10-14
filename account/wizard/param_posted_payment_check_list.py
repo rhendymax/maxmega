@@ -714,8 +714,8 @@ class param_posted_payment_check_list(osv.osv_memory):
                                       str("%.2f" % (gain_loss))+ " \n"
                 elif type == 'receivable':
                     #20140716
-                    cur_name = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist.currency_id.name
-                    cur_id = res_partner_obj.browse(self.cr, self.uid, t['partner_id']).property_product_pricelist.currency_id.id
+                    cur_name = res_partner_obj.browse(cr, uid, t['partner_id']).property_product_pricelist.currency_id.name
+                    cur_id = res_partner_obj.browse(cr, uid, t['partner_id']).property_product_pricelist.currency_id.id
                     for lines in inv.line_cr_ids:
                         if lines.amount > 0:
                             amount_inv_home = lines.amount_inv_home or 0.00

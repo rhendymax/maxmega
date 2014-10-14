@@ -344,12 +344,12 @@
 		<blockTable colWidths="100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0">
 			<tr>
 				<td><para style="terp_default_7"><font>Total Home :</font></para></td>
-				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_cheque_home(), digits=2) ]]</font></para></td>
-				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_bank_charges_home(), digits=2) ]]</font></para></td>
-				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_deposit_home(), digits=2) ]]</font></para></td>
-				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_reconcile_home(), digits=2) ]]</font></para></td>
-				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_credit_note_home(), digits=2) ]]</font></para></td>
-				<td><para style="terp_default_Right_7"><font>[[ formatLang(footer_alloc_inv_home(), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['cheque_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['bank_charges_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['deposit_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['reconcile_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['credit_note_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['alloc_inv_home']), get_balance_by_cur(), 0 ), digits=2) ]]</font></para></td>
 				<td><para style="terp_default_Right_7"></para></td>
 			</tr>
 		</blockTable>
