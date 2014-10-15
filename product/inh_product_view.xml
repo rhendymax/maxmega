@@ -165,8 +165,10 @@
 				<field name="state" position="replace">
 					<field name="state" invisible="1"/>
 				</field>
-				<field name="categ_id" position="replace"/>
-				<field name="product_manager" position="replace"/>
+				<!--field name="categ_id" position="replace">
+					<field name="categ_id" string="b"/>
+				</field-->
+				<!--field name="product_manager" position="replace"/-->
 				<xpath expr="/form/notebook/page[@string='Procurement &amp; Locations']" position="replace">
 					<page string="Procurement &amp; Locations" invisible="1">
 						<group colspan="2" col="2" name="delay">
@@ -324,12 +326,14 @@
 					<field name="incoming_qty" invisible="1"/>
 					<field name="outgoing_qty" invisible="1"/>
 				</xpath>
+				<field name="categ_id" position="replace"/>
+				<field name="product_manager" position="replace"/>
 				<field name="type" position="before">
-					<field name="brand_id"/>
-					<field name="max_categ_id"/>
+					<field name="brand_id" widget="selection"/>
+					<field name="max_categ_id" widget="selection"/>
 					<field name="spq"/>
-					<field name="categ_id"/>
-					<field name="product_manager"/>
+					<field name="categ_id" widget="selection"/>
+					<field name="product_manager" widget="selection"/>
 					<field name="lead_time"/>
 					<field name="brand_name" invisible="1"/>
 				</field>
@@ -375,5 +379,37 @@
 				</field>
 			</field>
 		</record>
+		
+		<!-- RT 20141014 -->
+        <record id="view_normal_property_acc_form_inherit" model="ir.ui.view">
+            <field name="name">view.normal.property.acc.form.inherit</field>
+            <field name="model">product.product</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="stock.view_normal_property_acc_form"/>
+            <field name="priority">26</field>
+            <field name="arch" type="xml">
+            	<field name="property_stock_account_input" attrs="{'readonly':[('valuation', '!=', 'real_time')]}" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" position="replace">
+                	<field name="property_stock_account_input" widget="selection" attrs="{'readonly':[('valuation', '!=', 'real_time')]}" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" groups="base.group_extended"/>
+                </field>
+            	<field name="property_stock_account_output" attrs="{'readonly':[('valuation', '!=', 'real_time')]}" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" position="replace">
+            		<field name="property_stock_account_output" widget="selection" attrs="{'readonly':[('valuation', '!=', 'real_time')]}" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" groups="base.group_extended"/>
+            	</field>
+            </field>
+        </record>
+
+        <record id="product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.normal.form.view.inherit</field>
+            <field name="model">product.product</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.product_normal_form_view"/>
+            <field name="arch" type="xml">
+	            <field name="property_account_income" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" attrs="{'readonly':[('sale_ok','=',0)]}" position="replace">
+	            	<field name="property_account_income" widget="selection" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" attrs="{'readonly':[('sale_ok','=',0)]}" groups="base.group_extended"/>
+	            </field>
+	            <field name="property_account_expense" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" attrs="{'readonly':[('purchase_ok','=',0)]}" position="replace">
+	            	<field name="property_account_expense" widget="selection" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" attrs="{'readonly':[('purchase_ok','=',0)]}" groups="base.group_extended"/>
+	            </field>
+            </field>
+        </record>
 	</data>
 </openerp>
