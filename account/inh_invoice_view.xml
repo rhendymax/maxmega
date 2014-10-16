@@ -7,7 +7,7 @@
 			<field name="inherit_id" ref="account.invoice_form"/>
 			<field name="arch" type="xml">
 				<button name="%(account.account_invoices)d" position="replace">
-					<button name="%(account_invoices2)d" string="Print Invoice y" type="action" icon="gtk-print" states="open,paid,proforma,sale,proforma2"/>
+					<button name="%(max_maxmega_invoice2)d" string="Print Invoice y" type="action" icon="gtk-print" states="open,paid,proforma,sale,proforma2"/>
 				</button>
 			</field>
 		</record>

@@ -36,7 +36,7 @@
         'purchase_report.xml',
         'stock_report.xml',
         'sale_report.xml',
-
+        'account/inh_invoice_view.xml',
     ],
 
     'demo_xml': [],

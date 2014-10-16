@@ -656,10 +656,7 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
             'time': time,
         })
 report_sxw.report_sxw(
-    'report.max.maxmega.invoice',
+    'report.max.maxmega.invoice2',
     'account.invoice',
     'addons/maxmega_report_addons/report/account_print_invoice.rml',
-    parser=maxmega_tax_invoice, header=True
-)
-        
-        
+    parser=maxmega_tax_invoice, header=True)
