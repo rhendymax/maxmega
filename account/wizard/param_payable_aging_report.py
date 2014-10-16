@@ -166,7 +166,7 @@ class param_payable_aging_report(osv.osv_memory):
                                     "where " + qry_supp + " and " \
                                     "ref ilike '" + str(partner_input_from) + "%' " \
                                     "order by ref limit 1")
-                    qry = self.cr.dictfetchone()
+                    qry = cr.dictfetchone()
                     if qry:
                         data_found = True
                         val_part.append(('ref', '>=', qry['ref']))
@@ -201,7 +201,7 @@ class param_payable_aging_report(osv.osv_memory):
                 result['data_search'] = 'Customer Name'
             if data['form']['filter_selection'] == 'all_vall':
                 partner_ids = res_partner_obj.search(cr, uid, val_part, order='name ASC')
-            if data['form']['filter_selection'] == 'name':
+            if data['form']['filter_selection'] == 'def':
                 data_found = False
                 if partner_default_from and res_partner_obj.browse(cr, uid, partner_default_from) and res_partner_obj.browse(cr, uid, partner_default_from).name:
                     partner_default_from_str = res_partner_obj.browse(cr, uid, partner_default_from).name
