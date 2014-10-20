@@ -658,7 +658,6 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
         })
 
     def get_cust_po(self, invoice_id):
-        print invoice_id
         cust_po_no = False
         invoice_qry = ''
         if invoice_id:
