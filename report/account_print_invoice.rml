@@ -140,7 +140,7 @@
 							<para style="terp_default_9"><font>Tél. : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.phone) or removeParentNode('para') ]]</font></para>
 							<para style="terp_default_9"><font>Fax : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.fax) or removeParentNode('para') ]]</font></para>
 							<para style="terp_default_9"><font>Attn : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.name) or removeParentNode('para') ]]</font></para>
-							<para style="terp_default_9"><font>Email : [[ (o.picking_id and o.picking_id.partner_shipping_id o.picking_id.partner_shipping_id.email) or removeParentNode('para') ]]</font></para>
+							<para style="terp_default_9"><font>Email : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.email) or removeParentNode('para') ]]</font></para>
 						</td>
 					</tr>
 					</blockTable>
@@ -239,7 +239,7 @@
             <para style="terp_default_9">[[ l.name ]]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9"></para>
+            <para style="terp_default_Centre_9">[[ get_cust_po(l.id) ]]</para>
           </td>
           <td>
             <para style="terp_default_Right_9">[[ formatLang(l.quantity)]] [[ (l.uos_id and l.uos_id.name) or '' ]]</para>

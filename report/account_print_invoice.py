@@ -654,7 +654,32 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
         super(maxmega_tax_invoice, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
             'time': time,
+            'get_cust_po': self.get_cust_po,
         })
+
+    def get_cust_po(self, invoice_id):
+        print invoice_id
+        cust_po_no = False
+        invoice_qry = ''
+        if invoice_id:
+            invoice_qry = "AND ail.id = %s "%invoice_id
+        else:
+            invoice_qry = "AND ail.id IN (0) "
+        self.cr.execute("select so.client_order_ref from account_invoice_line ail " \
+                        "inner join stock_move sm on ail.stock_move_id = sm.id " \
+                        "inner join sale_order_line sol on sm.sale_line_id = sol.id " \
+                        "inner join sale_order so on so.id = sol.order_id " \
+                        + invoice_qry)
+
+        qry = self.cr.dictfetchall()
+        if qry:
+            for s in qry:
+                if cust_po_no == False:
+                    cust_po_no = str(s['client_order_ref'])
+                else:
+                    cust_po_no += ', %s'%s['client_order_ref']
+        return cust_po_no
+
 report_sxw.report_sxw(
     'report.max.maxmega.invoice2',
     'account.invoice',
