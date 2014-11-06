@@ -136,7 +136,7 @@
 						<td>
 							<para style="terp_default_Bold_9"><font>SHIP TO :</font></para>
 							<para style="terp_default_9"><font>[[ (o.picking_id and o.picking_id.partner_id and o.picking_id.partner_id.title and o.picking_id.partner_id.title.name) or ' ' ]] [[ (o.picking_id and o.picking_id.partner_id and o.picking_id.partner_id.name) or ' ']]</font></para>
-							<para style="terp_default_9"><font>[[ (o.picking_id and o.picking_id.partner_shipping_id and display_address(o.picking_id.partner_shipping_id)) or ' ']]</font></para>
+							<para style="terp_default_9"><font>[[ (o.picking_id and display_address(o.picking_id)) or ' ']]</font></para>
 							<para style="terp_default_9"><font>Tél. : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.phone) or removeParentNode('para') ]]</font></para>
 							<para style="terp_default_9"><font>Fax : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.fax) or removeParentNode('para') ]]</font></para>
 							<para style="terp_default_9"><font>Attn : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.name) or removeParentNode('para') ]]</font></para>
@@ -234,7 +234,6 @@
            <td>
             <para style="terp_default_9"><seq/></para>
           </td>
-          
           <td>
             <para style="terp_default_9">[[ l.name ]]</para>
           </td>
