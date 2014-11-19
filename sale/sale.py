@@ -493,6 +493,8 @@ class sale_order_line(osv.osv):
         'customer_rescheduled_date': fields.date('Customer Rescheduled Date (CRD) (*)', required=True, select=True),
         'save_done': fields.boolean('Save Done', invisible=True),
         'reschedule_ids': fields.one2many('change.cod', 'sale_order_line_id', 'Reschedule History', readonly=True,),
+        #RT 20141021
+        'confirmation_date': fields.date('Confirmation Date (ETD)'),
     }
 
 sale_order_line()

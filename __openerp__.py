@@ -38,6 +38,7 @@ add price methodology at product master.
         'purchase/wizard/change_etd_view.xml',
         'purchase/inh_purchase_view.xml',
         'sale/wizard/change_cod_view.xml',
+        'sale/wizard/change_confirm_view.xml',
         'sale/inh_sale_view.xml',
         'security/ir.model.access.csv',
     ],

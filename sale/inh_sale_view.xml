@@ -65,6 +65,11 @@
 						<newline/>
 						<field name="effective_date"/>
 						<newline/>
+						<field name="confirmation_date"
+						attrs="{'readonly': [('save_done','=',True)]}"
+						on_change="confirm_date_onchange(confirmation_date)"/>
+						<button name="%(act_change_conf_date)d" string="Change Confirmation Date" type="action" icon="gtk-go-forward"/>
+						<newline/>
 						<field name="customer_original_date"
 						attrs="{'readonly': [('save_done','=',True)]}"
 						on_change="cod_onchange(customer_original_date)"/>
