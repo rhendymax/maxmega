@@ -36,7 +36,10 @@
         'purchase_report.xml',
         'stock_report.xml',
         'sale_report.xml',
+#        'sale_order_confirmation.xml',
         'account/inh_invoice_view.xml',
+        'sale/inh_sale_order_view.xml',
+
     ],
 
     'demo_xml': [],

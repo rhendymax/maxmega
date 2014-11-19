@@ -4,5 +4,16 @@
         <report auto="False" id="sale.report_sale_order" model="sale.order"
                 name="max.sale.order"
                 usage="default" string="Quotation / Order" header="False"/>
+
+        <report
+            auto="False"
+            id="max_maxmega_sale_order2"
+            model="sale.order"
+            name="max.maxmega.sale.order2"
+            rml="max_report_addons/report/sale_order_confirmation.rml"
+            string="Sale Order"
+            usage="default"
+            multi="True"
+            header="True"/>
     </data>
 </openerp>

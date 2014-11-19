@@ -655,6 +655,7 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'get_cust_po': self.get_cust_po,
+            'get_exrate_sgd': self.get_exrate_sgd,
         })
 
     def get_cust_po(self, invoice_id):
@@ -679,8 +680,28 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
                     cust_po_no += ', %s'%s['client_order_ref']
         return cust_po_no
 
+    def get_exrate_sgd(self, invoice):
+        rate = 0.00
+#        date_qry = ''
+#        if invoice:
+#            if invoice.currency_id and invoice.currency_id.name == 'SGD':
+#                if invoice.invoice_date:
+#                    date_qry = "AND name <= '" + invoice_date + "'"
+#                else:
+#                    date_qry = ""
+#            else:
+#                
+#
+#        self.cr.execute("select rate from res_currency_rate where currency_id = 38 " \
+#                        + date_qry + " order by name desc limit 1 ")
+#        qry = self.cr.dictfetchall()
+#        if qry:
+#            for s in qry:
+#                rate = str(s['rate'])
+        return rate
+
 report_sxw.report_sxw(
     'report.max.maxmega.invoice2',
     'account.invoice',
     'addons/maxmega_report_addons/report/account_print_invoice.rml',
-    parser=maxmega_tax_invoice, header=True)
+    parser=maxmega_tax_invoice, header=False)
