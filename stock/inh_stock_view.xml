@@ -309,6 +309,7 @@
 					<field name="partner_shipping_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
 					<field name="partner_invoice_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
 					<field name="pricelist_id" colspan="4"/>
+					
 				</field>
 
 				<field name="invoice_state" position="after">

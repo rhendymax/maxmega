@@ -30,7 +30,7 @@ class res_partner(osv.osv):
     _description = "Partner"
 
     _columns = {
-        'ref': fields.char('Code', size=64, select=1),
+        'ref': fields.char('Code', size=64, select=1, required=True),
         'sundry': fields.boolean('Sundry', help="Check this box to set this partner as Sundry."),
         'contact_person_ids': fields.one2many('contact.person', 'partner_id', 'Contact Person'),
         'sale_term_id': fields.many2one('sale.payment.term','Sale Payment Term'),
@@ -153,7 +153,41 @@ class res_partner(osv.osv):
         result = self.name_get(cr, user, ids, context=context)
         return result
 
+    def _check_name(self, cursor, user, ids, context=None):
+        for partner in self.browse(cursor, user, ids, context=context):
+            if self.search(cursor, user, [('name', '=', partner.name),('ref', '=', partner.ref),('id', '!=', partner.id)]):
+                return False
+        return True
+
+    _constraints = [
+        (_check_name, 'Error: Partner Name and Ref must be unique per Partner!', ['name']),
+    ]
+
     def create(self, cr, user, vals, context=None):
+        #RT
+        name = ('name' in vals and vals['name']) or False
+        ref = ('ref' in vals and vals['ref']) or False
+        if name:
+            vals.update({'name': name.strip()})
+        if ref:
+            vals.update({'ref': ref.strip()})
+        
+        customer = ('customer' in  vals and vals['customer']) or False
+        supplier = ('supplier' in  vals and vals['supplier']) or False
+        sundry = ('sundry' in  vals and vals['sundry']) or False
+        if (not customer) and (not supplier) and (not sundry): 
+            raise osv.except_osv(_('Error!'), _('You Need Tick At least Customer Or Supplier!'))
+        if customer:
+            if supplier or sundry:
+                raise osv.except_osv(_('Error!'), _('You Can Only Tick Customer Or Supplier Only!'))
+        if supplier:
+            if customer:
+                raise osv.except_osv(_('Error!'), _('You Can Only Tick Customer Or Supplier Only!'))
+        if sundry:
+            if not supplier:
+                raise osv.except_osv(_('Sundry!'), _('You Need Tick Supplier When Choosing Sundry !'))
+        #END RT
+        
         if 'customer' in vals:
             if vals['customer']:
                 sales_zone_id = ('sales_zone_id' in vals and vals['sales_zone_id']) or False
@@ -164,8 +198,40 @@ class res_partner(osv.osv):
 
     def write(self, cr, uid, ids, vals, context=None):
         po_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
-        customer = ('customer' in vals and vals['customer']) or (self.pool.get('res.partner').browse(cr, uid, po_id, context=None).customer) or False
+        customer = ('customer' in vals and vals['customer']) or False
+        if not 'customer' in vals:
+            customer = (self.pool.get('res.partner').browse(cr, uid, po_id, context=None).customer)
+
         sales_zone_id = ('sales_zone_id' in vals and vals['sales_zone_id']) or (self.pool.get('res.partner').browse(cr, uid, po_id, context=None).sales_zone_id and self.pool.get('res.partner').browse(cr, uid, po_id, context=None).sales_zone_id.id) or False
+        #RT
+        name = ('name' in vals and vals['name']) or False
+        ref = ('ref' in vals and vals['ref']) or False
+        if name:
+            vals.update({'name': name.strip()})
+        if ref:
+            vals.update({'ref': ref.strip()})
+
+        supplier = ('supplier' in vals and vals['supplier']) or False
+        if not 'supplier' in vals:
+            supplier = (self.pool.get('res.partner').browse(cr, uid, po_id, context=None).supplier)
+
+        sundry = ('sundry' in vals and vals['sundry']) or False
+        if not 'sundry' in vals:
+            sundry = (self.pool.get('res.partner').browse(cr, uid, po_id, context=None).sundry)
+
+        if (not customer) and (not supplier) and (not sundry): 
+            raise osv.except_osv(_('Error!'), _('You Need Tick At least Customer Or Supplier!'))
+        if customer:
+            if supplier or sundry:
+                raise osv.except_osv(_('Error!'), _('You Can Only Tick Customer Or Supplier Only!'))
+        if supplier:
+            if customer:
+                raise osv.except_osv(_('Error!'), _('You Can Only Tick Customer Or Supplier Only!'))
+        if sundry:
+            if not supplier:
+                raise osv.except_osv(_('Sundry!'), _('You Need Tick Supplier When Choosing Sundry !'))
+        #end RT
+
         if customer:
             if not sales_zone_id:
                 raise osv.except_osv(_('No Sales Zone!'), _('You have to select a Sales Zone in the customer form !'))

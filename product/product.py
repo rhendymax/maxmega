@@ -67,6 +67,57 @@ class product_product(osv.osv):
     _description = "Product"
     _order = 'brand_id,name_template'
 
+#RT
+    def create(self, cr, user, vals, context=None):
+        #RT
+        name = ('name' in vals and vals['name']) or False
+        default_code = ('default_code' in vals and vals['default_code']) or False
+        
+        if ' ' in name:
+            raise osv.except_osv(_('Error!'), _("No Space Allowed at Supplier Part No!"))
+        if ' ' in default_code:
+            raise osv.except_osv(_('Error!'), _("No Space Allowed at Internal Part No!"))
+        
+        last_char_name = name[-1]
+        last_char_code = default_code[-1]
+        if not last_char_name.isalnum():
+            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Supplier Part No!"))
+        if not last_char_code.isalnum():
+            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
+
+        vals.update({'name':name.upper()})
+        vals.update({'default_code':default_code.upper()})
+
+        return super(product_product, self).create(cr, user, vals, context=context)
+#END RT
+
+    def write(self, cr, uid, ids, vals, context=None):
+        product_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
+        name = ('name' in vals and vals['name']) or False
+        default_code = ('default_code' in vals and vals['default_code']) or False
+        if not 'name' in vals:
+            name = (self.pool.get('product.product').browse(cr, uid, product_id, context=None).name)
+        if not 'default_code' in vals:
+            default_code = (self.pool.get('product.product').browse(cr, uid, product_id, context=None).default_code)
+        #RT
+        if ' ' in name:
+            raise osv.except_osv(_('Error!'), _("No Space Allowed at Supplier Part No!"))
+        if ' ' in default_code:
+            raise osv.except_osv(_('Error!'), _("No Space Allowed at Internal Part No!"))
+        
+        last_char_name = name[-1]
+        last_char_code = default_code[-1]
+        if not last_char_name.isalnum():
+            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Supplier Part No!"))
+        if not last_char_code.isalnum():
+            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
+        vals.update({'name':name.upper()})
+        vals.update({'default_code':default_code.upper()})
+        #end RT
+
+        return super(product_product, self).write(cr, uid, ids, vals, context=context)
+
+
     def name_get(self, cr, user, ids, context=None):
         if context is None:
             context = {}
@@ -1250,7 +1301,7 @@ class product_product(osv.osv):
         'brand_name': fields.related('brand_id','name', type='char', readonly=True, size=64, relation='product.brand', string='Brand Name'),
         'max_categ_id': fields.many2one('product.categ.max','Product Category', required=True),
     }
-  
+
     _defaults = {
         'type': lambda *a: 'product',
         'procure_method': lambda *a: 'make_to_order',
@@ -1283,6 +1334,25 @@ class product_brand(osv.osv):
     _name = "product.brand"
     _description = "Product Brand"
 
+    def create(self, cr, user, vals, context=None):
+        #RT
+        name = ('name' in vals and vals['name']) or False
+        
+
+        vals.update({'name':name.strip().upper()})
+
+        return super(product_brand, self).create(cr, user, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        brand_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
+        name = ('name' in vals and vals['name']) or False
+        if not 'name' in vals:
+            name = (self.pool.get('product.brand').browse(cr, uid, brand_id, context=None).name)
+        vals.update({'name':name.strip().upper()})
+        #end RT
+
+        return super(product_brand, self).write(cr, uid, ids, vals, context=context)
+
     _columns = {
         'name': fields.char('Name', size=64, required=True),
         'description': fields.text('Description'),
@@ -1298,6 +1368,28 @@ class product_categ_max(osv.osv):
     _name = "product.categ.max"
     _description = "Product Category Max"
 
+#RT
+    def create(self, cr, user, vals, context=None):
+        #RT
+        name = ('name' in vals and vals['name']) or False
+        
+
+        vals.update({'name':name.strip().upper()})
+
+        return super(product_categ_max, self).create(cr, user, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        product_categ_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
+        name = ('name' in vals and vals['name']) or False
+        if not 'name' in vals:
+            name = (self.pool.get('product.categ.max').browse(cr, uid, product_categ_id, context=None).name)
+        vals.update({'name':name.strip().upper()})
+        #end RT
+
+        return super(product_categ_max, self).write(cr, uid, ids, vals, context=context)
+
+#END RT
+
     _columns = {
         'name': fields.char('Name', size=64, required=True),
         'description': fields.text('Description'),
@@ -1309,3 +1401,4 @@ class product_categ_max(osv.osv):
 
 product_categ_max()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
