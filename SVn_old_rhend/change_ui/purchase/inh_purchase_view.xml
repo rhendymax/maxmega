@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="purchase_order_form_max" model="ir.ui.view">
+			<field name="name">purchase.order.form.max</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form"/>
+			<field name="arch" type="xml">
+				<field name="invoiced" position="replace">
+					<field name="invoiced" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<button name="button_dummy" position="replace">
+					<button name="button_dummy" states="draft" string="Compute" type="object" icon="gtk-execute" groups="so_workflowchange.group_non_user"/>
+				</button>
+				<xpath expr="/form/notebook/page[@string='Delivery &amp; Invoicing']/group[@colspan='2']" position="replace">
+					<group colspan="2" col="2" groups="so_workflowchange.group_non_user">
+						<separator string="Delivery" colspan="2"/>
+						<field name="dest_address_id" on_change="onchange_dest_address_id(dest_address_id)"/>
+						<field name="minimum_planned_date"/>
+						<field name="location_id"/>
+					</group>
+				</xpath>
+				<separator string="Invoices" position="replace">
+					<separator string="Invoices" colspan="4" groups="so_workflowchange.group_non_user"/>
+				</separator>
+				<separator string="Purchase Control" position="replace">
+					<separator string="Dates" colspan="4"/>
+				</separator>
+				<field name="invoice_ids" position="replace">
+					<field name="invoice_ids" groups="so_workflowchange.group_non_user" nolabel="1" colspan="4" context="{'type':'in_invoice', 'journal_type':'purchase'}"/>
+				</field>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='date_planned']" position="replace">
+					<field name="date_planned" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="replace">
+					<field name="name" groups="so_workflowchange.group_non_user"/>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="purchase_order_line_max" model="ir.ui.view">
+			<field name="name">purchase.order.line.max</field>
+			<field name="model">purchase.order.line</field>
+			<field name="inherit_id" ref="purchase.purchase_order_line_form"/>
+			<field name="arch" type="xml">
+				<page string="Invoicing" position="replace">
+					<page string="Invoicing" groups="so_workflowchange.group_non_user">
+						<separator colspan="4" string="Manual Invoices"/>
+						<field name="invoiced"/>
+						<newline/>
+						<field colspan="4" name="invoice_lines" nolabel="1" widget="many2many"/>
+					</page>
+				</page>
+				<page string="Notes" position="replace">
+					<page string="Notes" groups="so_workflowchange.group_non_user">
+					</page>
+				</page>
+			</field>
+		</record>
+
+		<record id="purchase_order_tree_max" model="ir.ui.view">
+			<field name="name">purchase.order.tree.max</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_tree"/>
+			<field name="arch" type="xml">
+				<field name="minimum_planned_date" position="replace">
+					<field name="minimum_planned_date" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<!--field name="amount_untaxed" position="replace"/>
+				<field name="amount_total" position="replace">
+					<field name="amount_untaxed" sum="Total Untaxed amount" groups="so_workflowchange.group_non_user"/>
+					<field name="amount_total" sum="Total amount" groups="so_workflowchange.group_non_user"/>
+				</field-->
+				<field name="invoiced_rate" position="replace">
+					<field name="invoiced_rate" widget="progressbar" groups="so_workflowchange.group_non_user"/>
+					<field name="pricelist_id"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="purchase_quotation_search_max" model="ir.ui.view">
+			<field name="name">purchase.quotation.search.max</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.view_request_for_quotation_filter"/>
+			<field name="arch" type="xml">
+				<filter name="exception" position="replace">
+					<filter icon="terp-emblem-important" name="exception" string="Exception" domain="[('state','in',('except_invoice','except_picking'))]"  help="Purchase order which are in the exception state" groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<filter name="not_invoiced" position="replace">
+					<filter icon="terp-gtk-go-back-rtl" name="not_invoiced" string="Not invoiced" domain="[('invoice_ids','=', False)]"  help="Purchase orders that include lines not invoiced." groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<field name="create_uid" position="replace">
+					<field name="create_uid" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<filter string="Origin" position="replace">
+					<filter string="Origin" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'origin'}" groups="so_workflowchange.group_non_user"/>
+					<separator orientation="vertical"/>
+				</filter>
+				<filter string="Expected Date" position="replace">
+					<separator orientation="vertical"/>
+					<filter string="Expected Date" icon="terp-go-month" domain="[]" context="{'group_by':'minimum_planned_date'}" groups="so_workflowchange.group_non_user"/>
+				</filter>
+			</field>
+		</record>
+
+		<record id="purchase_order_search_max" model="ir.ui.view">
+			<field name="name">purchase.order.search.max</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+			<field name="arch" type="xml">
+				<filter name="to_approve" position="replace">
+					<filter icon="terp-gtk-jump-to-ltr" name="to_approve" string="To Approve" domain="[('state','in',('draft','wait','confirmed'))]" help="Purchase orders which are not approved yet." groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<filter string="Done" position="replace">
+					<separator orientation="vertical"/>
+					<filter icon="terp-accessories-archiver+" string="Done" domain="[('state','=','done')]" help="Purchase orders which are in done state." groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<filter name="exception" position="replace">
+					<filter icon="terp-emblem-important" name="exception" string="Exception" domain="[('state','in',('except_invoice','except_picking'))]" help="Purchase orders which are in exception state" groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<filter name="not_invoiced" position="replace">
+					<filter icon="terp-gtk-go-back-rtl" name="not_invoiced" string="Not invoiced" domain="[('invoice_ids','=', False)]"  help="Purchase orders that include lines not invoiced." groups="so_workflowchange.group_non_user"/>
+				</filter>
+				<field name="create_uid" position="replace">
+					<field name="create_uid" groups="so_workflowchange.group_non_user"/>
+				</field>
+				<filter string="Origin" position="replace">
+					<filter string="Origin" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'origin'}" groups="so_workflowchange.group_non_user"/>
+					<separator orientation="vertical"/>
+				</filter>
+				<filter string="Expected Date" position="replace">
+					<separator orientation="vertical"/>
+					<filter string="Expected Date" icon="terp-go-month" domain="[]" context="{'group_by':'minimum_planned_date'}" groups="so_workflowchange.group_non_user"/>
+				</filter>
+			</field>
+		</record>
+
+		<menuitem name="Products by Category" id="purchase.menu_product_by_category_purchase_form" action="product.product_category_action" groups="so_workflowchange.group_non_user"
+			parent="purchase.menu_procurement_management_product" sequence="10"/>
+
+		<record model='ir.actions.act_window' id='purchase.action_view_purchase_order_group'>
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="purchase.menu_procurement_management_inventory" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="purchase.menu_procurement_management_invoice" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+
+		<record id="base.next_id_73" model="ir.ui.menu">
+			<field name="groups_id" eval="[(6,0,[ref('so_workflowchange.group_non_user')])]"/>
+		</record>
+	</data>
+</openerp>
