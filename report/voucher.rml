@@ -130,7 +130,7 @@
     <blockTable style="TableHeader3" colWidths="100,228,100,100">
       <tr>
         <td><para style="std9">INV. VHC NO.</para></td>
-        <td><para style="std9">DOCUMENT NO./DESCRIPTION</para></td>
+        <td><para style="std9">DESCRIPTION</para></td>
         <td><para style="std9_right">PAID ([[ to_upper(o.journal_id.currency and o.journal_id.currency.name or company.currency_id.name) ]])</para></td>
         <td><para style="std9_right">PAID ([[ to_upper(company.currency_id.name) ]])</para></td>
       </tr>
@@ -140,8 +140,8 @@
     <blockTable style="TableHeader4" colWidths="100,228,100,100">
       <tr>
         <td><para style="std9">[[ to_upper(line.name) ]]</para></td>
-        <!--td><para style="std9">[[ to_upper(split_word(line.move_line_id.invoice.number)) ]]</para></td-->
-        <td><para style="std8"><font color="white"> </font></para></td>
+        <td><para style="std9">[[ to_upper(split_word(line.move_line_id.invoice.invoice_no)) ]]</para></td>
+        <!--td><para style="std8"><font color="white"> </font></para></td-->
         <!--td><para style="std9">[[ to_upper(line.name) ]]</para></td-->
         <td><para style="std9_right">[[ formatLang(get_line_amount(o.type, line.type, line.amount) or 0, digits=2) ]]</para></td>
         <td><para style="std9_right">[[ formatLang(get_line_amount(o.type, line.type, line.amount_home) or 0, digits=2) ]]</para></td>
