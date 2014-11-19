@@ -18,11 +18,11 @@
       <lineStyle kind="LINEBELOW" colorName="#000000"/>
     </blockTableStyle>
     <blockTableStyle id="TableMiddle">
-      <blockAlignment value="LEFT"/>
-      <blockValign value="TOP"/>
-      <lineStyle kind="LINEBELOW" colorName="#000000"/>
-      <lineStyle kind="LINEABOVE" colorName="#000000"/>
-    </blockTableStyle>
+		    <blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="10,0"/>
+    	</blockTableStyle>
     <blockTableStyle id="TableEnd">
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
@@ -72,15 +72,28 @@
 			</tr>
 		</blockTable>
 		
-		<blockTable colWidths="80.0,80.0,80.0,360.0,80.0,80.0,40.0" style="TableMiddle">
+		<blockTable colWidths="80.0,80.0,80.0,280.0,60.0,60.0,60.0,60.0,40.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_Bold_8">Trans Date</para></td>
 				<td><para style="terp_default_Bold_8">Vch. No.</para></td>
 				<td><para style="terp_default_Bold_8">Reference No</para></td>
 				<td><para style="terp_default_Bold_8">Line Item Description</para></td>
-				<td><para style="terp_default_Right_Bold_8">Trans. Debit</para></td>
-				<td><para style="terp_default_Right_Bold_8">Trans Credit</para></td>
-				<td><para style="terp_default_Bold_8"></para></td>
+				<td><para style="terp_default_Right_Bold_8">Amount</para></td>
+				<td><para style="terp_default_Right_Bold_8">Currency</para></td>
+				<td><para style="terp_default_Right_Bold_8">Debit</para></td>
+				<td><para style="terp_default_Right_Bold_8">Credit</para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Right_Bold_8">Currency</para></td>
+				<td><para style="terp_default_Right_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Right_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Right_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
 			</tr>
 		</blockTable>
 		<section>
@@ -105,12 +118,14 @@
 				</blockTable>
 				<section>
 					<para style="terp_default_7"><font>[[repeatIn(per['val_ids2'], 'inv') ]]</font></para>
-					<blockTable colWidths="80.0,80.0,80.0,360.0,80.0,80.0,40.0">
+					<blockTable colWidths="80.0,80.0,80.0,280.0,60.0,60.0,60.0,60.0,40.0">
 						<tr>
 							<td><para style="terp_default_7"><font>[[ formatLang(inv['aml_date'] or '',date=True) ]]</font></para></td>
 							<td><para style="terp_default_7"><font>[[ inv['am_name'] ]]</font></para></td>
 							<td><para style="terp_default_7"><font>[[ inv['aml_ref'] ]]</font></para></td>
 							<td><para style="terp_default_7"><font>[[ inv['aml_name'] ]]</font></para></td>
+							<td><para style="terp_default_7"><font>[[ inv['aml_amount'] ]]</font></para></td>
+							<td><para style="terp_default_7"><font>[[ inv['aml_currency'] ]]</font></para></td>
 							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_debit'] or 0, digits=2) ]]</font></para></td>
 							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_credit'] or 0, digits=2) ]]</font></para></td>
 							<td><para style="terp_default_Right_7"></para></td>

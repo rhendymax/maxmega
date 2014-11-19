@@ -53,7 +53,7 @@ class general_ledger_report(report_sxw.rml_parse):
         self.fiscal_year_name = fiscal_year_name
         qry_acc = ''
         val_acc = []
-        qry_acc = 'type <> view'
+        qry_acc = "type <> 'view'"
         val_acc.append(('type','!=','view'))
         partner_ids = False
         account_ids = False
@@ -405,6 +405,11 @@ class general_ledger_report(report_sxw.rml_parse):
                         cr.execute("select av.cheque_no as cheque_no, rp.name as part_name, aj.type as jour_type, aj.name as jour_name, ap.id as period_id, aml.date as aml_date, " \
                             "aml.ref as aml_ref, " \
                             "aml.name as aml_name, " \
+                            "aml.amount_currency, " \
+                            "rc.currency_id as rc_currency_id, " \
+                            "aml.currency_id as aml_currency_id, " \
+                            "rcurr.name as aml_cur_name, " \
+                            "rcur.name as rc_cur_name, " \
                             "aml.debit as aml_debit, " \
                             "aml.credit as aml_credit, " \
                             "am.name as am_name " \
@@ -416,6 +421,9 @@ class general_ledger_report(report_sxw.rml_parse):
                             "left join account_period ap on aml.period_id = ap.id "\
                             "left join account_fiscalyear af on ap.fiscalyear_id = af.id "\
                             "left join account_journal aj on aml.journal_id = aj.id "\
+                            "left join res_company rc on aml.company_id = rc.id " \
+                            "left join res_currency rcurr on aml.currency_id = rcurr.id " \
+                            "left join res_currency rcur on rc.currency_id = rcur.id " \
                             "where " \
                             "am.state in ('draft', 'posted') " \
                             "and ap.id = " + str(u['id']) + " "\
@@ -425,11 +433,26 @@ class general_ledger_report(report_sxw.rml_parse):
                         qry5 = cr.dictfetchall()
                         
                         if qry5:
+                            home_currency = ''
+                            amount_currency = 0.00
                             for v in qry5:
                                 balance += (v['aml_debit'] - v['aml_credit'])
 #                                 closing += (v['home_amt'] * sign)
 #                                 closing_inv += (v['inv_amt'] * sign)
-
+                                
+                                #RT
+                                if v['aml_currency_id']:
+                                    if v['aml_currency_id'] <> v['rc_currency_id']:
+                                        amount_currency = v['amount_currency']
+                                        home_currency = v['aml_cur_name']
+                                    else:
+                                        amount_currency = v['aml_debit'] - v['aml_credit']
+                                        home_currency = v['rc_cur_name']
+                                else:
+                                    amount_currency = v['aml_debit'] - v['aml_credit']
+                                    home_currency = v['rc_cur_name']
+                                #
+                                
                                 if u['period_startdate'] < min_period.date_start:
                                     continue
 # 
@@ -448,6 +471,8 @@ class general_ledger_report(report_sxw.rml_parse):
                                         'am_name' : v['am_name'],
                                         'aml_ref' : v['aml_ref'],
                                         'aml_name' : part_name + jour_name + cheque_no + name,
+                                        'aml_amount': amount_currency,
+                                        'aml_currency': home_currency,
                                         'aml_debit' : v['aml_debit'],
                                         'aml_credit' : v['aml_credit'],
                                         })

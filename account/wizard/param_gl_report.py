@@ -337,7 +337,7 @@ class param_gl_report(osv.osv_memory):
         header += ('date_search' in form and (form['date_search'] == 'date' and 'Date : ' + str(form['date_showing']) + " \n") or \
                    (form['date_search'] == 'period' and 'Period : ' + str(form['date_showing']) + " \n")) or ''
 
-        header += 'Trans Date;Vch. No.;Reference No;Line Item Description;Trans. Debit;Trans Credit' + " \n"
+        header += 'Trans Date;Vch. No.;Reference No;Line Item Description;Amount Currency;CurrencyDebit;Credit' + " \n"
         
         min_period = False
         if period_ids:
@@ -448,6 +448,11 @@ class param_gl_report(osv.osv_memory):
                         cr.execute("select av.cheque_no as cheque_no, rp.name as part_name, aj.type as jour_type, aj.name as jour_name, ap.id as period_id, aml.date as aml_date, " \
                             "aml.ref as aml_ref, " \
                             "aml.name as aml_name, " \
+                            "aml.amount_currency, " \
+                            "rc.currency_id as rc_currency_id, " \
+                            "aml.currency_id as aml_currency_id, " \
+                            "rcurr.name as aml_cur_name, " \
+                            "rcur.name as rc_cur_name, " \
                             "aml.debit as aml_debit, " \
                             "aml.credit as aml_credit, " \
                             "am.name as am_name " \
@@ -459,12 +464,16 @@ class param_gl_report(osv.osv_memory):
                             "left join account_period ap on aml.period_id = ap.id "\
                             "left join account_fiscalyear af on ap.fiscalyear_id = af.id "\
                             "left join account_journal aj on aml.journal_id = aj.id "\
+                            "left join res_company rc on aml.company_id = rc.id " \
+                            "left join res_currency rcurr on aml.currency_id = rcurr.id " \
+                            "left join res_currency rcur on rc.currency_id = rcur.id " \
                             "where " \
                             "am.state in ('draft', 'posted') " \
                             "and ap.id = " + str(u['id']) + " "\
                             + date_to_qry2 + \
                             "and aml.account_id = " + str(s['id']) + " "\
                             "order by aa.code, af.name, ap.date_start, aml.date")
+                        
                         qry5 = cr.dictfetchall()
                         val_ids2 = []
                         if qry5:
@@ -475,6 +484,19 @@ class param_gl_report(osv.osv_memory):
 
 #                                 closing += (v['home_amt'] * sign)
 #                                 closing_inv += (v['inv_amt'] * sign)
+
+                                #RT
+                                if v['aml_currency_id']:
+                                    if v['aml_currency_id'] <> v['rc_currency_id']:
+                                        amount_currency = v['amount_currency']
+                                        home_currency = v['aml_cur_name']
+                                    else:
+                                        amount_currency = v['aml_debit'] - v['aml_credit']
+                                        home_currency = v['rc_cur_name']
+                                else:
+                                    amount_currency = v['aml_debit'] - v['aml_credit']
+                                    home_currency = v['rc_cur_name']
+                                #
 
                                 if u['period_startdate'] < min_period.date_start:
                                     continue
@@ -494,6 +516,8 @@ class param_gl_report(osv.osv_memory):
                                         'am_name' : v['am_name'],
                                         'aml_ref' : part_name + jour_name + cheque_no + ref,
                                         'aml_name' : v['aml_name'],
+                                        'aml_amount': amount_currency,
+                                        'aml_currency': home_currency,
                                         'aml_debit' : v['aml_debit'],
                                         'aml_credit' : v['aml_credit'],
                                         })
@@ -525,17 +549,17 @@ class param_gl_report(osv.osv_memory):
             header += '[' + str(rs1['acc_code']) + '] ' + str(rs1['acc_name']) + ' \n'
             total_home_amt = 0
             for rs2 in rs1['val_ids']:
-                header += str(rs2['fiscalyear_name']) + ';' + str(rs2['period_code']) + ';;' + 'Opening Balance' + ';;;' \
+                header += str(rs2['fiscalyear_name']) + ';' + str(rs2['period_code']) + ';;' + 'Opening Balance' + ';;;;;' \
                         + str(rs2['opening_balance']) + ' \n'
                 ttl_debit = ttl_credit = 0
                 for rs3 in rs2['val_ids2']:
                     ttl_debit += float_round(rs3['aml_debit'],2)
                     ttl_credit += float_round(rs3['aml_credit'],2)
                     header += str(rs3['aml_date']) + ';' + str(rs3['am_name']) + ';' + str(rs3['aml_ref']) + ';' \
-                        + str(rs3['aml_name']) + ';' + str(rs3['aml_debit']) + ';' + str(rs3['aml_credit']) + ' \n'
+                        + str(rs3['aml_name']) + ';' + str(rs3['aml_amount']) + ';' + str(rs3['aml_currency']) + ';' + str(rs3['aml_debit']) + ';' + str(rs3['aml_credit']) + ' \n'
                 debit_total += ttl_debit
                 credit_total += ttl_debit
-                header += 'Total For ' + str(rs1['acc_code']) + ';;;' + 'PERIOD CLOSING AS AT ' + str(rs2['period_end']) + ';' \
+                header += 'Total For ' + str(rs1['acc_code']) + ';;;;;' + 'PERIOD CLOSING AS AT ' + str(rs2['period_end']) + ';' \
                 + str(ttl_debit) + ';' + str(ttl_credit) + ' \n'
             grand_total += rs1['closing']
             closing = rs1['closing']
