@@ -354,7 +354,6 @@ class param_inventory_valuation_report_max(osv.osv_memory):
             + sl_qry + \
             pp_qry + \
             "%s order by sld.name, sld.id") %(date_to_qry,date_to_qry,date_to_qry,date_to_qry,date_to_qry,date_to_qry,date_to_qry,date_to_qry,date_to_qry, date_to_qry_real))
-
         incoming_list = cr.dictfetchall()
 
         cr.execute((

@@ -24,6 +24,7 @@ import time
 import pooler
 import base64
 from tools import float_round, float_is_zero, float_compare
+from tools.translate import _
 
 class param_inventory_valuation_report(osv.osv_memory):
     _name = 'param.inventory.valuation.report'

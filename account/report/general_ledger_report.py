@@ -412,7 +412,8 @@ class general_ledger_report(report_sxw.rml_parse):
                             "rcur.name as rc_cur_name, " \
                             "aml.debit as aml_debit, " \
                             "aml.credit as aml_credit, " \
-                            "am.name as am_name " \
+                            "am.name as am_name, " \
+                            "ai.invoice_no as supplier_invoice_no " \
                             "from account_move_line aml "\
                             "left join account_move am on aml.move_id = am.id "\
                             "left join account_account aa on aml.account_id = aa.id "\
@@ -424,6 +425,7 @@ class general_ledger_report(report_sxw.rml_parse):
                             "left join res_company rc on aml.company_id = rc.id " \
                             "left join res_currency rcurr on aml.currency_id = rcurr.id " \
                             "left join res_currency rcur on rc.currency_id = rcur.id " \
+                            "left join account_invoice ai on aml.move_id = ai.move_id "\
                             "where " \
                             "am.state in ('draft', 'posted') " \
                             "and ap.id = " + str(u['id']) + " "\
@@ -470,6 +472,7 @@ class general_ledger_report(report_sxw.rml_parse):
                                         'aml_date' : v['aml_date'],
                                         'am_name' : v['am_name'],
                                         'aml_ref' : v['aml_ref'],
+                                        'supplier_invoice_no' : v['supplier_invoice_no'],
                                         'aml_name' : part_name + jour_name + cheque_no + name,
                                         'aml_amount': amount_currency,
                                         'aml_currency': home_currency,

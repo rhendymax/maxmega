@@ -122,9 +122,10 @@
 						<tr>
 							<td><para style="terp_default_7"><font>[[ formatLang(inv['aml_date'] or '',date=True) ]]</font></para></td>
 							<td><para style="terp_default_7"><font>[[ inv['am_name'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ inv['aml_ref'] ]]</font></para></td>
+							<!-- td><para style="terp_default_7"><font>[[ inv['aml_ref'] ]]</font></para></td-->
+							<td><para style="terp_default_7"><font>[[ inv['supplier_invoice_no'] ]]</font></para></td>
 							<td><para style="terp_default_7"><font>[[ inv['aml_name'] ]]</font></para></td>
-							<td><para style="terp_default_7"><font>[[ inv['aml_amount'] ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_amount'] or 0, digits=2) ]]</font></para></td>
 							<td><para style="terp_default_7"><font>[[ inv['aml_currency'] ]]</font></para></td>
 							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_debit'] or 0, digits=2) ]]</font></para></td>
 							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_credit'] or 0, digits=2) ]]</font></para></td>
