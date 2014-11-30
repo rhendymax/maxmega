@@ -166,7 +166,7 @@
 						<tr><td><para style="terp_default_9"><font color="white"> </font></para></td></tr>
 						<tr>
 							<td>
-								<para style="terp_default_Bold_9"><font>SHIP TO :</font></para>
+								<para style="terp_default_Bold_9"><font>MAIL TO :</font></para>
 								<para style="terp_default_9"><font>[[ o.partner_id and o.partner_id.title and o.partner_id.title.name or '' ]] [[ o.partner_id and o.partner_id.name or '' ]]</font></para>
 								<para style="terp_default_9">[[ (o.picking_id and o.picking_id.partner_shipping_id and display_address(o.picking_id.partner_shipping_id)) or '' ]] </para>
 								<para style="terp_default_9">Tél. : [[ o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.phone) or removeParentNode('para') ]]</para>
@@ -208,7 +208,7 @@
 							<para style="terp_default_Bold_8">SALES PERSON</para>
 						</td>
 						<td>
-							<para style="terp_default_8_Left"><font> : </font></para>
+							<para style="terp_default_8_Left"><font> : [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</font></para>
 							<para style="terp_default_8_Left"><font> : [[ o.number or ' ' ]]</font></para>
 							<para style="terp_default_8_Left"><font> : [[ formatLang(o.date_invoice,date= True) or ' ' ]]</font></para>
 							<para style="terp_default_8_Left"><font> : [[ (o.picking_id and o.picking_id.name) or ' ' ]]</font></para>
@@ -279,13 +279,13 @@
 		<blockTable colWidths="110.0,20.0,120.0,20.0,110.0,20.0,120.0" style="Table_Account_Detail">
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">USD EXCHANGE RATE</para>
+				<para style="terp_default_Bold_8">[[ get_currency_name(o) ]] EXCHANGE RATE</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">@</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ get_exrate_sgd(o) or '']]</para>
+				<para style="terp_default_8">[[ get_currency_rate(o) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8"> </para>
@@ -302,13 +302,13 @@
 		</tr>
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">TOTAL IN SGD</para>
+				<para style="terp_default_Bold_8">TOTAL IN [[ get_currency_name(o) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ (o.amount_untaxed * get_exrate_sgd(o.date_invoice)) ]]</para>
+				<para style="terp_default_8">[[ formatLang(get_total(o,'1'), digits=2) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8"> </para>
@@ -325,16 +325,16 @@
 		</tr>
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">TAX SGD</para>
+				<para style="terp_default_Bold_8">TAX [[ get_currency_name(o) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_8">[[ (o.amount_tax * get_exrate_sgd(o.date_invoice)) ]]</para>
+				<para style="terp_default_8">[[ formatLang(get_total(o,'2'), digits=2) ]]</para>
 			</td>
 			<td>
-				<para style="terp_default_Bold_8"> </para>
+				<para style="terp_default_Bold_8"></para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">TAX</para>
@@ -348,13 +348,13 @@
 		</tr>
 		<tr>
 			<td>
-				<para style="terp_default_Bold_8">TOTAL AMOUNT USD</para>
+				<para style="terp_default_Bold_8">TOTAL AMOUNT [[ get_currency_name(o) ]]</para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_Bold_Right_9">[[ ((o.amount_untaxed + o.amount_tax) * get_exrate_sgd(o.date_invoice)) ]]</para>
+				<para style="terp_default_Bold_Right_9">[[ formatLang(get_total(o,'3'), digits=2) ]]</para>
 				<illustration width="150" height="8">
 				<lineMode width ="1.0"/>
 				<lines>-6 5 115 5</lines>
@@ -363,7 +363,7 @@
 				</illustration>
 			</td>
 			<td>
-				<para style="terp_default_Bold_8"> </para>
+				<para style="terp_default_Bold_8"></para>
 			</td>
 			<td>
 				<para style="terp_default_Bold_8">TOTAL AMOUNT [[o.currency_id.name]]</para>

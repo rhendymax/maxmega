@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
-        <report auto="False" id="stock.report_picking_list" model="stock.picking"
-        		name="max.stock.picking.list" string="Packing list" usage="default" header="False"/>
-        <report auto="False" id="report_picking_do" model="stock.picking"
-        		name="max.stock.picking.do" string="Delivery Order" usage="default" header="False"/>
+	<data>
+		<report auto="False" 
+				id="stock.report_picking_list" 
+				model="stock.picking"
+				name="max.stock.picking.list" 
+				rml="max_report_addons/report/picking.rml"
+				string="Packing list" 
+				usage="default"
+				header="False"/>
+
+		<report auto="False" 
+				id="stock.report_picking_do"
+				model="stock.picking"
+				name="max.stock.picking.do"
+				rml="max_report_addons/report/picking_do.rml"
+				string="Delivery Order"
+				usage="default"
+				header="False"/>
 
 		<record id="view_internal_picking_inherit_rp" model="ir.ui.view">
 			<field name="name">view.internal.picking.inherit.rp</field>
@@ -21,7 +34,4 @@
 			</field>
 		</record>
 	</data>
-
-
-
 </openerp>

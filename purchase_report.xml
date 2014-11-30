@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
-        <report auto="False" id="purchase.report_purchase_order" model="purchase.order"
-                name="max.purchase.order"
-                usage="default" string="Purchase Orderxxx" header="False"/>
-    </data>
+	<data>
+		<report auto="False" 
+			id="purchase.report_purchase_quotation" 
+			model="purchase.order"
+			name="purchase.quotation"
+			rml="purchase/report/request_quotation.rml"
+			string="Request for Quotation"
+			groups="so_workflowchange.group_non_user"
+			header="False"/>
+
+		<report auto="False" 
+			id="purchase.report_purchase_order" 
+			model="purchase.order"
+			name="purchase.order"
+			rml="purchase/report/order.rml"
+			string="Purchase Order"
+			groups="so_workflowchange.group_non_user"
+			header="False"/>
+
+		<report auto="False" 
+			id="max_report_purchase_order" 
+			model="purchase.order"
+			name="max.purchase.order"
+			rml="max_report_addons/report/order.rml"
+			usage="default"
+			string="Purchase Order / RFQ Order" 
+			header="False"/>
+	</data>
 </openerp>
