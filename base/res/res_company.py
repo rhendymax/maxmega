@@ -44,6 +44,8 @@ class company(osv.osv):
         'sinv_chrg_seq_id': fields.many2one('ir.sequence', 'Supplier Invoice(Charges) Sequence', help="This field contains the information related to the numbering of the supplier invoices(charges) entries."),
         'cinv_chrg_seq_id': fields.many2one('ir.sequence', 'Customer Invoice(Charges) Sequence', help="This field contains the information related to the numbering of the customer invoices(charges) entries."),
         'currency_tax_id': fields.many2one('res.currency', 'Currency for Tax Purpose', required=True),
+        'gst_reg_no': fields.char('GST Reg No', size=64, select=1, required=True),
+        
     }
     def btn_crt_si(self, cr, uid, ids, context=None):
         for o in self.browse(cr, uid, ids):

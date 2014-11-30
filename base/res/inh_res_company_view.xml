@@ -10,6 +10,9 @@
 				<field name="currency_id" position="before">
 					<field name="currency_tax_id" colspan="2"/>
 				</field>
+				<field name="company_registry" position="after">
+					<field name="gst_reg_no"/>
+				</field>
 				<field name="currency_id" position="after">
 					<field name="def_pur_journal_id" domain="[('type','=','purchase')]"/>
 					<field name="def_sal_journal_id" domain="[('type','=','sale')]"/>

@@ -72,6 +72,7 @@ class product_product(osv.osv):
         #RT
         name = ('name' in vals and vals['name']) or False
         default_code = ('default_code' in vals and vals['default_code']) or False
+        spq = ('spq' in vals and vals['spq']) or False
         
         if ' ' in name:
             raise osv.except_osv(_('Error!'), _("No Space Allowed at Supplier Part No!"))
@@ -88,6 +89,10 @@ class product_product(osv.osv):
         vals.update({'name':name.upper()})
         vals.update({'default_code':default_code.upper()})
 
+#         if ' ' in spq:
+#             raise osv.except_osv(_('Error!'), _("Standard Packaging Qty Can't Empty!"))
+        if spq < 1:
+            raise osv.except_osv(_('Error!'), _("Standard Packaging Qty Must More Than Zero!"))
         return super(product_product, self).create(cr, user, vals, context=context)
 #END RT
 
@@ -95,6 +100,7 @@ class product_product(osv.osv):
         product_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
         name = ('name' in vals and vals['name']) or False
         default_code = ('default_code' in vals and vals['default_code']) or False
+        spq = ('spq' in vals and vals['spq']) or False
         if not 'name' in vals:
             name = (self.pool.get('product.product').browse(cr, uid, product_id, context=None).name)
         if not 'default_code' in vals:
@@ -113,6 +119,9 @@ class product_product(osv.osv):
             raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
         vals.update({'name':name.upper()})
         vals.update({'default_code':default_code.upper()})
+
+        if spq < 1:
+            raise osv.except_osv(_('Error!'), _("Standard Packaging Qty Must More Than Zero!"))
         #end RT
 
         return super(product_product, self).write(cr, uid, ids, vals, context=context)

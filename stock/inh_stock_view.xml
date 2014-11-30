@@ -314,6 +314,7 @@
 
 				<field name="invoice_state" position="after">
 					<field name="invoiced"/>
+					<button name="%(act_change_shipping_address)d" string="Change Shipping Address" type="action" icon="gtk-go-forward" colspan="2"/>
 				</field>
 
 				<xpath expr="/form/notebook/page/field[@name='move_lines']/tree/field[@name='state']" position="after">

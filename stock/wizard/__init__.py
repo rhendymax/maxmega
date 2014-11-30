@@ -22,4 +22,5 @@
 import change_warehouse_qty
 import return_picking
 import change_reference
+import change_shipping_address
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -76,6 +76,7 @@
         'stock/wizard/change_reference_view.xml',
         'stock/wizard/return_picking_view.xml',
         'stock/wizard/change_warehouse_qty_view.xml',
+        'stock/wizard/change_shipping_address_view.xml',
         'stock/inh_internal_stock_view.xml',
         'stock/inh_stock_view.xml',
         'stock/int_type_view.xml',
