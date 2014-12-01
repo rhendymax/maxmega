@@ -100,7 +100,7 @@ class product_product(osv.osv):
         product_id = (type(ids).__name__ == 'list' and ids[0]) or ids or False
         name = ('name' in vals and vals['name']) or False
         default_code = ('default_code' in vals and vals['default_code']) or False
-        spq = ('spq' in vals and vals['spq']) or False
+
         if not 'name' in vals:
             name = (self.pool.get('product.product').browse(cr, uid, product_id, context=None).name)
         if not 'default_code' in vals:
@@ -120,6 +120,9 @@ class product_product(osv.osv):
         vals.update({'name':name.upper()})
         vals.update({'default_code':default_code.upper()})
 
+        spq = ('spq' in vals and vals['spq']) or False
+        if not 'spq' in vals:
+            spq = (self.pool.get('product.product').browse(cr, uid, product_id, context=None).spq)
         if spq < 1:
             raise osv.except_osv(_('Error!'), _("Standard Packaging Qty Must More Than Zero!"))
         #end RT
