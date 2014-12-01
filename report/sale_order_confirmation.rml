@@ -284,9 +284,9 @@
 							<blockTable colWidths="110.0,135.0" style="Table8">
 								<tr>
 									<td>
+										<para style="terp_default_Bold_8">GST REG NO</para>
 										<para style="terp_default_Bold_8">SO NO</para>
 										<para style="terp_default_Bold_8">SO DATE</para>
-										<para style="terp_default_Bold_8">GST REG NO</para>
 										<para style="terp_default_Bold_8">SHIPMENT METHOD</para>
 										<para style="terp_default_Bold_8">SHIPMENT TERM</para>
 										<para style="terp_default_Bold_8">CUSTOMER PO</para>
@@ -294,9 +294,9 @@
 										<para style="terp_default_Bold_8">PAYMENT TERM</para>
 									</td>
 									<td>
+										<para style="terp_default_8"> : [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</para>
 										<para style="terp_default_8_Left"><font> : [[ o.name or ' ' ]]</font></para>
 										<para style="terp_default_8_Left"><font> : [[ formatLang(o.date_order,date= True) or ' ' ]]</font></para>
-										<para style="terp_default_8"> : [[ (o.company_id and o.company_id.company_registry) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.ship_method_id and o.ship_method_id.name) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.fob_id and o.fob_id.description) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.client_order_ref) or '' ]]</para>

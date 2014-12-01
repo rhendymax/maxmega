@@ -106,8 +106,6 @@
             <fill color="black"/>
             <stroke color="black"/>
             <drawRightString x="20cm" y="27.8cm">[[ company.rml_header1 ]]</drawRightString>
-
-
             <drawString x="9.3cm" y="28.2cm">[[ company.partner_id.name ]]</drawString>
             <drawString x="9.3cm" y="27.8cm">[[ company.partner_id.address and company.partner_id.address[0].street or  '' ]]</drawString>
             <drawString x="9.3cm" y="27.4cm">[[ company.partner_id.address and company.partner_id.address[0].zip or '' ]] [[ company.partner_id.address and company.partner_id.address[0].city or '' ]] - [[ company.partner_id.address and company.partner_id.address[0].country_id and company.partner_id.address[0].country_id.name  or '']]</drawString>
@@ -183,7 +181,7 @@
 					</para>
 				</td>
 				<td>
-					<blockTable colWidths="125.0,120.0" style="Table8">
+					<blockTable colWidths="120.0,125.0" style="Table8">
 					<tr>
 						<td>
 							<para style="terp_default_10_Italic_Bold">TAX INVOICE</para>

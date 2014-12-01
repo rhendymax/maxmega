@@ -148,7 +148,7 @@
 						</td>
 						<td><para style="terp_default_9"><font color="white"> </font></para></td>
 						<td>
-							<blockTable colWidths="135.0,110.0" style="Tableau2">
+							<blockTable colWidths="120.0,125.0" style="Tableau2">
 								<tr>
 									<td><para style="terp_default_9"><font color="white"> </font></para></td>
 									<td><para style="terp_default_9"><font color="white"> </font></para></td>
@@ -159,9 +159,9 @@
 								</tr>
 								<tr>
 									<td>
+										<para style="terp_default_Bold_8">GST REG NO</para>
 										<para style="terp_default_Bold_8">PO NO</para>
 										<para style="terp_default_Bold_8">PO DATE</para>
-										<para style="terp_default_Bold_8">GST REG NO</para>
 										<para style="terp_default_Bold_8">SHIPMENT METHOD</para>
 										<para style="terp_default_Bold_8">SHIPMENT TERM</para>
 										<para style="terp_default_Bold_8">REFERENCE NO</para>
@@ -170,9 +170,9 @@
 										<para style="terp_default_Bold_8">PAYMENT TERM</para>
 									</td>
 									<td>
+										<para style="terp_default_8"> : [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</para>
 										<para style="terp_default_8"><font> : [[ o.name or ' ' ]]</font></para>
 										<para style="terp_default_8"><font> : [[ formatLang(o.date_order,date= True) or ' ' ]]</font></para>
-										<para style="terp_default_8"> : [[ (o.company_id and o.company_id.company_registry) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.ship_method_id and o.ship_method_id.name) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.fob_id and o.fob_id.description) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.partner_ref) or '' ]]</para>
