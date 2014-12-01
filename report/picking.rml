@@ -127,8 +127,7 @@
 										<para style="terp_default_8">Email : [[ (o.partner_invoice_id.email) or removeParentNode('para') ]]</para>
 									</td>
 								</tr>
-								<tr><td><para style="terp_default_8"><font color="white"> </font></para></td>
-						<td><para style="terp_default_9"><font colora style="terp_default_8"><font color="white"> </font></para></td></tr>
+								<tr><td><para style="terp_default_8"><font color="white"> </font></para></td></tr>
 								<tr>
 									<td>
 										<para style="terp_default_Bold_8">SHIP TO :</para>
