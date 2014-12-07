@@ -211,14 +211,14 @@
             <drawRightString x="18.0cm" y="27.0cm">[[ company.partner_id.address and company.partner_id.address[0].email or '' ]]</drawRightString>
             <!--page bottom-->
 
-            <lines>1.0cm 2.8cm 20.5cm 2.8cm</lines>
-            <setFont name="Helvetica" size="7"/>
-            <drawString x="1.3cm" y="2.4cm">1. Cancellation/Reschedule is not allowed if the scheduled delivery date is within the cancellation/reschedule window.</drawString>
-            <drawString x="1.3cm" y="2.0cm">2. For order lines with delivery schedule outside the cancellation/reschedule window, Seller reserves the right to amend the price.</drawString>
-            <drawString x="1.3cm" y="1.6cm">3. Delivery schedules are accurate at the point of confirmation based on committed dates by manufacturers/source of supply.</drawString>
-            <drawString x="1.3cm" y="1.2cm">Seller shallnot be held liable for any decommitment of delivery schedules due tocircumstances which are beyond Seller's control.</drawString>
-            <drawString x="1.3cm" y="0.8cm">4. Buyer shall revert to Seller within three (3) working days from receipt of Sales Order Confirmation for any discrepancies.</drawString>
-            <drawString x="1.3cm" y="0.4cm">The Sales Order Confirmation shall be treated as valid andin good order unless notified in writing within three (3) working days from issuance to buyer.</drawString>
+            <lines>1.0cm 2.1cm 20.5cm 2.1cm</lines>
+            <setFont name="Helvetica" size="6"/>
+            <drawString x="1.3cm" y="1.8cm">1. Cancellation/Reschedule is not allowed if the scheduled delivery date is within the cancellation/reschedule window.</drawString>
+            <drawString x="1.3cm" y="1.5cm">2. For order lines with delivery schedule outside the cancellation/reschedule window, Seller reserves the right to amend the price.</drawString>
+            <drawString x="1.3cm" y="1.2cm">3. Delivery schedules are accurate at the point of confirmation based on committed dates by manufacturers/source of supply.</drawString>
+            <drawString x="1.3cm" y="0.9cm">Seller shallnot be held liable for any decommitment of delivery schedules due tocircumstances which are beyond Seller's control.</drawString>
+            <drawString x="1.3cm" y="0.6cm">4. Buyer shall revert to Seller within three (3) working days from receipt of Sales Order Confirmation for any discrepancies.</drawString>
+            <drawString x="1.3cm" y="0.3cm">The Sales Order Confirmation shall be treated as valid andin good order unless notified in writing within three (3) working days from issuance to buyer.</drawString>
         </pageGraphics>
     </pageTemplate>
 	</template>
@@ -227,6 +227,16 @@
 			<para style="terp_default_8">[[ repeatIn(objects,'o') ]]</para>
 			<para style="terp_default_8">[[ setLang(o.partner_id.lang) ]]</para>
 			<pto_header>
+				<blockTable colWidths="26.0,245.0,76.5,70.0,62.5,75.0" style="TableMiddle">
+					<tr>
+						<td><para style="terp_default_9"><font color="white"> </font></para></td>
+						<td><para style="terp_default_9"><font color="white"> </font></para></td>
+						<td><para style="terp_default_9"><font color="white"> </font></para></td>
+						<td><para style="terp_default_9"><font color="white"> </font></para></td>
+						<td><para style="terp_default_9"><font color="white"> </font></para></td>
+						<td><para style="terp_default_9"><font color="white"> </font></para></td>
+					</tr>
+				</blockTable>
 				<blockTable colWidths="26.0,245.0,76.5,70.0,62.5,75.0" style="TableMiddle">
 					<tr>
 						<td><para style="terp_tblheader_General_Centre">No</para></td>

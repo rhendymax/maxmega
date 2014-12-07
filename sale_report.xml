@@ -7,7 +7,7 @@
 			name="max.sale.order"
 			rml="max_report_addons/report/sale_order.rml"
 			usage="default"
-			string="Quotation / RFQ Order" 
+			string="Sale Order / RFQ Order" 
 			header="False"/>
 
 		<report
@@ -16,9 +16,8 @@
 			model="sale.order"
 			name="max.maxmega.sale.order2"
 			rml="max_report_addons/report/sale_order_confirmation.rml"
-			string="Sale Order"
+			string="Sales Order Confirmation"
 			usage="default"
-			multi="True"
 			header="True"/>
 	</data>
 </openerp>

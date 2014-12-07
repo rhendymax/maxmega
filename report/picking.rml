@@ -160,8 +160,8 @@
 									</td>
 									<td>
 										<para style="terp_default_8"> : [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</para>
-										<para style="terp_default_8"> : [[ o.name or '' ]]</para>
-										<para style="terp_default_8"> : </para>
+										<para style="terp_default_8"> : [[ o.name or ' ' ]]</para>
+										<para style="terp_default_8"> : [[ o.do_date or ' ' ]]</para>
 										<para style="terp_default_9"><font color="white"> </font></para>
 										<para style="terp_default_8"> : [[ (o.partner_id and o.partner_id.sale_term_id and o.partner_id.sale_term_id.name) or '' ]]</para>
 										<para style="terp_default_8"><font color="white"> </font></para>
