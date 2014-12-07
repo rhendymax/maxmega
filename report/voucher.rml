@@ -69,9 +69,69 @@
     <images/>
   </stylesheet>
   <story>
+  <pto>
     <para style="std8">[[repeatIn(objects,'o')]]</para>
     <para style="std8">[[ setLang(o.partner_id.lang) ]]</para>
-
+	<pto_header>
+		<blockTable style="TableHeader1" colWidths="248,100,180">
+			<tr>
+				<td>
+					<para style="std9">TO : </para>
+					<para style="std9">[[ to_upper(o.partner_id.ref) ]]</para>
+					<para style="std9">[[ to_upper(o.partner_id.name) ]]</para>
+					<para style="std9">[[ to_upper(get_partner_address(o.partner_id)) ]]</para>
+					<para style="std9">[[ to_upper(get_partner_address(o.partner_id, add='country')) ]]</para>
+				</td>
+					<td><para style="std9_bold">GST REG NO.</para></td>
+					<td><para style="std9_bold">: </para></td>
+			</tr>
+			<tr>
+				<td><para style="std8"><font color="white"> </font></para></td>
+				<td><para style="std9_bold">P/V NO.</para></td>
+				<td><para style="std9_bold">: [[ o.number ]]</para></td>
+			</tr>
+			<tr>
+				<td><para style="std8"><font color="white"> </font></para></td>
+				<td><para style="std9_bold">CHEQUE DATE</para></td>
+				<td><para style="std9_bold">: [[ o.date ]]</para></td>
+			</tr>
+			<tr>
+				<td><para style="std8"><font color="white"> </font></para></td>
+				<td><para style="std9_bold">CHEQUE NO.</para></td>
+				<td><para style="std9_bold">: [[ o.cheque_no ]]</para></td>
+			</tr>
+		</blockTable>
+		<para style="std8"><font color="white"> </font></para>
+		<blockTable style="TableHeader2" colWidths="55,70,85,38,80,100,100">
+			<tr>
+				<td><para style="std9">BANK</para></td>
+				<td><para style="std9">: [[ to_upper(o.journal_id.name) ]]</para></td>
+				<td><para style="std9">CHEQUE AMT</para></td>
+				<td><para style="std9">: [[ to_upper(o.journal_id.currency and o.journal_id.currency.name or company.currency_id.name) ]]</para></td>
+				<td><para style="std9">[[ formatLang(o.amount or 0, digits=2) ]]</para></td>
+				<td><para style="std9">BANK CHARGES</para></td>
+				<td><para style="std9">: [[ formatLang(o.bank_charges_amount or 0, digits=2) ]]</para></td>
+			</tr>
+			<tr>
+				<td><para style="std9">EX RATE</para></td>
+				<td><para style="std9">: [[ formatLang(o.ex_rate or 0, digits=7) ]]</para></td>
+				<td><para style="std9">CHEQUE HOME</para></td>
+				<td><para style="std9">: [[ to_upper(company.currency_id.name) ]]</para></td>
+				<td><para style="std9">[[ formatLang(o.total_in_home_currency or 0, digits=2) ]]</para></td>
+				<!--td><para style="std9">[[ formatLang(reduce(lambda x, line: x + (line.amount_home or 0), o.line_ids, 0), digits=2) ]]</para></td-->
+				<td><para style="std9">BANK DRAFT NO</para></td>
+				<td><para style="std9">: [[ to_upper(o.bank_draft_no) ]]</para></td>
+			</tr>
+		</blockTable>
+		<blockTable style="TableHeader3" colWidths="100,228,100,100">
+			<tr>
+				<td><para style="std9">INV. VHC NO.</para></td>
+				<td><para style="std9">DESCRIPTION</para></td>
+				<td><para style="std9_right">PAID ([[ to_upper(o.journal_id.currency and o.journal_id.currency.name or company.currency_id.name) ]])</para></td>
+				<td><para style="std9_right">PAID ([[ to_upper(company.currency_id.name) ]])</para></td>
+			</tr>
+		</blockTable>
+	</pto_header>
     <blockTable style="TableHeader1" colWidths="248,100,180">
       <tr>
         <td>
@@ -187,6 +247,6 @@
         <td><para style="std9_bold">POSTED BY:</para></td>
       </tr>
     </blockTable>
-
+	</pto>
   </story>
 </document>
