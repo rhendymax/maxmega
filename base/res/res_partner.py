@@ -56,6 +56,7 @@ class res_partner(osv.osv):
           view_load=True,
           help="This pricelist will be used, instead of the default one, for purchases from the current partner"),
         'grace': fields.integer('Grace Days', help="number of Grace Days(for customer only)"),
+        'exist_partner': fields.boolean('Allowed Existing Partner', help="Allowed Existing Partner when address is different!"),
     }
 
     def address_get(self, cr, uid, ids, adr_pref=None):
@@ -156,11 +157,13 @@ class res_partner(osv.osv):
     def _check_name(self, cursor, user, ids, context=None):
         for partner in self.browse(cursor, user, ids, context=context):
             if self.search(cursor, user, [('name', '=', partner.name),('ref', '=', partner.ref),('id', '!=', partner.id)]):
-                return False
+#                 ,('exist_partner', '=', partner.exist_partner)
+                if partner.exist_partner == False:
+                    return False
         return True
 
     _constraints = [
-        (_check_name, 'Error: Partner Name and Ref must be unique per Partner!', ['name']),
+        (_check_name, 'Error: Partner Name and Ref must be unique per Partner! or Tick the Allowed Existing Partner to Save!', ['name']),
     ]
 
     def create(self, cr, user, vals, context=None):

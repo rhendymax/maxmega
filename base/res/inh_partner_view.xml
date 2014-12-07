@@ -47,6 +47,9 @@
 				<field name="name" position="replace">
 					<field name="name" select="1" colspan="6"/>
 				</field>
+				<field name="lang" position="after">
+					<field name="exist_partner"/>
+				</field>
 				<xpath expr="/form/notebook/page/field[@name='address']/form/group/field[@name='type']" position="after">
 					<field name="default_key"/>
 				</xpath>
