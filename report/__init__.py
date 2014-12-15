@@ -27,5 +27,6 @@ import max_invoice
 import sale_order
 import internal_move_printout
 import sale_order_confirmation
+import max_journal_entries
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

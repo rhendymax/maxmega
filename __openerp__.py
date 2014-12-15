@@ -36,6 +36,7 @@
         'purchase_report.xml',
         'stock_report.xml',
         'sale_report.xml',
+        'max_journal_entries_report.xml',
         'account/inh_invoice_view.xml',
         'sale/inh_sale_order_view.xml',
 

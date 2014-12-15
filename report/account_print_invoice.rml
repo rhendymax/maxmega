@@ -81,45 +81,47 @@
         <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
         <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
         <paraStyle name="terp_default_Centre_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_Bold_Right_8" rightIndent="0.0" leftIndent="-3.0" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
         <images/>
     </stylesheet>
     <template pageSize="(21.59cm, 27.94cm)" title="Tax Invoice" author="Yanto Chen" allowSplitting="20">
         <pageTemplate id="first">
             <frame id="first" x1="0.3cm" y1="2.8cm" width="20.0cm" height="23.0cm"/>
             <pageGraphics>
-            <image x="0.8cm" y="26.1cm" height="25.0">[[ company.logo or removeParentNode('image') ]]</image>
-			<!--setFont name="Helvetica-Bold" size="15" leading="17"/>
-			<drawString x="1.3cm" y="26.0cm">TAX INVOICE</drawString-->
-			<setFont name="DejaVu Sans" size="7"/>
-			<fill color="black"/>
-			<stroke color="black"/>
-			<drawRightString x="20cm" y="26.3cm">[[ company.rml_header1 ]]</drawRightString>
-			<drawString x="9.3cm" y="26.7cm">[[ company.partner_id.name ]]</drawString>
-			<drawString x="9.3cm" y="26.3cm">[[ company.partner_id.address and company.partner_id.address[0].street or  '' ]]</drawString>
-			<drawString x="9.3cm" y="25.9cm">[[ company.partner_id.address and company.partner_id.address[0].zip or '' ]] [[ company.partner_id.address and company.partner_id.address[0].city or '' ]] - [[ company.partner_id.address and company.partner_id.address[0].country_id and company.partner_id.address[0].country_id.name  or '']]</drawString>
-			<drawString x="9.3cm" y="25.5cm">Phone:</drawString>
-			<drawRightString x="13.0cm" y="25.5cm">[[ company.partner_id.address and company.partner_id.address[0].phone or '' ]]</drawRightString>
-			<drawString x="14.0cm" y="25.5cm">Mail:</drawString>
-			<drawRightString x="18.0cm" y="25.5cm">[[ company.partner_id.address and company.partner_id.address[0].email or '' ]]</drawRightString>
-
-            <lines>0.6cm 2.4cm 20.2cm 2.4cm</lines>
-            <setFont name="Helvetica" size="6"/>
-            <drawString x="1.3cm" y="2.1cm">1. Any discrepancies found in the delivered goods should be reported within 2 days;</drawString>
-            <drawString x="1.3cm" y="1.8cm">Otherwise, it will be considered that all goods sold are in good order &amp; have been accepted;</drawString>
-            <drawString x="1.3cm" y="1.5cm">2. All return is subject to our RMA policy, no debit or unauthorized return is accepted;</drawString>
-            <drawString x="1.3cm" y="1.2cm">3. Late payment charge of 1.5% per month will be imposed on all overdue invoice;</drawString>
-            <drawString x="1.3cm" y="0.9cm">4. Certificate of Conformance: We hereby certify that the equipment and materials furnished</drawString>
-            <drawString x="1.3cm" y="0.6cm">against the above mentioned contract / order are in full accordance with contract / order</drawString>
-            <drawString x="1.3cm" y="0.3cm">instruction for specifications, quality, proper packing, quality, marking &amp; ROHS Compliance Part;</drawString>
-        </pageGraphics>
-    </pageTemplate>
+				<image x="0.8cm" y="26.1cm" height="25.0">[[ company.logo or removeParentNode('image') ]]</image>
+				<!--setFont name="Helvetica-Bold" size="15" leading="17"/>
+				<drawString x="1.3cm" y="26.0cm">TAX INVOICE</drawString-->
+				<setFont name="DejaVu Sans" size="7"/>
+				<fill color="black"/>
+				<stroke color="black"/>
+				<drawRightString x="20cm" y="26.3cm">[[ company.rml_header1 ]]</drawRightString>
+				<drawString x="9.3cm" y="26.7cm">[[ company.partner_id.name ]]</drawString>
+				<drawString x="9.3cm" y="26.3cm">[[ company.partner_id.address and company.partner_id.address[0].street or  '' ]]</drawString>
+				<drawString x="9.3cm" y="25.9cm">[[ company.partner_id.address and company.partner_id.address[0].zip or '' ]] [[ company.partner_id.address and company.partner_id.address[0].city or '' ]] - [[ company.partner_id.address and company.partner_id.address[0].country_id and company.partner_id.address[0].country_id.name  or '']]</drawString>
+				<drawString x="9.3cm" y="25.5cm">Phone:</drawString>
+				<drawRightString x="13.0cm" y="25.5cm">[[ company.partner_id.address and company.partner_id.address[0].phone or '' ]]</drawRightString>
+				<drawString x="14.0cm" y="25.5cm">Mail:</drawString>
+				<drawRightString x="18.0cm" y="25.5cm">[[ company.partner_id.address and company.partner_id.address[0].email or '' ]]</drawRightString>
+				<!-- setFont name="Helvetica" size="7"/>
+				<drawRightString x="20cm" y="18.5cm">Page <pageNumber/> of <pageCount/> </drawRightString -->
+				<lines>0.6cm 2.4cm 20.2cm 2.4cm</lines>
+				<setFont name="Helvetica" size="6"/>
+				<drawString x="1.3cm" y="2.1cm">1. Any discrepancies found in the delivered goods should be reported within 2 days;</drawString>
+				<drawString x="1.3cm" y="1.8cm">Otherwise, it will be considered that all goods sold are in good order &amp; have been accepted;</drawString>
+				<drawString x="1.3cm" y="1.5cm">2. All return is subject to our RMA policy, no debit or unauthorized return is accepted;</drawString>
+				<drawString x="1.3cm" y="1.2cm">3. Late payment charge of 1.5% per month will be imposed on all overdue invoice;</drawString>
+				<drawString x="1.3cm" y="0.9cm">4. Certificate of Conformance: We hereby certify that the equipment and materials furnished</drawString>
+				<drawString x="1.3cm" y="0.6cm">against the above mentioned contract / order are in full accordance with contract / order</drawString>
+				<drawString x="1.3cm" y="0.3cm">instruction for specifications, quality, proper packing, quality, marking &amp; ROHS Compliance Part;</drawString>
+			</pageGraphics>
+		</pageTemplate>
 	</template>
   <story>
   <pto>
     <para style="terp_default_8">[[ repeatIn(objects,'o') ]]</para>
     <para style="terp_default_8">[[ setLang(o.partner_id.lang) ]]</para>
-    <pto_header><!-- Must be after setLang() -->
-   		<blockTable colWidths="20.0,155.0,100.0,80.0,65.0,100.0" rowHeights="24.0" repeatRows="1" style="Tableau1">
+    <pto_header>
+   		<!--blockTable colWidths="20.0,155.0,100.0,80.0,65.0,100.0" rowHeights="24.0" repeatRows="1" style="Tableau1">
 			<tr>
 				<td><para style="terp_default_9"><font color="white"> </font></para></td>
 				<td><para style="terp_default_9"><font color="white"> </font></para></td>
@@ -128,7 +130,7 @@
 				<td><para style="terp_default_9"><font color="white"> </font></para></td>
 				<td><para style="terp_default_9"><font color="white"> </font></para></td>
 			</tr>
-		</blockTable>
+		</blockTable-->
 		<blockTable colWidths="250.0,30.0,240.0" style="Tableau1">
 			<tr>
 				<td>
@@ -155,6 +157,14 @@
 								<para style="terp_default_8">Fax : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.fax) or removeParentNode('para') ]]</para>
 								<para style="terp_default_8">Attn : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.name) or removeParentNode('para') ]]</para>
 								<para style="terp_default_8">Email : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.email) or removeParentNode('para') ]]</para>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<illustration width="15" height="1">
+									<setFont name="Helvetica" size="8"/>
+									<drawRightString x="18cm" y="0.05cm">Page <pageNumber/> of <pageCount/> </drawRightString>
+								</illustration>
 							</td>
 						</tr>
 					</blockTable>
@@ -196,7 +206,7 @@
 				</td>
 			</tr>
 		</blockTable>
-		<blockTable colWidths="26.0,249.0,62.5,80.0,62.5,75.0" rowHeights="24.0" repeatRows="1"  style="Table_Header_Pur_ord_Line">
+		<blockTable colWidths="26.0,249.0,72.5,70.0,62.5,75.0" rowHeights="24.0" repeatRows="1"  style="Table_Header_Pur_ord_Line">
 			<tr>
 				<td><para style="terp_tblheader_General_Centre">No</para></td>
 				<td><para style="terp_tblheader_General">ITEM DESCRIPTION</para></td>
@@ -233,7 +243,15 @@
 								<para style="terp_default_8">Tél. : [[ o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.phone) or removeParentNode('para') ]]</para>
 								<para style="terp_default_8">Fax : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.fax) or removeParentNode('para') ]]</para>
 								<para style="terp_default_8">Attn : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.name) or removeParentNode('para') ]]</para>
-								<para style="terp_default_8">Email : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.email) or removeParentNode('para') ]]</para>
+								<para style="terp_default_8"><font>Email : [[ (o.picking_id and o.picking_id.partner_shipping_id and o.picking_id.partner_shipping_id.email) or removeParentNode('para') ]]</font></para>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<illustration width="15" height="1">
+									<setFont name="Helvetica" size="8"/>
+									<drawRightString x="18cm" y="0.05cm">Page <pageNumber/> of <pageCount/> </drawRightString>
+								</illustration>
 							</td>
 						</tr>
 					</blockTable>
@@ -275,7 +293,7 @@
 				</td>
 			</tr>
 		</blockTable>
-		<blockTable colWidths="26.0,249.0,62.5,80.0,62.5,75.0" rowHeights="24.0" repeatRows="1" style="Table_Header_Pur_ord_Line">
+		<blockTable colWidths="26.0,249.0,72.5,70.0,62.5,75.0" rowHeights="24.0" repeatRows="1" style="Table_Header_Pur_ord_Line">
 			<tr>
 				<td><para style="terp_tblheader_General_Centre">No</para></td>
 				<td><para style="terp_tblheader_General">ITEM DESCRIPTION</para></td>
@@ -286,19 +304,19 @@
 			</tr>
 		</blockTable>
 		<section>
-			<para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-			<blockTable colWidths="26.0,249.0,62.5,80.0,62.5,75.0" style="Table_Content">
+			<para style="terp_default_8">[[ repeatIn(o.invoice_line,'l') ]]</para>
+			<blockTable colWidths="26.0,249.0,72.5,70.0,62.5,75.0" style="Table_Content">
 				<tr>
 					<td><para style="terp_default_Centre_8"><seq/></para></td>
 					<td><para style="terp_default_8">[[ l.name ]]</para></td>
 					<td><para style="terp_default_8">[[ get_cust_po(l.id) ]]</para></td>
-					<td><para style="terp_default_Right_8">[[ formatLang(l.quantity, digits=0)]] [[ (l.uos_id and l.uos_id.name) or '' ]]</para></td>
+					<td><para style="terp_default_Right_8">[[ formatLang(l.quantity, digits=0)]] </para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.price_unit, digits=6) ]]</para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.price_subtotal, digits=6) ]]</para></td>
 				</tr>
 			</blockTable>
 		</section>
-			<para style="terp_default_Right_9">
+			<para style="terp_default_Right_8">
 			<font color="white"> </font>
 			</para>
 		<blockTable colWidths="110.0,20.0,80.0,140.0,110.0,20.0,75.0" style="Table_Account_Detail">
@@ -380,7 +398,7 @@
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_Bold_Right_9">[[ formatLang(get_total(o,'3'), digits=2) ]]</para>
+				<para style="terp_default_Bold_Right_8">[[ formatLang(get_total(o,'3'), digits=2) ]]</para>
 				<illustration width="150" height="8">
 				<lineMode width ="1.0"/>
 				<lines>-6 5 75 5</lines>
@@ -398,7 +416,7 @@
 				<para style="terp_default_Bold_8">:</para>
 			</td>
 			<td>
-				<para style="terp_default_Bold_Right_9">[[ formatLang(o.amount_untaxed + o.amount_tax, digits=2) ]]</para>
+				<para style="terp_default_Bold_Right_8">[[ formatLang(o.amount_untaxed + o.amount_tax, digits=2) ]]</para>
 				<illustration width="150" height="8">
 				<lineMode width ="1.0"/>
 				<lines>-6 5 70 5</lines>
@@ -467,12 +485,12 @@
 				</td>
 			</tr>
 		</blockTable>
-		<blockTable colWidths="350.0,200.0" style="Tableau1">
+		<!--blockTable colWidths="350.0,200.0" style="Tableau1">
 			<tr>
 				<td><para style="terp_default_Bold_8">This is a computer generated Tax Invoice. No signature is Required</para></td>
 				<td><para style="terp_default_9"><font color="white"> </font></para></td>
 			</tr>
-		</blockTable>
+		</blockTable-->
   </pto>
   </story>
 </document>
