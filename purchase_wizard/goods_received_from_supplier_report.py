@@ -188,7 +188,7 @@ class goods_received_from_supplier_report(osv.osv_memory):
         date_from_qry = date_from and "And picking.date_done >= '" + str(date_from) + "' " or " "
         date_to_qry = date_to and "And picking.date_done <= '" + str(date_to) + "' " or " "
         
-        cr.execute("SELECT picking.date_done,pbd.name as brand_name,prd.default_code,"\
+        cr.execute("SELECT picking.date_done,picking.name as grn_no,pbd.name as brand_name,prd.default_code,"\
                     "pmove.product_qty as qty,pbd.name,location.name as location,res_partner.name as supp_name,pmove.price_unit "\
                     "FROM stock_move as pmove "\
                     "inner join stock_picking as picking on picking.id= pmove.picking_id "\
@@ -209,10 +209,10 @@ class goods_received_from_supplier_report(osv.osv_memory):
         header += 'Goods Received From Supplier Report' + " \n"
         header += ('pb_selection' in form and 'Product Brand Filter Selection : ' + form['pb_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + form['date_showing'] + "\n") or ''
-        header += 'DATE RECEIVE;INVENTORY BRAND;OEM NUMBER;SUPPLIER NAME;QTY;UNIT COST;TOTAL COST;LOCATION KEY' + " \n"
+        header += 'DATE RECEIVE;GRN NO;INVENTORY BRAND;OEM NUMBER;SUPPLIER NAME;QTY;UNIT COST;TOTAL COST;LOCATION KEY' + " \n"
         uprice_total = total_amt = total_qty = 0.00
         for r in p:
-            header += str(r['date_done'] or '') + ";" + str(r['brand_name']) + ";" + str(r['default_code']) + ";" \
+            header += str(r['date_done'] or '') + ";" + str(r['grn_no'] or '') + ";" + str(r['brand_name']) + ";" + str(r['default_code']) + ";" \
             + str(r['supp_name']) + ";" + str(r['qty']) + ";" + str(r['price_unit'] or 0.00) + ";" \
             + str((r['qty'] * r['price_unit'] or 0.00)) + ";" + str(r['location']) + " \n"
             uprice_total += r['price_unit'] or 0.00
