@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report
+            auto="False"
+            id="max_journal_entries"
+            model="max.journal.entries"
+            name="max.journal.entries"
+            rml="max_report_addons/report/max_journal_entries.rml"
+            string="Max Journal Entries"
+            usage="default"
+            multi="True"
+            header="True"/>
+ 
+    </data>
+</openerp>
