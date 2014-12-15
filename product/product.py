@@ -34,9 +34,20 @@ class product_template(osv.osv):
         'name': fields.char('Supplier Part No', size=128, required=True, translate=True, select=True),
     }
 
-    _sql_constraints = [
-        ('number_uniq', 'unique(name)', 'Supplier Part No must be unique per Product!'),
-    ]
+#     _sql_constraints = [
+#         ('number_uniq', 'unique(name)', 'Supplier Part No must be unique per Product!'),
+#     ]
+
+#     def _check_name(self, cr, user, ids, context=None):
+#         for product in self.browse(cr, user, ids, context=context):
+#             if self.search(cr, user, [('name', '=', product.name),('id', '!=', product.id)]):
+# #                 if product.exist_partner == False:
+#                 return False
+#         return True
+# 
+#     _constraints = [
+#         (_check_name, 'Error: Supplier Part No must be unique per Product!', ['name']),
+#     ]
 
 product_template()
 
@@ -89,7 +100,17 @@ class product_product(osv.osv):
             return round(move_price, decimal_precision_id.digits)
         else:
             return round(move_price)
-    
+
+    def _check_name(self, cr, user, ids, context=None):
+        for product in self.browse(cr, user, ids, context=context):
+            if self.search(cr, user, [('name', '=', product.name),('brand_id', '=', product.brand_id.id),('id', '!=', product.id)]):
+                return False
+        return True
+
+    _constraints = [
+        (_check_name, 'Error: Supplier Part No must be unique per Product Brand!', ['name']),
+    ]
+
     def create(self, cr, uid, data, context=None):
         product_supplier_obj = self.pool.get('product.supplier')
         res_partner_child_obj = self.pool.get('res.partner.child')
@@ -316,9 +337,9 @@ class product_product(osv.osv):
 
         return super(product_product, self).write(cr, uid, ids, vals, context=context)
 
-    _sql_constraints = [
-        ('default_code_uniq', 'unique(default_code)', 'Internal Part No must be unique per Product!'),
-    ]
+#     _sql_constraints = [
+#         ('default_code_uniq', 'unique(default_code)', 'Internal Part No must be unique per Product!'),
+#     ]
 
 product_product()
 
