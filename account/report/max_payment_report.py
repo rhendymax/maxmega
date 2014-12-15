@@ -603,7 +603,7 @@ class max_payment_report(report_sxw.rml_parse):
                     res_currency_grouping = self.balance_by_cur[cur_id].copy()
                     res_currency_grouping['cheque'] += cheque
                     res_currency_grouping['cheque_home'] += cheque_home
-                    res_currency_grouping['bank_charges'] += bank_charges_home
+                    res_currency_grouping['bank_charges'] += bank_charges
                     res_currency_grouping['bank_charges_home'] += bank_charges_home
                     res_currency_grouping['deposit'] += deposit
                     res_currency_grouping['deposit_home'] += deposit_home

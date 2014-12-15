@@ -769,7 +769,7 @@ class param_posted_payment_check_list(osv.osv_memory):
                     res_currency_grouping = balance_by_cur[cur_id].copy()
                     res_currency_grouping['cheque'] += cheque
                     res_currency_grouping['cheque_home'] += cheque_home
-                    res_currency_grouping['bank_charges'] += bank_charges_home
+                    res_currency_grouping['bank_charges'] += bank_charges
                     res_currency_grouping['bank_charges_home'] += bank_charges_home
                     res_currency_grouping['deposit'] += deposit
                     res_currency_grouping['deposit_home'] += deposit_home
@@ -826,7 +826,7 @@ class param_posted_payment_check_list(osv.osv_memory):
             header += str(rs_curr['cur_name']) + ';' + str(rs_curr['cheque']) + ';' + str(rs_curr['bank_charges']) + \
                         ';' + str(rs_curr['deposit']) + ';' + str(rs_curr['reconcile']) + ';' + str(rs_curr['credit_note']) + ';' + str(rs_curr['alloc_inv']) + ' \n'
 
-            header += str(rs_curr['cur_name']) + ' Home;' + str(rs_curr['cheque_home']) + ';' + str(rs_curr['bank_charges_home']) + \
+            header += str(rs_curr['cur_name']) + ' Home (USD);' + str(rs_curr['cheque_home']) + ';' + str(rs_curr['bank_charges_home']) + \
                         ';' + str(rs_curr['deposit_home']) + ';' + str(rs_curr['reconcile_home']) + ';' + str(rs_curr['credit_note_home']) + ';' + str(rs_curr['alloc_inv_home']) + ' \n'
         header += ' \n' + 'Total Home:' + ';' + str("%.2f" % total_home) + \
                   ';' + str("%.2f" % total_bank_charges_home) + ';' + str("%.2f" % total_deposit_home) + ';' + str("%.2f" % total_reconcile_home) + ';' + str("%.2f" % total_credit_note_home) + ';' + str("%.2f" % total_alloc_inv_home) + ' \n \n'

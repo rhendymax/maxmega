@@ -327,17 +327,18 @@ class param_so_oustanding_report(osv.osv_memory):
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         
         header += ('so_selection' in form and 'SO : ' + form['so_selection'] + "\n") or ''
-        header += 'Customer Key;Customer Name;SO Number;Item Description;Order Qty(PCS);Unit Price;Oustanding Qty' + " \n"
+        header += 'Customer Rescheduled Date;Customer Key;Customer Name;SO Number;Item Description;Order Qty(PCS);Unit Price;Oustanding Qty;Ship Qty' + " \n"
 
         cr.execute(
             "SELECT sol.id as line_id, pt.name as prod_name, so.name as so_name, rp.name as rp_name, rp.ref as rp_ref, " \
-            "(sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) as oustanding " \
-#             "sol.customer_rescheduled_date as crd_date, sm.product_qty as ship_qty " \
+            "(sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) as oustanding, " \
+            "sol.customer_rescheduled_date as crd_date, " \
+            "coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0) as ship_qty " \
             "FROM sale_order_line sol " \
             "LEFT JOIN sale_order so on sol.order_id = so.id " \
             "LEFT JOIN res_partner rp on so.partner_id = rp.id " \
             "LEFT JOIN product_template pt on sol.product_id = pt.id " \
-#             "LEFT JOIN stock_move sm on sol.id = sm.sale_line_id " \
+            "LEFT JOIN stock_move sm on sol.id = sm.sale_line_id " \
             "WHERE so.state IN ('progress') " \
             "And (sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) > 0 " \
             + partner_qry \
@@ -350,10 +351,10 @@ class param_so_oustanding_report(osv.osv_memory):
         if qry3:
             for t in qry3:
                 sol = sol_obj.browse(cr, uid, t['line_id'])
-                header += str(t['rp_name'] or '') + ";" + str(t['rp_ref'] or '') + ";" + str(t['so_name'] or '') + ";" \
+                header += str(t['crd_date'] or '') + ";" + str(t['rp_name'] or '') + ";" + str(t['rp_ref'] or '') + ";" + str(t['so_name'] or '') + ";" \
                 + str(t['prod_name'] or '') + ";" + str(sol.product_uom_qty or 0.00) \
-                + ";" + str(sol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) + " \n"
-#                 + ";" + str(t['crd_date'] or '')+ ";" + str(t['ship_qty'] or 0.00) + " \n"
+                + ";" + str(sol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) \
+                + ";" + str(t['ship_qty'] or 0.00) + " \n"
                 
                 order_qty += sol.product_uom_qty or 0.00
                 oustanding += (t['oustanding'] or 0)

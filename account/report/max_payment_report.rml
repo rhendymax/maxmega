@@ -330,7 +330,7 @@
 					<td><para style="terp_default_7"><font></font></para></td>
 				</tr>
 				<tr>
-					<td><para style="terp_default_7"><font>[[ bal['cur_name'] ]] Home</font></para></td>
+					<td><para style="terp_default_7"><font>[[ bal['cur_name'] ]] Home (USD)</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['cheque_home'] or 0, digits=2) ]]</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['bank_charges_home'] or 0, digits=2) ]]</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(bal['deposit_home'] or 0, digits=2) ]]</font></para></td>

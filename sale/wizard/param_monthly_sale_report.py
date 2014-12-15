@@ -353,7 +353,7 @@ class param_monthly_sale_report(osv.osv_memory):
                        "ail.price_unit / (select rate from res_currency_rate where currency_id = ai.currency_id " \
                        "and name <= ai.cur_date order by name desc limit 1) as selling_price, " \
                        "ail.quantity as quantity, ail.price_unit * ail.quantity as total_selling, " \
-                       "pb.name as brand_name, ai.date_invoice as inv_date, sz.name as sales_zone, rc.name as curr_name, ai.type as type from account_invoice ai " \
+                       "pb.name as brand_name, ai.date_invoice as inv_date, sz.name as sales_zone, rc.name as curr_name, ai.type as type, pc.name as cpn from account_invoice ai " \
                        "inner join account_invoice_line ail on ail.invoice_id = ai.id " \
                        "left join res_currency rc on rc.id = ai.currency_id " \
                        "left join res_partner rp on ai.partner_id = rp.id " \
@@ -361,6 +361,9 @@ class param_monthly_sale_report(osv.osv_memory):
                        "left join product_product pp on pp.id = ail.product_id " \
                        "left join product_brand pb on pp.brand_id = pb.id " \
                        "left join res_partner_sales_zone sz on sz.id = ai.sales_zone_id " \
+                       "left join stock_move sm on sm.id = ail.stock_move_id " \
+                       "left join sale_order_line sol on sol.id = sm.sale_line_id " \
+                       "left join product_customer pc on pc.id = sol.product_customer_id " \
                        "where ai.type in ('out_invoice', 'out_refund') and ai.state in ('open', 'paid') and ail.product_id is not null " \
                        + partner_qry \
                        + date_from_qry \
@@ -384,7 +387,7 @@ class param_monthly_sale_report(osv.osv_memory):
                         sub_qty += qty
                         sub_total_selling_price +=  total_selling_price
 
-                        header += str(rs['cust_name'] or '') + ';;' + str(rs['inv_key'] or '') + ';' + str(selling_price) + ';' \
+                        header += str(rs['cust_name'] or '') + ';' + str(rs['cpn'] or '') + ';' + str(rs['inv_key'] or '') + ';' + str(selling_price) + ';' \
                          + str(qty) + ';' + str("%.2f" % total_selling_price) + ';' + str(rs['brand_name'] or '') + ';' + str(rs['inv_date'] or '') + ';' \
                          + str(rs['sales_zone']) + ' \n'
                     header += ';;;' + 'Sub Total :;' + str(sub_qty or 0.00) + ';' + str(sub_total_selling_price or 0.00) + ' \n'
