@@ -312,6 +312,7 @@
 					<field name="location_id" domain="[('usage','=','internal')]"
 						on_change="location_onchange(product_id,location_id)"
 						colspan="10"/>
+					<field name="balance_qty" string ="Balance Qty"/>
 					<button name="%(act_change_price)d" string="Change Price Unit" type="action" icon="gtk-go-forward" states="draft,confirmed" invisible="1"/>
 					<button name="%(act_change_qty)d" string="Change Qty" type="action" icon="gtk-go-forward" states="confirmed"/>
 				</xpath>

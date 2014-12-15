@@ -156,8 +156,7 @@ class res_partner(osv.osv):
 
     def _check_name(self, cursor, user, ids, context=None):
         for partner in self.browse(cursor, user, ids, context=context):
-            if self.search(cursor, user, [('name', '=', partner.name),('ref', '=', partner.ref),('id', '!=', partner.id)]):
-#                 ,('exist_partner', '=', partner.exist_partner)
+            if self.search(cursor, user, [('name', '=', partner.name),('ref', '=', partner.ref),('customer', '=', partner.customer),('supplier', '=', partner.supplier),('id', '!=', partner.id)]):
                 if partner.exist_partner == False:
                     return False
         return True

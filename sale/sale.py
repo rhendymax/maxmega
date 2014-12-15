@@ -2809,6 +2809,28 @@ class sale_order_line(osv.osv):
             res[obj.id] = qty_received
         return res
 
+    def _qty_balance(self, cr, uid, ids, field_names=None, arg=False, context=None):
+        if not ids: return {}
+        res = {}
+        for record in self.browse(cr, uid, ids, context=context):
+            cr.execute(
+                    "SELECT (sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.state = 'done' And sm.sale_line_id = sol.id group by sm.product_id),0)) as oustanding " \
+                    "FROM sale_order_line sol " \
+                    "INNER JOIN sale_order so on sol.order_id = so.id " \
+                    "WHERE sol.id = " + str(record.id) + \
+                    " order by so.name")
+
+            qry = cr.dictfetchall()
+            if qry:
+                print "test1"
+                for t in qry:
+                    print "test2"
+                    res[record.id] = t['oustanding']
+                    print "test3"
+                    print t['oustanding']
+#             res[record.id] = 0.00
+        return res
+
     _columns = {
         'partner_id_parent': fields.many2one('res.partner', 'Customer'),
         'shop_id_parent': fields.many2one('sale.shop', 'Shop'),
@@ -2823,6 +2845,9 @@ class sale_order_line(osv.osv):
         'qty_onhand_allocated' : fields.float("Quantity On Hand Allocated", digits_compute=dp.get_precision('Product UoM'), readonly=True),
         'qty_received_onorder': fields.function(_qty_received_onorder, type='float', string='Quantity Received Based On Order'),
         'qty_onhand_count': fields.function(_qty_onhand_allocated, type='float', string='Total Quantity On Hand Allocated'),
+        'balance_qty': fields.function(_qty_balance,
+                    type='float', string='Quantity Balance',
+                    help='the summary of Balance Quantity'),
     }
 
     def copy_data(self, cr, uid, id, default=None, context=None):
