@@ -83,7 +83,7 @@
 					<para style="std9">[[ to_upper(get_partner_address(o.partner_id, add='country')) ]]</para>
 				</td>
 					<td><para style="std9_bold">GST REG NO.</para></td>
-					<td><para style="std9_bold">: </para></td>
+					<td><para style="std9_bold">: [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</para></td>
 			</tr>
 			<tr>
 				<td><para style="std8"><font color="white"> </font></para></td>
@@ -142,7 +142,7 @@
           <para style="std9">[[ to_upper(get_partner_address(o.partner_id, add='country')) ]]</para>
         </td>
         <td><para style="std9_bold">GST REG NO.</para></td>
-        <td><para style="std9_bold">: </para></td>
+		<td><para style="std9_bold">: [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</para></td>
       </tr>
       <tr>
         <td><para style="std8"><font color="white"> </font></para></td>
