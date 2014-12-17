@@ -2864,6 +2864,7 @@ class sale_order_line(osv.osv):
         'product_uom_qty': 0,
         'product_uos_qty': 0,
     }
+
 sale_order_line()
 
 class product_pricelist(osv.osv):
