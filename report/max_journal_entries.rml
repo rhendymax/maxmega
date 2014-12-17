@@ -275,7 +275,7 @@
 				<tr>
 					<td><para style="terp_default_Centre_8"><seq/></para></td>
 					<td><para style="terp_default_8">[[ (l.account_id and l.account_id.name) or ' ' ]]</para></td>
-					<td><para style="terp_default_Centre_8">[[ (l.currency_id and l.currency_id.name) or ' ' ]]</para></td>
+					<td><para style="terp_default_Centre_8">[[ get_currency_name(l) ]]</para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.debit, digits=2) ]] </para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.credit, digits=2) ]]</para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(((l.ex_rate_other > 0 and l.ex_rate_other) or l.ex_rate) or 0, digits=6)]] </para></td>

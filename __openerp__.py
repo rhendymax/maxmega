@@ -29,7 +29,7 @@
 """,
     'author': 'Yanto Chen',
     'website': 'http://www.openerp.com',
-    'depends': ["account", "base_setup", "product", "analytic", "process", "board", "edi", "base", "partner_child", "product", "purchase", "sale","price_methodology","stock", "upgrade_all"],
+    'depends': ["account", "base_setup", "product", "analytic", "process", "board", "edi", "base", "partner_child", "product", "purchase", "sale","price_methodology","stock", "max_finance_module", "upgrade_all"],
     'init_xml': [],
     'update_xml': [
         'account_report.xml',
@@ -39,6 +39,7 @@
         'max_journal_entries_report.xml',
         'account/inh_invoice_view.xml',
         'sale/inh_sale_order_view.xml',
+        'max_journal_entries/inh_max_journal_entries_view.xml',
 
     ],
 

@@ -7,7 +7,7 @@
             model="max.journal.entries"
             name="max.journal.entries"
             rml="max_report_addons/report/max_journal_entries.rml"
-            string="Max Journal Entries"
+            string="Print Report"
             usage="default"
             multi="True"
             header="True"/>
