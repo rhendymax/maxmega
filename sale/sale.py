@@ -30,7 +30,14 @@ class sale_order(osv.osv):
 
     _columns = {
         'partner_id2': fields.many2one('res.partner', 'Customer', required=True),
+        'date_so_line': fields.date('Date For So Lines', required=True),
     }
+
+#     _defaults = {
+#         'effective_date': fields.date.context_today,
+#         'customer_original_date': fields.date.context_today,
+#         'customer_rescheduled_date': fields.date.context_today,
+#     }
 
     def create(self, cr, user, vals, context=None):
         if 'partner_id2' in vals:
@@ -121,6 +128,23 @@ class sale_order_line(osv.osv):
         warning = {}
         res_final = {'value':result, 'domain':domain, 'warning':warning}
         warning_msgs = ''
+        so_date = context.get('date_on_so', False)
+        eff_date = context.get('eff_date', False)
+        etd = context.get('etd', False)
+        cod = context.get('cod', False)
+        crd = context.get('crd', False)
+        if not so_date:
+            raise osv.except_osv(_('Error!'), _('Please select Date For So Lines!'))
+        if not etd:
+            res_final['value']['confirmation_date'] = so_date
+        if not cod:
+            res_final['value']['customer_original_date'] = so_date
+        if not crd:
+            res_final['value']['customer_rescheduled_date'] = so_date
+
+        if not eff_date:
+            effective_date = so_date
+            res_final['value']['effective_date'] = so_date
 
         if not product_customer_id:
             return res_final
@@ -475,12 +499,6 @@ class sale_order_line(osv.osv):
 
         return {'value': result, 'warning': warning}
 
-    _defaults = {
-        'effective_date': fields.date.context_today,
-        'customer_original_date': fields.date.context_today,
-        'customer_rescheduled_date': fields.date.context_today,
-    }
-
     _columns = {
         'spq': fields.float('SPQ (*)', help="Standard Packaging Qty"),
         'moq': fields.float('MOQ (*)', help="Minimum Order Qty"),
@@ -494,7 +512,7 @@ class sale_order_line(osv.osv):
         'save_done': fields.boolean('Save Done', invisible=True),
         'reschedule_ids': fields.one2many('change.cod', 'sale_order_line_id', 'Reschedule History', readonly=True,),
         #RT 20141021
-        'confirmation_date': fields.date('Confirmation Date (ETD)'),
+        'confirmation_date': fields.date('Confirmation Date (ETD)', required=True, ),
     }
 
 sale_order_line()

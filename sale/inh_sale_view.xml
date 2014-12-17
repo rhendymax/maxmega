@@ -6,6 +6,9 @@
 			<field name="model">sale.order</field>
 			<field name="inherit_id" ref="sale.view_order_form"/>
 			<field name="arch" type="xml">
+				<field name="shipped" position="after">
+					<field name="date_so_line" colspan="2"/>
+				</field>
 				<field name="partner_id" position="replace">
 					<field name="partner_id" options='{"quick_create": false}'
 						attrs="{'readonly': [('order_line','!=',False)]}"
@@ -22,6 +25,7 @@
 					<group colspan="5" col="10">
 						<field name="save_done"/>
 						<field name="product_customer_id" colspan="6"
+							context="{'date_on_so':parent.date_so_line, 'eff_date':effective_date, 'etd':confirmation_date, 'cod':customer_original_date, 'crd':customer_rescheduled_date}"
 							on_change="onchange_product_customer_id(parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,product_packaging,parent.fiscal_position,False,context)"
 							domain="[('partner_id','=',parent.partner_id), ('sale_ok','=',True)]"/>
 						<field name="spq" on_change="spq_onchange(product_id,context)"/>
@@ -43,9 +47,6 @@
 							on_change="product_uom_change2(parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,context)"
 							nolabel="1"/>
 					</group>
-
-
-
 					<newline/>
 					<group colspan="5" col="10">
 						<field name="product_supplier_id" colspan="6"/>
@@ -65,18 +66,14 @@
 						<newline/>
 						<field name="effective_date"/>
 						<newline/>
-						<field name="confirmation_date"
-						attrs="{'readonly': [('save_done','=',True)]}"
-						on_change="confirm_date_onchange(confirmation_date)"/>
-						<button name="%(act_change_conf_date)d" string="Change Confirmation Date" type="action" icon="gtk-go-forward"/>
+						<field name="confirmation_date"/>
+						<button name="%(act_change_conf_date)d" string="Change Confirmation Date" attrs="{'invisible':[('state','!=','confirmed')]}" type="action" icon="gtk-go-forward"/>
 						<newline/>
 						<field name="customer_original_date"
-						attrs="{'readonly': [('save_done','=',True)]}"
 						on_change="cod_onchange(customer_original_date)"/>
 						<field name="customer_rescheduled_date"
-						attrs="{'readonly': [('save_done','=',True)]}"
 						on_change="cod_onchange(customer_original_date)"/>
-						<button name="%(act_change_cod)d" string="Change CRD" type="action" icon="gtk-go-forward"/>
+						<button name="%(act_change_cod)d" string="Change CRD" attrs="{'invisible':[('state','!=','confirmed')]}" type="action" icon="gtk-go-forward"/>
 					</group>
 				</xpath>
 				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/separator[@string='Invoice Lines']" position="replace"/>
