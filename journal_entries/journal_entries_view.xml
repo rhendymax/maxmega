@@ -33,8 +33,8 @@
 						<page string="Journal Items">
 								<field name="line_id" nolabel="1" colspan="4"/>
 								<field name="state" colspan ="2"/>
-								<label colspan="1"/>
-								<group col="1" colspan="1">
+								<!-- label colspan="1"/ -->
+								<group col="5" colspan="1">
 									<button name="set_to_draft" states="cancel" string="Set To Draft" type="object"/>
 									<button name="button_cancel" states="posted" string="Cancel" type="object" icon="gtk-cancel"/>
 									<button name="button_validate" states="draft" string="Post" type="object" icon="terp-camera_test"/>
