@@ -174,7 +174,7 @@
 										<para style="terp_default_8"><font> : [[ o.name or ' ' ]]</font></para>
 										<para style="terp_default_8"><font> : [[ formatLang(o.date_order,date= True) or ' ' ]]</font></para>
 										<para style="terp_default_8"> : [[ (o.ship_method_id and o.ship_method_id.name) or '' ]]</para>
-										<para style="terp_default_8"> : [[ (o.fob_id and o.fob_id.description) or '' ]]</para>
+										<para style="terp_default_8"> : [[ (o.fob_id and o.fob_id.name) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.partner_ref) or '' ]]</para>
 										<para style="terp_default_8"> : [[ (o.requisitor_id and o.requisitor_id.name) or '']]</para>
 										<para style="terp_default_8"> : [[ (o.buyer_id and o.buyer_id.name) or '']]</para>

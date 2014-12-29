@@ -70,10 +70,21 @@ class maxmega_purchase_order(report_sxw.rml_parse):
         description = ''
         product_supplier_id = product_supplier_obj.search(self.cr, self.uid, [('product_id','=', l.product_id.id),('partner_child_id','=', partner_child_id)])[0] or False
         product_supplier_price_ids = product_supplier_price.search(self.cr, self.uid, [('product_supplier_id','=', product_supplier_id),('effective_date','<=', l.original_request_date)], order='effective_date DESC')
+        
+        notes = ""
+        if l.notes:
+            notes = '\n' + str(l.notes)
+        
         if product_supplier_price_ids:
-            remark = str(product_supplier_price.browse(self.cr, self.uid, product_supplier_price_ids[0],context=None).name)
-            if remark == "-":
+            remark = product_supplier_price.browse(self.cr, self.uid, product_supplier_price_ids[0],context=None).name
+            print remark
+            if not remark:
+                print "Test"
                 remark = ""
+            else:
+                remark = str(remark)
+                if remark == "-":
+                    remark = ""
         else:
             remark = ""
         cpn = ""
@@ -95,8 +106,7 @@ class maxmega_purchase_order(report_sxw.rml_parse):
                 description = str(l.product_id.default_code)+ '\n' + str(remark)
             else:
                 description = str(l.product_id.default_code)+ '\n' + str(remark) + " CPN :" + str(cpn)
-        print description
-        return description
+        return description + notes
 
     def _get_subtotal(self, l):
 #        sol_obj         = self.pool.get('sale.order.line')
