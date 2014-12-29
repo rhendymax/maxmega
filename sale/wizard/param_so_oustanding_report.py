@@ -303,7 +303,7 @@ class param_so_oustanding_report(osv.osv_memory):
             ids = data['ids']
         if not ids:
             return []
-        order_qty = oustanding = 0
+        order_qty = oustanding = ship_qty = 0
         res_partner_obj = self.pool.get('res.partner')
         voucher_obj = self.pool.get('account.voucher')
         sol_obj = self.pool.get('sale.order.line')
@@ -313,8 +313,8 @@ class param_so_oustanding_report(osv.osv_memory):
 
         date_from = form['date_from'] or False
         date_to = form['date_to'] or False
-        date_from_qry = date_from and "And so.date_order >= '" + str(date_from) + "' " or " "
-        date_to_qry = date_to and "And so.date_order <= '" + str(date_to) + "' " or " "
+        date_from_qry = date_from and "And sol.customer_rescheduled_date >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And sol.customer_rescheduled_date <= '" + str(date_to) + "' " or " "
 
         so_ids = form['so_ids'] or False
         so_qry = (so_ids and ((len(so_ids) == 1 and "AND so.id = " + str(so_ids[0]) + " ") or "AND so.id IN " + str(tuple(so_ids)) + " ")) or "AND so.id IN (0) "
@@ -322,23 +322,26 @@ class param_so_oustanding_report(osv.osv_memory):
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Customer Delivery Outstanding Sale Order' + " \n"
+        header += 'SO Oustanding Report' + " \n"
         header += ('filter_selection' in form and 'Customer search  ;' + form['filter_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
         
         header += ('so_selection' in form and 'SO : ' + form['so_selection'] + "\n") or ''
-        header += 'Customer Rescheduled Date;Customer Key;Customer Name;SO Number;Item Description;Order Qty(PCS);Unit Price;Oustanding Qty;Ship Qty' + " \n"
+        header += 'Customer Rescheduled Date;Customer Key;Customer Name;SO Number;Item Description;CCY;Order Qty(PCS);Unit Price;Oustanding Qty;Ship Qty' + " \n"
 
         cr.execute(
             "SELECT sol.id as line_id, pt.name as prod_name, so.name as so_name, rp.name as rp_name, rp.ref as rp_ref, " \
             "(sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) as oustanding, " \
             "sol.customer_rescheduled_date as crd_date, " \
-            "coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0) as ship_qty " \
+            "coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0) as ship_qty, " \
+            "rc.name as ccy_name " \
             "FROM sale_order_line sol " \
             "LEFT JOIN sale_order so on sol.order_id = so.id " \
             "LEFT JOIN res_partner rp on so.partner_id = rp.id " \
             "LEFT JOIN product_template pt on sol.product_id = pt.id " \
             "LEFT JOIN stock_move sm on sol.id = sm.sale_line_id " \
+            "LEFT JOIN product_pricelist ppl on so.pricelist_id = ppl.id " \
+            "LEFT JOIN res_currency rc on ppl.currency_id = rc.id " \
             "WHERE so.state IN ('progress') " \
             "And (sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) > 0 " \
             + partner_qry \
@@ -352,13 +355,14 @@ class param_so_oustanding_report(osv.osv_memory):
             for t in qry3:
                 sol = sol_obj.browse(cr, uid, t['line_id'])
                 header += str(t['crd_date'] or '') + ";" + str(t['rp_name'] or '') + ";" + str(t['rp_ref'] or '') + ";" + str(t['so_name'] or '') + ";" \
-                + str(t['prod_name'] or '') + ";" + str(sol.product_uom_qty or 0.00) \
+                + str(t['prod_name'] or '') + ";" + str(t['ccy_name'] or '') + ";" + str(sol.product_uom_qty or 0.00) \
                 + ";" + str(sol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) \
                 + ";" + str(t['ship_qty'] or 0.00) + " \n"
                 
                 order_qty += sol.product_uom_qty or 0.00
-                oustanding += (t['oustanding'] or 0)
-        header += "Grand Total;;;;" + str(order_qty) + ";" + ";" + str(oustanding)  + " \n"
+                oustanding += t['oustanding'] or 0
+                ship_qty += t['ship_qty'] or 0
+        header += "Grand Total;;;;;;" + str(order_qty) + ";" + ";" + str(oustanding) + ";" + str(ship_qty) + " \n"
 
         all_content_line += header
         all_content_line += ' \n'

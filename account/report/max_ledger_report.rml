@@ -111,9 +111,15 @@
 			<blockTable colWidths="300,100,300,100">
 				<tr>
 					<td><para style="terp_default_ItalicBold_7"><font>Closing Balance By Currency</font></para></td>
+					<td><para style="terp_default_Bold_7"><font>Currency</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>Inv Amount</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>Home Amount</font></para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_ItalicBold_7"></para></td>
 					<td><para style="terp_default_7"><font>[[ ln['cur_name'] ]]</font></para></td>
 					<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['closing'] or 0, digits=2) ]]</font></para></td>
-					<td><para style="terp_default_7"></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['closing_home'] or 0, digits=2) ]]</font></para></td>
 				</tr>
 			</blockTable>
 		</section>

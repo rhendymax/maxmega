@@ -6,9 +6,9 @@
 			<field name="model">param.margin.sales.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Customer Gross Margin Report by Invoice Number">
-					<separator string="Customer Gross Margin Report by Invoice Number" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Customer Gross Margin Report by Invoice Number"/>
+				<form string="Gross Margin Report by Invoice Number">
+					<separator string="Gross Margin Report by Invoice Number" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Gross Margin Report by Invoice Number"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Invoice No">
@@ -26,24 +26,23 @@
 								</tree>
 							</field>
 						</page>
-						<page string="Date">
+						<page string="Inv Date">
 							<field name="date_selection" colspan="4"/>
 							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 						</page>
 					</notebook>
-					<group col="8" colspan="4">
-						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2" />
-						<label colspan="2" nolabel="1" string=" "/>
-						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
-						<button name="create_vat" string="Print as PDF" colspan="2" type="object" icon="gtk-ok"/>
+					<group col="2" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel"/>
+						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="1" default_focus="1" />
+						<!--button name="create_vat" string="Print as PDF" colspan="2" type="object" icon="gtk-ok"/-->
 					</group>
 				</form>
 			</field>
 		</record>
 
 		<record id="margin_sales_csv_view" model="ir.ui.view">
-			<field name="name">Customer Gross Margin Report by Invoice Number</field>
+			<field name="name">Gross Margin Report by Invoice Number</field>
 			<field name="model">param.margin.sales.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
@@ -59,19 +58,19 @@
 		</record>
 
 		<record id="action_param_margin_sales_report" model="ir.actions.act_window">
-			<field name="name">Customer Gross Margin Report by Invoice Number</field>
+			<field name="name">Gross Margin Report by Invoice Number</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">param.margin.sales.report</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
 			<field name="view_id" ref="view_param_margin_sales_report"/>
 			<field name="target">new</field>
-			<field name="help">This menu print Margin Sales Report.</field>
+			<field name="help">This menu print Gross Margin Report by Invoice Number.</field>
 		</record>
 
 		<menuitem
 			id="menu_param_margin_sales_report"
-			name="Customer Gross Margin Report by Invoice Number"
+			name="Gross Margin Report by Invoice Number"
 			action="action_param_margin_sales_report"
 			parent="menu_custom_sale" sequence="7"/>
 	</data>

@@ -174,7 +174,7 @@ class param_margin_sales_report(osv.osv_memory):
         cr = cr
         uid = uid
         
-        gt_qty = gt_sales_total = gt_qty_cost = gt_cost_total = gt_margin = 0.00
+        gt_qty = gt_sales_total = gt_qty_cost = gt_cost_total = gt_margin = gt_gm = 0.00
         gt_sell_price = gt_cost_price = 0.00000
         
         date_from = form['date_from'] or False
@@ -187,68 +187,89 @@ class param_margin_sales_report(osv.osv_memory):
 
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Customer Gross Margin Report by Invoice Number' + " \n"
+        header += 'Gross Margin Report by Invoice Number' + " \n"
         header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
-        header += 'Inventory Key;Inv Date;Inv No;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
+        header += ('date_selection' in form and 'Inv Date : ' + str(form['date_showing']) + "\n") or ''
+        header += 'Customer;Inventory Key;Inv Date;Inv No;Qty;Sell;Sales Total; Qty Cost;Cost Price;Cost Total;Margin;GM %' + " \n"
 
-        cr.execute("select  DISTINCT l.partner_id " \
-                        "from account_invoice l " \
-                        "inner join account_invoice_line ail on l.id = ail.invoice_id  " \
-                        "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
-                        + date_from_qry \
-                        + date_to_qry \
-                        + invoice_qry)
-        partner_ids_vals = []
-        qry2 = cr.dictfetchall()
-        if qry2:
-            for r in qry2:
-                partner_ids_vals.append(r['partner_id'])
-        partner_ids_vals_qry = (len(partner_ids_vals) > 0 and ((len(partner_ids_vals) == 1 and "where id = " + str(partner_ids_vals[0]) + " ") or "where id IN " + str(tuple(partner_ids_vals)) + " ")) or "where id IN (0) "
+#         cr.execute("select  DISTINCT l.partner_id " \
+#                         "from account_invoice l " \
+#                         "inner join account_invoice_line ail on l.id = ail.invoice_id  " \
+#                         "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
+#                         + date_from_qry \
+#                         + date_to_qry \
+#                         + invoice_qry)
+#         partner_ids_vals = []
+#         qry2 = cr.dictfetchall()
+#         if qry2:
+#             for r in qry2:
+#                 partner_ids_vals.append(r['partner_id'])
+#         partner_ids_vals_qry = (len(partner_ids_vals) > 0 and ((len(partner_ids_vals) == 1 and "where id = " + str(partner_ids_vals[0]) + " ") or "where id IN " + str(tuple(partner_ids_vals)) + " ")) or "where id IN (0) "
+# 
+#         cr.execute(
+#                 "SELECT id, name, ref " \
+#                 "FROM res_partner " \
+#                 + partner_ids_vals_qry \
+#                 + " order by name")
+#         qry = cr.dictfetchall()
+        prec_sale = self.pool.get('decimal.precision').precision_get(cr, uid, 'Sale Price')
+        prec_acc = self.pool.get('decimal.precision').precision_get(cr, uid, 'Account')
+#         if qry:
+#             for s in qry:
+#                 header += '[' + str(s['ref'] or '') + '] ' + str(s['name'] or '') + ' \n'
+        cr.execute("select rp.ref as partner_ref, rp.name as partner_name, " \
+                   "pt.name as inventory_key, l.date_invoice as inv_date, " \
+                    "l.number as invoice_no, " \
+                    "ail.quantity as quantity, " \
+                    "round(CAST(ail.price_unit / (select rate from res_currency_rate where currency_id = l.currency_id and name < l.cur_date order by name desc limit 1) as numeric), 5) as selling_price, " \
+                    "round(CAST((ail.price_unit / (select rate from res_currency_rate where currency_id = l.currency_id and name < l.cur_date order by name desc limit 1)) * ail.quantity as numeric), 2) as total, " \
+                    "sm.id as move_id " \
+                    "from account_invoice l " \
+                    "inner join account_invoice_line ail on l.id = ail.invoice_id " \
+                    "left join res_partner rp on l.partner_id = rp.id " \
+                    "left join product_template pt on ail.product_id = pt.id " \
+                    "left join product_product pp on pt.id = pp.id " \
+                    "left join product_brand pb on pp.brand_id = pb.id " \
+                    "left join stock_move sm on ail.stock_move_id = sm.id " \
+                    "left join sale_order_line sol on sm.sale_line_id = sol.id " \
+                    "left join sale_order so on sol.order_id = so.id " \
+                    "left join stock_location sl on sol.location_id = sl.id " \
+                    "left join product_customer pc on sol.product_customer_id = pc.id " \
+                    "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
+                    + date_from_qry \
+                    + date_to_qry \
+                    + invoice_qry + \
+                    "order by l.date_invoice, l.number")
+        res_lines = cr.dictfetchall()
+        lines_ids = []
+        if res_lines:
+            for val_lines in res_lines:
+                cr.execute("select fc.quantity as qty, \
+                        (CASE WHEN COALESCE(pp_in.currency_id, rc.currency_id) = rc.currency_id THEN \
+                        round(CAST(sm_in.price_unit as numeric), 5) \
+                        ELSE round(CAST(sm_in.price_unit / \
+                        (select rate from res_currency_rate where currency_id = pp_in.currency_id and name >=  sp_in.do_date order by name limit 1) as numeric), 5) \
+                         END) AS cost_price \
+                        from fifo_control fc \
+                        left join stock_move sm_in on COALESCE(fc.int_in_move_id, fc.in_move_id) = sm_in.id \
+                        left join stock_move sm_out on fc.out_move_id = sm_out.id \
+                        left join stock_picking sp_in on sm_in.picking_id = sp_in.id \
+                        left join stock_picking sp_out on sm_out.picking_id = sp_out.id \
+                        left join product_pricelist pp_in on sp_in.pricelist_id = pp_in.id \
+                        left join res_company rc on sm_out.company_id = rc.id \
+                        where (fc.out_move_id = " + str(val_lines['move_id']) + ")")
+                cost_val = cr.dictfetchall()
 
-        cr.execute(
-                "SELECT id, name, ref " \
-                "FROM res_partner " \
-                + partner_ids_vals_qry \
-                + " order by name")
-        qry = cr.dictfetchall()
-        if qry:
-            for s in qry:
-                header += '[' + str(s['ref'] or '') + '] ' + str(s['name'] or '') + ' \n'
-                cr.execute("select pt.name as inventory_key, " \
-                            "l.date_invoice as inv_date, " \
-                            "l.number as invoice_no, " \
-                            "ail.quantity as quantity, " \
-                            "round(CAST(ail.price_unit / (select rate from res_currency_rate where currency_id = l.currency_id and name < l.cur_date order by name desc limit 1) as numeric), 5) as selling_price, " \
-                            "round(CAST((ail.price_unit / (select rate from res_currency_rate where currency_id = l.currency_id and name < l.cur_date order by name desc limit 1)) * ail.quantity as numeric), 2) as total, " \
-                            "sm.id as move_id " \
-                            "from account_invoice l " \
-                            "inner join account_invoice_line ail on l.id = ail.invoice_id " \
-                            "left join res_partner rp on l.partner_id = rp.id " \
-                            "left join product_template pt on ail.product_id = pt.id " \
-                            "left join product_product pp on pt.id = pp.id " \
-                            "left join product_brand pb on pp.brand_id = pb.id " \
-                            "left join stock_move sm on ail.stock_move_id = sm.id " \
-                            "left join sale_order_line sol on sm.sale_line_id = sol.id " \
-                            "left join sale_order so on sol.order_id = so.id " \
-                            "left join stock_location sl on sol.location_id = sl.id " \
-                            "left join product_customer pc on sol.product_customer_id = pc.id " \
-                            "where l.type = 'out_invoice' and l.state in ('open','paid') and ail.product_id is not null  " \
-                            + date_from_qry \
-                            + date_to_qry \
-                            + invoice_qry + \
-                            "and l.partner_id = " + str(s['id']) + " "\
-                            "order by l.date_invoice, l.number")
-                res_lines = cr.dictfetchall()
-                lines_ids = []
-                if res_lines:
-                    for val_lines in res_lines:
-                        cr.execute("select fc.quantity as qty, \
-                                (CASE WHEN COALESCE(pp_in.currency_id, rc.currency_id) = rc.currency_id THEN \
-                                round(CAST(sm_in.price_unit as numeric), 5) \
+                margin_percent = 0
+                margin = 0
+                first_val = False
+                for cost_lines in cost_val:
+                    if not first_val:
+                        cr.execute("select coalesce(SUM(CASE WHEN COALESCE(pp_in.currency_id, rc.currency_id) = rc.currency_id THEN \
+                                round(CAST(sm_in.price_unit as numeric), 5) * fc.quantity \
                                 ELSE round(CAST(sm_in.price_unit / \
                                 (select rate from res_currency_rate where currency_id = pp_in.currency_id and name >=  sp_in.do_date order by name limit 1) as numeric), 5) \
-                                 END) AS cost_price \
+                                * fc.quantity END),0) AS test \
                                 from fifo_control fc \
                                 left join stock_move sm_in on COALESCE(fc.int_in_move_id, fc.in_move_id) = sm_in.id \
                                 left join stock_move sm_out on fc.out_move_id = sm_out.id \
@@ -257,68 +278,49 @@ class param_margin_sales_report(osv.osv_memory):
                                 left join product_pricelist pp_in on sp_in.pricelist_id = pp_in.id \
                                 left join res_company rc on sm_out.company_id = rc.id \
                                 where (fc.out_move_id = " + str(val_lines['move_id']) + ")")
-                        cost_val = cr.dictfetchall()
-
-                        margin_percent = 0
-                        margin = 0
-                        first_val = False
-                        for cost_lines in cost_val:
-                            if not first_val:
-                                cr.execute("select coalesce(SUM(CASE WHEN COALESCE(pp_in.currency_id, rc.currency_id) = rc.currency_id THEN \
-                                        round(CAST(sm_in.price_unit as numeric), 5) * fc.quantity \
-                                        ELSE round(CAST(sm_in.price_unit / \
-                                        (select rate from res_currency_rate where currency_id = pp_in.currency_id and name >=  sp_in.do_date order by name limit 1) as numeric), 5) \
-                                        * fc.quantity END),0) AS test \
-                                        from fifo_control fc \
-                                        left join stock_move sm_in on COALESCE(fc.int_in_move_id, fc.in_move_id) = sm_in.id \
-                                        left join stock_move sm_out on fc.out_move_id = sm_out.id \
-                                        left join stock_picking sp_in on sm_in.picking_id = sp_in.id \
-                                        left join stock_picking sp_out on sm_out.picking_id = sp_out.id \
-                                        left join product_pricelist pp_in on sp_in.pricelist_id = pp_in.id \
-                                        left join res_company rc on sm_out.company_id = rc.id \
-                                        where (fc.out_move_id = " + str(val_lines['move_id']) + ")")
-                                res_val = cr.dictfetchone()
+                        res_val = cr.dictfetchone()
 #                                print val_lines['total']
 #                                print res_val['test']
-                                margin = val_lines['total'] - res_val['test']
-                                if val_lines['total'] > 0:
-                                    margin_percent = margin / val_lines['total'] * 100
-                                else:
-                                    margin_percent = 0
-                                first_val = True
-                                header += str(val_lines['inventory_key'] or '') + ";" + str(val_lines['inv_date'] or '') + ";" + str(val_lines['invoice_no'] or '') + ";" \
-                                + str(val_lines['quantity'] or 0) + ";" + str(val_lines['selling_price'] or 0.00000) + ";" + str(val_lines['total'] or 0) + ";" + str(cost_lines['qty'] or 0) + ";" \
-                                + str(cost_lines['cost_price'] or 0) + ";" + str(res_val['test'] or 0) + ";" + str(margin or 0) + ";" + str(float_round(margin_percent, 2) or 0) + "% \n"
-                                gt_qty += val_lines['quantity'] or 0.00
-                                gt_sell_price += val_lines['selling_price'] or 0.0000
-                                gt_sales_total += val_lines['total'] or 0.00
-                                gt_qty_cost += cost_lines['qty'] or 0.00
-                                gt_cost_price += cost_lines['cost_price'] or 0.00000
-                                gt_cost_total += res_val['test'] or 0.00
-                                gt_margin += margin or 0.00
-                            else:
-                                header += str('') + ";" + str('') + ";" + str('') + ";" \
-                                + str('') + ";" + str('') + ";" + str('') + ";" + str(cost_lines['qty'] or 0) + ";" \
-                                + str(cost_lines['cost_price'] or 0) + ";" + str('') + ";" + str('') + ";" + str('') + " \n"
-                                gt_qty_cost += cost_lines['qty'] or 0.00
-                                gt_cost_price += cost_lines['cost_price'] or 0.00000
-        header += ' \n' + 'Grand Total' + ';' + ';' + ';' + str(float_round(gt_qty,2)) + ';' + str(float_round(gt_sell_price,5)) + ';' \
-        + str(float_round(gt_sales_total,2)) + ';' + str(float_round(gt_qty_cost,2)) + ';' + str(float_round(gt_cost_price,5)) + ';' \
-        + str(float_round(gt_cost_total,2)) + ';' + str(float_round(gt_margin,2)) + ' \n'
-        
+                        margin = val_lines['total'] - res_val['test']
+                        if val_lines['total'] > 0:
+                            margin_percent = margin / val_lines['total'] * 100
+                        else:
+                            margin_percent = 0
+                        first_val = True
+                        header += str(('[' + val_lines['partner_ref'] + '] ' + val_lines['partner_name']) or '') + ';' + str(val_lines['inventory_key'] or '') + ";" + str(val_lines['inv_date'] or '') + ";" + str(val_lines['invoice_no'] or '') + ";" \
+                        + str(val_lines['quantity'] or 0) + ";" + str(val_lines['selling_price'] or 0.00000) + ";" + str(val_lines['total'] or 0) + ";" + str(cost_lines['qty'] or 0) + ";" \
+                        + str(cost_lines['cost_price'] or 0) + ";" + str(res_val['test'] or 0) + ";" + str(margin or 0) + ";" + str(float_round(margin_percent, 2) or 0) + "% \n"
+                        gt_qty += val_lines['quantity'] or 0.00
+                        gt_sell_price += val_lines['selling_price'] or 0.0000
+                        gt_sales_total += val_lines['total'] or 0.00
+                        gt_qty_cost += cost_lines['qty'] or 0.00
+                        gt_cost_price += cost_lines['cost_price'] or 0.00000
+                        gt_cost_total += res_val['test'] or 0.00
+                        gt_margin += margin or 0.00
+                    else:
+                        header += str('') + ";" + str('') + ";" + str('') + ";" \
+                        + str('') + ";" + str('') + ";" + str('') + ";" + str(cost_lines['qty'] or 0) + ";" \
+                        + str(cost_lines['cost_price'] or 0) + ";" + str('') + ";" + str('') + ";" + str('') + " \n"
+                        gt_qty_cost += cost_lines['qty'] or 0.00
+                        gt_cost_price += cost_lines['cost_price'] or 0.00000
+                gt_gm = round((gt_margin / gt_sales_total * 100),2)
+        header += '\n;;;;Qty;;Sales Total; Qty Cost;;Cost Total;Margin;GM %' + " \n"
+        header += 'Grand Total' + ';;;;' + str(float_round(gt_qty,2)) + ';;' \
+        + str(float_round(gt_sales_total,2)) + ';' + str(float_round(gt_qty_cost,2)) + ';;' \
+        + str(float_round(gt_cost_total,2)) + ';' + str(float_round(gt_margin,2)) + ';' + str(gt_gm) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'
         csv_content = ''
     
-        filename = 'Customer Gross Margin Report by Invoice Number.csv'
+        filename = 'Gross Margin Report by Invoice Number.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','margin_sales_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Customer Gross Margin Report by Invoice Number',
+                'name':'Gross Margin Report by Invoice Number',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.margin.sales.report',

@@ -47,7 +47,14 @@
 	<story>
 		<para><font color="white"> </font></para>
 		<para style="terp_header_Centre">Onhand Allocated Sale Order Checklist Report</para>
-		<para><font color="white"></font></para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_search_by_spn() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
 		<blockTable colWidths="120.0,320.0,120.0,120.0,60.0,60.0" style="TableMiddle">
 			<tr>
 				<td><para style="terp_default_8">Sale Order No.</para></td>

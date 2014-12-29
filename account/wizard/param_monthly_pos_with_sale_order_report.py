@@ -183,9 +183,9 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Monthly Pos With Sale Order' + " \n"
+        header += 'Monthly Pos by Sales Order' + " \n"
         header += ('ai_selection' in form and 'Invoice Filter Selection : ' + form['ai_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date : ' + form['date_showing'] + "\n") or ''
+        header += ('date_selection' in form and 'Inv Date : ' + form['date_showing'] + "\n") or ''
         header += 'Date;Invoice No;SO No;Customer PO No;Customer;Location;CPN;MPN;Selling Price;Qty;Total;Brand' + " \n"
 
         cr.execute("select ai.number as invoice_no, " \
@@ -196,7 +196,8 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
                         "rp.name as customer_name, " \
                         "pc.name as cpn, " \
                         "pt.name as mpn, " \
-                        "ail.price_unit as selling_price, " \
+                        "ail.price_unit / (select rate from res_currency_rate where currency_id = ai.currency_id " \
+                        "and name <= ai.cur_date order by name desc limit 1) as selling_price, " \
                         "ail.quantity as quantity, " \
                         "ail.price_unit * ail.quantity as total, " \
                         "pb.name as brand_name " \
@@ -219,30 +220,36 @@ class param_monthly_pos_with_sale_order_report(osv.osv_memory):
 
         results = cr.dictfetchall()
         gt_selling_price = gt_qty = gt_total = 0
+        prec_sale = self.pool.get('decimal.precision').precision_get(cr, uid, 'Sale Price')
+        prec_acc = self.pool.get('decimal.precision').precision_get(cr, uid, 'Account')
         if results:
+            qty = 0
+            selling_price = total_selling_price = 0.00
             for t in results:
+                qty = t['quantity'] or 0
+                selling_price = round(t['selling_price'],prec_sale)
+                total_selling_price = round((selling_price * qty),prec_acc)
                 header += str(t['date_inv'] or '') + ";" + str(t['invoice_no']) + ";" + str(t['so_no'] or '') + ";'" \
                         + str(t['customer_po_no']) + ";" + str(t['customer_name'] or '') + ";" + str(t['location'] or '') + ";" \
-                        + str(t['cpn'] or '') + ";" + str(t['mpn'] or '') + ";" + str(t['selling_price'] or 0.00000) + ";" + str(t['quantity'] or 0) + ";"\
-                        + str(t['total'] or 0)+ ";" + str(t['brand_name'] or '') + " \n"
-                gt_selling_price += t['selling_price'] or 0.00000
-                gt_qty += t['quantity'] or 0
-                gt_total += t['total'] or 0
-            header += ' \n' + 'Grand Total' + ';' + ';' + ';' + ';' + ';' + ';' + ';' + ';' + str(float_round(gt_selling_price,5)) + ';' + str(float_round(gt_qty,0)) \
-            + ';' + str(float_round(gt_total,0)) + ' \n'
+                        + str(t['cpn'] or '') + ";" + str(t['mpn'] or '') + ";" + str(selling_price) + ";" + str(qty) + ";"\
+                        + str(total_selling_price)+ ";" + str(t['brand_name'] or '') + " \n"
+                gt_qty += qty
+                gt_total += total_selling_price
+            header += ' \n' + ';' + ';' + ';' + ';' + ';' + ';' + ';' + ';' + 'Grand Total :;' + str(gt_qty) \
+            + ';' + str(gt_total) + ' \n'
         all_content_line += header
         all_content_line += ' \n'
         all_content_line += 'End of Report'
         csv_content = ''
 
-        filename = 'Monthly Pos With Sale Order Report.csv'
+        filename = 'Monthly Pos by Sales Order Report.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','monthly_pos_with_sale_order_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Monthly Pos With Sale Order Report',
+                'name':'Monthly Pos by Sales Order Report',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.monthly.pos.with.sale.order.report',

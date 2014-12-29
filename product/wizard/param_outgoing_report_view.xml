@@ -87,6 +87,7 @@
 			id="menu_outgoing_report"
 			name="Outgoing Report"
 			action="action_param_outgoing_report"
+			groups="so_workflowchange.group_non_user"
 			parent="menu_custom_sale" sequence="9"/>
 	</data>
 </openerp>

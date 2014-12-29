@@ -313,7 +313,6 @@ class max_ledger_report(report_sxw.rml_parse):
 
         date_from_qry = date_from and "And l.date >= '" + str(date_from) + "' " or " "
         date_to_qry = date_to and "And l.date <= '" + str(date_to) + "' " or " "
-
         cr.execute(
                 "SELECT DISTINCT l.partner_id " \
                 "FROM account_move_line AS l, account_account AS account, " \
@@ -463,7 +462,7 @@ class max_ledger_report(report_sxw.rml_parse):
                                        'balance': balance,
                                        })
                         val_ids2 = val_ids2 and sorted(val_ids2, key=lambda val_res: val_res['aml_date']) or []
-
+                        
                         if u['period_startdate'] < min_period.date_start:
                             continue
                         else:
@@ -483,6 +482,8 @@ class max_ledger_report(report_sxw.rml_parse):
                     cur_name = partner_obj.browse(self.cr, self.uid, s['id']).property_product_pricelist.currency_id.name
                     cur_id = partner_obj.browse(self.cr, self.uid, s['id']).property_product_pricelist.currency_id.id
                 self.report_total += closing
+
+
                 if cur_id not in self.balance_by_cur:
                     self.balance_by_cur.update({cur_id : {
                              'inv' : closing_inv,
@@ -497,15 +498,17 @@ class max_ledger_report(report_sxw.rml_parse):
                     self.balance_by_cur[cur_id] = res_currency_grouping
 #                 print val
 #                 raise osv.except_osv(_('Invalid action !'), _('test'))
+                
                 results1.append({
                     'part_name' : s['name'],
                     'part_ref' : s['ref'],
                     'cur_name': cur_name,
                     'closing' : closing_inv,
+                    'closing_home': closing,
                     'val_ids' : val,
                     })
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
-
+#         raise osv.except_osv(_('Invalid action !'), _('test'))
         return results1
 report_sxw.report_sxw('report.max.ledger.report_landscape', 'account.invoice',
     'addons/max_custom_report/account/report/max_ledger_report.rml', parser=max_ledger_report, header="internal landscape")

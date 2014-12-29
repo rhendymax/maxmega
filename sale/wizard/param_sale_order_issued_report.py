@@ -234,7 +234,7 @@ class param_sale_order_issued_report(osv.osv_memory):
         
         all_content_line = ''
         header = 'sep=;' + " \n"
-        header += 'Sale Order Issued' + " \n"
+        header += 'Sales Order Issued Report' + " \n"
         
         header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
         header += ('date_selection' in form and 'Date : ' + str(form['date_showing'])+ "\n") or ''
@@ -282,14 +282,14 @@ class param_sale_order_issued_report(osv.osv_memory):
         all_content_line += 'End of Report'
         csv_content = ''
 
-        filename = 'Sale Order Issued Report.csv'
+        filename = 'Sales Order Issued Report.csv'
         out = base64.encodestring(all_content_line)
         self.write(cr, uid, ids,{'data':out, 'filename':filename})
         obj_model = self.pool.get('ir.model.data')
         model_data_ids = obj_model.search(cr,uid,[('model','=','ir.ui.view'),('name','=','sale_order_issued_csv_view')])
         resource_id = obj_model.read(cr, uid, model_data_ids, fields=['res_id'])[0]['res_id']
         return {
-                'name':'Sale Order Issued Report',
+                'name':'Sales Order Issued Report',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'param.sale.order.issued.report',

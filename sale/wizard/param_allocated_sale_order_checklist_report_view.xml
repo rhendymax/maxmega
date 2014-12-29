@@ -66,7 +66,7 @@
 
 		<menuitem
 			id="menu_param_allocated_sale_order_checklist_report"
-			name="Allocated Sale Order Report"
+			name="Allocated Sales Order Report"
 			action="action_param_allocated_sale_order_checklist_report"
 			parent="menu_custom_sale" sequence="1"/>
 	</data>

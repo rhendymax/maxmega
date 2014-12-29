@@ -623,6 +623,7 @@ class param_payable_report(osv.osv_memory):
                     'part_ref' : s['ref'],
                     'cur_name': cur_name,
                     'closing' : closing_inv,
+                    'closing_home': closing,
                     'val_ids' : val,
                     })
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
@@ -639,7 +640,8 @@ class param_payable_report(osv.osv_memory):
                         + str(rs3['currency_name']) + ';' + str(rs3['exchange_rate']) + ';' + str(rs3['inv_amount']) + ';' \
                         + str(rs3['home_amount']) + ';' + str(rs3['balance']) + ' \n'
                 header += ';' + ';' + ';' + 'Closing Balance' + ';;;;' + str(total_home_amt + rs2['opening_balance']) + ' \n'
-            header += 'Closing Balance By Currency' + ';;;' + str(rs1['cur_name']) + ';;;' + str(rs1['closing']) + ' \n \n'
+            header += 'Closing Balance By Currency' + ';;;' + 'Currency' + ';;' + 'Inv Amount' + ';' + 'Home Amount' + ' \n'
+            header += ';;;' + str(rs1['cur_name']) + ';;' + str(rs1['closing']) + ';' + str(rs1['closing_home']) + ' \n \n'
         header += 'Report Total :;;;;;;;' + str(report_total) + '\n \n \n'
         
         result_currency = []

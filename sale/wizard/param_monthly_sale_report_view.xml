@@ -2,13 +2,13 @@
 <openerp>
 	<data>
 		<record id="view_param_monthly_sale_report" model="ir.ui.view">
-			<field name="name">Monthly Sales Detail Report</field>
+			<field name="name">Monthly POS Report by Customer</field>
 			<field name="model">param.monthly.sale.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Monthly Sales Detail Report">
-					<separator string="Monthly Sales Detail Report" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Monthly Sales Detail Report"/>
+				<form string="Monthly POS Report by Customer">
+					<separator string="Monthly POS Report by Customer" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Monthly POS Report by Customer"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Customer">
@@ -33,7 +33,7 @@
 								</tree>
 							</field>
 						</page>
-						<page string="Date">
+						<page string="Inv Date">
 							<field name="date_selection" colspan="4"/>
 							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
@@ -63,7 +63,7 @@
 		</record>
 
 		<record id="monthly_sale_result_csv_view" model="ir.ui.view">
-			<field name="name">Monthly Sales Detail Report</field>
+			<field name="name">Monthly POS Report by Customer</field>
 			<field name="model">param.monthly.sale.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
@@ -79,19 +79,19 @@
 		</record>
 
 		<record id="action_param_monthly_sale_report" model="ir.actions.act_window">
-			<field name="name">Monthly Sales Detail Report</field>
+			<field name="name">Monthly POS Report by Customer</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">param.monthly.sale.report</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
 			<field name="view_id" ref="view_param_monthly_sale_report"/>
 			<field name="target">new</field>
-			<field name="help">This menu print Monthly Sale Order Report.</field>
+			<field name="help">This menu print Monthly Sales Detail Report by Customer.</field>
 		</record>
 
 		<menuitem
 			id="menu_monthly_sale_report"
-			name="Monthly Sales Detail Report"
+			name="Monthly POS Report by Customer"
 			action="action_param_monthly_sale_report"
 			parent="menu_custom_sale" sequence="4"/>
 	</data>

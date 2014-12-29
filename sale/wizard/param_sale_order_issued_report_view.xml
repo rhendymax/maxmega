@@ -79,7 +79,7 @@
 
 		<menuitem
 			id="menu_param_sale_order_issued_report"
-			name="Sale Order Issued Report"
+			name="Sales Order Issued Report"
 			action="action_param_sale_order_issued_report"
 			parent="menu_custom_sale" sequence="2"/>
 	</data>

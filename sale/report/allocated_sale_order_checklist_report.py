@@ -45,11 +45,14 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
         qry_pp = ''
         val_pp = []
         pp_ids = False
+        pp_selection = False
 
         pp_default_from = data['form']['pp_default_from'] and data['form']['pp_default_from'][0] or False
         pp_default_to = data['form']['pp_default_to'] and data['form']['pp_default_to'][0] or False
         pp_input_from = data['form']['pp_input_from'] or False
         pp_input_to = data['form']['pp_input_to'] or False
+        pp_default_from_str = pp_default_to_str = ''
+        pp_input_from_str = pp_input_to_str= ''
 
         if data['form']['pp_selection'] == 'all_vall':
             pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
@@ -58,15 +61,19 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
             data_found = False
             if pp_default_from and product_product_obj.browse(self.cr, self.uid, pp_default_from) and product_product_obj.browse(self.cr, self.uid, pp_default_from).name:
                 data_found = True
+                pp_default_from_str = product_product_obj.browse(self.cr, self.uid, pp_default_from).name
                 val_pp.append(('name', '>=', product_product_obj.browse(self.cr, self.uid, pp_default_from).name))
             if pp_default_to and product_product_obj.browse(self.cr, self.uid, pp_default_to) and product_product_obj.browse(self.cr, self.uid, pp_default_to).name:
                 data_found = True
+                pp_default_to_str = product_product_obj.browse(self.cr, self.uid, pp_default_to).name
                 val_pp.append(('name', '<=', product_product_obj.browse(self.cr, self.uid, pp_default_to).name))
             if data_found:
+                self.pp_selection = '"' + pp_default_from_str + '" - "' + pp_default_to_str + '"'
                 pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
         elif data['form']['pp_selection'] == 'input':
             data_found = False
             if pp_input_from:
+                pp_input_from_str = pp_input_from
                 self.cr.execute("select name " \
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_from) + "%' " \
@@ -76,6 +83,7 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
                     data_found = True
                     val_pp.append(('name', '>=', qry['name']))
             if pp_input_to:
+                pp_input_to_str = pp_input_to
                 self.cr.execute("select name " \
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_to) + "%' " \
@@ -85,10 +93,15 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
                     data_found = True
                     val_pp.append(('name', '<=', qry['name']))
             if data_found:
+                self.pp_selection = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
                 pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
         elif data['form']['pp_selection'] == 'selection':
+            p_ids = ''
             if data['form']['pp_ids']:
+                for pp in  product_product_obj.browse(self.cr, self.uid, data['form']['pp_ids']):
+                    p_ids += '"' + str(pp.name) + '",'
                 pp_ids = data['form']['pp_ids']
+            self.pp_selection = '[' + p_ids +']'
         self.pp_ids = pp_ids
     #        raise osv.except_osv(_('Invalid action !'), _(' \'%s\' \'%s\'!') %(data['form']['partner_code_from'][0], data['form']['partner_code_from'][0]))
         return super(allocated_sale_order_checklist_report, self).set_context(objects, data, new_ids, report_type=report_type)
@@ -99,9 +112,16 @@ class allocated_sale_order_checklist_report(report_sxw.rml_parse):
         self.localcontext.update({
             'time': time,
             'locale': locale,
+            'get_search_by_spn' : self._get_search_by_spn,
             'get_lines': self._get_lines,
             'grand_total' : self._grand_total,
             })
+
+    def _get_search_by_spn(self):
+        header = False
+        if self.pp_selection:
+            header = 'Supplier Part No : ' + self.pp_selection
+        return header
 
     def _grand_total(self):
         return self.grand_total

@@ -33,7 +33,7 @@
 								</tree>
 							</field>
 						</page>
-						<page string="Date">
+						<page string="CRD Date">
 							<field name="date_selection" colspan="4"/>
 							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>

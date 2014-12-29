@@ -40,75 +40,73 @@ class monthly_pos_report(report_sxw.rml_parse):
     _name = 'monthly.pos.report'
 
     def set_context(self, objects, data, ids, report_type=None):
-                new_ids = ids
-                res = {}
-                product_brand_obj = self.pool.get('product.brand')
-                qry_supp = ''
-                val_part = []
-                qry_pb = ''
-                val_pb = []
-                
-                partner_ids = False
-                brand_ids = False
-                #Date
-                if data['form']['date_selection'] == 'none_sel':
-                    self.date_from = False
-                    self.date_to = False
-                else:
-                    self.date_from = data['form']['date_from']
-                    self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
-        
-        #Inventory Brand
-                brand_default_from = data['form']['brand_default_from'] and data['form']['brand_default_from'][0] or False
-                brand_default_to = data['form']['brand_default_to'] and data['form']['brand_default_to'][0] or False
-                brand_input_from = data['form']['brand_input_from'] or False
-                brand_input_to = data['form']['brand_input_to'] or False
-        
-                if data['form']['brand_selection'] == 'all_vall':
-                    brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
-                if data['form']['brand_selection'] == 'def':
-                    data_found = False
-                    if brand_default_from and product_brand_obj.browse(self.cr, self.uid, brand_default_from) and product_brand_obj.browse(self.cr, self.uid, brand_default_from).name:
-                        data_found = True
-                        val_pb.append(('name', '>=', product_brand_obj.browse(self.cr, self.uid, brand_default_from).name))
-                    if brand_default_to and product_brand_obj.browse(self.cr, self.uid, brand_default_to) and product_brand_obj.browse(self.cr, self.uid, brand_default_to).name:
-                        data_found = True
-                        val_pb.append(('name', '<=', product_brand_obj.browse(self.cr, self.uid, brand_default_to).name))
-                    if data_found:
-                        brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
-                elif data['form']['brand_selection'] == 'input':
-                    data_found = False
-                    if brand_input_from:
-                        self.cr.execute("select name " \
-                                        "from product_brand "\
-                                        "where " + qry_pb + " and " \
-                                        "name ilike '" + str(brand_input_from) + "%' " \
-                                        "order by name limit 1")
-                        qry = self.cr.dictfetchone()
-                        if qry:
-                            data_found = True
-                            val_pb.append(('name', '>=', qry['name']))
-                    if brand_input_to:
-                        self.cr.execute("select name " \
-                                        "from product_brand "\
-                                        "where " + qry_pb + " and " \
-                                        "name ilike '" + str(brand_input_to) + "%' " \
-                                        "order by name desc limit 1")
-                        qry = self.cr.dictfetchone()
-                        if qry:
-                            data_found = True
-                            val_pb.append(('name', '<=', qry['name']))
-                    #print val_part
-                    if data_found:
-                        brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
-                elif data['form']['brand_selection'] == 'selection':
-                    if data['form']['brand_ids']:
-                        brand_ids = data['form']['brand_ids']
-                self.brand_ids = brand_ids
-        
-                #print self.period_ids
-                return super(monthly_pos_report, self).set_context(objects, data, new_ids, report_type=report_type)
+        new_ids = ids
+        res = {}
+        product_brand_obj = self.pool.get('product.brand')
+        qry_supp = ''
+        val_part = []
+        qry_pb = ''
+        val_pb = []
+        partner_ids = False
+        brand_ids = False
+        #Date
+        if data['form']['date_selection'] == 'none_sel':
+            self.date_from = False
+            self.date_to = False
+        else:
+            self.date_from = data['form']['date_from']
+            self.date_to = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
+        #Inventory Brand
+        brand_default_from = data['form']['brand_default_from'] and data['form']['brand_default_from'][0] or False
+        brand_default_to = data['form']['brand_default_to'] and data['form']['brand_default_to'][0] or False
+        brand_input_from = data['form']['brand_input_from'] or False
+        brand_input_to = data['form']['brand_input_to'] or False
+
+        if data['form']['brand_selection'] == 'all_vall':
+            brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+        if data['form']['brand_selection'] == 'def':
+            data_found = False
+            if brand_default_from and product_brand_obj.browse(self.cr, self.uid, brand_default_from) and product_brand_obj.browse(self.cr, self.uid, brand_default_from).name:
+                data_found = True
+                val_pb.append(('name', '>=', product_brand_obj.browse(self.cr, self.uid, brand_default_from).name))
+            if brand_default_to and product_brand_obj.browse(self.cr, self.uid, brand_default_to) and product_brand_obj.browse(self.cr, self.uid, brand_default_to).name:
+                data_found = True
+                val_pb.append(('name', '<=', product_brand_obj.browse(self.cr, self.uid, brand_default_to).name))
+            if data_found:
+                brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+        elif data['form']['brand_selection'] == 'input':
+            data_found = False
+            if brand_input_from:
+                self.cr.execute("select name " \
+                                "from product_brand "\
+                                "where " + qry_pb + " and " \
+                                "name ilike '" + str(brand_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pb.append(('name', '>=', qry['name']))
+            if brand_input_to:
+                self.cr.execute("select name " \
+                                "from product_brand "\
+                                "where " + qry_pb + " and " \
+                                "name ilike '" + str(brand_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pb.append(('name', '<=', qry['name']))
+            #print val_part
+            if data_found:
+                brand_ids = product_brand_obj.search(self.cr, self.uid, val_pb, order='name ASC')
+        elif data['form']['brand_selection'] == 'selection':
+            if data['form']['brand_ids']:
+                brand_ids = data['form']['brand_ids']
+        self.brand_ids = brand_ids
+
+        #print self.period_ids
+        return super(monthly_pos_report, self).set_context(objects, data, new_ids, report_type=report_type)
 
     def __init__(self, cr, uid, name, context=None):
         super(monthly_pos_report, self).__init__(cr, uid, name, context=context)
@@ -131,11 +129,8 @@ class monthly_pos_report(report_sxw.rml_parse):
 
     def _get_lines(self):
         results = []
-        # partner
         cr              = self.cr
         uid             = self.uid
-        
-        
         date_from = self.date_from
         date_to = self.date_to
         date_from_qry = date_from and "And l.date_invoice >= '" + str(date_from) + "' " or " "
@@ -247,7 +242,6 @@ class monthly_pos_report(report_sxw.rml_parse):
                         'qty' : qty,
                         'total' : total,
                                 })
-
         results = results and sorted(results, key=lambda val_res: val_res['part_name']) or []
 
         return results

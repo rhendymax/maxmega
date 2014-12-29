@@ -109,7 +109,7 @@ class param_allocated_sale_order_checklist_report(osv.osv_memory):
                 if qry:
                     data_found = True
                     val_pp.append(('name', '<=', qry['name']))
-            result['pp_selection'] = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
+            pp_selection = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
             if data_found:
                 pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
         elif data['form']['pp_selection'] == 'selection':

@@ -6,9 +6,9 @@
 			<field name="model">param.gross.margin.product.report</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Gross Margin Report by Product">
-					<separator string="Gross Margin Report by Product" colspan="4"/>
-					<label colspan="4" nolabel="1" string="This menu prints Gross Margin Report by Product"/>
+				<form string="Gross Margin Report by Product Brand">
+					<separator string="Gross Margin Report by Product Brand" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints Gross Margin Report by Product Brand"/>
 					<newline/>
 					<notebook colspan="4">
 						<page string="Invoice No">
@@ -26,7 +26,7 @@
 								</tree>
 							</field>
 						</page>
-						<page string="Date">
+						<page string="Inv Date">
 							<field name="date_selection" colspan="4"/>
 							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
 							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
@@ -89,14 +89,14 @@
 		</record>
 
 		<record id="action_param_gross_margin_product_report" model="ir.actions.act_window">
-			<field name="name">Gross Margin Report by Product</field>
+			<field name="name">Gross Margin Report by Product Brand</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">param.gross.margin.product.report</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
 			<field name="view_id" ref="view_param_gross_margin_product_report"/>
 			<field name="target">new</field>
-			<field name="help">This menu print Gross Margin Product Report.</field>
+			<field name="help">This menu print Gross Margin Report by Product Brand.</field>
 		</record>
 
 		<menuitem
