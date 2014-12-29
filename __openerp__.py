@@ -39,6 +39,8 @@ Customise report
         'wizard/param_payment_deposit_bank_report.xml',
         'wizard/param_receipt_deposit_bank_report.xml',
         'wizard/param_partner_enquiry.xml',
+        'wizard/param_oustanding_payment_deposit_report.xml',
+        'wizard/param_oustanding_receipt_deposit_report.xml',
     ],
 
     'demo_xml': [],

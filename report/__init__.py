@@ -27,3 +27,4 @@ import sale_journal_zone_key_report
 import sale_journal_zone_report
 import deposit_bank_report
 import partner_enquiry_report
+import oustanding_deposit_report

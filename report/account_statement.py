@@ -283,7 +283,12 @@ class statement(report_sxw.rml_parse):
 #                     res -= inv.residual
 #         return res
 
-report_sxw.report_sxw('report.max.account.statement', 'res.partner', 'addons/max_report/report/account_statement.rml', parser=statement, header="external")
+report_sxw.report_sxw(
+                'report.max.account.statement',
+                'res.partner',
+                'addons/max_report/report/account_statement.rml',
+                parser=statement, header="external"
+                )
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

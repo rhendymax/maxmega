@@ -7,11 +7,34 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <field name="period_id" required="1"/>
-                <newline/>
-                <button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
-                <button icon="gtk-print" name="print_report" string="Print" type="object" colspan="2" default_focus="1" />
+                <!--newline/>
+	               <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+	               <button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
+	               <button icon="gtk-print" name="print_report" string="Print" type="object" colspan="2" default_focus="1" /-->
+            	<group col="8" colspan="4">
+					<button icon='gtk-cancel' special="cancel" string="Cancel" />
+					<label colspan="2" nolabel="1" string=" "/>
+					<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
+					<button name="print_report" string="Print" colspan="2" type="object" icon="gtk-ok"/>
+				</group>
             </field>
         </record>
+
+		<record id="action_account_statement_csv_report" model="ir.ui.view">
+			<field name="name">Statement of Account</field>
+			<field name="model">account.statement.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Report Options">
+					<field name="data" filename="filename" colspan="4" readonly="1"/>
+					<field name="filename" invisible="1"/>
+					<separator colspan="4"/>
+					<group col="4" colspan="4">
+						<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+					</group>
+				</form>
+			</field>
+		</record>
 
         <record id="action_account_statement_report" model="ir.actions.act_window">
             <field name="name">Statement of Account</field>
