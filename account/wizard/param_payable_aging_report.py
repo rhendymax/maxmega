@@ -511,8 +511,8 @@ class param_payable_aging_report(osv.osv_memory):
                         total_home_amt2 += due_home_2
                         total_home_amt3 += due_home_3
                         total_home_amt4 += due_home_4
-                        total_org_amount += (t['inv_amt'] * sign) or 0.00
-                        total_org_home += (t['home_amt'] * sign) or 0.00
+                        total_org_amount += (total_amt1 + total_amt2 + total_amt3 + total_amt4) or 0.00
+                        total_org_home += (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4) or 0.00
                         val.append({
                             'invoice_name' : t['inv_name'] or '',
                             'sales_person': t['sales_name'] or '',
@@ -542,8 +542,8 @@ class param_payable_aging_report(osv.osv_memory):
                     'contact_phone' : addr and addr.phone or '',
                     'contact_person' : addr and addr.name or '',
                     'credit_limit' : s['credit_limit'] or 0.00,
-                    'total_inv' : total_org_amount,
-                    'total_home' : total_org_home,
+                    'total_inv' : (total_amt1 + total_amt2 + total_amt3 + total_amt4) or 0.00,
+                    'total_home' : (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4) or 0.00,
                     'total_amt1' : total_amt1 or  0.00,
                     'total_home_amt1' : total_home_amt1 or 0.00,
                     'total_amt2' : total_amt2 or 0.00,
@@ -559,8 +559,8 @@ class param_payable_aging_report(osv.osv_memory):
                     balance_by_cur.update({cur_id : {
 #                              'inv_amt' : (total_amt1 + total_amt2 + total_amt3 + total_amt4),
 #                              'home_amt' : (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4),
-                             'inv_amt' : total_org_amount,
-                             'home_amt' : total_org_home,
+                             'inv_amt' : (total_amt1 + total_amt2 + total_amt3 + total_amt4) or 0.00,
+                             'home_amt' : (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4) or 0.00,
                              'amt1' : total_amt1,
                              'amt2' : total_amt2,
                              'amt3' : total_amt3,
