@@ -860,6 +860,8 @@ class stock_picking(osv.osv):
                                 gracedays = sale_grace
                             termdays = sale_term_id.days
                             over_due_days = daysremaining - (termdays + gracedays)
+                            if over_due_days < 0:
+                                over_due_days = 0
 #Fix 19 May 2014
                 credit_type = False
 #                credit_type = (do_amt > credit_balance and credit_limit > 0 and "Credit Limit") or (st.overdue_days > 0 and "Payment Terms") or False

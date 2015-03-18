@@ -178,9 +178,6 @@ class cost_price_fifo(osv.osv_memory):
         if stock_move_ids:
 #            raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(product_id, stock_move_ids))
             for sm in stock_move_obj.browse(cr, uid, stock_move_ids, context=context):
-                print "test"
-                print sm.purchase_line_id.id
-                print "testing"
 #                if sm.id == 946:
 #                    continue
 #                    raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(sm.full_out, sm.id))
@@ -248,7 +245,6 @@ class cost_price_fifo(osv.osv_memory):
                         total_unit_cost_price = uom_obj._compute_price(cr, uid, sm.product_id.uom_id.id, total_unit_cost_price, sm.product_uom.id)
                         total_unit_cost_price = product_product_obj.round_p(cr, uid, total_unit_cost_price, 'Purchase Price',)
                         number = number + 1
-                        
                         res_temp.append({
                                          'int_doc_no' : '',
                                          'int_move_id' : False,

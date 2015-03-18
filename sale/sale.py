@@ -2215,6 +2215,8 @@ class sale_order(osv.osv):
                 inputpl2 = 'p'+ str(product.id) + 'l' + str(move_line.location_id.id)
                 if inputpl2 not in prod_loc_vals2:
                     prod_loc_vals2.append(inputpl2)
+                    print product.id
+                    print move_line.location_id.id
                     res_fifo = cost_price_fifo_obj.stock_move_get(cr, uid, product.id, move_line.location_id.id, context=context)
                     if res_fifo:
                         if inputpl2 in prod_loc_vals:
