@@ -102,13 +102,16 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
 
     def _get_tax(self, o):
         tax = 'Not Found'
-        for taxes in o.tax_line:
-            if taxes.name in ('Purchase Out-Of-Scope - GST_Purchase_OFS', 'Sale Out-Of-Scope - GST_Sales_OFS'):
-                tax = 'OFS 0.00 %'
-            elif taxes.name in ('Purchase GST 0% - GST_Purchase_Zero%','Sale GST 0% - GST_Sale_Zero%'):
-                tax = 'ZERO 0.00 %'
-            elif taxes.name in ('Purchase GST 7% - GST_purchase_7%','Sale GST 7% - GST_Sales_7%'):
-                 tax = 'GST 7.00 %'
+        if o.tax_line:
+            for taxes in o.tax_line:
+                if taxes.name in ('Purchase Out-Of-Scope - GST_Purchase_OFS', 'Sale Out-Of-Scope - GST_Sales_OFS'):
+                    tax = 'OFS 0.00 %'
+                elif taxes.name in ('Purchase GST 0% - GST_Purchase_Zero%','Sale GST 0% - GST_Sale_Zero%'):
+                    tax = 'ZERO 0.00 %'
+                elif taxes.name in ('Purchase GST 7% - GST_purchase_7%','Sale GST 7% - GST_Sales_7%'):
+                     tax = 'GST 7.00 %'
+        else:
+            tax = 'ZERO 0.00 %'
 #         if o.partner_id and o.partner_id.property_account_position:
 #             tax = 'yes'
 #             fiscal_position = o.partner_id.property_account_position
