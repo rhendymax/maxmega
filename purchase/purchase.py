@@ -220,27 +220,29 @@ class purchase_order_line(osv.osv):
             qty_overall = product_uom._compute_qty(cr, uid, uom_id, qty, default_uom)
 #            raise osv.except_osv(_('Debug !'), _(' \'%s\'!') %(qty_overall,))
 
+                # Remove Checking MOQ Validation
+#             if qty_overall < moq:
+#                 if 'warning' in product_vals:
+#                     if 'message' in product_vals['warning']:
+#                         message = product_vals['warning']['message']
+#                         message = message + '\n & \n the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
+#                         product_vals['warning'].update({
+#                                          'message': message,
+#                                          })
+#                     else:
+#                         message = 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
+#                         product_vals['warning'].update({
+#                                         'title': _('Configuration Error !'),
+#                                         'message': message,
+#                                         })
+#                 else:
+#                     warning = {
+#                                'title': _('Configuration Error !'),
+#                                'message' : 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
+#                                }
+#                     product_vals['warning'] = warning
+                # End Of Remove
 
-            if qty_overall < moq:
-                if 'warning' in product_vals:
-                    if 'message' in product_vals['warning']:
-                        message = product_vals['warning']['message']
-                        message = message + '\n & \n the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
-                        product_vals['warning'].update({
-                                         'message': message,
-                                         })
-                    else:
-                        message = 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
-                        product_vals['warning'].update({
-                                        'title': _('Configuration Error !'),
-                                        'message': message,
-                                        })
-                else:
-                    warning = {
-                               'title': _('Configuration Error !'),
-                               'message' : 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
-                               }
-                    product_vals['warning'] = warning
 
             if qty_overall < spq:
                 qty_overall = 0
@@ -324,6 +326,8 @@ class purchase_order_line(osv.osv):
         'done_savedrecords': fields.boolean('Saved Records'),
         'spq': fields.float('SPQ (*)', help="Standard Packaging Qty"),
         'moq': fields.float('MOQ (*)', help="Minimum Order Qty"),
+        #RT
+        'cust_request_date': fields.date('Customer Request Date', ),
     }
 
     _defaults = {

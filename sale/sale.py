@@ -94,6 +94,19 @@ sale_order()
 class sale_order_line(osv.osv):
     _inherit = "sale.order.line"
     _description = "Sales Order Line"
+#=============================
+#       For Line Numbers
+#=============================
+#     def _get_all_so(self, cr, uid, ids, name, args, context=None):
+#         res = {}
+#         line = 0
+#         for sol in self.browse(cr, uid, ids, context=context):
+#             print sol.id
+#             line +=1
+#             res[sol.id] = line
+# #             
+#         return res
+# END
 
     def create(self, cr, uid, vals, context=None):
         if vals.get('product_supplier_id'):
@@ -104,6 +117,7 @@ class sale_order_line(osv.osv):
         return super(sale_order_line, self).create(cr, uid, vals, context=context)
 
     def write(self, cr, uid, ids, vals, context=None):
+        print "write"
         if vals.get('product_supplier_id'):
             vals.update({'product_supplier_id2': vals['product_supplier_id']})
         if vals.get('product_id'):
@@ -129,22 +143,22 @@ class sale_order_line(osv.osv):
         res_final = {'value':result, 'domain':domain, 'warning':warning}
         warning_msgs = ''
         so_date = context.get('date_on_so', False)
-        eff_date = context.get('eff_date', False)
-        etd = context.get('etd', False)
+#         eff_date = context.get('eff_date', False)
+#         etd = context.get('etd', False)
         cod = context.get('cod', False)
         crd = context.get('crd', False)
         if not so_date:
             raise osv.except_osv(_('Error!'), _('Please select Date For So Lines!'))
-        if not etd:
-            res_final['value']['confirmation_date'] = so_date
+#         if not etd:
+#             res_final['value']['confirmation_date'] = so_date
         if not cod:
             res_final['value']['customer_original_date'] = so_date
         if not crd:
             res_final['value']['customer_rescheduled_date'] = so_date
 
-        if not eff_date:
-            effective_date = so_date
-            res_final['value']['effective_date'] = so_date
+#         if not eff_date:
+#             effective_date = so_date
+#             res_final['value']['effective_date'] = so_date
 
         if not product_customer_id:
             return res_final
@@ -499,9 +513,14 @@ class sale_order_line(osv.osv):
 
         return {'value': result, 'warning': warning}
 
+    _defaults = {
+        'effective_date': fields.date.context_today,
+    }
+
     _columns = {
         'spq': fields.float('SPQ (*)', help="Standard Packaging Qty"),
         'moq': fields.float('MOQ (*)', help="Minimum Order Qty"),
+#         'line_number': fields.function(_get_all_so, string='No', type='integer'),
         'product_id2': fields.many2one('product.product', 'Product', domain=[('sale_ok', '=', True)]),
         'product_customer_id':fields.many2one('product.customer', 'Customer Part No.', required=True, change_default=True, readonly=True, states={'draft':[('readonly',False)]}),
         'product_supplier_id':fields.many2one('product.supplier', 'Supplier Branch Name.', required=True, invisible=True),
@@ -512,7 +531,7 @@ class sale_order_line(osv.osv):
         'save_done': fields.boolean('Save Done', invisible=True),
         'reschedule_ids': fields.one2many('change.cod', 'sale_order_line_id', 'Reschedule History', readonly=True,),
         #RT 20141021
-        'confirmation_date': fields.date('Confirmation Date (ETD)', required=True, ),
+        'confirmation_date': fields.date('Confirmation Date (ETD)', ),
     }
 
 sale_order_line()

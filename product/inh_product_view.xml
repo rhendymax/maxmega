@@ -19,6 +19,16 @@
 								<field name="default_key"/>
 								<field name="currency_id"/>
 							</tree>
+<!-- START -->
+							<form string="Supplier Price Methodology Form">
+								<field name="partner_id2"/>
+								<field name="partner_child_id"/>
+								<field name="moq"/>
+								<field name="currency_id"/>
+								<field name="default_key"/>
+								<field colspan="4" name="supplierprice_ids" nolabel="1"/>
+							</form>
+<!-- END -->
 						</field>
 						<separator colspan="4" string="Customer Price Methodology"/>
 						<field colspan="4" name="customerm_ids" nolabel="1">
@@ -29,6 +39,16 @@
 								<field name="supplier_key_funct"/>
 								<field name="currency_id"/>
 							</tree>
+<!-- START -->
+							<form string="Customer Price Methodology Form">
+								<field name="name"/>
+								<field name="partner_id"/>
+								<field name="supplier_key_id"/>
+								<field name="currency_id"/>
+								<field name="moq"/>
+								<field name="customerprice_ids" nolabel="1" colspan="4"/>
+							</form>
+<!-- END -->
 						</field>
 					</page>
 

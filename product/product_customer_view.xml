@@ -51,9 +51,12 @@
 					<field name="partner_id" context="{'search_default_customer':1,'default_customer':1,'default_supplier':0}"  options='{"quick_create": false}' domain="[('customer','=','1')]"/>
 					<field name="pricelist_id"/>
 					<field name="currency_id" widget="selection"/>
-					<field name="product_id" invisible="1"/>
+					<!-- <field name="product_id" invisible="1"/> -->
 					<field name="supplier_key_id" domain="[('product_id', '=', product_id)]" options='{"quick_create": false}'/>
 					<newline/>
+<!-- START -->
+					<field name="product_id" readonly="1"/>
+<!-- END -->
 					<field name="moq"/>
 					<field name="customerprice_ids" nolabel="1" colspan="4"/>
 				</form>

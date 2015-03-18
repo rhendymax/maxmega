@@ -36,6 +36,7 @@ add price methodology at product master.
         'product/inh_product_view.xml',
         'purchase/wizard/change_eta_view.xml',
         'purchase/wizard/change_etd_view.xml',
+        'purchase/wizard/change_crd_view.xml',
         'purchase/inh_purchase_view.xml',
         'sale/wizard/change_cod_view.xml',
         'sale/wizard/change_confirm_view.xml',

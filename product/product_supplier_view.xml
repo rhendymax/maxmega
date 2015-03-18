@@ -56,6 +56,9 @@
 					<field name="pricelist_id"/>
 					<field name="currency_id" widget="selection"/>
 					<field name="moq"/>
+<!-- START -->
+					<field name="product_id" readonly="1"/>
+<!-- END -->
 					<field colspan="4" name="supplierprice_ids" nolabel="1"/>
 				</form>
 			</field>
