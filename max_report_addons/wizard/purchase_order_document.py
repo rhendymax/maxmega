@@ -176,15 +176,11 @@ class purchase_order_document(osv.osv_memory):
         
         company = self.pool.get('res.company').browse(cr, uid, (self.pool.get('res.users').browse(cr, uid, uid).company_id.id))
         header = 'sep=;' + " \n"
-        header += ';;;' + str((company.name).title() or '') + ' \n'
-        header += ';;;' + str((company.street).title() or '') + ' ' + str((company.country_id and company.country_id.name).title() or '') + ' ' + str(company.zip or '') + ' \n'
-        header += ';;;' + 'Telephone : ' + str(company.phone or '') + ' ' +'Facsimile : ' + str(company.fax or '') + ' \n'
-        header += " \n"
-        header += ';;;' + 'QUOTATION ORDER' + " \n"
-        header += " \n"
-        
+        header += str((company.name).title() or '') + ';' + str((company.street).title() or '') + ' ' + str((company.country_id and company.country_id.name).title() or '') + ' ' + str(company.zip or '') + ';' \
+                + 'Telephone : ' + str(company.phone or '') + ' ' +'Facsimile : ' + str(company.fax or '') + ';'
         po_ids = form['po_ids'] or False
         po_obj = self.pool.get('purchase.order')
+        x_no = 1
 
         if po_ids: 
             for po in po_obj.browse(cr, uid, po_ids):
@@ -192,51 +188,85 @@ class purchase_order_document(osv.osv_memory):
                 po_date = po.date_order
                 tgl = str(po_date)
                 tgl2 = datetime.strftime(datetime.strptime(tgl,'%Y-%m-%d'),'%d-%m-%Y')
-#                 print tgl2
-#                 header += 'TOOO : ' + str(self._get_shipping(po)) + "\n"
-#                 header += 'TOOO : ' + str((po.partner_shipping_id and self._display_address1(cr, uid, po.partner_shipping_id, context)) or '') + "\n"
-#                 header += 'TO : ' + ';' + 'SHIP TO : ' + ';' + 'PO NO : '+ str((po.product_id and po.product_id.name) or '') + ';' \
-#                         + str(po.header_po or '') + ';' + 'NO'+ ';' + 'ITEM DESCRIPTION' + ';' + 'REQUIRED DATE' + ';' + 'QTY' + ';' + 'UNIT PRICE (USD)' + ';' \
-#                         + 'TOTAL AMOUNT (USD)' + ';' + str(po.footer_po.replace("\n", " ") or '') + ';' + 'SUBTOTAL' + ';' + str((po.fiscal_position and po.fiscal_position.name) or 'GST 7%') + ';' \
-#                         + 'TOTAL AMOUNT' + ';' + 'E.&.O.E ' + ';' + 'ISSUED BY' + " \n"
-#                 header += str((po.partner_id and po.partner_id.name).title() or '') + ';' + str(self._get_shipping(po)) + ';' \
-#                         + 'PO DATE : '+ str(tgl2 or '') + ';;'
-                header += 'TO : ' + ';' + 'SHIP TO : ' + ';' + 'PO NO : '+ str((po.product_id and po.product_id.name) or '') + ';' \
-                                + str((po.header_po and po.header_po.replace("\n", " ")) or '') + ';' + str(po.footer_po and po.footer_po.replace("\n", " ") or '') + ';' + 'SUBTOTAL' + ';' + str((po.fiscal_position and po.fiscal_position.name) or 'GST 7%') + ';' \
-                                + 'TOTAL AMOUNT' + ';' + 'E.&.O.E ' + ';' + 'ISSUED BY' + " \n"
-                header += str((po.partner_id and po.partner_id.name).title() or '') + ';' + str(self._get_shipping(po)) + ';' \
-                                + 'PO DATE : '+ str(tgl2 or '') + ';;;' + str(po.amount_untaxed or '') + ';' + str(po.amount_tax or '') + ';' \
-                                + str(po.amount_total or '') + ';;' + str(company.name or '') + '\n'
-                header += str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].street).title() or '') + ';' \
-                        + str((po.partner_shipping_id and self._display_address1(cr, uid, po.partner_shipping_id, context)) or '') + ';' \
-                        + 'GST REG NO : '+ str((po.company_id and po.company_id.gst_reg_no) or '') + " \n"
-                header += str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].country_id.name).title() or '') + ';' \
-                        + 'Tel. : ' + str(((po.partner_shipping_id and po.partner_shipping_id.phone)) or '') + ';' \
-                        + 'SHIPMENT METHOD : '+ str((po.partner_id and po.partner_id.ship_method_id and po.partner_id.ship_method_id.name) or '') + " \n"
-                header += 'Tel. : ' + str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].phone) or '') + ';' \
-                        + 'Fax : ' + str(((po.partner_shipping_id and po.partner_shipping_id.fax)) or '') + ';' \
-                        + 'SHIPMENT TERM : '+ str((po.partner_id and po.partner_id.fob_id and po.partner_id.fob_id.name) or '') + " \n"
-                header += 'Fax : ' + str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].fax) or '') + ';' \
-                        + 'ATTN : ' + str((po.partner_shipping_id and po.partner_shipping_id.name) or '') + ';' \
-                        + 'REFERENCE NO : '+ str(po.partner_ref or '') + ';' + " \n"
-                header += 'ATTN : ' + self._get_attn(po) + ';;' + 'REQUISITOR : '+ str((po.requisitor_id and po.requisitor_id.name) or '') + " \n"
-                header += ';;' + 'BUYER : '+ str((po.buyer_id and po.buyer_id.name).title() or '') + " \n"
-                header += 'NO'+ ';' + 'ITEM DESCRIPTION' + ';' + 'REQUIRED DATE' + ';' + 'QTY' + ';' + 'UNIT PRICE ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + ';' \
-                                + 'TOTAL AMOUNT ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + " \n"
+                if x_no > 1:
+                    header += ';;;' + 'QUOTATION ORDER' + ';' \
+                            + 'TO : ' + ';' + 'To_Tel' + ';' + 'To_Fax' + ';' + 'To_ATTN' + ';' \
+                            + 'SHIP TO : ' + ';' + 'ShipTo_Tel' + ';' + 'ShipTo_Fax' + ';' + 'ShipTo_ATTN' + ';' \
+                            + 'PO NO' + ';' + 'PO DATE' + ';' + 'SUBTOTAL' + ';' + str((po.fiscal_position and po.fiscal_position.name) or 'GST 7%') + ';' + 'TOTAL AMOUNT' + ';' + 'E.&.O.E' + ';' + 'ISSUED BY' + ';' \
+                            + 'SHIPMENT METHOD' + ';' + 'SHIPMENT TERM' + ';' + 'REFERENCE NO :' + ';' + 'REQUISITOR :' + ';' + 'BUYER' + ';' \
+                            + 'NO' + ';' + 'ITEM DESCRIPTION' + ';' + 'REQUIRED DATE' + ';' + 'QTY' + ';' \
+                            + 'UNIT PRICE ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + ';' + 'TOTAL AMOUNT ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + " \n"
+                else:
+                    header += 'QUOTATION ORDER' + ';' \
+                            + 'TO : ' + ';' + 'To_Tel' + ';' + 'To_Fax' + ';' + 'To_ATTN' + ';' \
+                            + 'SHIP TO : ' + ';' + 'ShipTo_Tel' + ';' + 'ShipTo_Fax' + ';' + 'ShipTo_ATTN' + ';' \
+                            + 'PO NO' + ';' + 'PO DATE' + ';' + 'SUBTOTAL' + ';' + str((po.fiscal_position and po.fiscal_position.name) or 'GST 7%') + ';' + 'TOTAL AMOUNT' + ';' + 'E.&.O.E' + ';' + 'ISSUED BY' + ';' \
+                            + 'SHIPMENT METHOD' + ';' + 'SHIPMENT TERM' + ';' + 'REFERENCE NO :' + ';' + 'REQUISITOR :' + ';' + 'BUYER' + ';' \
+                            + 'NO' + ';' + 'ITEM DESCRIPTION' + ';' + 'REQUIRED DATE' + ';' + 'QTY' + ';' \
+                            + 'UNIT PRICE ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + ';' + 'TOTAL AMOUNT ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + " \n"
+                # START FROM TO :
+                header += ';;;;' \
+                        + str((po.partner_id and po.partner_id.name).title() or '') + ';' + str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].phone) or '') + ';' + str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].fax) or '') + ';' + self._get_attn(po) + ';' \
+                        + str(self._get_shipping(po)) + ';' + str(((po.partner_shipping_id and po.partner_shipping_id.phone)) or '') + ';' + str(((po.partner_shipping_id and po.partner_shipping_id.fax)) or '') + ';' + str((po.partner_shipping_id and po.partner_shipping_id.name) or '') + ';' \
+                        + str((po.product_id and po.product_id.name) or '') + ';' + str(tgl2 or '') + ';' + str(po.amount_untaxed or 0) + ';' + str(po.amount_tax or 0) + ';' + str(po.amount_total or 0) + ';;;' \
+                        + str((po.partner_id and po.partner_id.ship_method_id and po.partner_id.ship_method_id.name) or '') + ';' + str((po.partner_id and po.partner_id.fob_id and po.partner_id.fob_id.name) or '') + ';' + str(po.partner_ref or '') + ';' + str((po.requisitor_id and po.requisitor_id.name) or '') + ';' + str((po.buyer_id and po.buyer_id.name).title() or '') + ';'
+                l_no = 1
                 if po.order_line:
                     for l in po.order_line:
+                        if l_no > 1:
+                            header += ';;;;;;;;;;;;;;;;;;;;;;;;'
                         nom +=1
-                        header += str(nom) + ';' + str(self._get_description(cr, uid, l, po.partner_child_id and po.partner_child_id.id)) + ';' \
-                                + str(datetime.strftime(datetime.strptime(str(l.original_request_date2),'%Y-%m-%d'),'%d-%m-%Y') or '') + ';' \
-                                + str(l.product_qty or 0) + ' ' + str((l.product_uom and l.product_uom.name) or '') + ';' + str(l.price_unit or 0) + ';' \
-                                + str((l.price_unit * l.product_qty) or 0) + '\n'
+                        l_no += 1
+                        header += str(nom) + ';' + str(self._get_description(cr, uid, l, po.partner_child_id and po.partner_child_id.id)) + ';' + str(datetime.strftime(datetime.strptime(str(l.original_request_date2),'%Y-%m-%d'),'%d-%m-%Y') or '') + ';' + str(l.product_qty or 0) + ' ' + str((l.product_uom and l.product_uom.name) or '') + ';' \
+                                + str(l.price_unit or 0) + ';' + str((l.price_unit * l.product_qty) or 0) + ';' \
+                                + " \n"
+
+###########################
+#     START COMMENT
+###########################
+# LEMPARAN --> + 'SHIP TO : ' + ';' + 'PO NO : '+ str((po.product_id and po.product_id.name) or '') + ';' \
+#                                 + str((po.header_po and po.header_po.replace("\n", " ")) or '') + ';' + str(po.footer_po and po.footer_po.replace("\n", " ") or '') + ';' + 'SUBTOTAL' + ';' + str((po.fiscal_position and po.fiscal_position.name) or 'GST 7%') + ';' \
+#                                 + 'TOTAL AMOUNT' + ';' + 'E.&.O.E ' + ';' + 'ISSUED BY' 
+                                
+                                
+#                 header += str((po.partner_id and po.partner_id.name).title() or '') + ';' + str(self._get_shipping(po)) + ';' \
+#                                 + 'PO DATE : '+ str(tgl2 or '') + ';;;' + str(po.amount_untaxed or '') + ';' + str(po.amount_tax or '') + ';' \
+#                                 + str(po.amount_total or '') + ';;' + str(company.name or '') + '\n'
+#                 header += str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].street).title() or '') + ';' \
+#                         + str((po.partner_shipping_id and self._display_address1(cr, uid, po.partner_shipping_id, context)) or '') + ';' \
+#                         + 'GST REG NO : '+ str((po.company_id and po.company_id.gst_reg_no) or '') + " \n"
+#                 header += str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].country_id.name).title() or '') + ';' \
+#                         + 'Tel. : ' + str(((po.partner_shipping_id and po.partner_shipping_id.phone)) or '') + ';' \
+#                         + 'SHIPMENT METHOD : '+ str((po.partner_id and po.partner_id.ship_method_id and po.partner_id.ship_method_id.name) or '') + " \n"
+#                 header += 'Tel. : ' + str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].phone) or '') + ';' \
+#                         + 'Fax : ' + str(((po.partner_shipping_id and po.partner_shipping_id.fax)) or '') + ';' \
+#                         + 'SHIPMENT TERM : '+ str((po.partner_id and po.partner_id.fob_id and po.partner_id.fob_id.name) or '') + " \n"
+#                 header += 'Fax : ' + str((po.partner_id and po.partner_id.address[0] and po.partner_id.address[0].fax) or '') + ';' \
+#                         + 'ATTN : ' + str((po.partner_shipping_id and po.partner_shipping_id.name) or '') + ';' \
+#                         + 'REFERENCE NO : '+ str(po.partner_ref or '') + ';' + " \n"
+#                 header += 'ATTN : ' + self._get_attn(po) + ';;' + 'REQUISITOR : '+ str((po.requisitor_id and po.requisitor_id.name) or '') + " \n"
+#                 header += ';;' + 'BUYER : '+ str((po.buyer_id and po.buyer_id.name).title() or '') + " \n"
+#                 header += 'NO'+ ';' + 'ITEM DESCRIPTION' + ';' + 'REQUIRED DATE' + ';' + 'QTY' + ';' + 'UNIT PRICE ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + ';' \
+#                                 + 'TOTAL AMOUNT ' + str((po.pricelist_id and po.pricelist_id.currency_id and po.pricelist_id.currency_id.name) or '') + " \n"
+#                 if po.order_line:
+#                     for l in po.order_line:
+#                         nom +=1
+#                         header += str(nom) + ';' + str(self._get_description(cr, uid, l, po.partner_child_id and po.partner_child_id.id)) + ';' \
+#                                 + str(datetime.strftime(datetime.strptime(str(l.original_request_date2),'%Y-%m-%d'),'%d-%m-%Y') or '') + ';' \
+#                                 + str(l.product_qty or 0) + ' ' + str((l.product_uom and l.product_uom.name) or '') + ';' + str(l.price_unit or 0) + ';' \
+#                                 + str((l.price_unit * l.product_qty) or 0) + '\n'
+# END COMMENT
 #                         ';;' + str(po.amount_untaxed or '') + ';' \
 #                         + str(po.amount_tax or '') + ';' + str(po.amount_total or '') + ';' + str(company.name or '') + " \n"
-                
+###########################
+#     START COMMENT
+###########################
                 header += " \n"
-                header += " \n"
-                header += ';;;' + 'This is a computer generated Purchase Order. ' + ' \n'
-                header += ';;;' + 'No signature is required' + ' \n'
+                x_no += 1
+#                 header += " \n"
+#                 header += ';;;' + 'This is a computer generated Purchase Order. ' + ' \n'
+#                 header += ';;;' + 'No signature is required' + ' \n'
+# END COMMENT
 #                 header += " \n" 
 #                 header += " \n"
 #                 header += 'TO :' + ';;;;;' + 'PO DATE' + ';' + ':' + ';' + str(tgl2 or '') + " \n"
@@ -276,11 +306,6 @@ class purchase_order_document(osv.osv_memory):
 #                 header += ';;;;;' + 'ISSUED BY'
 #                 header += " \n"
 #                 header += " \n"
-#                 header += " \n"
-#                 header += " \n"
-#                 header += " \n"
-#                 header += " \n"
-#                 header += " \n"
 #                 header += ';;;;;' + str(company.name or '') + ' \n \n'
 #                 header += ';;;;;' + 'This is a computer generated Purchase Order. ' + ' \n'
 #                 header += ';;;;;' + 'No signature is required' + ' \n'
@@ -298,11 +323,11 @@ class purchase_order_document(osv.osv_memory):
 #         company = self.pool.get('res.company').browse(cr, uid, (self.pool.get('res.users').browse(cr, uid, uid).company_id.id))
 #         partner_ids = form['partner_ids'] or False
 
-        
-        
-        
         all_content_line += header
-#         all_content_line += ' \n'
+        all_content_line += ' \n'
+        all_content_line += str(company.name or '') + ' \n \n'
+        all_content_line += 'This is a computer generated Purchase Order. ' + ' \n'
+        all_content_line += 'No signature is required' + ' \n'
 #         all_content_line += 'End of Report'
         csv_content = ''
 
