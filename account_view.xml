@@ -158,19 +158,26 @@
 			action="max_finance_module.action_max_journal_entries"
 			sequence="30"/>
 
+		<!--menuitem
+			name="Closing Balance"
+			id="menu_closing_opening_balance"
+			parent="menu_account_max_journal_entries"
+			action="max_finance_module.action_validate_account_balance"
+			sequence="40"/-->
+
 		<menuitem
 			name="Sales Receipt"
 			id="menu_account_max_journal_entries_sales_receipt"
 			parent="menu_account_max_journal_entries"
 			action="max_finance_module.action_sales_receipt"
-			sequence="40"/>
+			sequence="50"/>
 
 		<menuitem
 			name="Purchase Payment"
 			id="menu_account_max_journal_entries_purchase_payment"
 			parent="menu_account_max_journal_entries"
 			action="max_finance_module.action_purchase_payment"
-			sequence="50"/>
+			sequence="60"/>
 
 <!-- -->
 
@@ -250,10 +257,12 @@
 <!-- -->
 
 <!-- -->
+		<!-- Rhendy Add Tick Box On Users Access Right Control Seen Report Accounting Only Tick Is True -->
 		<menuitem
 			name="General Reports"
 			id="menu_account_max_report_gr"
 			parent="menu_account_max_report"
+			groups="so_workflowchange.group_non_account_report"
 			sequence="10"/>
 
 		<menuitem
