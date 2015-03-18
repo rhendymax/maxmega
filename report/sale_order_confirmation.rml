@@ -240,7 +240,7 @@
 				<blockTable colWidths="26.0,245.0,76.5,70.0,62.5,75.0" style="TableMiddle">
 					<tr>
 						<td><para style="terp_tblheader_General_Centre">No</para></td>
-						<td><para style="terp_tblheader_General_Centre">Part No</para></td>
+						<td><para style="terp_tblheader_General_Centre">Supplier Part No</para></td>
 						<td><para style="terp_tblheader_General_Centre">Confirmation</para></td>
 						<td><para style="terp_tblheader_General_Centre">QTY</para></td>
 						<td><para style="terp_tblheader_General_Centre">Unit Price</para></td>
@@ -321,7 +321,7 @@
 			<blockTable colWidths="26.0,245.0,76.5,70.0,62.5,75.0" repeatRows="1" style="TableMiddle">
 				<tr>
 					<td><para style="terp_tblheader_General_Centre">No</para></td>
-					<td><para style="terp_tblheader_General_Centre">Part No</para></td>
+					<td><para style="terp_tblheader_General_Centre">Supplier Part No</para></td>
 					<td><para style="terp_tblheader_General_Centre">Confirmation</para></td>
 					<td><para style="terp_tblheader_General_Centre">QTY</para></td>
 					<td><para style="terp_tblheader_General_Centre">Unit Price</para></td>
@@ -336,6 +336,11 @@
 					<td><para style="terp_tblheader_General_Centre">[[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]</para></td>
 				</tr>
 			</blockTable>
+			<blockTable colWidths="555">
+				<tr>
+					<td><para style="terp_default_8">[[ o.header_so or '']]</para></td>
+				</tr>
+			</blockTable>
 			<section>
 				<para style="terp_default_2">[[ repeatIn(o.order_line,'l') ]]</para>
 				<blockTable colWidths="26.0,245.0,76.5,70.0,62.5,75.0" style="Table_Content">
@@ -343,7 +348,7 @@
 						<td><para style="terp_default_9"><seq/></para></td>
 						<td><para style="terp_default_9">[[ l.name or '']]</para></td>
 						<td><para style="terp_default_Centre_9">[[ formatLang(l.confirmation_date,date= True) or ' ' ]]</para></td>
-						<td><para style="terp_default_Right_9">[[ formatLang(l.product_uom_qty)]] [[ (l.product_uom and l.product_uom.name) or '' ]]</para></td>
+						<td><para style="terp_default_Right_9">[[ formatLang(l.product_uom_qty, digits=0)]] [[ (l.product_uom and l.product_uom.name) or '' ]]</para></td>
 						<td><para style="terp_default_Right_9">[[ formatLang(l.price_unit, digits=5) ]]</para></td>
 						<td><para style="terp_default_Right_9">[[ formatLang(get_price_subtotal(l), digits=2) ]]</para></td>
 					</tr>
@@ -358,6 +363,11 @@
 
 				</blockTable>
 			</section>
+			<blockTable colWidths="555">
+				<tr>
+					<td><para style="terp_default_8">[[ o.footer_so or '']]</para></td>
+				</tr>
+			</blockTable>
 			<blockTable colWidths="290.0,145.0,20.0,100.0" rowHeights="60.0" style="Table_All_Total_Detail">
 					<tr>
 						<td>

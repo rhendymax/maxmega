@@ -40,7 +40,8 @@
         'account/inh_invoice_view.xml',
         'sale/inh_sale_order_view.xml',
         'max_journal_entries/inh_max_journal_entries_view.xml',
-
+        'wizard/purchase_order_document.xml',
+        'purchase/inh_purchase_view.xml',
     ],
 
     'demo_xml': [],

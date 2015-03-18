@@ -179,9 +179,10 @@
 				</td>
 			</tr>
 		</blockTable>
-		<blockTable colWidths="26.0,220.0,76.0,76.0,76.0,76.0" repeatRows="1"  style="Table_Header_Pur_ord_Line">
+		<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" repeatRows="1"  style="Table_Header_Pur_ord_Line">
 			<tr>
 				<td><para style="terp_tblheader_General_Centre">No</para></td>
+				<td><para style="terp_tblheader_General">ACCOUNT</para></td>
 				<td><para style="terp_tblheader_General">ITEM DESCRIPTION</para></td>
 				<td><para style="terp_tblheader_General_Centre">CCY</para></td>
 				<td><para style="terp_tblheader_General_Centre">DEBIT</para></td>
@@ -190,6 +191,7 @@
 			</tr>
 			<tr>
 				<td><para style="terp_tblheader_General_Centre"></para></td>
+				<td><para style="terp_tblheader_General"></para></td>
 				<td><para style="terp_tblheader_General"></para></td>
 				<td><para style="terp_tblheader_General_Centre"></para></td>
 				<td><para style="terp_tblheader_General_Centre">DEBIT HOME</para></td>
@@ -251,9 +253,10 @@
 				</td>
 			</tr>
 		</blockTable>
-		<blockTable colWidths="26.0,220.0,76.0,76.0,76.0,76.0" repeatRows="1" style="Table_Header_Pur_ord_Line">
+		<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" repeatRows="1" style="Table_Header_Pur_ord_Line">
 			<tr>
 				<td><para style="terp_tblheader_General_Centre">No</para></td>
+				<td><para style="terp_tblheader_General">ACCOUNT</para></td>
 				<td><para style="terp_tblheader_General">ITEM DESCRIPTION</para></td>
 				<td><para style="terp_tblheader_General_Centre">CCY</para></td>
 				<td><para style="terp_tblheader_General_Centre">DEBIT</para></td>
@@ -271,10 +274,11 @@
 		</blockTable>
 		<section>
 			<para style="terp_default_8">[[ repeatIn(o.line_id,'l') ]]</para>
-			<blockTable colWidths="26.0,220.0,76.0,76.0,76.0,76.0" style="Table_Content">
+			<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" style="Table_Content">
 				<tr>
 					<td><para style="terp_default_Centre_8"><seq/></para></td>
 					<td><para style="terp_default_8">[[ (l.account_id and l.account_id.name) or ' ' ]]</para></td>
+					<td><para style="terp_default_8">[[ (l.name) or ' ' ]]</para></td>
 					<td><para style="terp_default_Centre_8">[[ get_currency_name(l) ]]</para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.debit, digits=2) ]] </para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.credit, digits=2) ]]</para></td>
@@ -284,14 +288,16 @@
 					<td><para style="terp_default_Centre_8"></para></td>
 					<td><para style="terp_default_8"></para></td>
 					<td><para style="terp_default_8"></para></td>
+					<td><para style="terp_default_Centre_8">[[ get_home_curr_name(l) ]]</para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.debit_home, digits=2)]] </para></td>
 					<td><para style="terp_default_Right_8">[[ formatLang(l.credit_home, digits=2) ]]</para></td>
 					<td><para style="terp_default_Right_8"></para></td>
 				</tr>
 			</blockTable>
 		</section>
-		<blockTable colWidths="26.0,220.0,76.0,76.0,76.0,76.0" style="Table_Header_Pur_ord_Line">
+		<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" style="Table_Header_Pur_ord_Line">
 				<tr>
+					<td><para style="terp_tblheader_General"><font></font></para></td>
 					<td><para style="terp_tblheader_General"><font></font></para></td>
 					<td><para style="terp_tblheader_General">Total<font></font></para></td>
 					<td><para style="terp_tblheader_General_Right"><font></font></para></td>
@@ -300,6 +306,7 @@
 					<td><para style="terp_tblheader_General_Right"><font></font></para></td>
 				</tr>
 				<tr>
+					<td><para style="terp_tblheader_General"><font></font></para></td>
 					<td><para style="terp_tblheader_General"><font></font></para></td>
 					<td><para style="terp_tblheader_General">Total Home<font></font></para></td>
 					<td><para style="terp_tblheader_General_Right"><font></font></para></td>

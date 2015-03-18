@@ -9,6 +9,7 @@
 				<button name="%(sale.report_sale_order)d" string="Print Order" position="before">
 					<button name="%(max_maxmega_sale_order2)d" string="Print Confirmation" type="action" icon="gtk-print" states="waiting_date,manual,draft,progress,done,shipping_except,invoice_except"/>
 				</button>
+				<button name="%(sale.report_sale_order)d" string="Print Order" position="replace"/>
 			</field>
 		</record>
 

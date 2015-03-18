@@ -46,7 +46,83 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
             'get_total': self._get_total,
             'get_currency_name': self._get_currency_name,
             'get_currency_rate': self._get_currency_rate,
+            'get_tax': self._get_tax,
+            'get_description': self._get_description,
+#             'get_mail_add': self._get_mail_add,
         })
+
+#     def _get_mail_add(self, o):
+#         mail = ''
+#         if o.partner_id and o.partner_id.address.type:
+#             print o.partner_id.address.id.type
+#         else:
+#             print 'test'
+#         return mail
+
+#     def _get_description(self, l):
+#         description = ''
+#         len_note_pn = len((l.stock_move_id and l.stock_move_id.note) or "")
+#         len_note_pn_remark = 0
+#         if len_note_pn > 1:
+#             pn_note_lines = str((l.stock_move_id and l.stock_move_id.note) or "").split('\n')
+#             while (len_note_pn_remark < 1):
+#                 part_note = str(pn_note_lines[len_note_pn_remark])
+#                 len_note_pn_remark += 1
+#         if len_note_pn > 0:
+# #             description = str(l.product_id.default_code)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+#             description = str(l.product_id.name)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.stock_move_id and l.stock_move_id.product_customer_id.name)
+#         else:
+# #             description = str(l.product_id.default_code)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+#             description = str(l.product_id.name)+'\n' +"CUST P/N:" + str(l.stock_move_id and l.stock_move_id.product_customer_id.name)
+#         return description
+
+    def _get_description(self, l):
+        description = ''
+#         len_note_pn = len((l.stock_move_id and l.stock_move_id.note) or "")
+#         len_note_pn_remark = 0
+#         if len_note_pn > 1:
+#             pn_note_lines = str((l.stock_move_id and l.stock_move_id.note) or "").split('\n')
+#             while (len_note_pn_remark < 1):
+        if str((l.stock_move_id and l.stock_move_id.note) or "") <> '':
+            part_note = str((l.stock_move_id and l.stock_move_id.note.strip() + '\n') or "")
+        elif l.note:
+            part_note = str((l.note.strip() + '\n') or "")
+        else:
+            part_note = ''
+#         if len_note_pn > 0:
+#             description = str(l.product_id.default_code)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+
+
+        cust_part_no = (l.stock_move_id and l.stock_move_id.product_customer_id and "CUST P/N:" + str(l.stock_move_id.product_customer_id.name)) or ''
+        description = str((l.product_id and l.product_id.name) or '') + '\n' +str(part_note) + cust_part_no
+#         else:
+# #             description = str(l.product_id.default_code)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+#             description = str(l.product_id.name)+'\n' +"CUST P/N:" + str(l.stock_move_id and l.stock_move_id.product_customer_id.name)
+        return description
+
+    def _get_tax(self, o):
+        tax = 'Not Found'
+        for taxes in o.tax_line:
+            if taxes.name in ('Purchase Out-Of-Scope - GST_Purchase_OFS', 'Sale Out-Of-Scope - GST_Sales_OFS'):
+                tax = 'OFS 0.00 %'
+            elif taxes.name in ('Purchase GST 0% - GST_Purchase_Zero%','Sale GST 0% - GST_Sale_Zero%'):
+                tax = 'ZERO 0.00 %'
+            elif taxes.name in ('Purchase GST 7% - GST_purchase_7%','Sale GST 7% - GST_Sales_7%'):
+                 tax = 'GST 7.00 %'
+#         if o.partner_id and o.partner_id.property_account_position:
+#             tax = 'yes'
+#             fiscal_position = o.partner_id.property_account_position
+#             tax_id = False
+#             for tax in fiscal_position.tax_ids:
+#                 tax_id = tax.tax_dest_id.id
+#             if tax_id:
+#                 if tax_id in (13,14):
+#                     
+#                 if tax_id in (10,12):
+#                    
+#         else:
+#             tax = 'ZERO 0.00 %'
+        return tax
 
     def _get_cust_po(self, invoice_id):
         cust_po_no = False
@@ -82,7 +158,6 @@ class maxmega_tax_invoice(report_sxw.rml_parse):
         tgl2 = datetime.strftime(datetime.strptime(tgl,'%m/%d/%Y %H:%M:%S'),'%Y-%m-%d')
         context['date'] = tgl2
         rate = currency_obj.browse(self.cr, self.uid, inv.company_id.currency_tax_id.id, context=context).rate
-        print rate
         return rate
     
     def _get_total(self, inv, type):

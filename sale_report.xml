@@ -7,7 +7,8 @@
 			name="max.sale.order"
 			rml="max_report_addons/report/sale_order.rml"
 			usage="default"
-			string="Sale Order / RFQ Order" 
+			string="Sale Order / RFQ Order"
+			groups="so_workflowchange.group_non_user"
 			header="False"/>
 
 		<report

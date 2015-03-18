@@ -45,6 +45,7 @@ class maxmega_journal_entries(report_sxw.rml_parse):
 #             'get_cust_po': self._get_cust_po,
 #             'get_total': self._get_total,
             'get_currency_name': self._get_currency_name,
+            'get_home_curr_name': self._get_home_curr_name,
 #             'get_currency_rate': self._get_currency_rate,
         })
 
@@ -82,7 +83,26 @@ class maxmega_journal_entries(report_sxw.rml_parse):
                 currency_id = company_obj.browse(self.cr, self.uid, company_id).currency_id.id
                 if currency_id:
                    currency_name = currency_obj.browse(self.cr, self.uid, currency_id).name
+                   
+                    
         return currency_name
+
+    def _get_home_curr_name(self, line):
+        res_obj      = self.pool.get('res.users')
+        company_obj      = self.pool.get('res.company')
+        currency_obj      = self.pool.get('res.currency')
+#         if line.currency_id and line.currency_id.name:
+#             currency_name = line.currency_id and line.currency_id.name
+#         else:
+        company_id  = res_obj.browse(self.cr, self.uid, self.uid).company_id.id
+        if company_id:
+            currency_id = company_obj.browse(self.cr, self.uid, company_id).currency_id.id
+            if currency_id:
+               currency_name = currency_obj.browse(self.cr, self.uid, currency_id).name
+               
+                    
+        return currency_name
+
 # 
 #     def _get_currency_rate(self, inv):
 #         rate = 0.00

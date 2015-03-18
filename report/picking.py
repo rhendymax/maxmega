@@ -71,8 +71,10 @@ class maxmega_packing_order(report_sxw.rml_parse):
                 len_note_pn_remark += 1
         if len_note_pn > 0:
             description = str(l.product_id.default_code)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+            description = str(l.product_id.default_code)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
         else:
-            description = str(l.product_id.default_code)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+#             description = str(l.product_id.default_code)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+            description = str(l.product_id.name)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
         return description
 # class maxmega_packing_order(report_rml):
 #     def create(self, cr, uid, ids, datas, context):

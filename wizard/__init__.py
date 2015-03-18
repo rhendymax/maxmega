@@ -19,11 +19,6 @@
 #
 ##############################################################################
 
-import report
-import account
-import sale
-import stock
-import wizard
-import purchase
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
+import purchase_order_document

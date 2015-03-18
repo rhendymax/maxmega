@@ -60,7 +60,7 @@
         <paraStyle name="terp_default_Centre_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
         <images/>
     </stylesheet>
-    <template pageSize="(21.59cm, 27.94cm)" title="Sale Order" author="Yanto Chen" allowSplitting="20">
+    <template pageSize="(21.59cm, 27.94cm)" title="Purchase Order" author="Yanto Chen" allowSplitting="20">
         <pageTemplate id="first">
             <frame id="first" x1="0.3cm" y1="2.8cm" width="20.0cm" height="23.0cm"/>
             <pageGraphics>
@@ -109,7 +109,7 @@
 						<td><para style="terp_tblheader_General_Centre">REQUIRED DATE</para></td>
 						<td><para style="terp_tblheader_General_Centre">QTY</para></td>
 						<td><para style="terp_tblheader_General_Centre">UNIT PRICE [[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]</para></td>
-						<td><para style="terp_tblheader_General_Centre">[[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]TOTAL AMOUNT</para></td>
+						<td><para style="terp_tblheader_General_Centre">TOTAL AMOUNT [[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]</para></td>
 					</tr>
 				</blockTable>
 			</pto_header>
@@ -126,7 +126,7 @@
 										<para style="terp_default_8">[[ display_address(o.partner_invoice_id) ]] </para>
 										<para style="terp_default_8">Tél. : [[ (o.partner_invoice_id and o.partner_invoice_id.phone) or removeParentNode('para') ]]</para>
 										<para style="terp_default_8">Fax : [[ (o.partner_invoice_id and o.partner_invoice_id.fax) or removeParentNode('para') ]]</para>
-										<para style="terp_default_8">Attn : [[ (o.partner_invoice_id and o.partner_invoice_id.name) or removeParentNode('para') ]]</para>
+										<para style="terp_default_8">Attn : [[ get_attn(o) or removeParentNode('para') ]]</para>
 										<para style="terp_default_8">Email : [[ (o.partner_invoice_id and o.partner_invoice_id.email) or removeParentNode('para') ]]</para>
 									</td>
 								</tr>
@@ -136,7 +136,7 @@
 								<tr>
 									<td>
 										<para style="terp_default_Bold_8"><font>SHIP TO :</font></para>
-										<para style="terp_default_8"><font>[[ o.partner_id and o.partner_id.title and o.partner_id.title.name or '' ]] [[ o.partner_id and o.partner_id.name or '' ]]</font></para>
+										<para style="terp_default_8"><font>[[ get_shipping(o) ]]</font></para>
 										<para style="terp_default_8">[[ (o.partner_shipping_id and display_address(o.partner_shipping_id)) or '' ]] </para>
 										<para style="terp_default_8">Tél. : [[ (o.partner_shipping_id and o.partner_shipping_id.phone) or removeParentNode('para') ]] </para>
 										<para style="terp_default_8">Fax : [[ (o.partner_shipping_id and o.partner_shipping_id.fax) or removeParentNode('para') ]] </para>
@@ -192,7 +192,12 @@
 					<td><para style="terp_tblheader_General_Centre">REQUIRED DATE</para></td>
 					<td><para style="terp_tblheader_General_Centre">QTY</para></td>
 					<td><para style="terp_tblheader_General_Centre">UNIT PRICE [[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]</para></td>
-					<td><para style="terp_tblheader_General_Centre">[[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]TOTAL AMOUNT</para></td>
+					<td><para style="terp_tblheader_General_Centre">TOTAL AMOUNT [[ (o.pricelist_id and o.pricelist_id.currency_id and o.pricelist_id.currency_id.name) or '' ]]</para></td>
+				</tr>
+			</blockTable>
+			<blockTable colWidths="555">
+				<tr>
+					<td><para style="terp_default_8">[[ o.header_po or '']]</para></td>
 				</tr>
 			</blockTable>
 			<section>
@@ -201,13 +206,18 @@
 					<tr>
 						<td><para style="terp_default_Centre_8"><seq/></para></td>
 						<td><para style="terp_default_8">[[ get_description(l,o.partner_child_id.id) or '']]</para></td>
-						<td><para style="terp_default_Right_8">[[ formatLang(l.original_request_date2,date= True) or ' ' ]]</para></td>
-						<td><para style="terp_default_Right_8">[[ formatLang(l.product_qty)]] [[ (l.product_uom and l.product_uom.name) or '' ]]</para></td>
+						<td><para style="terp_default_Right_8">[[ formatLang(l.original_request_date2, date= True) or ' ' ]]</para></td>
+						<td><para style="terp_default_Right_8">[[ formatLang(l.product_qty, digits=0)]] [[ (l.product_uom and l.product_uom.name) or '' ]]</para></td>
 						<td><para style="terp_default_Right_8">[[ formatLang(l.price_unit, digits=5) ]]</para></td>
 						<td><para style="terp_default_Right_8">[[ formatLang(get_price_subtotal(l), digits=2) ]]</para></td>
 					</tr>
 				</blockTable>
 			</section>
+			<blockTable colWidths="555">
+				<tr>
+					<td><para style="terp_default_8">[[ o.footer_po or '']]</para></td>
+				</tr>
+			</blockTable>
 			<blockTable colWidths="290.0,145.0,20.0,100.0" rowHeights="60.0" style="Table_All_Total_Detail">
 					<tr>
 						<td>

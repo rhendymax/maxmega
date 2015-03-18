@@ -153,18 +153,14 @@
 										<para style="terp_default_Bold_8">GST REG.NO</para>
 										<para style="terp_default_Bold_8">NO</para>
 										<para style="terp_default_Bold_8">SHIPMENT DATE</para>
-										<para style="terp_default_Bold_8"><font color="white"> </font></para>
 										<para style="terp_default_Bold_8">PAYMENT TERM</para>
-										<para style="terp_default_Bold_8"><font color="white"> </font></para>
 										<para style="terp_default_Bold_8">SALES PERSON</para>
 									</td>
 									<td>
 										<para style="terp_default_8"> : [[ (o.company_id and o.company_id.gst_reg_no) or ' ']]</para>
 										<para style="terp_default_8"> : [[ o.name or ' ' ]]</para>
 										<para style="terp_default_8"> : [[ o.do_date or ' ' ]]</para>
-										<para style="terp_default_9"><font color="white"> </font></para>
 										<para style="terp_default_8"> : [[ (o.partner_id and o.partner_id.sale_term_id and o.partner_id.sale_term_id.name) or '' ]]</para>
-										<para style="terp_default_8"><font color="white"> </font></para>
 										<para style="terp_default_8"> : [[ (o.user_id and o.user.id.name) or ' ' ]]</para>
 									</td>
 								</tr>
@@ -181,6 +177,11 @@
 						<td><para style="terp_tblheader_General_Centre">QTY</para></td>
 					</tr>
 				</blockTable>
+				<blockTable colWidths="555">
+					<tr>
+						<td><para style="terp_default_8">[[ o.header_picking or '']]</para></td>
+					</tr>
+				</blockTable>
 				<section>
 				<para style="terp_default_8">[[ repeatIn(o.move_lines,'l') ]]</para>
 				<blockTable colWidths="30.0,118.0,130.0,190.0,88.0" style="Table_Content">
@@ -189,10 +190,15 @@
 						<td><para style="terp_default_8">[[ l.sale_id.name ]]</para></td>
 						<td><para style="terp_default_8">[[ l.client_order_ref ]]</para></td>
 						<td><para style="terp_default_8">[[ get_description(l) ]]</para></td>
-						<td><para style="terp_default_Right_8">[[ formatLang(l.product_qty)]] [[ (l.product_uom and l.product_uom.name) or '' ]]</para></td>
+						<td><para style="terp_default_Right_8">[[ formatLang(l.product_qty, digits=0)]] [[ (l.product_uom and l.product_uom.name) or '' ]]</para></td>
 					</tr>
 				</blockTable>
 				</section>
+				<blockTable colWidths="555">
+					<tr>
+						<td><para style="terp_default_8">[[ o.footer_picking or '']]</para></td>
+					</tr>
+				</blockTable>
 				<blockTable colWidths="130.0,127.0,38.00,130.0,130.0" rowHeights = "72.0" style="Table_Country_Detail">
 					<tr>
 						<td>

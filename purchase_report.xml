@@ -26,6 +26,7 @@
 			rml="max_report_addons/report/order.rml"
 			usage="default"
 			string="Purchase Order / RFQ Order" 
-			header="False"/>
+			groups="so_workflowchange.group_non_user"
+			header="True"/>
 	</data>
 </openerp>

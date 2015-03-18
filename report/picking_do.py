@@ -60,7 +60,17 @@ class maxmega_picking_do(report_sxw.rml_parse):
 #         print str(name)
         self.localcontext.update({
               'get_description' : self._get_description,
+#               'get_attn': self._get_attn,
         })
+
+#     def _get_attn(self, o):
+#         contact = ''
+#         if o.contact_person_id:
+#             contact = (o.contact_person_id.name) or ''
+#         else:
+#             if o.partner_order_id:
+#                 contact = (o.partner_order_id.name) or ''
+#         return contact
 
     def _get_description(self, l):
         description = ''
@@ -72,9 +82,11 @@ class maxmega_picking_do(report_sxw.rml_parse):
                 part_note = str(pn_note_lines[len_note_pn_remark])
                 len_note_pn_remark += 1
         if len_note_pn > 0:
-            description = str(l.product_id.default_code)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+#             description = str(l.product_id.default_code)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+            description = str(l.product_id.name)+'\n'+str(part_note)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
         else:
-            description = str(l.product_id.default_code)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+#             description = str(l.product_id.default_code)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
+            description = str(l.product_id.name)+'\n' +"CUST P/N:" + str(l.product_customer_id.name)
         return description
 
 # class maxmega_picking_do(report_rml):

@@ -32,7 +32,6 @@ import math
 from datetime import datetime
 from tools import amount_to_text_en
 import locale
-locale.setlocale(locale.LC_ALL, '')
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -62,7 +61,24 @@ class maxmega_purchase_order(report_sxw.rml_parse):
         self.localcontext.update({
             'get_description':self._get_description,
             'get_price_subtotal': self._get_subtotal,
+            'get_shipping' : self._get_shipping,
+            'get_attn': self._get_attn,
         })
+
+    def _get_attn(self, o):
+        contact = ''
+        if o.contact_person_id:
+            contact = (o.contact_person_id.name) or ''
+        else:
+            if o.partner_order_id:
+                contact = (o.partner_order_id.name) or ''
+        return contact
+    
+    def _get_shipping(self, o):
+        name = ''
+        if o.partner_shipping_id and o.partner_shipping_id.partner_id_dummy:
+            name = ((o.partner_shipping_id.partner_id_dummy.title and o.partner_shipping_id.partner_id_dummy.title.name) or '') + ((o.partner_shipping_id.partner_id_dummy.name) or '')
+        return name
 
     def _get_description(self, l, partner_child_id):
         product_supplier_price = self.pool.get('product.supplier.price')
@@ -77,9 +93,7 @@ class maxmega_purchase_order(report_sxw.rml_parse):
         
         if product_supplier_price_ids:
             remark = product_supplier_price.browse(self.cr, self.uid, product_supplier_price_ids[0],context=None).name
-            print remark
             if not remark:
-                print "Test"
                 remark = ""
             else:
                 remark = str(remark)
@@ -87,25 +101,29 @@ class maxmega_purchase_order(report_sxw.rml_parse):
                     remark = ""
         else:
             remark = ""
-        cpn = ""
-
-        for allo in l.allocated_ids:
-            if cpn == "" or "-":
-                cpn = cpn + str(allo.sale_line_id.product_customer_id.name)
-            else:
-                cpn = cpn + ' || ' + str(allo.sale_line_id.product_customer_id.name)
-                
-        len_cpn = len(cpn)
+#         cpn = ""
+# 
+#         for allo in l.allocated_ids:
+#             if cpn == "" or "-":
+#                 cpn = cpn + str(allo.sale_line_id.product_customer_id.name)
+#             else:
+#                 cpn = cpn + ' || ' + str(allo.sale_line_id.product_customer_id.name)
+#                 
+#         len_cpn = len(cpn)
         if remark == "" :
-            if len_cpn == 0 :
-                description = str(l.product_id.default_code)
-            else:
-                description = str(l.product_id.default_code)+ '\n' + " CPN :" + str(cpn)
+#             if len_cpn == 0 :
+            description = str(l.product_id.name)
+#                 description = str(l.product_id.default_code)
+#             else:
+#                 description = str(l.product_id.name)+ '\n' + " CPN :" + str(cpn)
+#                 description = str(l.product_id.default_code)+ '\n' + " CPN :" + str(cpn)
         else:
-            if len_cpn == 0 :
-                description = str(l.product_id.default_code)+ '\n' + str(remark)
-            else:
-                description = str(l.product_id.default_code)+ '\n' + str(remark) + " CPN :" + str(cpn)
+#             if len_cpn == 0 :
+            description = str(l.product_id.name)+ '\n' + str(remark)
+#                 description = str(l.product_id.default_code)+ '\n' + str(remark)
+#             else:
+#                 description = str(l.product_id.name)+ '\n' + str(remark) + " CPN :" + str(cpn)
+#                 description = str(l.product_id.default_code)+ '\n' + str(remark) + " CPN :" + str(cpn)
         return description + notes
 
     def _get_subtotal(self, l):
