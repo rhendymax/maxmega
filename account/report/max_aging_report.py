@@ -301,6 +301,20 @@ class max_aging_report(report_sxw.rml_parse):
         partner_ids = self.partner_ids or False
         #print partner_ids
 
+        val_period = []
+        period_1 = period_2 = period_3 = False
+        val_period.append(('special', '=', False))
+        if date_to:
+            val_period.append(('date_start', '<=', date_to))
+
+        qry_period_ids = period_obj.search(cr, uid, val_period, order='date_start DESC')
+        if qry_period_ids[1]:
+            period_1 = qry_period_ids[1]
+        if qry_period_ids[2]:
+            period_2 = qry_period_ids[2]
+        if qry_period_ids[3]:
+            period_3 = qry_period_ids[3]
+
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND aml.partner_id = " + str(partner_ids[0]) + " ") or "AND aml.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND aml.partner_id IN (0) "
         cr.execute(
                 "select DISTINCT aml.partner_id " \
@@ -361,7 +375,7 @@ class max_aging_report(report_sxw.rml_parse):
                 addr = addr and addr['invoice'] and partner_add_obj.browse(self.cr, self.uid, addr['invoice']) or False
 
                 cr.execute(
-                        "select sp.id as picking_id, ai.sale_term_id as term_id, aml.id as aml_id, am.name as inv_name, aml.date as inv_date, ai.ref_no as inv_ref, rs.name as sales_name, aml.debit - aml.credit as home_amt, " \
+                        "select sp.id as picking_id, ai.sale_term_id as term_id, aml.id as aml_id, aml.period_id as period_id, am.name as inv_name, aml.date as inv_date, ai.ref_no as inv_ref, rs.name as sales_name, aml.debit - aml.credit as home_amt, " \
                         "abs(CASE WHEN (aml.currency_id is not null) and (aml.cur_date is not null) THEN amount_currency ELSE aml.debit - aml.credit END) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) " \
                         "as inv_amt, " \
                         "abs(coalesce ( " \
@@ -414,6 +428,8 @@ class max_aging_report(report_sxw.rml_parse):
 #                         "and aml.partner_id = " + str(s['id']) + " order by aml.date"
 #                 print qry3
                 val = []
+                due_1 = due_2 = due_3 = due_4 = 0.00
+                due_home_1 = due_home_2 = due_home_3 = due_home_4 = 0.00
                 total_amt1 = total_amt2= total_amt3 = total_amt4 = total_home_amt1 = total_home_amt2 = total_home_amt3 = total_home_amt4 = 0
                 if qry3:
                     for t in qry3:
@@ -446,14 +462,37 @@ class max_aging_report(report_sxw.rml_parse):
                                             cust_po_no = u['cust_po_no']
                         remain_amt = (t['inv_amt'] * sign) - (t['paid'] * sign)
                         remain_home_amt = (t['home_amt'] * sign) - (t['paid_home'] * sign)
-                        total_amt1 += daysremaining < 31 and remain_amt or 0.00
-                        total_amt2 += (daysremaining > 30 and daysremaining < 61 and remain_amt) or 0.00
-                        total_amt3 += (daysremaining > 60 and daysremaining < 91 and remain_amt) or 0.00
-                        total_amt4 += daysremaining > 90 and remain_amt or 0.00
-                        total_home_amt1 += daysremaining < 31 and remain_home_amt or 0.00
-                        total_home_amt2 += (daysremaining > 30 and daysremaining < 61 and remain_home_amt) or 0.00
-                        total_home_amt3 += (daysremaining > 60 and daysremaining < 91 and remain_home_amt) or 0.00
-                        total_home_amt4 += daysremaining > 90 and remain_home_amt or 0.00
+                        
+                        if t['period_id'] == period_1:
+                            due_1 += remain_amt
+                            due_home_1 += remain_home_amt
+                        elif t['period_id'] == period_2:
+                            due_2 += remain_amt
+                            due_home_2 += remain_home_amt
+                        elif t['period_id'] == period_3:
+                            due_3 += remain_amt
+                            due_home_3 += remain_home_amt
+                        else:
+                            due_4 += remain_amt
+                            due_home_4 += remain_home_amt
+                        
+#                         total_amt1 += daysremaining < 31 and remain_amt or 0.00
+#                         total_amt2 += (daysremaining > 30 and daysremaining < 61 and remain_amt) or 0.00
+#                         total_amt3 += (daysremaining > 60 and daysremaining < 91 and remain_amt) or 0.00
+#                         total_amt4 += daysremaining > 90 and remain_amt or 0.00
+#                         total_home_amt1 += daysremaining < 31 and remain_home_amt or 0.00
+#                         total_home_amt2 += (daysremaining > 30 and daysremaining < 61 and remain_home_amt) or 0.00
+#                         total_home_amt3 += (daysremaining > 60 and daysremaining < 91 and remain_home_amt) or 0.00
+#                         total_home_amt4 += daysremaining > 90 and remain_home_amt or 0.00
+                        total_amt1 += due_1
+                        total_amt2 += due_2
+                        total_amt3 += due_3
+                        total_amt4 += due_4
+                        total_home_amt1 += due_home_1
+                        total_home_amt2 += due_home_2
+                        total_home_amt3 += due_home_3
+                        total_home_amt4 += due_home_4
+
                         val.append({
                             'invoice_name' : t['inv_name'],
                             'sales_person': t['sales_name'],
@@ -465,14 +504,22 @@ class max_aging_report(report_sxw.rml_parse):
                             'home_orig_amt' : (t['home_amt'] * sign),
                             'paid_amt' : (t['paid'] * sign),
                             'home_paid_amt' : (t['paid_home'] * sign),
-                            'amt1':  daysremaining < 31 and remain_amt or 0.00,
-                            'home_amt1': daysremaining < 31 and remain_home_amt or 0.00,
-                            'amt2': (daysremaining > 30 and daysremaining < 61 and remain_amt) or 0.00,
-                            'home_amt2': (daysremaining > 30 and daysremaining < 61 and remain_home_amt) or 0.00,
-                            'amt3': (daysremaining > 60 and daysremaining < 91 and remain_amt) or 0.00,
-                            'home_amt3': (daysremaining > 60 and daysremaining < 91 and remain_home_amt) or 0.00,
-                            'amt4': daysremaining > 90 and remain_amt or 0.00,
-                            'home_amt4': daysremaining > 90 and remain_home_amt or 0.00,
+#                             'amt1':  daysremaining < 31 and remain_amt or 0.00,
+#                             'home_amt1': daysremaining < 31 and remain_home_amt or 0.00,
+#                             'amt2': (daysremaining > 30 and daysremaining < 61 and remain_amt) or 0.00,
+#                             'home_amt2': (daysremaining > 30 and daysremaining < 61 and remain_home_amt) or 0.00,
+#                             'amt3': (daysremaining > 60 and daysremaining < 91 and remain_amt) or 0.00,
+#                             'home_amt3': (daysremaining > 60 and daysremaining < 91 and remain_home_amt) or 0.00,
+#                             'amt4': daysremaining > 90 and remain_amt or 0.00,
+#                             'home_amt4': daysremaining > 90 and remain_home_amt or 0.00,
+                            'amt1':  due_1,
+                            'home_amt1': due_home_1,
+                            'amt2': due_2,
+                            'home_amt2': due_home_2,
+                            'amt3': due_3,
+                            'home_amt3': due_home_3,
+                            'amt4': due_4,
+                            'home_amt4': due_home_4,
                             })
                 val = val and sorted(val, key=lambda val_res: val_res['invoice_date']) or []
                 results1.append({

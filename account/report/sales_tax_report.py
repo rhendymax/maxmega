@@ -381,14 +381,15 @@ class sales_tax_report(report_sxw.rml_parse):
                 inv_tax_amt = inv_taxable_amt = inv_taxable_home = inv_tax_home = cred_taxable_home = cred_tax_home = cred_taxable_amt = cred_tax_amt = 0
 
                 cr.execute(
-                        "select ai.number as inv_name, ai.date_invoice as inv_date, rp.name as part_name, rc.name as cur_name, ac_t.amount as tax_percent, ai.currency_id as inv_curr, ait.base as taxable_amt, ait.amount as tax_amt, ai.id as inv_id " \
+                        "select ai.number as inv_name, ai.date_invoice as inv_date, rp.name as part_name, rc.name as cur_name, " \
+                        "ac_t.amount as tax_percent, ai.currency_id as inv_curr, ait.base as taxable_amt, ait.amount as tax_amt, ai.id as inv_id " \
                         "from account_invoice_tax ait " \
                         "left join account_invoice ai on ait.invoice_id = ai.id " \
                         "left join res_currency rc on ai.currency_id = rc.id " \
                         "left join res_partner rp on ai.partner_id = rp.id " \
                         "left join account_tax ac_t on ac_t.base_code_id = ait.base_code_id " \
                         "WHERE ai.partner_id IS NOT NULL " \
-                            "and ai.type in ('out_invoice') " \
+                            "and ai.type = 'out_invoice' " \
                             "AND ai.state IN ('open', 'paid') " \
                             + tax_qry \
                             + date_from_qry \
@@ -402,7 +403,6 @@ class sales_tax_report(report_sxw.rml_parse):
                     for inv in qry_inv:
                         rate = taxable_home = tax_home = home_rate = 0
                         cur_date = inv['inv_date'] or False
-
                         if home_currency_id and cur_date:
                             res_currency_home_ids = res_currency_rate2_obj.search(cr, uid, [('currency_id', '=', home_currency_id), ('name', '<=', cur_date)], order='name DESC', limit=1)
                             if res_currency_home_ids:
@@ -435,6 +435,7 @@ class sales_tax_report(report_sxw.rml_parse):
                             'tax_home' : tax_home,
                             })
                         if cur_id not in self.balance_by_cur:
+#                             print "MASUK IF"
                             self.balance_by_cur.update({cur_id : {
                                 'taxable_amt' : inv['taxable_amt'],
                                 'taxable_home' : taxable_home,
@@ -442,6 +443,8 @@ class sales_tax_report(report_sxw.rml_parse):
                                 'tax_home' : tax_home,
                                 }
                                 })
+#                             print "Jumlah : "
+#                             print inv['tax_amt']
                         else:
                             res_currency_grouping = self.balance_by_cur[cur_id].copy()
                             res_currency_grouping['taxable_amt'] += inv['taxable_amt']
@@ -450,15 +453,21 @@ class sales_tax_report(report_sxw.rml_parse):
                             res_currency_grouping['tax_home'] += tax_home
             #                    res_currency_grouping['sup_tax'] += (inv_sup_tax - cred_sup_tax)
                             self.balance_by_cur[cur_id] = res_currency_grouping
+#                             print "Plus"
+#                             print inv['tax_amt']
+#                             print "==="
+#                             print res_currency_grouping['tax_amt']
+                            
                 cr.execute(
-                    "select ai.number as inv_name, ai.date_invoice as inv_date, rp.name as part_name, rc.name as cur_name, ac_t.amount as tax_percent, ai.currency_id as inv_curr, ait.base as taxable_amt, ait.amount as tax_amt, ai.id as inv_id " \
+                    "select ai.number as inv_name, ai.date_invoice as inv_date, rp.name as part_name, rc.name as cur_name, " \
+                    "ac_t.amount as tax_percent, ai.currency_id as inv_curr, ait.base as taxable_amt, ait.amount as tax_amt, ai.id as inv_id " \
                     "from account_invoice_tax ait " \
                     "left join account_invoice ai on ait.invoice_id = ai.id " \
                     "left join res_currency rc on ai.currency_id = rc.id " \
                     "left join res_partner rp on ai.partner_id = rp.id " \
                     "left join account_tax ac_t on ac_t.ref_base_code_id = ait.base_code_id " \
                     "WHERE ai.partner_id IS NOT NULL " \
-                        "and ai.type in ('out_refund') " \
+                        "and ai.type = 'out_refund' " \
                         "AND ai.state IN ('open', 'paid') " \
                         + tax_qry \
                         + date_from_qry \
@@ -503,20 +512,27 @@ class sales_tax_report(report_sxw.rml_parse):
                             'tax_home' : tax_home,
                             })
                         if cur_id not in self.balance_by_cur:
+#                             print "if bawah"
                             self.balance_by_cur.update({cur_id : {
-                                'taxable_amt' : inv['taxable_amt'] * -1,
+                                'taxable_amt' : cred['taxable_amt'] * -1,
                                 'taxable_home' : taxable_home * -1,
-                                'tax_amt': inv['tax_amt'] * -1,
+                                'tax_amt': cred['tax_amt'] * -1,
                                 'tax_home' : tax_home * -1,
                                 }
                                 })
                         else:
+#                             print "Else BWH"
                             res_currency_grouping = self.balance_by_cur[cur_id].copy()
-                            res_currency_grouping['taxable_amt'] -= inv['taxable_amt']
+                            res_currency_grouping['taxable_amt'] -= cred['taxable_amt']
                             res_currency_grouping['taxable_home'] -= taxable_home
-                            res_currency_grouping['tax_amt'] -= inv['tax_amt']
+                            res_currency_grouping['tax_amt'] -= cred['tax_amt']
                             res_currency_grouping['tax_home'] -= tax_home
                             self.balance_by_cur[cur_id] = res_currency_grouping
+                            
+#                         print "AKHIRRRRRRRRRRR"
+#                         print res_currency_grouping['tax_amt']
+#                         print "Last Data"
+#                         print inv['tax_amt']
                 self.taxable_home += (inv_taxable_home - cred_taxable_home)
                 self.tax_home += (inv_tax_home - cred_tax_home)
                 results.append({

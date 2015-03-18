@@ -267,6 +267,8 @@ class param_payable_aging_report(osv.osv_memory):
         partner_obj = self.pool.get('res.partner')
         partner_add_obj = self.pool.get('res.partner.address')
         sale_payment_term_obj = self.pool.get('sale.payment.term')
+#         period_id = form['period_id'] or False
+#         period = self.pool.get('account.period').browse(cr, uid, period_id)
         report_total = 0.00
         balance_by_cur = {}
         ####################
@@ -312,15 +314,27 @@ class param_payable_aging_report(osv.osv_memory):
             header += ('filter_selection' in form and 'Customer search : ' + form['filter_selection'] + " \n") or ''
             deposit_qry = 'and not (aml.debit > 0 and aml.is_depo = True) '
             sign = 1
+
+        val_period = []
+        period_1 = period_2 = period_3 = False
+        val_period.append(('special', '=', False))
+        if date_to:
+            val_period.append(('date_start', '<=', date_to))
+
+        qry_period_ids = period_obj.search(cr, uid, val_period, order='date_start DESC')
+        if qry_period_ids[1]:
+            period_1 = qry_period_ids[1]
+        if qry_period_ids[2]:
+            period_2 = qry_period_ids[2]
+        if qry_period_ids[3]:
+            period_3 = qry_period_ids[3]
         
         header += ('date_to_header' in form and 'Age Reference Date : ' + form['date_to_header'] + ' \n') or ''
 
 #        header += ('date_search' in form and (form['date_search'] == 'date' and 'Date : ' + str(form['date_showing']) + " \n") or \
 #                   (form['date_search'] == 'period' and 'Period : ' + str(form['date_showing']) + " \n")) or ''
 
-        header += 'Vch No;Sales Person;TP Doc Date;Due Date;Ref No;Cust PO No;Orig Amt;Orig Amt Home;Paid/CN;Paid/CN Home;< 31;< 31 Home;31 To 60;31 To 60 Home;61 To 90;61 To 90 Home;Over 91;Over 91 Home' + " \n"
-
-        
+        header += 'Vch No;Supplier Invoice No;Sales Person;TP Doc Date;Due Date;Ref No;Cust PO No;Orig Amt;Orig Amt Home;Paid/CN;Paid/CN Home;< 31;< 31 Home;31 To 60;31 To 60 Home;61 To 90;61 To 90 Home;Over 91;Over 91 Home' + " \n"
 
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND aml.partner_id = " + str(partner_ids[0]) + " ") or "AND aml.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND aml.partner_id IN (0) "
         cr.execute(
@@ -385,7 +399,7 @@ class param_payable_aging_report(osv.osv_memory):
                 addr = addr and addr['invoice'] and partner_add_obj.browse(cr, uid, addr['invoice']) or False
                 
                 cr.execute(
-                        "select sp.id as picking_id, ai.sale_term_id as term_id, aml.id as aml_id, am.name as inv_name, aml.date as inv_date, ai.ref_no as inv_ref, rs.name as sales_name, aml.debit - aml.credit as home_amt, " \
+                        "select sp.id as picking_id, ai.sale_term_id as term_id, aml.id as aml_id, aml.period_id as period_id, am.name as inv_name, aml.date as inv_date, ai.ref_no as inv_ref, rs.name as sales_name, aml.debit - aml.credit as home_amt, " \
                         "abs(CASE WHEN (aml.currency_id is not null) and (aml.cur_date is not null) THEN amount_currency ELSE aml.debit - aml.credit END) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) " \
                         "as inv_amt, " \
                         "abs(coalesce ( " \
@@ -395,7 +409,7 @@ class param_payable_aging_report(osv.osv_memory):
                         "abs(coalesce ( " \
                         "(select sum(CASE WHEN (aml4.currency_id is not null) and (aml4.cur_date is not null) THEN amount_currency ELSE aml4.debit - aml4.credit END) from account_move_line aml4 where aml4.reconcile_partial_id = aml.reconcile_partial_id and aml4.id != aml.id and aml4.date  <= '" +str(date_to) + "'), " \
                         "(select sum(CASE WHEN (aml5.currency_id is not null) and (aml5.cur_date is not null) THEN amount_currency ELSE aml5.debit - aml5.credit END) from account_move_line aml5 where aml5.reconcile_id = aml.reconcile_id and aml5.id != aml.id and aml5.date  <= '" +str(date_to) + "'), " \
-                        "0)) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) as paid " \
+                        "0)) * (CASE WHEN (debit - credit) > 0 THEN 1 ELSE -1 END) as paid, ai.invoice_no as supp_inv_no " \
                         "from account_move_line aml " \
                         "left join account_move am on aml.move_id = am.id left join account_invoice ai on am.id = ai.move_id " \
                         "left join account_account aa on aml.account_id = aa.id left join account_journal aj on am.journal_id = aj.id " \
@@ -440,9 +454,11 @@ class param_payable_aging_report(osv.osv_memory):
                 
                 qry3 = cr.dictfetchall()
                 val = []
-                total_amt1 = total_amt2= total_amt3 = total_amt4 = total_home_amt1 = total_home_amt2 = total_home_amt3 = total_home_amt4 = 0.00
+                total_amt1 = total_amt2= total_amt3 = total_amt4 = total_home_amt1 = total_home_amt2 = total_home_amt3 = total_home_amt4 = total_org_amount = total_org_home = 0.00
                 if qry3:
                     for t in qry3:
+                        due_1 = due_2 = due_3 = due_4 = 0.00
+                        due_home_1 = due_home_2 = due_home_3 = due_home_4 = 0.00
                         due_date = False
                         sale_term_id = t['term_id'] and sale_payment_term_obj.browse(cr, uid, t['term_id']) or False
                         daysremaining = 0
@@ -452,7 +468,7 @@ class param_payable_aging_report(osv.osv_memory):
                             gracedays = partner_grace > 0 and partner_grace or sale_grace
                             termdays = sale_term_id.days
                             Date = datetime.strptime(t['inv_date'], '%Y-%m-%d')
-                            due_date = Date + timedelta(days=(termdays + gracedays))
+                            due_date = Date + timedelta(days=(termdays))
                         #print EndDate
                         due_date = due_date and due_date.strftime('%Y-%m-%d') or False
                         d = datetime.strptime(t['inv_date'], '%Y-%m-%d')
@@ -470,19 +486,37 @@ class param_payable_aging_report(osv.osv_memory):
                                     if qry4:
                                         for u in qry4:
                                             cust_po_no = u['cust_po_no']
+                                            print u['cust_po_no']
                         remain_amt = (t['inv_amt'] * sign) - (t['paid'] * sign)
                         remain_home_amt = (t['home_amt'] * sign) - (t['paid_home'] * sign)
-                        total_amt1 += daysremaining < 31 and remain_amt or 0.00
-                        total_amt2 += (daysremaining > 30 and daysremaining < 61 and remain_amt) or 0.00
-                        total_amt3 += (daysremaining > 60 and daysremaining < 91 and remain_amt) or 0.00
-                        total_amt4 += daysremaining > 90 and remain_amt or 0.00
-                        total_home_amt1 += daysremaining < 31 and remain_home_amt or 0.00
-                        total_home_amt2 += (daysremaining > 30 and daysremaining < 61 and remain_home_amt) or 0.00
-                        total_home_amt3 += (daysremaining > 60 and daysremaining < 91 and remain_home_amt) or 0.00
-                        total_home_amt4 += daysremaining > 90 and remain_home_amt or 0.00
+                       
+                        if t['period_id'] == period_1:
+                            due_1 = remain_amt
+                            due_home_1 = remain_home_amt
+                        elif t['period_id'] == period_2:
+                            due_2 = remain_amt
+                            due_home_2 = remain_home_amt
+                        elif t['period_id'] == period_3:
+                            due_3 = remain_amt
+                            due_home_3 = remain_home_amt
+                        else:
+                            due_4 = remain_amt
+                            due_home_4 = remain_home_amt
+                        
+                        total_amt1 += due_1
+                        total_amt2 += due_2
+                        total_amt3 += due_3
+                        total_amt4 += due_4
+                        total_home_amt1 += due_home_1
+                        total_home_amt2 += due_home_2
+                        total_home_amt3 += due_home_3
+                        total_home_amt4 += due_home_4
+                        total_org_amount += (t['inv_amt'] * sign) or 0.00
+                        total_org_home += (t['home_amt'] * sign) or 0.00
                         val.append({
                             'invoice_name' : t['inv_name'] or '',
                             'sales_person': t['sales_name'] or '',
+                            'supp_inv_no': t['supp_inv_no'] or '',
                             'invoice_date' : t['inv_date'] or '',
                             'due_date' : due_date or '',
                             'ref_no' : t['inv_ref'] or '',
@@ -491,14 +525,14 @@ class param_payable_aging_report(osv.osv_memory):
                             'home_orig_amt' : (t['home_amt'] * sign) or 0.00,
                             'paid_amt' : (t['paid'] * sign) or 0.00,
                             'home_paid_amt' : (t['paid_home'] * sign) or 0.00,
-                            'amt1':  daysremaining < 31 and remain_amt or 0.00,
-                            'home_amt1': daysremaining < 31 and remain_home_amt or 0.00,
-                            'amt2': (daysremaining > 30 and daysremaining < 61 and remain_amt) or 0.00,
-                            'home_amt2': (daysremaining > 30 and daysremaining < 61 and remain_home_amt) or 0.00,
-                            'amt3': (daysremaining > 60 and daysremaining < 91 and remain_amt) or 0.00,
-                            'home_amt3': (daysremaining > 60 and daysremaining < 91 and remain_home_amt) or 0.00,
-                            'amt4': daysremaining > 90 and remain_amt or 0.00,
-                            'home_amt4': daysremaining > 90 and remain_home_amt or 0.00,
+                            'amt1': due_1,
+                            'home_amt1': due_home_1,
+                            'amt2': due_2,
+                            'home_amt2': due_home_2,
+                            'amt3': due_3,
+                            'home_amt3': due_home_3,
+                            'amt4': due_4,
+                            'home_amt4': due_home_4,
                             })
                 val = val and sorted(val, key=lambda val_res: val_res['invoice_date']) or []
                 results1.append({
@@ -508,8 +542,8 @@ class param_payable_aging_report(osv.osv_memory):
                     'contact_phone' : addr and addr.phone or '',
                     'contact_person' : addr and addr.name or '',
                     'credit_limit' : s['credit_limit'] or 0.00,
-                    'total_inv' : (total_amt1 + total_amt2 + total_amt3 + total_amt4) or 0.00,
-                    'total_home' : (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4) or 0.00,
+                    'total_inv' : total_org_amount,
+                    'total_home' : total_org_home,
                     'total_amt1' : total_amt1 or  0.00,
                     'total_home_amt1' : total_home_amt1 or 0.00,
                     'total_amt2' : total_amt2 or 0.00,
@@ -523,8 +557,10 @@ class param_payable_aging_report(osv.osv_memory):
 
                 if cur_id not in balance_by_cur:
                     balance_by_cur.update({cur_id : {
-                             'inv_amt' : (total_amt1 + total_amt2 + total_amt3 + total_amt4),
-                             'home_amt' : (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4),
+#                              'inv_amt' : (total_amt1 + total_amt2 + total_amt3 + total_amt4),
+#                              'home_amt' : (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4),
+                             'inv_amt' : total_org_amount,
+                             'home_amt' : total_org_home,
                              'amt1' : total_amt1,
                              'amt2' : total_amt2,
                              'amt3' : total_amt3,
@@ -537,8 +573,10 @@ class param_payable_aging_report(osv.osv_memory):
                             })
                 else:
                     res_currency_grouping = balance_by_cur[cur_id].copy()
-                    res_currency_grouping['inv_amt'] += (total_amt1 + total_amt2 + total_amt3 + total_amt4)
-                    res_currency_grouping['home_amt'] += (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4)
+#                     res_currency_grouping['inv_amt'] += (total_amt1 + total_amt2 + total_amt3 + total_amt4)
+#                     res_currency_grouping['home_amt'] += (total_home_amt1 + total_home_amt2 + total_home_amt3 + total_home_amt4)
+                    res_currency_grouping['inv_amt'] += total_org_amount
+                    res_currency_grouping['home_amt'] += total_org_home
                     res_currency_grouping['amt1'] += total_amt1
                     res_currency_grouping['amt2'] += total_amt2
                     res_currency_grouping['amt3'] += total_amt3
@@ -551,12 +589,14 @@ class param_payable_aging_report(osv.osv_memory):
                     
         results1 = results1 and sorted(results1, key=lambda val_res: val_res['part_name']) or []
         for rs1 in results1:
-            header += '[' + str(rs1['part_ref'])  + '] ' + str(rs1['part_name']) + ';' + str(rs1['cur_name']) + ';' + 'Tel : ' + str(rs1['contact_phone']) + ';' + 'Contact : ' + str(rs1['contact_person']) \
-                          + ';' + 'Credit Limit : ' + str(rs1['credit_limit'] or 0.00) + ' \n'
+            header += '[' + str(rs1['part_ref'])  + '] ' + str(rs1['part_name']) + ';' + str(rs1['cur_name']) + ';' \
+                    + 'Tel : ' + str(rs1['contact_phone']) + ';' + 'Contact : ' + str(rs1['contact_person']) \
+                    + ';' + 'Credit Limit : ' + str(rs1['credit_limit'] or 0.00) + ' \n'
             total_home_amt = 0
             for rs2 in rs1['val_ids']:
-                header += str(rs2['invoice_name']) + ';' + str(rs2['sales_person']) + ';' + str(rs2['invoice_date']) + ';' + str(rs2['due_date']) + ';' \
-                          + str(rs2['ref_no']) + ';' + str(rs2['cust_po_no']) + ';' + str(rs2['orig_amt']) + ';' + str(rs2['home_orig_amt']) + ';' \
+                header += str(rs2['invoice_name']) + ';'  + str(rs2['supp_inv_no']) + ';' + str(rs2['sales_person']) + ';' \
+                          + str(rs2['invoice_date']) + ';' + str(rs2['due_date']) + ';' + str(rs2['ref_no']) + ';' \
+                          + str(rs2['cust_po_no']) + ';' + str(rs2['orig_amt']) + ';' + str(rs2['home_orig_amt']) + ';' \
                           + str(rs2['paid_amt']) + ';' + str(rs2['home_paid_amt']) + ';' + str(rs2['amt1']) + ';' \
                           + str(rs2['home_amt1']) + ';' + str(rs2['amt2']) + ';' + str(rs2['home_amt2']) + ';' \
                           + str(rs2['amt3']) + ';' + str(rs2['home_amt3']) + ';' + str(rs2['amt4']) + ';' + str(rs2['home_amt4']) + ' \n'
@@ -565,6 +605,7 @@ class param_payable_aging_report(osv.osv_memory):
             header += str(rs1['cur_name']) + ';' + str(rs1['total_inv']) + ';' \
                     + str(rs1['total_amt1']) + ';' + str(rs1['total_amt2']) + ';' \
                     + str(rs1['total_amt3']) + ';' + str(rs1['total_amt4']) + ' \n'
+            print rs1['total_inv']
             header += 'Home;' + str(rs1['total_home']) + ';' \
                     + str(rs1['total_home_amt1']) + ';' + str(rs1['total_home_amt2']) + ';' \
                     + str(rs1['total_home_amt3']) + ';' + str(rs1['total_home_amt4']) + ' \n \n'

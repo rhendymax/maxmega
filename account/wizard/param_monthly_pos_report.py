@@ -272,9 +272,11 @@ class param_monthly_pos_report(osv.osv_memory):
 
 #         result = round(amount, prec)
         if qry3:
+            htg = 0
             total_qty = 0
             total = 0.00000
             for t in qry3:
+                htg += 1
                 price_unit = round(t['selling_price'],prec_sale)
                 sub_total = round((price_unit * t['quantity']),prec_acc)
                 header += str(t['brand_name'] or '') + ';' + str(('[' + t['partner_ref'] + '] ' + t['partner_name']) or '') + ';' \

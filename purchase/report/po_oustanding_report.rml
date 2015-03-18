@@ -111,7 +111,7 @@
 			<td><para style="terp_default_7"></para></td>
 			<td><para style="terp_default_ItalicBold_7"><font>Grand Total:</font></para></td>
 			<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(total_qty(), digits=0) ]]</font></para></td>
-			<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(total_price_unit(), digits=5) ]]</font></para></td>
+			<td><para style="terp_default_Right_Bold_7"></para></td>
 			<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(total_oustanding(), digits=0) ]]</font></para></td>
 		</tr>
 	</blockTable>

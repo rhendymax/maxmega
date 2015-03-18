@@ -56,6 +56,21 @@
 								</tree>
 							</field>
 						</page>
+						<page string="Supplier Part No">
+							<field name="product_selection" colspan="4"/>
+							<field name="product_default_from" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_default_to" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_input_from"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_input_to"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_ids"
+								attrs="{'invisible': [('product_selection','!=','selection')], 'required': [('product_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
 					</notebook>
 					<group col="8" colspan="4">
 						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2"/>

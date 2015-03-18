@@ -155,7 +155,7 @@ class param_incoming_report(osv.osv_memory):
                                 "from product_template "\
                                 "where name ilike '" + str(pp_input_to) + "%' " \
                                 "order by name desc limit 1")
-                qry = self.cr.dictfetchone()
+                qry = cr.dictfetchone()
                 if qry:
                     data_found = True
                     val_pp.append(('name', '<=', qry['name']))

@@ -41,6 +41,7 @@ class po_oustanding_report(report_sxw.rml_parse):
     def set_context(self, objects, data, ids, report_type=None):
         new_ids = ids
         res = {}
+        product_product_obj = self.pool.get('product.product')
         res_partner_obj = self.pool.get('res.partner')
         purchase_order_obj = self.pool.get('purchase.order')
         period_obj = self.pool.get('account.period')
@@ -48,7 +49,11 @@ class po_oustanding_report(report_sxw.rml_parse):
         val_part = []
         qry_po = ''
         val_po = []
-        
+
+        qry_pp = ''
+        val_pp = []
+
+        pp_ids = False
         partner_ids = False
         po_ids = False
         
@@ -214,6 +219,52 @@ class po_oustanding_report(report_sxw.rml_parse):
                 po_ids = data['form']['po_ids']
         self.po_ids = po_ids
 
+
+        pp_default_from = data['form']['product_default_from'] and data['form']['product_default_from'][0] or False
+        pp_default_to = data['form']['product_default_to'] and data['form']['product_default_to'][0] or False
+        pp_input_from = data['form']['product_input_from'] or False
+        pp_input_to = data['form']['product_input_to'] or False
+
+        if data['form']['product_selection'] == 'all_vall':
+            pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
+
+        elif data['form']['product_selection'] == 'def':
+            data_found = False
+            if pp_default_from and product_product_obj.browse(self.cr, self.uid, pp_default_from) and product_product_obj.browse(self.cr, self.uid, pp_default_from).name:
+                data_found = True
+                val_pp.append(('name', '>=', product_product_obj.browse(self.cr, self.uid, pp_default_from).name))
+            if pp_default_to and product_product_obj.browse(self.cr, self.uid, pp_default_to) and product_product_obj.browse(self.cr, self.uid, pp_default_to).name:
+                data_found = True
+                val_pp.append(('name', '<=', product_product_obj.browse(self.cr, self.uid, pp_default_to).name))
+            if data_found:
+                pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
+        elif data['form']['product_selection'] == 'input':
+            data_found = False
+            if pp_input_from:
+                self.cr.execute("select name " \
+                                "from product_template "\
+                                "where name ilike '" + str(pp_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pp.append(('name', '>=', qry['name']))
+            if pp_input_to:
+                self.cr.execute("select name " \
+                                "from product_template "\
+                                "where name ilike '" + str(pp_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = self.cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pp.append(('name', '<=', qry['name']))
+            if data_found:
+                pp_ids = product_product_obj.search(self.cr, self.uid, val_pp, order='name ASC')
+        elif data['form']['product_selection'] == 'selection':
+            if data['form']['product_ids']:
+                pp_ids = data['form']['product_ids']
+        self.pp_ids = pp_ids
+
         return super(po_oustanding_report, self).set_context(objects, data, new_ids, report_type=report_type)
     
     def __init__(self, cr, uid, name, context=None):
@@ -251,6 +302,9 @@ class po_oustanding_report(report_sxw.rml_parse):
         partner_ids = self.partner_ids or False
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND po.partner_id = " + str(partner_ids[0]) + " ") or "AND po.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND po.partner_id IN (0) "
 
+        pp_ids = self.pp_ids or False
+        pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND pol.product_id = " + str(pp_ids[0]) + " ") or "AND pol.product_id IN " + str(tuple(pp_ids)) + " ")) or "AND pol.product_id IN (0) "
+
         date_from = self.date_from
         date_to = self.date_to
         date_from_qry = date_from and "And po.date_order >= '" + str(date_from) + "' " or " "
@@ -271,6 +325,7 @@ class po_oustanding_report(report_sxw.rml_parse):
             + partner_qry \
             + date_from_qry \
             + date_to_qry \
+            + pp_qry \
             + po_qry + \
             "order by po.name")
         qry3 = cr.dictfetchall()

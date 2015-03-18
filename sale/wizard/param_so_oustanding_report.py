@@ -47,15 +47,28 @@ class param_so_oustanding_report(osv.osv_memory):
         'so_ids' :fields.many2many('sale.order', 'report_oustanding_so_rel', 'report_id', 'so_id', 'Sale Order', domain=[('state','=','progress')]),
         'data': fields.binary('Exported CSV', readonly=True),
         'filename': fields.char('File Name',size=64),
+        #Product Selection
+        'product_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Supplier Part No Filter Selection', required=True),
+        'product_default_from':fields.many2one('product.product', 'Supplier Part No From', domain=[], required=False),
+        'product_default_to':fields.many2one('product.product', 'Supplier Part No To', domain=[], required=False),
+        'product_input_from': fields.char('Supplier Part No From', size=128),
+        'product_input_to': fields.char('Supplier Part No To', size=128),
+        'product_ids' :fields.many2many('product.product', 'report_oustanding_sale_product_rel', 'report_id', 'product_id', 'Product', domain=[]),
+        'pc_selection': fields.selection([('all_vall','All'),('def','Default'),('input', 'Input'),('selection','Selection')],'Customer Part No Filter Selection', required=True),
+        'pc_default_from':fields.many2one('product.customer', 'Customer Part No From', domain=[], required=False),
+        'pc_default_to':fields.many2one('product.customer', 'Customer Part No To', domain=[], required=False),
+        'pc_input_from': fields.char('Customer Part No From', size=128),
+        'pc_input_to': fields.char('Customer Part No To', size=128),
+        'product_customer_ids' :fields.many2many('product.customer', 'report_oustanding_sale_product_customer_rel', 'report_id', 'product_customer_id', 'Customer Part No', domain=[]),
     }
 
     _defaults = {
-#        'date_from': lambda *a: time.strftime('%Y-01-01'),
-#        'date_to': lambda *a: time.strftime('%Y-%m-%d')
         'date_selection': 'none_sel',
         'customer_search_vals': 'code',
         'filter_selection': 'all_vall',
         'so_selection': 'all_vall',
+        'product_selection': 'all_vall',
+        'pc_selection': 'all_vall',
     }
     
     def create_vat(self, cr, uid, ids, context=None):
@@ -78,11 +91,23 @@ class param_so_oustanding_report(osv.osv_memory):
         res_partner_obj = self.pool.get('res.partner')
         sale_order_obj = self.pool.get('sale.order')
         period_obj = self.pool.get('account.period')
+        product_product_obj = self.pool.get('product.product')
+        product_customer_obj = self.pool.get('product.customer')
         qry_cust = ''
         val_part = []
         qry_so = ''
         val_so = []
-    
+
+        qry_pp = ''
+        val_pp = []
+
+        qry_pc = ''
+        val_pc = []
+
+
+        pp_ids = False
+        pc_ids = False
+
         partner_ids = False
         so_ids = False
         data_search = data['form']['customer_search_vals']
@@ -214,8 +239,128 @@ class param_so_oustanding_report(osv.osv_memory):
             result['date_from'] = data['form']['date_from']
             result['date_to'] = data['form']['date_to'] and data['form']['date_to'] + ' ' + '23:59:59'
 
+#product_customer
+
+        pc_default_from = data['form']['pc_default_from'] or False
+        pc_default_to = data['form']['pc_default_to'] or False
+        pc_input_from = data['form']['pc_input_from'] or False
+        pc_input_to = data['form']['pc_input_to'] or False
+        pc_default_from_str = pc_default_to_str = ''
+        pc_input_from_str = pc_input_to_str= ''
+
+        if data['form']['pc_selection'] == 'all_vall':
+            pc_ids = product_customer_obj.search(cr, uid, val_pc, order='name ASC')
+
+        elif data['form']['pc_selection'] == 'def':
+            data_found = False
+            if pc_default_from and product_customer_obj.browse(cr, uid, pc_default_from) and product_customer_obj.browse(cr, uid, pc_default_from).name:
+                pc_default_from_str = product_customer_obj.browse(cr, uid, pc_default_from).name
+                data_found = True
+                val_pc.append(('name', '>=', product_customer_obj.browse(cr, uid, pc_default_from).name))
+            if pc_default_to and product_customer_obj.browse(cr, uid, pc_default_to) and product_customer_obj.browse(cr, uid, pc_default_to).name:
+                pc_default_to_str = product_customer_obj.browse(cr, uid, pc_default_to).name
+                data_found = True
+                val_pc.append(('name', '<=', product_customer_obj.browse(cr, uid, pc_default_to).name))
+            result['pc_selection'] = '"' + pc_default_from_str + '" - "' + pc_default_to_str + '"'
+            if data_found:
+                pc_ids = product_customer_obj.search(cr, uid, val_pc, order='name ASC')
+        
+        elif data['form']['pc_selection'] == 'input':
+            data_found = False
+            if pc_input_from:
+                pc_input_from_str = pc_input_from
+                cr.execute("select name " \
+                                "from product_customer "\
+                                "where name ilike '" + str(pc_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pc.append(('name', '>=', qry['name']))
+            if pc_input_to:
+                pc_input_to_str = pc_input_to
+                cr.execute("select name " \
+                                "from product_customer "\
+                                "where name ilike '" + str(pc_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pc.append(('name', '<=', qry['name']))
+            result['pc_selection'] = '"' + pc_input_from_str + '" - "' + pc_input_to_str + '"'
+            if data_found:
+                pc_ids = product_customer_obj.search(cr, uid, val_pc, order='name ASC')
+        elif data['form']['pc_selection'] == 'selection':
+            ppr_ids = ''
+            if data['form']['product_customer_ids']:
+                for ppro in product_customer_obj.browse(cr, uid, data['form']['product_customer_ids']):
+                    ppr_ids += '"' + str(ppro.name) + '",'
+                pc_ids = data['form']['product_customer_ids']
+            result['pc_selection'] = '[' + ppr_ids +']'
+        result['pc_ids'] = pc_ids
+
+#product_product
+
+        pp_default_from = data['form']['product_default_from'] or False
+        pp_default_to = data['form']['product_default_to'] or False
+        pp_input_from = data['form']['product_input_from'] or False
+        pp_input_to = data['form']['product_input_to'] or False
+        pp_default_from_str = pp_default_to_str = ''
+        pp_input_from_str = pp_input_to_str= ''
+
+        if data['form']['product_selection'] == 'all_vall':
+            pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
+
+        elif data['form']['product_selection'] == 'def':
+            data_found = False
+            if pp_default_from and product_product_obj.browse(cr, uid, pp_default_from) and product_product_obj.browse(cr, uid, pp_default_from).name:
+                pp_default_from_str = product_product_obj.browse(cr, uid, pp_default_from).name
+                data_found = True
+                val_pp.append(('name', '>=', product_product_obj.browse(cr, uid, pp_default_from).name))
+            if pp_default_to and product_product_obj.browse(cr, uid, pp_default_to) and product_product_obj.browse(cr, uid, pp_default_to).name:
+                pp_default_to_str = product_product_obj.browse(cr, uid, pp_default_to).name
+                data_found = True
+                val_pp.append(('name', '<=', product_product_obj.browse(cr, uid, pp_default_to).name))
+            result['pp_selection'] = '"' + pp_default_from_str + '" - "' + pp_default_to_str + '"'
+            if data_found:
+                pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
+        
+        elif data['form']['product_selection'] == 'input':
+            data_found = False
+            if pp_input_from:
+                pp_input_from_str = pp_input_from
+                cr.execute("select name " \
+                                "from product_template "\
+                                "where name ilike '" + str(pp_input_from) + "%' " \
+                                "order by name limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pp.append(('name', '>=', qry['name']))
+            if pp_input_to:
+                pp_input_to_str = pp_input_to
+                cr.execute("select name " \
+                                "from product_template "\
+                                "where name ilike '" + str(pp_input_to) + "%' " \
+                                "order by name desc limit 1")
+                qry = cr.dictfetchone()
+                if qry:
+                    data_found = True
+                    val_pp.append(('name', '<=', qry['name']))
+            result['pp_selection'] = '"' + pp_input_from_str + '" - "' + pp_input_to_str + '"'
+            if data_found:
+                pp_ids = product_product_obj.search(cr, uid, val_pp, order='name ASC')
+        elif data['form']['product_selection'] == 'selection':
+            ppr_ids = ''
+            if data['form']['product_ids']:
+                for ppro in product_product_obj.browse(cr, uid, data['form']['product_ids']):
+                    ppr_ids += '"' + str(ppro.name) + '",'
+                pp_ids = data['form']['product_ids']
+            result['pp_selection'] = '[' + ppr_ids +']'
+        result['pp_ids'] = pp_ids
+    
 #sale order
-        qry_so = 'state = "progress"'
+        qry_so = "state = 'progress'"
         val_so.append(('state','=', 'progress'))
 
         so_default_from = data['form']['so_default_from'] or False
@@ -285,11 +430,15 @@ class param_so_oustanding_report(osv.osv_memory):
         data['model'] = context.get('active_model', 'ir.ui.menu')
         data['form'] = self.read(cr, uid, ids, ['customer_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                                                 'date_selection', 'date_from', 'date_to', \
-                                                'so_selection','so_default_from','so_default_to', 'so_input_from','so_input_to','so_ids' \
+                                                'so_selection','so_default_from','so_default_to', 'so_input_from','so_input_to','so_ids', \
+                                                'product_selection','product_default_from','product_default_to', 'product_input_from','product_input_to','product_ids', \
+                                                'pc_selection','pc_default_from','pc_default_to', 'pc_input_from','pc_input_to','product_customer_ids' \
                                                 ], context=context)[0]
         for field in ['customer_search_vals', 'filter_selection', 'partner_default_from','partner_default_to','partner_input_from','partner_input_to','partner_ids', \
                     'date_selection', 'date_from', 'date_to', \
-                    'so_selection','so_default_from','so_default_to', 'so_input_from','so_input_to','so_ids'\
+                    'so_selection','so_default_from','so_default_to', 'so_input_from','so_input_to','so_ids', \
+                    'product_selection','product_default_from','product_default_to', 'product_input_from','product_input_to','product_ids', \
+                    'pc_selection','pc_default_from','pc_default_to', 'pc_input_from','pc_input_to','product_customer_ids' \
                     ]:
             if isinstance(data['form'][field], tuple):
                 data['form'][field] = data['form'][field][0]
@@ -319,18 +468,25 @@ class param_so_oustanding_report(osv.osv_memory):
         so_ids = form['so_ids'] or False
         so_qry = (so_ids and ((len(so_ids) == 1 and "AND so.id = " + str(so_ids[0]) + " ") or "AND so.id IN " + str(tuple(so_ids)) + " ")) or "AND so.id IN (0) "
         data_search = form['data_search']
-        
+
+        pp_ids = form['pp_ids'] or False
+        pp_qry = (pp_ids and ((len(pp_ids) == 1 and "AND sol.product_id = " + str(pp_ids[0]) + " ") or "AND sol.product_id IN " + str(tuple(pp_ids)) + " ")) or "AND sol.product_id IN (0) "
+
+        pc_ids = form['pc_ids'] or False
+        pc_qry = (pc_ids and ((len(pc_ids) == 1 and "AND sol.product_customer_id = " + str(pc_ids[0]) + " ") or "AND sol.product_customer_id IN " + str(tuple(pc_ids)) + " ")) or "AND sol.product_customer_id IN (0) "
+
         all_content_line = ''
         header = 'sep=;' + " \n"
         header += 'SO Oustanding Report' + " \n"
         header += ('filter_selection' in form and 'Customer search  ;' + form['filter_selection'] + " \n") or ''
-        header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''
-        
+        header += ('date_selection' in form and 'Date : ' + str(form['date_showing']) + "\n") or ''  
         header += ('so_selection' in form and 'SO : ' + form['so_selection'] + "\n") or ''
-        header += 'Customer Rescheduled Date;Customer Key;Customer Name;SO Number;Item Description;CCY;Order Qty(PCS);Unit Price;Oustanding Qty;Ship Qty' + " \n"
+        header += ('pp_selection' in form and 'Supplier Part No Filter Selection : ' + form['pp_selection'] + " \n") or ''
+        header += ('pc_selection' in form and 'Customer Part No Filter Selection : ' + form['pc_selection'] + " \n") or ''
+        header += 'Customer Rescheduled Date;Customer Key;Customer Name;SO Number;SPN;CPN;CCY;Order Qty(PCS);Unit Price;Oustanding Qty;Ship Qty' + " \n"
 
         cr.execute(
-            "SELECT sol.id as line_id, pt.name as prod_name, so.name as so_name, rp.name as rp_name, rp.ref as rp_ref, " \
+            "SELECT sol.id as line_id, pt.name as prod_name, pc.name as prod_cust_name, so.name as so_name, rp.name as rp_name, rp.ref as rp_ref, " \
             "(sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) as oustanding, " \
             "sol.customer_rescheduled_date as crd_date, " \
             "coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0) as ship_qty, " \
@@ -342,11 +498,14 @@ class param_so_oustanding_report(osv.osv_memory):
             "LEFT JOIN stock_move sm on sol.id = sm.sale_line_id " \
             "LEFT JOIN product_pricelist ppl on so.pricelist_id = ppl.id " \
             "LEFT JOIN res_currency rc on ppl.currency_id = rc.id " \
+            "LEFT JOIN product_customer pc on sol.product_customer_id = pc.id " \
             "WHERE so.state IN ('progress') " \
             "And (sol.product_uom_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.sale_line_id = sol.id group by sm.product_id),0)) > 0 " \
             + partner_qry \
             + date_from_qry \
             + date_to_qry \
+            + pp_qry \
+            + pc_qry \
             + so_qry + \
             "order by so.name")
         qry3 = cr.dictfetchall()
@@ -355,14 +514,14 @@ class param_so_oustanding_report(osv.osv_memory):
             for t in qry3:
                 sol = sol_obj.browse(cr, uid, t['line_id'])
                 header += str(t['crd_date'] or '') + ";" + str(t['rp_name'] or '') + ";" + str(t['rp_ref'] or '') + ";" + str(t['so_name'] or '') + ";" \
-                + str(t['prod_name'] or '') + ";" + str(t['ccy_name'] or '') + ";" + str(sol.product_uom_qty or 0.00) \
+                + str(t['prod_name'] or '') + ";" + str(t['prod_cust_name'] or '') + ";" + str(t['ccy_name'] or '') + ";" + str(sol.product_uom_qty or 0.00) \
                 + ";" + str(sol.price_unit or 0.00)+ ";" + str(t['oustanding'] or 0.00) \
                 + ";" + str(t['ship_qty'] or 0.00) + " \n"
                 
                 order_qty += sol.product_uom_qty or 0.00
                 oustanding += t['oustanding'] or 0
                 ship_qty += t['ship_qty'] or 0
-        header += "Grand Total;;;;;;" + str(order_qty) + ";" + ";" + str(oustanding) + ";" + str(ship_qty) + " \n"
+        header += "Grand Total;;;;;;;" + str(order_qty) + ";" + ";" + str(oustanding) + ";" + str(ship_qty) + " \n"
 
         all_content_line += header
         all_content_line += ' \n'
