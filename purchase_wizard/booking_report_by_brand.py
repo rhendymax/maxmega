@@ -186,8 +186,8 @@ class booking_report_by_brand(osv.osv_memory):
 
         date_from = form['date_from'] or False
         date_to =  form['date_to'] or False
-        date_from_qry = date_from and "And po.date >= '" + str(date_from) + "' " or " "
-        date_to_qry = date_to and "And po.date <= '" + str(date_to) + "' " or " "
+        date_from_qry = date_from and "And po.date_order >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And po.date_order <= '" + str(date_to) + "' " or " "
 
         brand_ids = form['brand_ids'] or False
         brand_qry = (brand_ids and ((len(brand_ids) == 1 and "AND pbd.id = " + str(brand_ids[0]) + " ") or "AND pbd.id IN " + str(tuple(brand_ids)) + " ")) or "AND pbd.id IN (0) "
