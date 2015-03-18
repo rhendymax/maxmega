@@ -201,7 +201,7 @@ class report(report_sxw.rml_parse):
         if data['form']['sales_zone_selection'] == 'all_vall':
             sales_zone_ids = sales_zone_obj.search(self.cr, self.uid, val_sales_zone, order='name ASC')
 
-        if data['form']['sales_zone_selection'] == 'name':
+        if data['form']['sales_zone_selection'] == 'def':
             data_found = False
             if sales_zone_default_from and sales_zone_obj.browse(self.cr, self.uid, sales_zone_default_from) and sales_zone_obj.browse(self.cr, self.uid, sales_zone_default_from).name:
                 data_found = True
@@ -296,11 +296,11 @@ class report(report_sxw.rml_parse):
         partner_qry = (partner_ids and ((len(partner_ids) == 1 and "AND l.partner_id = " + str(partner_ids[0]) + " ") or "AND l.partner_id IN " + str(tuple(partner_ids)) + " ")) or "AND l.partner_id IN (0) "
         period_qry = (qry_period_ids and ((len(qry_period_ids) == 1 and "AND l.period_id = " + str(qry_period_ids[0]) + " ") or "AND l.period_id IN " +  str(tuple(qry_period_ids)) + " ")) or "AND l.period_id IN (0) "
 
-        date_from_qry = date_from and "And l.date >= '" + str(date_from) + "' " or " "
-        date_to_qry = date_to and "And l.date <= '" + str(date_to) + "' " or " "
+        date_from_qry = date_from and "And l.date_invoice >= '" + str(date_from) + "' " or " "
+        date_to_qry = date_to and "And l.date_invoice <= '" + str(date_to) + "' " or " "
 
         sales_zone_ids = self.sales_zone_ids or False
-        sales_zone_qry = (sales_zone_ids and ((len(sales_zone_ids) == 1 and "AND l.sales_zone_ids = " + str(sales_zone_ids[0]) + " ") or "AND l.sales_zone_id IN " + str(tuple(sales_zone_ids)) + " ")) or "AND l.sales_zone_ids IN (0) "
+        sales_zone_qry = (sales_zone_ids and ((len(sales_zone_ids) == 1 and "AND l.sales_zone_id = " + str(sales_zone_ids[0]) + " ") or "AND l.sales_zone_id IN " + str(tuple(sales_zone_ids)) + " ")) or "AND l.sales_zone_id IN (0) "
 
         cr.execute(
                 "SELECT l.id as inv_id " \
@@ -341,7 +341,8 @@ class report(report_sxw.rml_parse):
                 + partner_qry \
                 + date_from_qry \
                 + date_to_qry \
-                + period_qry + \
+                + period_qry \
+                + sales_zone_qry + \
                 "order by sz.name, l.date_invoice")
         qry4 = cr.dictfetchall()
         if qry4:

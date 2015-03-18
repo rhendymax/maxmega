@@ -203,7 +203,7 @@ class report(report_sxw.rml_parse):
 
         if data['form']['sale_zone_selection'] == 'all_vall':
             sale_zone_ids = sale_zone_obj.search(self.cr, self.uid, val_zone, order='name ASC')
-        if data['form']['sale_zone_selection'] == 'name':
+        if data['form']['sale_zone_selection'] == 'def':
             data_found = False
             if sale_zone_default_from and sale_zone_obj.browse(self.cr, self.uid, sale_zone_default_from) and sale_zone_obj.browse(self.cr, self.uid, sale_zone_default_from).name:
                 data_found = True

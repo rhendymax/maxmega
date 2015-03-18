@@ -149,7 +149,7 @@
     <blockTable style="TableHeader3" colWidths="94,98,60,108,60,108">
       <tr>
         <td><para style="std8">Statement As At :</para></td>
-        <td><para style="std8bold">[[ format_date(get_statement_date()) ]]</para></td>
+        <td><para style="std8bold">[[ get_statement_date()]]</para></td>
         <td><para style="std8">Deposit : </para></td>
         <td><para style="std8bold">[[ formatLang(o.depo_credit - o.depo_debit, digits=2) ]]</para></td>
         <td><para style="std8">Currency :</para></td>
@@ -230,7 +230,7 @@
     <blockTable style="TableHeader3" colWidths="94,98,60,108,60,108">
       <tr>
         <td><para style="std8">Statement As At :</para></td>
-        <td><para style="std8bold">[[ format_date(get_statement_date()) ]]</para></td>
+        <td><para style="std8bold">[[ get_statement_date() ]]</para></td>
         <td><para style="std8">Deposit : </para></td>
         <td><para style="std8bold">[[ formatLang(o.depo_credit - o.depo_debit, digits=2) ]]</para></td>
         <td><para style="std8">Currency :</para></td>

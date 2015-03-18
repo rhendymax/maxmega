@@ -101,6 +101,13 @@ class statement(report_sxw.rml_parse):
         date_start_max_period = max_period and period_obj.browse(cr, uid, max_period).date_start or False
         val_period = []
         val_period.append(('special', '=', False))
+        self.total_debit = 0.00
+        self.total_credit = 0.00
+        self.current = 0.00
+        self.due_1 = 0.00
+        self.due_2 = 0.00
+        self.due_3 = 0.00
+        self.due_4 = 0.00
         if date_start_max_period:
             val_period.append(('date_start', '<=', date_start_max_period))
 
@@ -153,7 +160,7 @@ class statement(report_sxw.rml_parse):
                         gracedays = partner_grace > 0 and partner_grace or sale_grace
                         termdays = sale_term_id.days
                         Date = datetime.strptime(t['inv_date'], '%Y-%m-%d')
-                        due_date = Date + timedelta(days=(termdays + gracedays))
+                        due_date = Date + timedelta(days=(termdays))
                     #print EndDate
                     due_date = due_date and due_date.strftime('%Y-%m-%d') or False
                     d = datetime.strptime(t['inv_date'], '%Y-%m-%d')

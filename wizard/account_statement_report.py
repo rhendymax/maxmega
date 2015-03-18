@@ -108,7 +108,6 @@ class account_statement_report(osv.osv_memory):
         period_id = form['period_id'] or False
         period = self.pool.get('account.period').browse(cr, uid, period_id)
         company = self.pool.get('res.company').browse(cr, uid, (self.pool.get('res.users').browse(cr, uid, uid).company_id.id))
-        print period
         partner_ids = form['partner_ids'] or False
         all_content_line = ''
         header = 'sep=;' + " \n"
@@ -118,11 +117,12 @@ class account_statement_report(osv.osv_memory):
 #                 partner_ref = (partner.ref and str(partner.ref) + '\n') or ''
                 name = (partner.name and str(partner.name) + '\n') or ''
                 street = (partner.address and partner.address[0].street and str(partner.address[0].street) + '\n') or ''
-                street2 = (partner.address and partner.address[0].street and str(partner.address[0].street2) + '\n') or ''
-                zip = (partner.address and partner.address[0].zip and partner.address[0].city and str(partner.address[0].zip + ' ' + partner.address[0].city) + '\n') or ''
+                street2 = (partner.address and partner.address[0].street2 and str(partner.address[0].street2) + '\n') or ''
+                zip = (partner.address and partner.address[0].zip and str(partner.address[0].zip + ' ' + partner.address[0].city and str(partner.address[0].city)) + '\n') or ''
                 country = (partner.address and partner.address[0].country_id and partner.address[0].country_id.name and str(partner.address[0].country_id.name) + '\n') or ''
 
-
+#                 print partner.address and partner.address[0].street2
+#                 print str(partner.address[0].street2)
                 header += str(partner.ref or '') + ';;;;;' + str((partner.sale_term_id and partner.sale_term_id.name) or '') + '\n' \
                           + name + street + street2 + zip + country
                 header += 'Statement As At : ' + str((period and period.date_stop) or '') + ';;;' + 'Deposit : ' + str(partner.depo_credit - partner.depo_debit) \
@@ -141,10 +141,13 @@ class account_statement_report(osv.osv_memory):
                 qry_period_ids = period_obj.search(cr, uid, val_period, order='date_start DESC')
                 if qry_period_ids[1]:
                     period_1 = qry_period_ids[1]
+                    print qry_period_ids[1]
                 if qry_period_ids[2]:
                     period_2 = qry_period_ids[2]
+                    print qry_period_ids[2]
                 if qry_period_ids[3]:
                     period_3 = qry_period_ids[3]
+                    print qry_period_ids[3]
         
                 if date_to:
                     cr.execute(
@@ -189,7 +192,7 @@ class account_statement_report(osv.osv_memory):
                                 gracedays = partner_grace > 0 and partner_grace or sale_grace
                                 termdays = sale_term_id.days
                                 Date = datetime.strptime(t['inv_date'], '%Y-%m-%d')
-                                due_date = Date + timedelta(days=(termdays + gracedays))
+                                due_date = Date + timedelta(days=(termdays))
                             #print EndDate
                             due_date = due_date and due_date.strftime('%Y-%m-%d') or False
                             d = datetime.strptime(t['inv_date'], '%Y-%m-%d')
@@ -213,10 +216,10 @@ class account_statement_report(osv.osv_memory):
                             ######################
                             #get cust po no
                             cust_po_no = False
+                            invoice = False
                             if t['invoice_id']:
                                 invoice = invoice_obj.browse(cr, uid, t['invoice_id'])
-                            
-                            picking_id = invoice.picking_id.id
+                            picking_id = (invoice and invoice.picking_id and invoice.picking_id.id) or False
                             picking_qry = ''
                             if picking_id:
                                 picking_qry = "AND ai.picking_id = %s "%picking_id
