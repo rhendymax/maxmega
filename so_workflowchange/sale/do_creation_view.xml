@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="do_creation_form" model="ir.ui.view">
+			<field name="name">do.creation.form</field>
+			<field name="model">do.creation</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="DO Creation">
+					<field name="delivery_date" string="Prepared Date" invisible="1"/>
+					<field name="do_date"/>
+					<button name="action_compute" string="_Compute GRN" type="object" colspan="1"/>
+					<label colspan="1"/>
+					<newline/>
+					<notebook colspan="4">
+						<page string="DO Lines">
+							<field colspan="4" name="delivery_lines_ids" nolabel="1"/>
+						</page>
+						<page string="Multiple Sale Order">
+							<separator colspan="4" string="Sale Order"/>
+							<field name="sale_order_ids" nolabel="1" colspan="4">
+								<tree editable="bottom">
+									<field name="name" string="Sale Order" readonly="1"/>
+									<field name="partner_id" string="Customer" readonly="1"/>
+								</tree>
+							</field>
+							<separator colspan="4" string="Sale Order Lines"/>
+							<field name="order_line_ids" nolabel="1" colspan="4">
+								<tree editable="bottom">
+									<field name="order_id" string="Sale Order" readonly="1"/>
+									<field name="partner_id" string="Customer" readonly="1"/>
+									<field name="product_id" string="SPN" readonly="1"/>
+									<field name="location_id" readonly="1"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Description">
+							<field name="desc" colspan = "4" nolabel="1"/>
+							<separator colspan="4" string="Country"/>
+							<field name="country_org_id"/>
+							<field name="country_des_id"/>
+						</page>
+					</notebook>
+					<group colspan="4" col="4">
+						<label colspan="2"/>
+						<button name="generated_do" string="_Create DO" type="object" icon="gtk-go-forward" colspan="1"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_do_creation" model="ir.actions.act_window">
+			<field name="name">DO Creation</field>
+			<field name="res_model">do.creation</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+		</record>
+
+
+
+		<record id="do_creation_lines_tree" model="ir.ui.view">
+			<field name="name">do.creation.lines.tree</field>
+			<field name="model">do.creation.lines</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Delivery Lines" editable="bottom">
+					<field name="order_id"/>
+					<field name="location_id"/>
+					<field name="product_id"/>
+					<field name="product_uom_qty"/>
+					<field name="product_uom" widget="selection"/>
+					<field name="price_unit"/>
+					<field name="qty_delivery"/>
+					<field name="product_uom2" widget="selection"/>
+					<field name="qty_onhand_count"/>
+					<field name="product_uom3" widget="selection"/>
+					<field name="spq"/>
+					<field name="qty_order" on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_onhand_count,product_uom3,qty_order,uom_id, spq, order_id)"/>
+					<field name="uom_id" widget="selection"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="do_creation_lines_form" model="ir.ui.view">
+			<field name="name">do.creation.lines.form</field>
+			<field name="model">do.creation.lines</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<group colspan="4" col="4">
+						<group colspan="3" col="3">
+							<field name="order_line_id" invisible="1"/>
+							<field name="order_id" readonly="1" colspan="2"/>
+							<newline/>
+							<field name="product_id" readonly="1" colspan="3"/>
+						<field name="location_id" domain="[('usage','=','internal')]"
+							colspan="3"/>
+						</group>
+						<label string="" colspan="1"/>
+					</group>
+					<newline/>
+					<group colspan="2" col="4">
+						<field name="product_uom_qty" colspan="3"/>
+						<field name="product_uom" nolabel="1" colspan="1"/>
+						<field name="qty_delivery" colspan="3"/>
+						<field name="product_uom2" nolabel="1" colspan="1"/>
+						<field name="qty_onhand_count" colspan="3"/>
+						<field name="product_uom3" nolabel="1" colspan="1"/>
+						<field name="spq"/>
+						<field name="qty_order"
+							on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_onhand_count,product_uom3,qty_order,uom_id,spq, order_id)"
+							colspan="3"/>
+						<field name="uom_id"
+							nolabel="1" colspan="1"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="view_sales_order_line_filter_do_creation" model="ir.ui.view">
+			<field name="name">sale.order.line.select.do.creation</field>
+			<field name="model">sale.order.line</field>
+			<field name="inherit_id" ref="sale.view_sales_order_line_filter"/>
+			<field name="arch" type="xml">
+				<field name="product_id" position="replace">
+					<field name="product_id" string ="Supplier Part No"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="view_order_line_tree_do_creation" model="ir.ui.view">
+			<field name="name">sale.order.line.tree.do_creation</field>
+			<field name="model">sale.order.line</field>
+			<field name="inherit_id" ref="sale.view_order_line_tree"/>
+			<field name="arch" type="xml">
+				<field name="product_id" position="replace">
+					<field name="partner_id" string ="Customer"/>
+					<field name="product_id" string ="Supplier Part No"/>
+				</field>
+				<field name="salesman_id" position="replace">
+					<field name="salesman_id" invisible="1"/>
+				</field>
+				<field name="state" position="replace">
+					<field name="state" invisible="1"/>
+				</field>
+				<field name="invoiced" position="replace">
+					<field name="invoiced" invisible="1"/>
+					<field name="location_id"/>
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>

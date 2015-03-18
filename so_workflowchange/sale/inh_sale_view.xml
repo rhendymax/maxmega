@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>aa
+
+		<record id="view_sale_order_form2" model="ir.ui.view">
+			<field name="name">view.sale.order.form2</field>
+			<field name="model">sale.order</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Sales Order">
+					<group col="6" colspan="4">
+						<group col="4" colspan="4">
+							<field name="name" readonly="1"/>
+							<field name="date_order" readonly="1"/>
+							<field name="shop_id" widget="selection" readonly="1"/>
+							<field name="client_order_ref" readonly="1"/>
+<!-- START New Code -->
+							<newline/>
+							<field name="partner_id" required="1"/>
+							<newline/>
+							<field name="partner_order_id"/>
+							<newline/>
+							<field name="partner_invoice_id"/>
+							<newline/>
+							<field name="partner_shipping_id"/>
+							<newline/>
+							<field name="pricelist_id"/>
+							<newline/>
+							<field name="project_id"/>
+<!-- END New Code -->
+						</group>
+						<group col="2" colspan="2">
+							<field name="shipped" readonly="1"/>
+						</group>
+
+					</group>
+					<notebook colspan="5">
+						<page string="Sales Order">
+							<!-- <field name="partner_id" required="1"/>
+							<field name="partner_order_id"/>
+							<field name="partner_invoice_id"/>
+							<field name="partner_shipping_id"/>
+							<field name="pricelist_id"/>
+							<field name="project_id"/> -->
+							<newline/>
+							<field colspan="4" name="order_line" nolabel="1" widget="one2many_list" readonly="1">
+								<form string="Sales Order Lines">
+									<notebook>
+										<page string="Order Line">
+											<group colspan="5" col="10">
+												<field name="product_customer_id" colspan="6"/>
+												<field name="spq"/>
+												<field name="moq"/>
+												<field colspan="6" name="product_id2" string="Part Number (*)"/>
+												<field name="product_uom_qty"/>
+												<field colspan="2" name="product_uom" nolabel="1"/>
+											</group>
+											<newline/>
+											<group colspan="5" col="10">
+												<field name="product_supplier_id" colspan="6"/>
+												<field name="product_supplier_id2" colspan="6"/>
+												<field name="price_unit"/>
+												<field name="discount"/>
+												<field name="location_id"/>
+											</group>
+												<group colspan="5" col="5" groups="base.group_extended">
+													<separator string="Date" colspan="5"/>
+													<newline/>
+													<field name="effective_date"/>
+													<newline/>
+													<field name="customer_original_date"/>
+													<field name="customer_rescheduled_date"/>
+												</group>
+												<separator colspan="5" string="Notes"/>
+												<field colspan="5" name="notes" nolabel="1"/>
+												<separator colspan="5" string="Taxes"/>
+												<field colspan="5" name="tax_id" nolabel="1"/>
+												<group colspan="5" col="5" groups="base.group_extended">
+													<separator colspan="5" string="States"/>
+													<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done" statusbar_colors='{"exception":"red","cancel":"red"}'/>
+													<field name="invoiced"/>
+												</group>
+										</page>
+										<page string="Allocated" groups="base.group_extended">
+											<field name="qty_onhand_allocated" readonly="1"/>
+											<newline/>
+											<field name="qty_received_onorder" readonly="1"/>
+											<newline/>
+											<field name="qty_onhand_count" readonly="1"/>
+											<separator string="GRN Allocated Lines" colspan="4"/>
+											<field colspan="4" name="move_allocated_control_ids" nolabel="1" widget="many2many" readonly="1">
+											<tree string="GRN Allocated Lines">
+												<field name="picking_id" readonly="1"/>
+												<field name="product_id" readonly="1"/>
+												<field name="quantity" readonly="1"/>
+												<field name="rec_quantity" readonly="1"/>
+											</tree>
+											<form string="GRN Allocated Lines">
+												<field name="picking_id" readonly="1"/>
+												<field name="product_id" readonly="1"/>
+												<field name="quantity" readonly="1"/>
+												<field name="rec_quantity" readonly="1"/>
+											</form>
+											</field>
+											<separator string="Purchase Order Allocated Lines" colspan="4"/>
+											<field colspan="4" name="allocated_ids" nolabel="1" widget="many2many" readonly="1"/>
+											<label string="" colspan="2"/>
+										</page>
+										<page string="History" groups="base.group_extended">
+											<separator colspan="4" string="Reschedule History"/>
+											<field colspan="4" name="reschedule_ids" nolabel="1">
+												<tree string="Reschedule History">
+													<field name="customer_rescheduled_date" string="CRD" readonly="1"/>
+													<field name="create_uid" readonly="1"/>
+													<field name="create_date" readonly="1"/>
+													<field name="reason_type" readonly="1"/>
+													<field name="reason" colspan="4" readonly="1"/>
+												</tree>
+												<form string="Reschedule History">
+													<field name="customer_rescheduled_date" readonly="1"/>
+													<field name="create_uid" readonly="1"/>
+													<field name="create_date" readonly="1"/>
+													<field name="reason" colspan="4" readonly="1"/>
+												</form>
+											</field>
+											<separator colspan="4" string="Change Effective History"/>
+											<field colspan="4" name="effective_ids" nolabel="1" readonly="1">
+												<tree string="Change Effective History">
+													<field name="change_date" string="Effective Date" readonly="1"/>
+													<field name="create_uid" readonly="1"/>
+													<field name="create_date" readonly="1"/>
+													<field name="reason" colspan="4" readonly="1"/>
+												</tree>
+												<form string="Change Effective History">
+													<field name="change_date" readonly="1"/>
+													<field name="create_uid" readonly="1"/>
+													<field name="create_date" readonly="1"/>
+													<field name="reason" colspan="4" readonly="1"/>
+												</form>
+											</field>
+										</page>
+									</notebook>
+								</form>
+								<tree string="Sales Order Lines">
+									<field colspan="4" name="name" readonly="1"/>
+									<field name="product_uom_qty" string="Qty(UoM)" readonly="1"/>
+									<field name="product_uom" string="UoM" readonly="1"/>
+									<field groups="product.group_uos" name="product_uos_qty" string="Qty(UoS)" readonly="1"/>
+									<field groups="product.group_uos" name="product_uos" string="UoS" readonly="1"/>
+									<field name="discount" readonly="1"/>
+									<field name="price_unit" readonly="1"/>
+									<field name="price_subtotal" readonly="1"/>
+								</tree>
+							</field>
+							<newline/>
+							<group col="13" colspan="10">
+								<field name="amount_untaxed" sum="Untaxed amount" readonly="1"/>
+								<field name="amount_tax" readonly="1"/>
+								<field name="amount_total" readonly="1"/>
+							</group>
+							<group col="17" colspan="4">
+								<field name="state" widget="statusbar" statusbar_visible="draft,progress,done" statusbar_colors='{"shipping_except":"red","invoice_except":"red","waiting_date":"blue"}'/>
+							</group>
+						</page>
+						<page string="Other Information">
+							<group colspan="2" col="2" groups="base.group_extended" name="logistics">
+								<separator string="Logistic" colspan="2"/>
+									<field name="incoterm" widget="selection" groups="so_workflowchange.group_non_user"/>
+									<field name="fob_id" widget="selection"/>
+									<field name="ship_method_id" widget="selection"/>
+									<field name="sales_zone_id" widget="selection"/>
+							</group>
+							<group colspan="2" col="2">
+								<separator string="References" colspan="2"/>
+								<field name="user_id"/>
+								<field name="sale_term_id" widget="selection"/>
+								<field groups="base.group_extended" name="origin" readonly="1"/>
+							</group>
+							<group colspan="2" col="2" groups="base.group_extended">
+								<separator string="Conditions" colspan="2"/>
+								<field name="fiscal_position" widget="selection" readonly="1"/>
+								<field name="company_id" widget="selection" groups="base.group_multi_company" readonly="1"/>
+							</group>
+							<group colspan="2" col="2" groups="base.group_extended">
+								<separator string="Dates" colspan="2"/>
+								<field name="create_date" readonly="1"/>
+								<field name="date_confirm" readonly="1"/>
+							</group>
+						</page>
+						<page string="SPQ Approve">
+							<separator colspan="4" string="SPQ Approve"/>
+							<group col="8" colspan="4">
+								<field name="spq_approve" readonly="1"/>
+								<field name="spq_approve_user" readonly="1" colspan="3"/>
+								<field name="spq_date" readonly="1" colspan="3"/>
+							</group>
+						</page>
+						<page string="Notes">
+							<separator colspan="4" string="Header"/>
+							<field colspan="4" name="header_so" nolabel="1" readonly="1"/>
+							<separator colspan="4" string="Footer"/>
+							<field colspan="4" name="footer_so" nolabel="1" readonly="1"/>
+							<separator colspan="4" string="Notes"/>
+							<field colspan="4" name="note" nolabel="1" readonly="1"/>
+						</page>
+						<page string="History" groups="base.group_extended">
+							<separator colspan="4" string="Packings"/>
+							<field colspan="4" name="picking_ids" nolabel="1" readonly="1"/>
+						</page>
+					</notebook>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_sale_order_form2" model="ir.actions.act_window">
+			<field name="name">Sales Orders</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">sale.order</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="sale.view_order_line_tree"/>
+			<field name="search_view_id" ref="sale.view_sales_order_filter"/>
+			<field name="context">{}</field>
+			<field name="help">Sales Orders help you manage quotations and orders from your customers. OpenERP suggests that you start by creating a quotation. Once it is confirmed, the quotation will be converted into a Sales Order. OpenERP can handle several types of products so that a sales order may trigger tasks, delivery orders, manufacturing orders, purchases and so on. Based on the configuration of the sales order, a draft invoice will be generated so that you just have to confirm it when you want to bill your customer.</field>
+		</record>
+		
+		<record id="sale_form_action2_tree" model="ir.actions.act_window.view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="act_window_id" ref="action_sale_order_form2"/>
+		</record>
+
+		<record id="sale_form_action2_form" model="ir.actions.act_window.view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_sale_order_form2"/>
+			<field name="act_window_id" ref="action_sale_order_form2"/>
+		</record>
+
+		<record id="sale_view_inherit3" model="ir.ui.view">
+			<field name="name">sale.view.inherit3</field>
+			<field name="model">sale.order</field>
+			<field name="inherit_id" ref="price_methodology.sale_view_inherit"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/notebook/page[@string='Other Information']/separator[@string='Notes']" position="replace"/>
+				<xpath expr="/form/notebook/page[@string='Other Information']/field[@name='note']" position="replace"/>
+				<xpath expr="/form/notebook/page[@string='Other Information']" position="after">
+					<page string="SPQ Approve">
+						<separator colspan="4" string="SPQ Approve"/>
+						<group col="8" colspan="4">
+							<field name="spq_approve"/>
+							<field name="spq_approve_user" readonly="1" colspan="3"/>
+							<field name="spq_date" readonly="1" colspan="3"/>
+							<button name="act_approve_spq" attrs="{'invisible': [('spq_approve', '=', True)]}" string="Approved SPQ" type="object" icon="gtk-go-forward" colspan="1"/>
+							<button name="act_undo_approve_spq" attrs="{'invisible': [('spq_approve', '!=', True)]}" string="Un-Approved SPQ" type="object" icon="gtk-go-back" colspan="1"/>
+						</group>
+					</page>
+					<page string="Notes">
+						<separator colspan="4" string="Header"/>
+						<field colspan="4" name="header_so" nolabel="1"/>
+						<separator colspan="4" string="Footer"/>
+						<field colspan="4" name="footer_so" nolabel="1"/>
+						<separator colspan="4" string="Notes"/>
+						<field colspan="4" name="note" nolabel="1"/>
+					</page>
+				</xpath>
+				<field domain="[('type','=','sale')]" name="pricelist_id" position="after">
+					<newline/>
+					<button name="%(act_adding_lines_so)d" string="Add Lines" type="action" icon="gtk-go-forward" states="progress"/>
+				</field>
+				<field name="pricelist_id" position="replace">
+					<field domain="[('type','=','sale')]" name="pricelist_id" groups="base.group_extended" on_change="onchange_pricelist_id2(partner_id)"/>
+				</field>
+				<field name="incoterm" position="replace">
+					<field name="incoterm" widget="selection" groups="so_workflowchange.group_non_user"/>
+					<field name="fob_id" widget="selection"/>
+					<field name="ship_method_id" widget="selection"/>
+					<field name="sales_zone_id" widget="selection"/>
+				</field>
+				<field name="user_id" position="after">
+					<field name="sale_term_id" widget="selection"/>
+				</field>
+				<button name="order_confirm" position="replace">
+					<button name="action_approval" type="object" states="draft" string="Confirm Order" icon="gtk-apply"/>
+				</button>
+				<button name="action_cancel" position="replace"/>
+				<button name="ship_cancel" position="replace"/>
+				<button name="cancel" position="replace"/>
+				<button name="invoice_cancel" position="replace">
+					<button name="button_dummy2" string="Refresh" type="object" icon="gtk-execute"/>
+					<button name="wkf_action_cancel" states="manual,progress,shipping_except,invoice_except,draft" string="Cancel Order" type="object" icon="gtk-cancel"/>
+					<button name="%(action_sale_order_make_delivery)d" string="Make deliveries"  states="progress"  type="action" icon="terp-gtk-go-back-rtl" />
+					<button name="button_check_done" string="Check Done" type="object" icon="gtk-execute"/>
+				</button>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page[@string='History']" position="before">
+					<page string="Allocated" groups="base.group_extended">
+						<field name="qty_onhand_allocated"/>
+						<newline/>
+						<field name="qty_received_onorder"/>
+						<newline/>
+						<field name="qty_onhand_count"/>
+						<button name="onhand_reallocated" type="object" states="confirmed" string="On Hand Re-Allocated" icon="gtk-execute"/>
+						<separator string="GRN Allocated Lines" colspan="4"/>
+						<field colspan="4" name="move_allocated_control_ids" nolabel="1" widget="many2many">
+						<tree string="GRN Allocated Lines">
+							<field name="picking_id"/>
+							<field name="product_id"/>
+							<field name="quantity"/>
+							<field name="rec_quantity"/>
+						</tree>
+						<form string="GRN Allocated Lines">
+							<field name="picking_id"/>
+							<field name="product_id"/>
+							<field name="quantity"/>
+							<field name="rec_quantity"/>
+						</form>
+						</field>
+						<separator string="Purchase Order Allocated Lines" colspan="4"/>
+						<field colspan="4" name="allocated_ids" nolabel="1" widget="many2many"/>
+						<label string="" colspan="2"/>
+						<group col="4" colspan="2">
+							<button name="do_refresh" states="confirmed" string="Refresh" type="object" icon="gtk-execute"/>
+							<button name="%(act_allocated_po)d" string="Allocated Purchase Order"  states="confirmed"  type="action" icon="gtk-go-forward"/>
+						</group>
+					</page>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='discount']" position="after">
+<!-- START New COde -->
+					<!-- NOT PRINTED, IN FORM, NOT TREE -->
+					<!-- <field name="line_number"/> -->
+<!-- END New COde -->
+					<field name="location_id" domain="[('usage','=','internal')]"
+						on_change="location_onchange(product_id,location_id)"
+						colspan="10"/>
+					<field name="balance_qty" string ="Balance Qty"/>
+					<newline/>
+					<button name="%(act_change_price)d" string="Change Price Unit" type="action" icon="gtk-go-forward" states="draft,confirmed" invisible="1"/>
+					<button name="%(act_change_qty)d" string="Change Qty" type="action" icon="gtk-go-forward" states="confirmed"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='product_id']" position="replace">
+					<field colspan="3"
+						context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+						name="product_id"
+						on_change="product_id_change3(location_id,parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,product_packaging,parent.fiscal_position,False,context)"
+						string="Supplier Part No" invisible="1"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='product_uom_qty']" position="replace">
+					<field
+						context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+						on_change="product_id_change3(location_id,parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,product_packaging,parent.fiscal_position,False,context)"
+						name="product_uom_qty"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='product_uom']" position="replace">
+					<field name="product_uom" colspan="2"
+						on_change="product_uom_change3(location_id,parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,context)"
+						string = "(*)"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='effective_date']" position="replace">
+					<field name="effective_date" string="Sale Price Effective Date"
+						on_change="product_id_change3(location_id,parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,product_packaging,parent.fiscal_position,False,context)"
+						/>
+					<button name="%(act_change_effective)d" string="Change Effective Date" type="action" icon="gtk-go-forward" states="confirmed"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='price_unit']" position="replace">
+					<field name="price_unit"
+						on_change="product_id_change3(location_id,parent.shop_id.company_id,product_customer_id,effective_date,parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id,False,True,parent.date_order,product_packaging,parent.fiscal_position,False,context)"
+						string="Unit Price (*)"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/field[@name='reschedule_ids']" position="after">
+					<separator colspan="4" string="Change Effective History"/>
+					<field colspan="4" name="effective_ids" nolabel="1">
+						<tree string="Change Effective History">
+							<field name="change_date" string="Effective Date"/>
+							<field name="create_uid"/>
+							<field name="create_date"/>
+							<field name="reason" colspan="4"/>
+						</tree>
+						<form string="Change Effective History">
+							<field name="change_date"/>
+							<field name="create_uid"/>
+							<field name="create_date"/>
+							<field name="reason" colspan="4"/>
+						</form>
+					</field>
+				</xpath>
+
+				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
+					<field name="location_id"/>
+				</xpath>
+				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+					<button name="%(act_delete_so_line_wizard)d" string="Delete Line" type="action" icon="gtk-cancel"/>
+				</xpath>
+<!-- START -->
+				<!-- xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="before">
+					<field name="line_number"/>
+				</xpath -->
+<!-- END -->
+			</field>
+		</record>
+	</data>
+</openerp>

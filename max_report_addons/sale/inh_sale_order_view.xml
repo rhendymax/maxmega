@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="inh_sale_order_form_r" model="ir.ui.view">
+			<field name="name">inh.sale.order.form.r</field>
+			<field name="model">sale.order</field>
+			<field name="inherit_id" ref="sale.view_order_form"/>
+			<field name="arch" type="xml">
+				<button name="%(sale.report_sale_order)d" string="Print Order" position="before">
+					<button name="%(max_maxmega_sale_order2)d" string="Print Confirmation" type="action" icon="gtk-print" states="waiting_date,manual,draft,progress,done,shipping_except,invoice_except"/>
+				</button>
+				<button name="%(sale.report_sale_order)d" string="Print Order" position="replace"/>
+			</field>
+		</record>
+
+	</data>
+</openerp>

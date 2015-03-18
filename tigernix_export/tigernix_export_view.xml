@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_tigernix_export_form">
+	    <field name="name">view.tigernix.export.form</field>
+	    <field name="model">tigernix.export</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+                <form>
+                    <field name="name" required="1"/>
+                    <field name="model_id" required="1"/>
+                    <newline/>
+                    <separator string="Field Selection" colspan="4"/>
+                    <field colspan="4" nolabel="1" name="field_ids" domain="[('model_id','=',model_id),('ttype','not in',('one2many','many2many'))]"/>
+                    <group col="1" colspan="4">
+                        <field name="filter_line" required="1" nolabel="1"><!--context="{'parent_id': parent.model_id}"-->
+                            <tree string="Field Filtering">
+                                <field name="field_id" required="1"/>
+                                <field name="operator" required="1"/>
+                                <field name="overall_operand" string="Value"/>
+                            </tree>
+			                <form string="Field Filtering">
+			                    <group col="6" colspan="4">
+			                        <field name="field_id" colspan="2" domain="[('model_id','=', parent.model_id)]" on_change="onchange_field_id(field_id)" required="1"/>
+			                        <field name="type" invisible="1"/>
+			                        <field name="operator" colspan="2" required="1" invisible="0"/>
+			                        <group colspan="2">
+			                            <field name="operand" string="Value" colspan="2" attrs="{'invisible':[ ('type','in',('boolean','date','datetime')) ]}"/>
+			                            <field name="operand_bool" string="Value" colspan="2" attrs="{'invisible':[('type','!=','boolean')]}"/>
+			                            <field name="operand_date" string="Value" colspan="2" attrs="{'invisible':[('type','!=','date')]}"/>
+			                            <field name="operand_datetime" string="Value" colspan="2" attrs="{'invisible':[('type','!=','datetime')]}"/>
+			                        </group>
+			                    </group>
+			                </form>
+                        </field>
+                    </group>
+
+                    <button colspan="4" name='%(action_report)d' type='action' string='Export to CSV' icon="gtk-convert"/>
+					<button colspan="4" name="%(max_export_pdf_menu)d" string="Export to PDF" type="action" icon="gtk-print"/>
+                </form>
+	    </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_tigernix_export_tree">
+	    <field name="name">view.tigernix.export.tree</field>
+	    <field name="model">tigernix.export</field>
+	    <field name="type">tree</field>
+	    <field name="arch" type="xml">
+                <tree string="Data Export">
+                    <field name="name" select="1"/>
+                    <field name="model_id" required="1"/>
+                </tree>
+	    </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_tigernix_export_field_form">
+	    <field name="name">view.tigernix.export.field.form</field>
+	    <field name="model">tigernix.export.field</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+                <form string="Field Selection">
+                    <field name="field_id"/>
+                </form>
+	    </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_tigernix_export_filter_form">
+	    <field name="name">view.tigernix.export.filter.form</field>
+	    <field name="model">tigernix.export.filter</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+                <form string="Field Filtering">
+                    <group col="6" colspan="4">
+                        <field name="field_id" colspan="2" domain="[('model_id','=', parent.model_id)]" on_change="onchange_field_id(field_id)" required="1"/>
+                        <field name="type" invisible="1"/>
+                        <field name="operator" colspan="2" required="1" invisible="0"/>
+                        <group colspan="2">
+                            <field name="operand" string="Value" colspan="2" attrs="{'invisible':[ ('type','in',('boolean','date','datetime')) ]}"/>
+                            <field name="operand_bool" string="Value" colspan="2" attrs="{'invisible':[('type','!=','boolean')]}"/>
+                            <field name="operand_date" string="Value" colspan="2" attrs="{'invisible':[('type','!=','date')]}"/>
+                            <field name="operand_datetime" string="Value" colspan="2" attrs="{'invisible':[('type','!=','datetime')]}"/>
+                        </group>
+                    </group>
+                </form>
+	    </field>
+        </record>
+        
+		<record id="action_tigernix_export_form" model="ir.actions.act_window">
+            <field name="name">New Export</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tigernix.export</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_tigernix_export_form"/>
+            <field name="view_mode">tree,form</field>
+        </record>
+	
+        <record id="action_tigernix_export_tree" model="ir.actions.act_window">
+            <field name="name">Export Data</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tigernix.export</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_tigernix_export_tree"/>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+		<menuitem icon="terp-partner" id="menu_custom_export"
+			name="Export Data" sequence="-2"/>
+
+        <menuitem id="tigernix_export_root" name="Export Data" parent="menu_custom_export"/>
+        
+        <menuitem action="action_tigernix_export_tree" id="tigernix_export_menu" sequence="15" parent="tigernix_export_root"/>
+        
+        <menuitem action="action_tigernix_export_form" id="new_tigernix_export_menu" sequence="15" parent="tigernix_export_menu"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<report auto="False" 
+			id="sale.report_sale_order" 
+			model="sale.order"
+			name="max.sale.order"
+			rml="max_report_addons/report/sale_order.rml"
+			usage="default"
+			string="Sale Order / RFQ Order"
+			groups="so_workflowchange.group_non_user"
+			header="False"/>
+
+		<report
+			auto="False"
+			id="max_maxmega_sale_order2"
+			model="sale.order"
+			name="max.maxmega.sale.order2"
+			rml="max_report_addons/report/sale_order_confirmation.rml"
+			string="Sales Order Confirmation"
+			usage="default"
+			header="True"/>
+	</data>
+</openerp>

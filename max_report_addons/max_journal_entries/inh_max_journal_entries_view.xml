@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="inh_max_journal_entries_form_r" model="ir.ui.view">
+			<field name="name">inh.max.journal.entriess.form.r</field>
+			<field name="model">max.journal.entries</field>
+			<field name="inherit_id" ref="max_finance_module.max_journal_entries_form"/>
+			<field name="arch" type="xml">
+				<button name="button_validate" position="before">
+					<button name="%(max_report_addons.max_journal_entries)d" string="Print Report" type="action" icon="gtk-print"/>
+				</button>
+			</field>
+		</record>
+
+	</data>
+</openerp>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--report
+            auto="False"
+            id="account_invoices"
+            model="account.invoice"
+            name="account.invoice"
+            rml="account/report/account_print_invoice.rml"
+            string="Invoices"
+            attachment="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            usage="default"
+            multi="True"/-->
+
+        <report
+            auto="False"
+            id="account.account_invoices"
+            model="account.invoice"
+            name="max.maxmega.invoice"
+            rml="max_report_addons/report/account_print_invoice.rml"
+            string="Invoices"
+            groups="so_workflowchange.group_non_user"
+            attachment_use="False"
+            usage="default"
+            multi="True"
+            header="True"/>
+ 
+        <report
+            auto="False"
+            id="max_maxmega_invoice2"
+            model="account.invoice"
+            name="max.maxmega.invoice2"
+            rml="max_report_addons/report/account_print_invoice.rml"
+            string="Invoices"
+            usage="default"
+            multi="True"
+            header="True"/>
+ 
+    </data>
+</openerp>

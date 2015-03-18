@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="int_type_tree" model="ir.ui.view">
+			<field name="name">int.type.tree</field>
+			<field name="model">int.type</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Physical Inventories Type">
+					<field name="name"/>
+					<field name="desc"/>
+					<field name="seq_name"/>
+					<field name="sequence_id"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="int_type_form" model="ir.ui.view">
+			<field name="name">int.type.form</field>
+			<field name="model">int.type</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Physical Inventories Type">
+					<field name="name"/>
+					<field name="desc"/>
+					<field name="seq_name" colspan="2"/>
+					<field name="sequence_id" readonly="1" colspan="2"/>
+					<field name="type" colspan="2"/>
+					<field name="property_stock_input" colspan="2"/>
+					<field name="property_stock_output" colspan="2"/>
+					<label string="" colspan="3"/>
+					<button name="btn_create_type_s" string="Create Type Sequence" type="object" colspan="1"/>
+				</form>
+			</field>
+		</record>
+
+		<record id="int_type_search" model="ir.ui.view">
+			<field name="name">int.type.search</field>
+			<field name="model">int.type</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Physical Inventories Type">
+					<field name="name"/>
+					<field name="desc"/>
+					<field name="seq_name"/>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_int_type" model="ir.actions.act_window">
+			<field name="name">Physical Inventories Type</field>
+			<field name="res_model">int.type</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="int_type_search"/>
+		</record>
+
+		<menuitem action="action_int_type"
+			id="menu_action_int_type" parent="stock.menu_stock_configuration" sequence="70"/>
+	</data>
+</openerp>

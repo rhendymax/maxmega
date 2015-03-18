@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_supplier,product_supplier manager,model_product_supplier,base.group_sale_manager,1,1,1,1
+access_product_customer,product_customer manager,model_product_customer,base.group_sale_manager,1,1,1,1
+access_product_customer_price,product_customer_price manager,model_product_customer_price,base.group_sale_manager,1,1,1,1
+access_product_supplier_price,product_supplier_price manager,model_product_supplier_price,base.group_sale_manager,1,1,1,1
+access_product_customer_upper_limit,product_customer_upper_limit manager,model_product_customer_upper_limit,base.group_sale_manager,1,1,1,1
+access_product_supplier_upper_limit,product_supplier_upper_limit manager,model_product_supplier_upper_limit,base.group_sale_manager,1,1,1,1
+access_change_cod,change_cod manager,model_change_cod,base.group_sale_manager,1,1,1,1

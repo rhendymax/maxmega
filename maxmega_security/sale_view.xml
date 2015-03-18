@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+<!--1.0-->
+		<menuitem
+			icon="terp-partner"
+			id="menu_sale_root"
+			name="Sales"
+			web_icon="data/sales.png"
+			web_icon_hover="data/sales-hover.png"
+			sequence="10"/>
+
+<!--1.1-->
+		<menuitem
+			name="Sales"
+			id="menu_sale_sales"
+			parent="menu_sale_root"
+			sequence="10"/>
+
+		<menuitem
+			name="Address Book"
+			id="menu_sale_address"
+			parent="menu_sale_root"
+			sequence="20"/>
+
+		<menuitem
+			name="Products"
+			id="menu_sale_product"
+			parent="menu_sale_root"
+			sequence="30"/>
+
+		<menuitem
+			name="Enquiry"
+			id="menu_sale_enquiry"
+			parent="menu_sale_root"
+			sequence="40"/>
+		
+		<menuitem
+			name="Configuration"
+			id="menu_sale_config"
+			parent="menu_sale_root"
+			sequence="50"/>
+
+<!--1.1.1-->
+
+<!-- -->
+		<menuitem
+			name="Sales Orders"
+			id="menu_sale_sales_sales_order"
+			parent="menu_sale_sales"
+			action="sale.action_order_form"
+			sequence="10"/>
+
+		<menuitem 
+			action="so_workflowchange.action_do_creation"
+			id="menu_sale_sales_do_creation" 
+			parent="menu_sale_sales" sequence="20"/>
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Customer"
+			id="menu_sale_address_cust"
+			parent="base.menu_address_book"
+			action="base.action_partner_form"
+			sequence="10"/>
+
+		<menuitem
+			name="Addresses"
+			id="menu_sale_address_cont"
+			parent="menu_sale_address"
+			action="base.action_partner_address_form"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Products"
+			id="menu_sale_product_product"
+			parent="menu_sale_product"
+			action="product.product_normal_action_sell"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			id="menu_sale_enquiry_product_product"
+			parent="menu_sale_enquiry"
+			action="so_workflowchange.product_normal_action2"
+			sequence="10"/>
+
+		<menuitem
+			id="menu_sale_enquiry_sale_order"
+			parent="menu_sale_enquiry"
+			action="so_workflowchange.action_sale_order_form2"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Sales"
+			id="menu_sale_config_sales"
+			parent="menu_sale_config"
+			sequence="10"/>
+
+		<menuitem
+			name="Products"
+			id="menu_sale_config_prod"
+			parent="menu_sale_config"
+			sequence="30"/>
+
+		<menuitem
+			name="Miscellaneous"
+			id="menu_sale_config_mis"
+			parent="menu_sale_config"
+			sequence="40"/>
+
+		<menuitem
+			name="Pricelists"
+			id="menu_sale_config_price"
+			parent="menu_sale_config"
+			sequence="50"/>
+<!-- -->
+
+<!--1.1.1.1-->
+
+<!-- -->
+		<menuitem
+			name="Shop"
+			id="menu_sale_config_sales_shop"
+			parent="menu_sale_config_sales"
+			action="sale.action_shop_form"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+
+		<menuitem
+			name="Partner Titles"
+			id="menu_sale_config_add_partner"
+			parent="base.menu_address_book"
+			action="base.action_partner_title_partner"
+			sequence="20"/>
+
+		<menuitem
+			name="Contact Titles"
+			id="menu_sale_config_add_contact"
+			parent="base.menu_address_book"
+			action="base.action_partner_title_contact"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Product Brand"
+			id="menu_sale_config_prod_prod_brand"
+			parent="menu_sale_config_prod"
+			action="so_workflowchange.action_product_brand"
+			sequence="10"/>
+
+		<menuitem
+			name="Product Categories"
+			id="menu_sale_config_prod_prod_cats"
+			parent="menu_sale_config_prod"
+			action="product.product_category_action_form"
+			sequence="20"/>
+
+		<menuitem
+			name="Product Category"
+			id="menu_sale_config_prod_prod_cat"
+			parent="menu_sale_config_prod"
+			action="so_workflowchange.action_product_categ_max"
+			sequence="30"/>
+
+		<menuitem
+			name="Packaging"
+			id="menu_sale_config_prod_packaging"
+			parent="menu_sale_config_prod"
+			action="product.product_ul_form_action"
+			sequence="40"/>
+
+		<menuitem
+			name="Units of Measure"
+			id="menu_sale_config_prod_uom"
+			parent="menu_sale_config_prod"
+			sequence="50"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Email Templates"
+			id="menu_sale_config_mis_email"
+			parent="menu_sale_config_mis"
+			action="sale.action_email_templates"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Pricelists"
+			id="menu_sale_config_price_price"
+			parent="menu_sale_config_price"
+			action="product.product_pricelist_action2"
+			sequence="10"/>
+
+		<menuitem
+			name="Pricelist Versions"
+			id="menu_sale_config_price_price_version"
+			parent="menu_sale_config_price"
+			action="product.product_pricelist_action"
+			sequence="20"/>
+
+		<menuitem
+			name="Price Types"
+			id="menu_sale_config_price_price_type"
+			parent="menu_sale_config_price"
+			action="product.product_price_type_action"
+			sequence="30"/>
+<!-- -->
+
+<!--1.1.1.1.1-->
+<!-- -->
+		<menuitem
+			name="Countries"
+			id="menu_sale_config_add_loc_country"
+			parent="base.menu_address_book"
+			action="base.action_country"
+			sequence="10"/>
+
+		<menuitem
+			name="Fed. States"
+			id="menu_sale_config_add_loc_fed"
+			parent="base.menu_address_book"
+			action="base.action_country_state"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="UoM Categories"
+			id="menu_sale_config_prod_uom_categ"
+			parent="menu_sale_config_prod_uom"
+			action="product.product_uom_categ_form_action"
+			sequence="10"/>
+
+		<menuitem
+			name="Units of Measure"
+			id="menu_sale_config_prod_uom_uom"
+			parent="menu_sale_config_prod_uom"
+			action="product.product_uom_form_action"
+			sequence="20"/>
+<!-- -->
+
+
+	</data>
+</openerp>

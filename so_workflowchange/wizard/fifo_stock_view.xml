@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="fifo_product_detail_tree" model="ir.ui.view">
+			<field name="name">fifo.product.detail.tree</field>
+			<field name="model">fifo.product.detail</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Product Detail View">
+					<field name="product_id"/>
+					<field name="int_move_id" invisible="1"/>
+					<field name="int_doc_no"/>
+					<field name="move_id" invisible="1"/>
+					<field name="document_no"/>
+					<field name="document_date"/>
+					<field name="location_id"/>
+					<field name="product_qty"/>
+					<field name="product_uom"/>
+					<field name="qty_allocated"/>
+					<field name="qty_onhand_free"/>
+					<field name="onhand_allocated_qty"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="fifo_product_detail_form" model="ir.ui.view">
+			<field name="name">fifo.product.detail.form</field>
+			<field name="model">fifo.product.detail</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<field name="product_id"/>
+					<field name="int_move_id"/>
+					<field name="int_doc_no"/>
+					<field name="move_id"/>
+					<field name="document_no"/>
+					<field name="document_date"/>
+					<field name="location_id"/>
+					<field name="product_qty"/>
+					<field name="product_uom"/>
+					<field name="qty_allocated"/>
+					<field name="qty_onhand_free"/>
+					<field name="onhand_allocated_qty"/>
+				 </form>
+			</field>
+		</record>
+	</data>
+</openerp>

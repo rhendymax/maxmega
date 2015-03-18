@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+<!--1.0-->
+		<menuitem
+			icon="terp-account"
+			id="menu_account_max_root"
+			name="Accounting"
+			web_icon="data/accounting.png"
+			web_icon_hover="data/accounting-hover.png"
+			sequence="40"/>
+
+<!--1.1-->
+		<menuitem
+			name="Customers"
+			id="menu_account_max_customer"
+			parent="menu_account_max_root"
+			sequence="10"/>
+
+		<menuitem
+			name="Suppliers"
+			id="menu_account_max_supplier"
+			parent="menu_account_max_root"
+			sequence="20"/>
+
+		<menuitem
+			name="Journal Entries"
+			id="menu_account_max_journal_entries"
+			parent="menu_account_max_root"
+			sequence="30"/>
+
+		<menuitem
+			name="Charts"
+			id="menu_account_max_charts"
+			parent="menu_account_max_root"
+			sequence="40"/>
+
+		<menuitem
+			name="Periodical Processing"
+			id="menu_account_max_periodical"
+			parent="menu_account_max_root"
+			sequence="50"/>
+
+		<menuitem
+			name="Reporting"
+			id="menu_account_max_reporting"
+			parent="menu_account_max_root"
+			sequence="60"/>
+
+		<menuitem
+			name="Report"
+			id="menu_account_max_report"
+			parent="menu_account_max_root"
+			sequence="70"/>
+
+		<menuitem
+			name="Configuration"
+			id="menu_account_max_config"
+			parent="menu_account_max_root"
+			sequence="80"/>
+
+<!--1.1.1-->
+
+<!-- -->
+
+		<menuitem
+			name="Customer Invoices"
+			id="menu_account_max_customer_ci"
+			parent="menu_account_max_customer"
+			action="account.action_invoice_tree1"
+			sequence="10"/>
+
+		<menuitem
+			name="Customer Refunds"
+			id="menu_account_max_customer_cust_ref"
+			parent="menu_account_max_customer"
+			action="account.action_invoice_tree3"
+			sequence="20"/>
+
+		<menuitem
+			name="Customer Payment"
+			id="menu_account_max_customer_cust_pay"
+			parent="menu_account_max_customer"
+			action="account_voucher.action_vendor_receipt"
+			sequence="30"/>
+
+		<menuitem
+			name="Journal Items"
+			id="menu_account_max_customer_journal_items"
+			parent="menu_account_max_customer"
+			action="account.action_account_moves_sale"
+			sequence="40"/>
+
+		<menuitem
+			name="Customer"
+			id="menu_account_max_customer_customer"
+			parent="menu_account_max_customer"
+			action="base.action_partner_customer_form"
+			sequence="50"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Supplier Invoices"
+			id="menu_account_max_supplier_si"
+			parent="menu_account_max_supplier"
+			action="account.action_invoice_tree2"
+			sequence="10"/>
+
+		<menuitem
+			name="Supplier Refunds"
+			id="menu_account_max_supplier_supp_ref"
+			parent="menu_account_max_supplier"
+			action="account.action_invoice_tree4"
+			sequence="20"/>
+
+		<menuitem
+			name="Supplier Payment"
+			id="menu_account_max_supplier_supp_pay"
+			parent="menu_account_max_supplier"
+			action="account_voucher.action_vendor_payment"
+			sequence="30"/>
+
+		<menuitem
+			name="Journal Items"
+			id="menu_account_max_supplier_journal_items"
+			parent="menu_account_max_supplier"
+			action="account.action_account_moves_purchase"
+			sequence="40"/>
+
+		<menuitem
+			name="Suppliers"
+			id="menu_account_max_supplier_supplier"
+			parent="menu_account_max_supplier"
+			action="base.action_partner_supplier_form"
+			sequence="50"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Journal Items"
+			id="menu_account_max_journal_entries_journal_items"
+			parent="menu_account_max_journal_entries"
+			action="account.action_account_moves_all_a"
+			sequence="10"/>
+
+		<menuitem
+			name="Journal Entries"
+			id="menu_account_max_journal_entries_journal_entries"
+			parent="menu_account_max_journal_entries"
+			action="account.action_move_journal_line"
+			sequence="20"/>
+
+		<menuitem
+			name="Max Journal Entries"
+			id="menu_account_max_journal_entries_max_journal_entries"
+			parent="menu_account_max_journal_entries"
+			action="max_finance_module.action_max_journal_entries"
+			sequence="30"/>
+
+		<!--menuitem
+			name="Closing Balance"
+			id="menu_closing_opening_balance"
+			parent="menu_account_max_journal_entries"
+			action="max_finance_module.action_validate_account_balance"
+			sequence="40"/-->
+
+		<menuitem
+			name="Sales Receipt"
+			id="menu_account_max_journal_entries_sales_receipt"
+			parent="menu_account_max_journal_entries"
+			action="max_finance_module.action_sales_receipt"
+			sequence="50"/>
+
+		<menuitem
+			name="Purchase Payment"
+			id="menu_account_max_journal_entries_purchase_payment"
+			parent="menu_account_max_journal_entries"
+			action="max_finance_module.action_purchase_payment"
+			sequence="60"/>
+
+<!-- -->
+
+
+<!-- -->
+		<menuitem
+			name="Chart of Accounts"
+			id="menu_account_max_charts_coa"
+			parent="menu_account_max_charts"
+			action="account.action_account_chart"
+			sequence="10"/>
+
+		<menuitem
+			name="Chart of Taxes"
+			id="menu_account_max_charts_cot"
+			parent="menu_account_max_charts"
+			action="account.action_account_tax_chart"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Draft Entries"
+			id="menu_account_max_periodical_draft_entries"
+			parent="menu_account_max_periodical"
+			sequence="10"/>
+
+		<menuitem
+			name="Reconciliation"
+			id="menu_account_max_periodical_reconciliation"
+			parent="menu_account_max_periodical"
+			sequence="20"/>
+
+		<menuitem
+			name="Statements"
+			id="menu_account_max_periodical_statements"
+			parent="menu_account_max_periodical"
+			sequence="30"/>
+
+		<menuitem
+			name="Recurring Entries"
+			id="menu_account_max_periodical_recurring"
+			parent="menu_account_max_periodical"
+			sequence="40"/>
+
+		<menuitem
+			name="End of Period"
+			id="menu_account_max_periodical_eop"
+			parent="menu_account_max_periodical"
+			sequence="50"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Dashboard"
+			id="menu_account_max_reporting_dashboard"
+			parent="menu_account_max_reporting"
+			sequence="10"/>
+
+		<menuitem
+			name="Legal Reports"
+			id="menu_account_max_reporting_legal_report"
+			parent="menu_account_max_reporting"
+			sequence="20"/>
+
+		<menuitem
+			name="Generic Reporting"
+			id="menu_account_max_reporting_generic_reporting"
+			parent="menu_account_max_reporting"
+			sequence="30"/>
+
+		<menuitem
+			name="Statistic Report"
+			id="menu_account_max_reporting_statistic_report"
+			parent="menu_account_max_reporting"
+			sequence="40"/>
+<!-- -->
+
+<!-- -->
+		<!-- Rhendy Add Tick Box On Users Access Right Control Seen Report Accounting Only Tick Is True -->
+		<menuitem
+			name="General Reports"
+			id="menu_account_max_report_gr"
+			parent="menu_account_max_report"
+			groups="so_workflowchange.group_non_account_report"
+			sequence="10"/>
+
+		<menuitem
+			name="AP Control Reports"
+			id="menu_account_max_report_ap"
+			parent="menu_account_max_report"
+			sequence="20"/>
+
+		<menuitem
+			name="AR Control Reports"
+			id="menu_account_max_report_ar"
+			parent="menu_account_max_report"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Financial Accounting"
+			id="menu_account_max_config_financial_accounting"
+			parent="menu_account_max_config"
+			sequence="10"/>
+
+		<menuitem
+			name="Miscellaneous"
+			id="menu_account_max_config_miscellaneous"
+			parent="menu_account_max_config"
+			sequence="20"/>
+<!-- -->
+
+<!--1.1.1.1-->
+
+<!-- -->
+
+		<menuitem
+			name="Balance Sheet Report"
+			id="menu_account_max_report_gr_balance_sheet"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_param_balance_sheet_report"
+			sequence="10"/>
+
+		<menuitem
+			name="Profit and Loss Report"
+			id="menu_account_max_report_gr_profit_loss"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_param_profit_and_lost_report"
+			sequence="20"/>
+		
+		<menuitem
+			name="Profit and Loss Report"
+			id="menu_account_max_report_gr_profit_loss"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_param_profit_and_lost_report"
+			sequence="20"/>
+		
+		<!-- menuitem icon="STOCK_PRINT" name="General Ledger"
+			id="menu_account_max_report_gr_general"
+			parent="menu_account_max_report_gr"
+			action="maxmega_reports.action_maxmega_gl_menu"
+			sequence="30"/ -->
+			
+		<menuitem icon="STOCK_PRINT" name="General Ledger"
+			id="menu_account_report_gr_general"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_param_gl_report"
+			sequence="40"/>
+
+		<!--menuitem icon="STOCK_PRINT" name="Trial Balance"
+			id="menu_account_max_report_gr_general_trial"
+			parent="menu_account_max_report_gr"
+			action="maxmega_reports.action_maxmega_trial_balance_menu"
+			sequence="50"/-->
+
+		<menuitem icon="STOCK_PRINT" name="Trial Balance"
+			id="menu_account_max_report_gr_trial_balance"
+			parent="menu_account_max_report_gr"
+			action="max_custom_report.action_trial_balance_report"
+			sequence="60"/>
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Posted Payment Check List"
+			id="menu_account_max_report_ap_posted_payment"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_posted_payment_check_list"
+			sequence="10"/>
+
+		<menuitem
+			name="AP Ledger Report"
+			id="menu_account_max_report_ap_ledger_payment"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_payable_ledger_report"
+			sequence="20"/>
+
+		<menuitem
+			name="AP Aging Report"
+			id="menu_account_max_report_ap_aging"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_payable_aging_report"
+			sequence="30"/>
+
+		<menuitem
+			name="Purchase Tax Report"
+			id="menu_account_max_report_ap_purchase_tax_report"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_purchase_tax_report"
+			sequence="40"/>
+
+		<menuitem
+			name="Purchase Journal Report"
+			id="menu_account_max_report_ap_purchase_journal"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_purchase_journal_by_supplier_report"
+			sequence="50"/>
+			
+		<menuitem
+			name="Payment Deposit Bank Report"
+			id="menu_account_max_report_ap_payment_deposit_bank"
+			parent="menu_account_max_report_ap"
+			action="max_report.action_param_payment_deposit_bank"
+			sequence="60"/>
+
+		<menuitem
+			name="Oustanding Payment Deposit Report"
+			id="menu_account_max_report_ap_oustanding_payment_deposit"
+			parent="menu_account_max_report_ap"
+			action="max_report.action_param_oustanding_payment_deposit"
+			sequence="70"/>	
+
+		<menuitem
+			name="Payment Register By Deposit Bank Report"
+			id="menu_account_max_report_ap_payment_register_by_deposit_bank"
+			parent="menu_account_max_report_ap"
+			action="max_custom_report.action_param_payment_register_by_deposit_bank"
+			sequence="80"/>	
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Posted Receipt Check List"
+			id="menu_account_max_report_ar_posted_receipt"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_posted_receipt_check_list"
+			sequence="10"/>
+
+		<menuitem
+			name="AR Ledger Report"
+			id="menu_account_max_report_ar_ledger_payment"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_receivable_ledger_report"
+			sequence="20"/>
+
+		<menuitem
+			name="AR Aging Report"
+			id="menu_account_max_report_ar_aging"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_receivable_aging_report"
+			sequence="30"/>
+
+		<menuitem
+			name="Sales Tax Report"
+			id="menu_account_max_report_ar_sale_tax"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_sales_tax_report"
+			sequence="40"/>
+			
+		<menuitem
+			name="Sales Journal Report"
+			id="menu_account_max_report_ar_sales_journal"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_sales_journal_by_customer_report"
+			sequence="50"/>
+		
+		<menuitem
+			name="Sales Journal Report By Voucher"
+			id="menu_account_max_report_ar_sales_journal_by_voucher"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_sales_journal_by_voucher_report"
+			sequence="60"/>
+			
+		<menuitem
+			name="Sale Journal by Sales Zone Report"
+			id="menu_account_max_report_ar_sales_journal_by_sales_zone"
+			parent="menu_account_max_report_ar"
+			action="max_report.action_param_sale_journal_zone"
+			sequence="70"/>
+			
+			<menuitem
+			name="Sale Journal by Sales Zone, Customer Key Report"
+			id="menu_account_max_report_ar_sales_journal_by_sales_zone_customer"
+			parent="menu_account_max_report_ar"
+			action="max_report.action_param_sale_journal_zone_key"
+			sequence="80"/>	
+			
+		<menuitem
+			name="Receipt Deposit Bank Report"
+			id="menu_account_max_report_ar_receipt_deposit_bank"
+			parent="menu_account_max_report_ar"
+			action="max_report.action_param_receipt_deposit_bank"
+			sequence="90"/>	
+
+		<menuitem
+			name="Oustanding Receipt Deposit Report"
+			id="menu_account_max_report_ar_oustanding_receipt_deposit"
+			parent="menu_account_max_report_ar"
+			action="max_report.action_param_oustanding_receipt_deposit"
+			sequence="100"/>
+
+		<menuitem
+			name="Receipt Register By Deposit Bank Report"
+			id="menu_account_max_report_ap_receipt_register_by_deposit_bank"
+			parent="menu_account_max_report_ar"
+			action="max_custom_report.action_param_receipt_register_by_deposit_bank"
+			sequence="110"/>
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Post Journal Entries"
+			id="menu_account_max_periodical_draft_entries_post_journal_entries"
+			parent="menu_account_max_periodical_draft_entries"
+			action="account.action_validate_account_move"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Manual Reconciliation"
+			id="menu_account_max_periodical_reconciliation_manual"
+			parent="menu_account_max_periodical_reconciliation"
+			action="account.action_account_manual_reconcile"
+			sequence="10"/>
+
+		<menuitem
+			name="Automatic Reconciliation"
+			id="menu_account_max_periodical_reconciliation_auto"
+			parent="menu_account_max_periodical_reconciliation"
+			action="account.action_account_automatic_reconcile"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Statements Reconciliation"
+			id="menu_account_max_periodical_statements_statement"
+			parent="menu_account_max_periodical_statements"
+			action="account.action_bank_statement_periodic_tree"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Define Recurring Entries"
+			id="menu_account_max_periodical_recurring_define"
+			parent="menu_account_max_periodical_recurring"
+			action="account.action_subscription_form"
+			sequence="10"/>
+
+		<menuitem
+			name="Generate Entries"
+			id="menu_account_max_periodical_recurring_generate"
+			parent="menu_account_max_periodical_recurring"
+			action="account.action_account_subscription_generate"
+			sequence="20"/>
+
+		<menuitem
+			name="Manual Recurring"
+			id="menu_account_max_periodical_recurring_manual"
+			parent="menu_account_max_periodical_recurring"
+			action="account.action_view_account_use_model"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Close a Period"
+			id="menu_account_max_periodical_eop_close"
+			parent="menu_account_max_periodical_eop"
+			action="account.action_account_period_tree"
+			sequence="10"/>
+
+		<menuitem
+			name="Generate Opening Entries"
+			id="menu_account_max_periodical_eop_generate"
+			parent="menu_account_max_periodical_eop"
+			action="account.action_account_fiscalyear_close"
+			sequence="20"/>
+
+		<menuitem
+			name="Cancel Opening Entries"
+			id="menu_account_max_periodical_eop_cancel"
+			parent="menu_account_max_periodical_eop"
+			action="account.action_account_open_closed_fiscalyear"
+			sequence="30"/>
+
+		<menuitem
+			name="Close a Fiscal Year"
+			id="menu_account_max_periodical_eop_close_fiscal"
+			parent="menu_account_max_periodical_eop"
+			action="account.action_account_fiscalyear_close_state"
+			sequence="40"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Accounting Dashboard"
+			id="menu_account_max_reporting_dashboard_dashboard"
+			parent="menu_account_max_reporting_dashboard"
+			action="account.open_board_account"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Accounting Reports"
+			id="menu_account_max_reporting_legal_report_accounting"
+			parent="menu_account_max_reporting_legal_report"
+			sequence="10"/>
+
+		<menuitem
+			name="Journals"
+			id="menu_account_max_reporting_legal_report_journal"
+			parent="menu_account_max_reporting_legal_report"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Partners"
+			id="menu_account_max_reporting_generic_reporting_partner"
+			parent="menu_account_max_reporting_generic_reporting"
+			sequence="10"/>
+
+		<menuitem
+			name="Taxes"
+			id="menu_account_max_reporting_generic_reporting_taxes"
+			parent="menu_account_max_reporting_generic_reporting"
+			sequence="20"/>
+
+		<menuitem
+			name="Multi-Currencies"
+			id="menu_account_max_reporting_generic_reporting_multi"
+			parent="menu_account_max_reporting_generic_reporting"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Invoices Analysis"
+			id="menu_account_max_reporting_statistic_report_invoices"
+			parent="menu_account_max_reporting_statistic_report"
+			action="account.action_account_invoice_report_all"
+			sequence="10"/>
+
+		<menuitem
+			name="Entries Analysis"
+			id="menu_account_max_reporting_statistic_report_entries"
+			parent="menu_account_max_reporting_statistic_report"
+			action="account.action_account_entries_report_all"
+			sequence="20"/>
+
+		<menuitem
+			name="Treasury Analysis"
+			id="menu_account_max_reporting_statistic_report_treasure"
+			parent="menu_account_max_reporting_statistic_report"
+			action="account.action_account_treasury_report_all"
+			sequence="30"/>
+
+		<menuitem
+			name="Sales Receipt Analysis"
+			id="menu_account_max_reporting_statistic_report_sales"
+			parent="menu_account_max_reporting_statistic_report"
+			action="account_voucher.action_sale_receipt_report_all"
+			sequence="40"/>
+<!-- -->
+
+<!-- -->
+
+		<record id="menu_account_max_config_financial_accounting_company" model="ir.ui.menu">
+			<field name="name">New Company Financial Setting</field>
+			<field eval="10" name="sequence"/>
+			<field name="parent_id" ref="menu_account_max_config_financial_accounting"/>
+			<field name="icon">STOCK_EXECUTE</field>
+			<field name="action" ref="account.ir_actions_server_action_wizard_multi_chart"/>
+		</record>
+
+		<menuitem
+			name="Periods"
+			id="menu_account_max_config_financial_accounting_periods"
+			parent="menu_account_max_config_financial_accounting"
+			sequence="20"/>
+
+		<menuitem
+			name="Journals"
+			id="menu_account_max_config_financial_accounting_journals"
+			parent="menu_account_max_config_financial_accounting"
+			sequence="30"/>
+
+		<menuitem
+			name="Accounts"
+			id="menu_account_max_config_financial_accounting_accounts"
+			parent="menu_account_max_config_financial_accounting"
+			sequence="40"/>
+
+		<menuitem
+			name="Taxes"
+			id="menu_account_max_config_financial_accounting_taxes"
+			parent="menu_account_max_config_financial_accounting"
+			sequence="50"/>
+
+		<menuitem
+			name="Financial Reports"
+			id="menu_account_max_config_financial_accounting_financial"
+			parent="menu_account_max_config_financial_accounting"
+			sequence="60"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Sale Payment Terms"
+			id="menu_account_max_config_miscellaneous_spt"
+			parent="menu_account_max_config_miscellaneous"
+			action="so_workflowchange.action_sale_payment_term"
+			sequence="10"/>
+
+		<menuitem
+			name="Recurring Models"
+			id="menu_account_max_config_miscellaneous_recurring_models"
+			parent="menu_account_max_config_miscellaneous"
+			action="account.action_model_form"
+			sequence="20"/>
+
+		<menuitem
+			name="Shipping Method"
+			id="menu_account_max_config_miscellaneous_shipping_method"
+			parent="menu_account_max_config_miscellaneous"
+			action="so_workflowchange.action_shipping_method"
+			sequence="30"/>
+
+		<menuitem
+			name="FOB Point Key"
+			id="menu_account_max_config_miscellaneous_fob_point_key"
+			parent="menu_account_max_config_miscellaneous"
+			action="so_workflowchange.action_fob_point"
+			sequence="40"/>
+
+		<menuitem
+			name="Payment Terms"
+			id="menu_account_max_config_miscellaneous_payment_term"
+			parent="menu_account_max_config_miscellaneous"
+			action="account.action_payment_term_form"
+			sequence="50"/>
+
+		<menuitem
+			name="Currencies"
+			id="menu_account_max_config_miscellaneous_currency"
+			parent="menu_account_max_config_miscellaneous"
+			action="base.action_currency_form"
+			sequence="60"/>
+
+		<menuitem
+			name="Email Templates"
+			id="menu_account_max_config_miscellaneous_email_templates"
+			parent="menu_account_max_config_miscellaneous"
+			action="account.action_email_templates"
+			sequence="70"/>
+
+		<menuitem
+			name="Sales Zone"
+			id="menu_account_max_config_miscellaneous_sales_zone"
+			parent="menu_account_max_config_miscellaneous"
+			action="so_workflowchange.action_res_partner_sales_zone"
+			sequence="80"/>
+<!-- -->
+
+<!--1.1.1.1.1-->
+
+<!-- -->
+		<menuitem
+			name="General Ledger"
+			id="menu_account_max_reporting_legal_report_accounting_general"
+			parent="menu_account_max_reporting_legal_report_accounting"
+			action="account.action_account_general_ledger_menu"
+			sequence="10"/>
+
+		<menuitem
+			name="Trial Balance"
+			id="menu_account_max_reporting_legal_report_accounting_trial"
+			parent="menu_account_max_reporting_legal_report_accounting"
+			action="account.action_account_balance_menu"
+			sequence="20"/>
+
+		<menuitem
+			name="Balance Sheet"
+			id="menu_account_max_reporting_legal_report_accounting_balance"
+			parent="menu_account_max_reporting_legal_report_accounting"
+			action="account.action_account_balance_menu"
+			sequence="30"/>
+
+		<menuitem
+			name="Profit And Loss"
+			id="menu_account_max_reporting_legal_report_accounting_pl"
+			parent="menu_account_max_reporting_legal_report_accounting"
+			action="account.action_account_report_pl"
+			sequence="40"/>
+
+		<menuitem
+			name="Financial Report"
+			id="menu_account_max_reporting_legal_report_accounting_financial"
+			parent="menu_account_max_reporting_legal_report_accounting"
+			action="account.action_account_report"
+			sequence="50"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Sale/Purchase Journals"
+			id="menu_account_max_reporting_legal_report_journal_sale_purchase_journal"
+			parent="menu_account_max_reporting_legal_report_journal"
+			action="account.action_account_print_sale_purchase_journal"
+			sequence="10"/>
+
+		<menuitem
+			name="Journals"
+			id="menu_account_max_reporting_legal_report_journal_journals"
+			parent="menu_account_max_reporting_legal_report_journal"
+			action="account.action_account_print_journal"
+			sequence="20"/>
+
+		<menuitem
+			name="General Journals"
+			id="menu_account_max_reporting_legal_report_journal_general_journals"
+			parent="menu_account_max_reporting_legal_report_journal"
+			action="account.action_account_general_journal"
+			sequence="30"/>
+
+		<menuitem
+			name="Centralizing Journal"
+			id="menu_account_max_reporting_legal_report_journal_centralizing_journal"
+			parent="menu_account_max_reporting_legal_report_journal"
+			action="account.action_account_central_journal"
+			sequence="40"/>
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Partner Balance"
+			id="menu_account_max_reporting_generic_reporting_partner_partner"
+			parent="menu_account_max_reporting_generic_reporting_partner"
+			action="account.action_account_partner_balance"
+			sequence="10"/>
+
+		<menuitem
+			name="Aged Partner Balance"
+			id="menu_account_max_reporting_generic_reporting_partner_aged"
+			parent="menu_account_max_reporting_generic_reporting_partner"
+			action="account.action_account_aged_balance_view"
+			sequence="20"/>
+
+		<menuitem
+			name="Partner Ledger"
+			id="menu_account_max_reporting_generic_reporting_partner_ledger"
+			parent="menu_account_max_reporting_generic_reporting_partner"
+			action="account.action_account_partner_ledger"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Taxes Report"
+			id="menu_account_max_reporting_generic_reporting_taxes_taxes"
+			parent="menu_account_max_reporting_generic_reporting_taxes"
+			action="account.action_account_vat_declaration"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Unrealized Gain or Loss"
+			id="menu_account_max_reporting_generic_reporting_multi_gain_or_loss"
+			parent="menu_account_max_reporting_generic_reporting_multi"
+			action="account.action_account_gain_loss"
+			sequence="10"/>
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Fiscal Years"
+			id="menu_account_max_config_financial_accounting_periods_fiscal"
+			parent="menu_account_max_config_financial_accounting_periods"
+			action="account.action_account_fiscalyear_form"
+			sequence="10"/>
+
+		<menuitem
+			name="Periods"
+			id="menu_account_max_config_financial_accounting_periods_periods"
+			parent="menu_account_max_config_financial_accounting_periods"
+			action="account.action_account_period_form"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Journals"
+			id="menu_account_max_config_financial_accounting_journals_journal"
+			parent="menu_account_max_config_financial_accounting_journals"
+			action="account.action_account_journal_form"
+			sequence="10"/>
+
+		<menuitem
+			name="Journal Views"
+			id="menu_account_max_config_financial_accounting_journals_journal_view"
+			parent="menu_account_max_config_financial_accounting_journals"
+			action="account.action_account_journal_view"
+			sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Setup your Bank Accounts"
+			id="menu_account_max_config_financial_accounting_accounts_setup"
+			parent="menu_account_max_config_financial_accounting_accounts"
+			action="account.action_bank_tree"
+			sequence="10"/>
+
+		<menuitem
+			name="Accounts"
+			id="menu_account_max_config_financial_accounting_accounts_accounts"
+			parent="menu_account_max_config_financial_accounting_accounts"
+			action="account.action_account_form"
+			sequence="20"/>
+
+		<menuitem
+			name="Account Types"
+			id="menu_account_max_config_financial_accounting_accounts_account_type"
+			parent="menu_account_max_config_financial_accounting_accounts"
+			action="account.action_account_type_form"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Taxes"
+			id="menu_account_max_config_financial_accounting_taxes_taxes"
+			parent="menu_account_max_config_financial_accounting_taxes"
+			action="account.action_tax_form"
+			sequence="10"/>
+
+		<menuitem
+			name="Tax codes"
+			id="menu_account_max_config_financial_accounting_taxes_tax_code"
+			parent="menu_account_max_config_financial_accounting_taxes"
+			action="account.action_tax_code_list"
+			sequence="20"/>
+
+		<menuitem
+			name="Fiscal Positions"
+			id="menu_account_max_config_financial_accounting_taxes_fiscal"
+			parent="menu_account_max_config_financial_accounting_taxes"
+			action="account.action_account_fiscal_position_form"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Account Reports"
+			id="menu_account_max_config_financial_accounting_financial_report"
+			parent="menu_account_max_config_financial_accounting_financial"
+			action="account.action_account_financial_report_tree"
+			sequence="10"/>
+
+		<menuitem
+			name="Account Reports Hierachy"
+			id="menu_account_max_config_financial_accounting_financial_hierachy"
+			parent="menu_account_max_config_financial_accounting_financial"
+			action="account.action_account_report_tree_hierarchy"
+			sequence="20"/>
+	</data>
+</openerp>

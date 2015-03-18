@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<document filename="Deposit Bank Report.pdf">
+	<template pageSize="(842.0,595.0)" title="Deposit Bank Report" author="" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+	
+	<stylesheet>
+		<blockTableStyle id="TableTop">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableMiddle">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableEnd">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+		</blockTableStyle>
+			<blockTableStyle id="TableBelow">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+		</blockTableStyle>
+		<initialize>
+			<paraStyle name="all" alignment="justify"/>
+		</initialize>
+		<paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_Right_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="Right" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="12.0" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+		<images/>
+	</stylesheet>
+	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">[[ get_header_title() ]]</para>
+		<para><font color="white"> </font></para>
+		<blockTable style="TableMiddle" colWidths="85,70,55,55,270,70,85,55,55">
+			<tr>
+				<td><para style="terp_default_Bold_8"><i>Receipt No.</i></para></td>
+				<td><para style="terp_default_Bold_8"><i>Receipt Date</i></para></td>
+				<td><para style="terp_default_Bold_Right_8"><i>Cheque Amt</i></para></td>
+				<td><para style="terp_default_Bold_Right_8"><i>Cheque Home</i></para></td>
+				<td><para style="terp_default_Bold_8"><i>[[ get_partner() ]]</i></para></td>
+				<td><para style="terp_default_Bold_Right_8"><i>Ex Rate</i></para></td>
+				<td><para style="terp_default_Bold_8"><i>Bank Draft</i></para></td>
+				<td><para style="terp_default_Bold_Right_8"><i>Charges</i></para></td>
+				<td><para style="terp_default_Bold_Right_8"><i>Charges Home</i></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para>[[ repeatIn(get_lines(), 'o') ]]</para>
+			<blockTable colWidths="185,240,375">
+				<tr>
+					<td><para style="terp_default_Bold_8">[[ o['journal_name'] or '' ]]</para></td>
+					<td><para style="terp_default_Bold_8">[[ o['acc_name'] or '' ]]</para></td>
+					<td><para style="terp_default_Bold_8">[[ o['cur_name'] or '' ]]</para></td>
+				</tr>
+			</blockTable>
+			<section>
+				<para>[[ repeatIn(o['vals'], 'ln') ]]</para>
+				<blockTable colWidths="85,70,55,55,270,70,85,55,55">
+					<tr>
+						<td><para style="terp_default_7"><font>[[ ln['rec_no'] ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ formatLang(ln['rec_date'] or '',date=True) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['check_amt'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['check_home'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ ln['part_name'] ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['exrate'] or 0, digits=6) ]]</font></para></td>
+						<td><para style="terp_default_7"><font>[[ ln['bank_draft'] ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['char'] or 0, digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"><font>[[ formatLang(ln['char_home'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+			</section>
+			<blockTable style="TableTop" colWidths="155,55,55,425,55,55">
+				<tr>
+					<td><para style="terp_default_Bold_8"></para></td>
+					<td><para style="terp_default_Bold_Right_8"><font>[[ formatLang(o['ttl_check'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Bold_Right_8"><font>[[ formatLang(o['ttl_check_home'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Bold_8"></para></td>
+					<td><para style="terp_default_Bold_Right_8"><font>[[ formatLang(o['ttl_char'] or 0, digits=2) ]]</font></para></td>
+					<td><para style="terp_default_Bold_Right_8"><font>[[ formatLang(o['ttl_char_home'] or 0, digits=2) ]]</font></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<para><font color="white"> </font></para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="210,55,480,55">
+			<tr>
+				<td><para style="terp_default_Bold_8"><i>Report Total</i></para></td>
+				<td><para style="terp_default_Bold_Right_8">[[ formatLang(get_amt(), digits=2) ]]</para></td>
+				<td><para style="std8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_Right_8">[[ formatLang(get_charges(), digits=2) ]]</para></td>
+			</tr>
+		</blockTable>
+	</story>
+</document>

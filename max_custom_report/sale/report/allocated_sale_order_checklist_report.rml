@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<document filename="Allocated Sale Order Checklist Report.pdf">
+	<template pageSize="(842.0,595.0)" title="Allocated Sale Order Checklist Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+	<stylesheet>
+		<blockTableStyle id="TableTop">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableBottom">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,0"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableMiddle">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableEnd">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+		</blockTableStyle>
+		<initialize>
+			<paraStyle name="all" alignment="justify"/>
+		</initialize>
+		<paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="12.0" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+		<images/>
+	</stylesheet>
+	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">Onhand Allocated Sale Order Checklist Report</para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_search_by_spn() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="120.0,320.0,120.0,120.0,60.0,60.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_8">Sale Order No.</para></td>
+				<td><para style="terp_default_8">Customer Ref</para></td>
+				<td><para style="terp_default_8">CPN</para></td>
+				<td><para style="terp_default_8">Location</para></td>
+				<td><para style="terp_default_Right_8">Qty</para></td>
+				<td><para style="terp_default_8">UOM</para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
+			<blockTable colWidths="800.0">
+				<tr>
+					<td><para style="terp_default_Bold_8"><font>[[ln['name'] ]]</font></para></td>
+				</tr>
+			</blockTable>
+			<section>
+				<para style="terp_default_8"><font>[[ repeatIn(ln['vals'], 'l') ]]</font></para>
+				<blockTable colWidths="120.0,320.0,120.0,120.0,60.0,60.0">
+				<tr>
+					<td><para style="terp_default_7"><font>[[l['so_name'] ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[l['customer_name'] ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[l['cpn'] ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[l['location'] ]]</font></para></td>
+					<td><para style="terp_default_Right_7"><font>[[ formatLang(l['qty'] or 0, digits=0) ]]</font></para></td>
+					<td><para style="terp_default_7"><font>[[l['uom'] ]]</font></para></td>
+				</tr>
+				</blockTable>
+			</section>
+			<blockTable colWidths="80, 600.0,60.0,60.0" style="TableBottom">
+				<tr>
+					<td><para></para></td>
+					<td><para style="terp_default_Bold_7">Total for [[ln['name'] ]]</para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['qty']), ln['vals'], 0 ), digits=0) ]]</font></para></td>
+					<td><para></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<blockTable colWidths="560.0,120.0,60.0,60.0">
+			<tr>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>Grand Total:</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(grand_total() or 0, digits=0) ]]</font></para></td>
+				<td><para style="terp_default_7"></para></td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="720.0, 80.0" style="TableEnd">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">End of Report</para>
+				</td>
+				<td>
+					<para style="terp_default_ItalicBold_7"></para>
+				</td>
+				
+			</tr>
+		</blockTable>
+	</story>
+</document>

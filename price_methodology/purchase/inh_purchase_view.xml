@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="purchase_view_inherit" model="ir.ui.view">
+			<field name="name">purchase.view.inherit</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form"/>
+			<field name="arch" type="xml">
+				<field name="date_order" position="after"/>
+				<field name="partner_id" position="replace"/>
+				<field name="shipped" position="after">
+					<field name="partner_id"
+						on_change="onchange_partner_id(partner_id, partner_id2, partner_child_id, order_line)"
+						attrs="{'readonly': [('order_line','!=',False)]}"
+						domain="[('supplier','=',True)]"
+						context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"
+						options='{"quick_create": false}' colspan ="4"/>
+					<field name="partner_id2" invisible ="1"/>
+					<field name="partner_child_id"
+						attrs="{'readonly': [('order_line','!=',False)]}"
+						on_change="onchange_partner_child_id(partner_child_id, partner_child_id2, order_line)"
+						options='{"quick_create": false}' colspan ="4"/>
+					<field name="partner_child_id2" invisible ="1"/>
+					<field domain="[('partner_id','=',partner_id)]" name="partner_order_id" options='{"quick_create": false}' colspan ="4"/>
+					<field domain="[('partner_id','=',partner_id)]" name="partner_invoice_id" groups="base.group_extended" options='{"quick_create": false}' colspan ="4"/>
+					<field domain="[('loc_address','=',True)]" name="partner_shipping_id" groups="base.group_extended" options='{"quick_create": false}' colspan ="4"/>
+				</field>
+				<field domain="[('type','=','purchase')]" name="pricelist_id" position="replace"/>
+				<field name="partner_shipping_id" position="after">
+				<newline/>
+					<field domain="[('type','=','purchase')]" name="pricelist_id"
+							on_change="onchange_pricelist_id(pricelist_id,order_line)" colspan="4"/>
+				</field>
+				<button name="purchase_confirm" position="before">
+					<button name="button_dummy2" string="Refresh" type="object" icon="gtk-execute"/>
+				</button>
+				<field name="partner_address_id" position="replace">
+					<field name="partner_address_id" options='{"quick_create": false}' invisible="1"/>
+				</field>
+				<separator string="Invoice Control" position="replace">
+					<separator string="Conditions" colspan="2"/>
+				</separator>
+			</field>
+		</record>
+		<record id="purchase_view_inherit_line" model="ir.ui.view">
+			<field name="name">purchase.view.inherit.line</field>
+			<field name="model">purchase.order.line</field>
+			<field name="inherit_id" ref="purchase.purchase_order_line_form"/>
+			<field name="arch" type="xml">
+				<field name="product_id" position="replace">
+					<field name="product_id" string = "Supplier Part No" colspan="4" on_change="onchange_product_id2(parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)" required="1"/>
+					<newline/>
+				</field>
+				<field name="product_uom" position="replace">
+					<field name="product_uom" on_change="onchange_product_uom2(parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)"/>
+				</field>
+				<field name="product_qty" position="replace">
+					<field name="product_qty" on_change="onchange_product_id2(parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)"/>
+				</field>
+				<field name="date_planned" position="replace"/>
+				<field name="price_unit" position="after">
+					<newline/>
+					<group colspan="5" col="5" groups="base.group_extended">
+						<separator string="Date" colspan="4"/>
+						<newline/>
+						<field name="done_savedrecords" invisible="1"/>
+						<field name="date_planned" invisible="1"/>
+						<field name="original_request_date" widget="date"/>
+						<newline/>
+						<field name="cust_request_date"/>
+						<button name="%(act_change_crd)d" string="Change CRD" type="action" states="confirmed" icon="gtk-go-forward"/>
+						<newline/>
+						<field name="original_request_date2" widget="date"/>
+						<newline/>
+						<field name="estimated_time_departure" widget="date"/>
+						<button name="%(act_change_etd)d" string="Change ETD" type="action" states="confirmed" icon="gtk-go-forward"/>
+						<newline/>
+						<field name="estimated_time_arrive" widget="date"/>
+						<button name="%(act_change_eta)d" string="Change ETA" type="action" states="confirmed" icon="gtk-go-forward"/>
+					
+					</group>
+				</field>
+			</field>
+		</record>
+	</data>
+</openerp>

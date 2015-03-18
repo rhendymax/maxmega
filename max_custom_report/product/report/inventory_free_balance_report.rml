@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<document filename="Inventory Free Balance Report.pdf">
+	<template pageSize="(842.0,595.0)" title="Inventory Free Balance Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+	<stylesheet>
+		<blockTableStyle id="Standard_Outline">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableMiddle">
+		<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="1,-1" stop="1,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="2,-1" stop="2,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="3,-1" stop="3,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="4,-1" stop="4,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="5,-1" stop="5,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="6,-1" stop="6,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="7,-1" stop="7,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="8,-1" stop="8,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="9,-1" stop="9,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="10,-1" stop="10,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="11,-1" stop="11,-1"/>
+				<lineStyle kind="LINEBELOW" colorName="#000000" start="12,-1" stop="12,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="2,-1" stop="2,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="3,-1" stop="3,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="4,-1" stop="4,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="5,-1" stop="5,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="6,-1" stop="6,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="7,-1" stop="7,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="8,-1" stop="8,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="9,-1" stop="9,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="10,-1" stop="10,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="11,-1" stop="11,-1"/>
+				<lineStyle kind="LINEABOVE" colorName="#000000" start="12,-1" stop="12,-1"/>
+		</blockTableStyle>
+		<blockTableStyle id="TableEnd">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="2,-1" stop="2,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="3,-1" stop="3,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="4,-1" stop="4,-1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="5,-1" stop="5,-1"/>
+		</blockTableStyle>
+		<initialize>
+			<paraStyle name="all" alignment="justify"/>
+		</initialize>
+		<paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="Right" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_6" fontName="Helvetica" fontSize="6.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Right_6" fontName="Helvetica" fontSize="6.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_6" fontName="Helvetica-Bold" fontSize="6.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_default_Bold_Right_6" fontName="Helvetica-Bold" fontSize="6.0" leading="11" alignment="Right" spaceBefore="0.0" spaceAfter="0.0"/>
+		<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+		<images/>
+	</stylesheet>
+	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">Inventory Free Balance</para>
+		<para><font color="white"></font></para>
+		<blockTable colWidths="240.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_Bold_8">SPN No</para></td>
+				<td><para style="terp_default_Right_Bold_8">Qty On Hand</para></td>
+				<td><para style="terp_default_Right_Bold_8">Qty GRN Allocated</para></td>
+				<td><para style="terp_default_Right_Bold_8">Qty GRN Un-Allocated</para></td>
+				<td><para style="terp_default_Right_Bold_8">Total SO Qty</para></td>
+				<td><para style="terp_default_Right_Bold_8">Qty On Hand Free</para></td>
+				<td><para style="terp_default_Right_Bold_8">Qty On Hand Allocated</para></td>
+				<td><para style="terp_default_Right_Bold_8">Quantity Free Balance</para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_7"><font>[[repeatIn(get_lines(),'ln') ]]</font></para>
+			<blockTable colWidths="800">
+				<tr>
+					<td><para style="terp_default_Bold_8">[[ln['loc_name'] ]]</para></td>
+				</tr>
+			</blockTable>
+			<section>
+				<para style="terp_default_8"><font>[[ repeatIn(ln['pro_lines'], 'p') ]]</font></para>
+				<blockTable colWidths="240.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0">
+					<tr>
+						<td><para style="terp_default_8"><font>[[p['prod_name'] ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['qty_onhand'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['qty_grn_allocated'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['qty_grn_unallocated'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['total_so_qty'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['qty_on_hand_free'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['qty_on_hand_allocated'], digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_8"><font>[[formatLang(p['qty_free_balance'], digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+			</section>
+		</section>
+
+		<blockTable colWidths="440.0,120.0,120.0,120.0" style="TableEnd">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">End of Report</para>
+				</td>
+				<td><para><font color="white"> </font></para></td>
+				<td><para><font color="white"> </font></para></td>
+				<td><para><font color="white"> </font></para></td>
+			</tr>
+			
+		</blockTable>
+	</story>
+</document>

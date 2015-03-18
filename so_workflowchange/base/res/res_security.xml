@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data noupdate="0">
+		<record model="res.groups" id="group_non_user" context="{'noadmin':True}">
+			<field name="name">Non Maxmega User</field>
+		</record>
+		<record model="res.groups" id="group_non_account" context="{'noadmin':True}">
+			<field name="name">Seen Credit Limit User</field>
+		</record>
+		<record model="res.groups" id="group_non_account_report" context="{'noadmin':True}">
+			<field name="name">Seen General Reports</field>
+		</record>
+	</data>
+</openerp>

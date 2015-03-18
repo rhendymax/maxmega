@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="product_customer_search" model="ir.ui.view">
+			<field name="name">product.customer.search</field>
+			<field name="model">product.customer</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Product Customer Search">
+					<field name="name"/>
+					<field name="partner_id"/>
+				</search>
+			</field>
+		</record>
+	
+		<record id="action_product_customer" model="ir.actions.act_window">
+			<field name="name">Product Customer</field>
+			<field name="res_model">product.customer</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="product_customer_search"/>
+		</record>
+
+		<menuitem action="action_product_customer"
+			id="menu_action_product_customer" parent="stock.menu_stock_product" sequence="20"/>
+
+
+		<record id="product_customer_tree" model="ir.ui.view">
+			<field name="name">product.customer.tree</field>
+			<field name="model">product.customer</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Customer Price View">
+					<field name="name"/>
+					<field name="partner_id"/>
+					<field name="product_id"/>
+					<field name="supplier_key_id"/>
+					<field name="currency_id"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="product_customer_form" model="ir.ui.view">
+			<field name="name">product.customer.form</field>
+			<field name="model">product.customer</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Customer Price Methodology">
+					<field name="name" on_change="onchange_name(parent.name, supplier_key_id)" required="1"/>
+					<field name="partner_id" context="{'search_default_customer':1,'default_customer':1,'default_supplier':0}"  options='{"quick_create": false}' domain="[('customer','=','1')]"/>
+					<field name="pricelist_id"/>
+					<field name="currency_id" widget="selection"/>
+					<!-- <field name="product_id" invisible="1"/> -->
+					<field name="supplier_key_id" domain="[('product_id', '=', product_id)]" options='{"quick_create": false}'/>
+					<newline/>
+<!-- START -->
+					<field name="product_id" readonly="1"/>
+<!-- END -->
+					<field name="moq"/>
+					<field name="customerprice_ids" nolabel="1" colspan="4"/>
+				</form>
+			</field>
+		</record>
+
+		<record id="product_customer_price_tree" model="ir.ui.view">
+			<field name="name">product.customer.price.tree</field>
+			<field name="model">product.customer.price</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Customer Price Detail">
+					<field name="effective_date"/>
+					<field name="name"/>
+					<field name="unit_cost"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="product_customer_price_form" model="ir.ui.view">
+			<field name="name">product.customer.price.form</field>
+			<field name="model">product.customer.price</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Customer Price">
+					<field name="effective_date" required="1" colspan="1"/>
+					<field name="name" colspan="1"/>
+					<field name="unit_cost" required="1" colspan="1"/>
+					<newline/>
+					<field name="upper_limit_ids" nolabel="1" colspan="4"/>
+				</form>
+			</field>
+		</record>
+
+		<record id="customer_upper_limit_tree" model="ir.ui.view">
+			<field name="name">customer.upper.limit.tree</field>
+			<field name="model">product.customer.upper.limit</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Upper limit Detail">
+					<field name="qty"/>
+					<field name="unit_cost"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="customer_upper_limit_form" model="ir.ui.view">
+			<field name="name">customer.upper.limit.form</field>
+			<field name="model">product.customer.upper.limit</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Upper limit">
+					<field name="qty" on_change="onchange_qty(qty)" required="1" colspan="1"/>
+					<field name="unit_cost" required="1" colspan="1"/>
+				</form>
+			</field>
+		</record>
+	</data>
+</openerp>

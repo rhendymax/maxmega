@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_change_shipping_address" model="ir.ui.view">
+			<field name="name">view.change.shipping.address</field>
+			<field name="model">change.shipping.address</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Change Shipping Address">
+					<group colspan="4" col="8">
+						<group colspan="2" col="2">
+						</group>
+						<group colspan="4" col="4">
+							<label string="change the Shipping Address To:" colspan="4"/>
+							<newline/>
+							<field name="partner_id" invisible="1" nolabel="1" colspan="2"/>
+							<field name="shipping_address" domain="[('partner_id', '=', partner_id)]" nolabel="1" colspan="2"/>
+							<newline/>
+							<group colspan="4" col="4">
+								<label string="" colspan="2"/>
+								<group col="4" colspan="2">
+									<button icon='gtk-cancel' special="cancel" string="_Cancel" />
+									<button name="change_shipping" string="_Validate" type="object" icon="gtk-go-forward" />
+								</group>
+							</group>
+						</group>
+						<group colspan="2" col="2">
+						</group>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="act_change_shipping_address" model="ir.actions.act_window">
+			<field name="name">Change Shipping Address</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">change.shipping.address</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_change_shipping_address"/>
+			<field name="target">new</field>
+			<field name="multi">True</field>
+		</record>
+	</data>
+</openerp>

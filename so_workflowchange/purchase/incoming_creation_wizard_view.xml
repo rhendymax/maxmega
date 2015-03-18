@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="incoming_creation__wizard_tree" model="ir.ui.view">
+			<field name="name">incoming.creation.wizard.tree</field>
+			<field name="model">incoming.creation.wizard</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Incoming Creation Wizard">
+					<field name="incoming_date"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="incoming_creation_wizard_form" model="ir.ui.view">
+			<field name="name">incoming.creation.wizard.form</field>
+			<field name="model">incoming.creation.wizard</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Incoming Creation Wizard">
+					<field name="incoming_date" invisible="1"/>
+						<field name="do_date"/>
+						<field name="invoice_date" required="1"/>
+						<field name="invoice_no"/>
+						<field name="ref_no"/>
+						<newline/>
+						<label colspan="3"/>
+						<button name="action_compute" string="_Compute GRN" type="object" colspan="1"/>
+					<newline/>
+					<notebook colspan="4">
+						<page string="Incoming Lines">
+							<field colspan="4" name="incoming_lines_ids" nolabel="1"/>
+						</page>
+						<page string="Multiple Purchase Order">
+							<separator colspan="4" string="Purchase Order"/>
+							<field name="purchase_order_ids" nolabel="1" colspan="4">
+								<tree editable="bottom">
+									<field name="name" string="Purchase Order" readonly="1"/>
+									<field name="partner_id" string="Supplier" readonly="1"/>
+								</tree>
+							</field>
+							<separator colspan="4" string="Purchase Order Lines"/>
+							<field name="order_line_ids" nolabel="1" colspan="4">
+								<tree editable="bottom">
+									<field name="order_id" string="Purchase Order" readonly="1"/>
+									<field name="partner_id" string="Supplier" readonly="1"/>
+									<field name="product_id" string="SPN" readonly="1"/>
+									<field name="location_dest_id" readonly="1"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Description">
+							<field name="desc" colspan = "4" nolabel="1"/>
+							<separator colspan="4" string="Country"/>
+							<field name="country_org_id"/>
+							<field name="country_des_id"/>
+						</page>
+					</notebook>
+					<group colspan="4" col="4">
+						<label colspan="2"/>
+						<button name="generated_do" string="_Create GRN" type="object" icon="gtk-go-forward" colspan="1"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="incoming_creation_wizard_search" model="ir.ui.view">
+			<field name="name">incoming.creation.wizard.search</field>
+			<field name="model">incoming.creation.wizard</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Incoming Creation Wizard">
+					<field name="incoming_date"/>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_incoming_creation_wizard" model="ir.actions.act_window">
+			<field name="name">Incoming Creation Wizard</field>
+			<field name="res_model">incoming.creation.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="search_view_id" ref="incoming_creation_wizard_search"/>
+		</record>
+
+		<record id="incoming_creation_lines_tree" model="ir.ui.view">
+			<field name="name">incoming.creation.lines.tree</field>
+			<field name="model">incoming.creation.lines</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Incoming Lines" editable="bottom">
+					<field name="order_id" readonly="1"/>
+					<field name="location_dest_id"/>
+					<field name="product_id"/>
+					<field name="product_uom_qty"/>
+					<field name="product_uom"/>
+					<field name="price_unit"/>
+					<field name="qty_delivery"/>
+					<field name="product_uom2"/>
+					<field name="spq"/>
+					<field name="qty_order" on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_order,uom_id,spq,order_id)"/>
+					<field name="uom_id"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="incoming_creation_lines_form" model="ir.ui.view">
+			<field name="name">incoming.creation.lines.form</field>
+			<field name="model">incoming.creation.lines</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<group colspan="4" col="4">
+						<group colspan="3" col="3">
+							<field name="order_line_id" invisible="1"/>
+							<field name="order_id" readonly="1" colspan="2"/>
+							<newline/>
+							<field name="product_id" readonly="1" colspan="3"/>
+							<newline/>
+						<field name="location_dest_id" domain="[('usage','=','internal')]" colspan="3"/>
+						</group>
+						<label string="" colspan="1"/>
+					</group>
+					<newline/>
+					<group colspan="2" col="4">
+						<field name="product_uom_qty" colspan="3"/>
+						<field name="product_uom" nolabel="1" colspan="1"/>
+						<field name="qty_delivery" colspan="3"/>
+						<field name="product_uom2" nolabel="1" colspan="1"/>
+						<field name="spq"/>
+						<field name="qty_order"
+							on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_order,uom_id)"
+							colspan="3"/>
+						<field name="uom_id"
+							on_change="onchange_qty_order(product_id,product_uom_qty,product_uom,qty_delivery,product_uom2,qty_order,uom_id)"
+							nolabel="1" colspan="1"/>
+					</group>
+				 </form>
+			</field>
+		</record>
+
+
+		<record id="purchase_order_line_search_incoming_wizard" model="ir.ui.view">
+			<field name="name">purchase.order.line.search.incoming.wizard</field>
+			<field name="model">purchase.order.line</field>
+			<field name="inherit_id" ref="purchase.purchase_order_line_search"/>
+			<field name="arch" type="xml">
+				<field name="product_id" position="replace">
+					<field name="product_id" string ="Supplier Part No"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="purchase_order_line_tree_incoming_wizard" model="ir.ui.view">
+			<field name="name">purchase.order.line.tree.incoming.wizard</field>
+			<field name="model">purchase.order.line</field>
+			<field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+			<field name="arch" type="xml">
+				<field name="product_id" position="replace">
+					<field name="product_id" string ="Supplier Part No"/>
+				</field>
+				<field name="name" position="replace">
+					<field name="name" invisible="1"/>
+				</field>
+				<field name="date_planned" position="replace">
+					<field name="date_planned" widget="date" width="135" invisible="1"/>
+					<field name="location_dest_id"/>
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>

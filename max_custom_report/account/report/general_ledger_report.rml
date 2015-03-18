@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<document filename="General Ledger Report.pdf">
+	<template pageSize="(842.0,595.0)" title="General Ledger Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+  <stylesheet>
+      <blockTableStyle id="TableTop">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000"/>
+    </blockTableStyle>
+     <blockTableStyle id="TableBottom">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000"/>
+    </blockTableStyle>
+    <blockTableStyle id="TableMiddle">
+		    <blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="10,0"/>
+    	</blockTableStyle>
+    <blockTableStyle id="TableEnd">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="-1,0"/>
+    </blockTableStyle>
+    
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicRight_7" fontName="Helvetica-Oblique" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicBoldRight_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="12.0" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+    <images/>
+  </stylesheet>
+	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">General Ledger Report</para>
+		<para><font color="white"> </font></para>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_fiscal_year() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_search_by_account() ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="800.0">
+			<tr>
+				<td>
+					<para style="terp_default_ItalicBold_7">[[ get_date() or removeParentNode('blockTable') ]]</para>
+				</td>
+			</tr>
+		</blockTable>
+		
+		<blockTable colWidths="80.0,80.0,80.0,280.0,60.0,60.0,60.0,60.0,40.0" style="TableMiddle">
+			<tr>
+				<td><para style="terp_default_Bold_8">Trans Date</para></td>
+				<td><para style="terp_default_Bold_8">Vch. No.</para></td>
+				<td><para style="terp_default_Bold_8">Reference No</para></td>
+				<td><para style="terp_default_Bold_8">Line Item Description</para></td>
+				<td><para style="terp_default_Right_Bold_8">Amount</para></td>
+				<td><para style="terp_default_Right_Bold_8">Currency</para></td>
+				<td><para style="terp_default_Right_Bold_8">Debit</para></td>
+				<td><para style="terp_default_Right_Bold_8">Credit</para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Right_Bold_8">Currency</para></td>
+				<td><para style="terp_default_Right_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Right_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Right_Bold_8"><font color="white"> </font></para></td>
+				<td><para style="terp_default_Bold_8"><font color="white"> </font></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_8">[[repeatIn(get_lines(),'ln') ]]</para>
+			<blockTable colWidths="80,420,300">
+				<tr>
+					<td><para style="terp_default_Bold_8"><font>[[ ln['acc_code'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_8"><font>[[ ln['acc_name'] ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"></para></td>
+				</tr>
+			</blockTable>
+			<section>
+				<para style="terp_default_7"><font>[[repeatIn(ln['val_ids'], 'per') ]]</font></para>
+				<blockTable colWidths="80,80,200,360,80">
+					<tr>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ per['fiscalyear_name'] ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ per['period_code'] ]]</font></para></td>
+						<td><para style="terp_default_ItalicBoldRight_7"><font>Opening Balance</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(per['opening_balance'] or 0, digits=2) ]]</font></para></td>
+					</tr>
+				</blockTable>
+				<section>
+					<para style="terp_default_7"><font>[[repeatIn(per['val_ids2'], 'inv') ]]</font></para>
+					<blockTable colWidths="80.0,80.0,80.0,280.0,60.0,60.0,60.0,60.0,40.0">
+						<tr>
+							<td><para style="terp_default_7"><font>[[ formatLang(inv['aml_date'] or '',date=True) ]]</font></para></td>
+							<td><para style="terp_default_7"><font>[[ inv['am_name'] ]]</font></para></td>
+							<!-- td><para style="terp_default_7"><font>[[ inv['aml_ref'] ]]</font></para></td-->
+							<td><para style="terp_default_7"><font>[[ inv['supplier_invoice_no'] ]]</font></para></td>
+							<td><para style="terp_default_7"><font>[[ inv['aml_name'] ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_amount'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_7"><font>[[ inv['aml_currency'] ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_debit'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"><font>[[ formatLang(inv['aml_credit'] or 0, digits=2) ]]</font></para></td>
+							<td><para style="terp_default_Right_7"></para></td>
+						</tr>
+					</blockTable>
+				</section>
+				<blockTable colWidths="160.0,440.0,80.0,80.0,40.0">
+					<tr>
+						<td><para style="terp_default_Bold_7"><font>Total For   [[ ln['acc_code'] ]]</font></para></td>
+						<td><para style="terp_default_Bold_7"><font>PERIOD CLOSING AS AT [[ per['period_end'] ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['aml_debit']), per['val_ids2'], 0 ), digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['aml_credit']), per['val_ids2'], 0 ), digits=2) ]]</font></para></td>
+						<td><para style="terp_default_Right_7"></para></td>
+					</tr>
+				</blockTable>
+			</section>
+			<blockTable colWidths="200.0,420.0,80.0,20.0,80.0">
+				<tr>
+					<td><para style="terp_default_Bold_7"><font>Closing Balance For   [[ ln['acc_code'] ]]</font></para></td>
+					<td><para style="terp_default_Bold_7"><font>PERIOD CLOSING AS AT [[ ln['period_end'] ]]</font></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font></font></para></td>
+					<td><para style="terp_default_Right_7"></para></td>
+					<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(ln['closing'] or 0, digits=2) ]]</font></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<blockTable colWidths="600.0,80.0,80.0,40.0" style="TableTop">
+			<tr>
+				<td><para style="terp_default_ItalicBold_7"><font>Report Total</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(get_debit_total() or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(get_credit_total() or 0, digits=2) ]]</font></para></td>
+				<td><para style="terp_default_7"></para></td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="500,220,80.0">
+			<tr>
+				<td><para style="terp_default_7"></para></td>
+				<td><para style="terp_default_ItalicBold_7"><font>Balance:</font></para></td>
+				<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(get_total() or 0, digits=2) ]]</font></para></td>
+			</tr>
+		</blockTable>
+	</story>
+</document>

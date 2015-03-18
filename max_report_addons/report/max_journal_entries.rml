@@ -1,0 +1,320 @@
+<?xml version="1.0"?>
+<document filename="Max Journal Entries.pdf">
+    <stylesheet>
+        <blockTableStyle id="Tableau1">
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+        </blockTableStyle>
+        <blockTableStyle id="Tableau2">
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+        </blockTableStyle>
+        <blockTableStyle id="Table_Header_Pur_ord_Line">
+            <blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEBELOW" colorName="#000000" start="0,1" stop="10,1"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="10,0"/>
+        </blockTableStyle>
+        <blockTableStyle id="tableHeader">
+        	<blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="1,-1" stop="1,-1"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="2,-1" stop="2,-1"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="3,-1" stop="3,-1"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="4,-1" stop="4,-1"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="5,-1" stop="5,-1"/>
+            <lineStyle kind="LINEBELOW" colorName="#000000" start="5,-1" stop="6,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="2,-1" stop="2,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="3,-1" stop="3,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="4,-1" stop="4,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="5,-1" stop="5,-1"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="5,-1" stop="6,-1"/>
+        </blockTableStyle>
+        <blockTableStyle id="Table_Content">
+          <blockAlignment value="LEFT"/>
+          <blockValign value="TOP"/>
+        </blockTableStyle>
+        <!--lineStyle kind="LINEBELOW" colorName="#e6e6e6"/-->
+        <blockTableStyle id="Table_Page_Number">
+            <blockAlignment value="RIGHT"/>
+            <blockValign value="TOP"/>
+        </blockTableStyle>
+        <blockTableStyle id="Table_All_Total_Detail">
+            <blockAlignment value="LEFT"/>
+            <blockValign value="TOP"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="0,0"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="1,0" stop="1,0"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="2,0" stop="2,0"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="3,0" stop="3,0"/>
+            <lineStyle kind="LINEABOVE" colorName="#000000" start="3,2" stop="3,2"/>
+        </blockTableStyle>
+        <blockTableStyle id="Table_Account_Detail">
+			<blockAlignment value="LEFT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="0,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="1,0" stop="1,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="2,0" stop="2,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="3,0" stop="3,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="4,0" stop="4,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="5,0" stop="5,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="6,0" stop="6,0"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="2,3" stop="2,3"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="6,3" stop="6,3"/>
+		</blockTableStyle>
+		<blockTableStyle id="Table_Signature_Line">
+			<blockAlignment value="RIGHT"/>
+			<blockValign value="TOP"/>
+			<lineStyle kind="LINEABOVE" colorName="#000000" start="0,4" stop="0,4"/>
+		</blockTableStyle>
+        <initialize>
+            <paraStyle name="all" alignment="justify"/>
+        </initialize>
+        <paraStyle name="P8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="6.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_tblheader_General" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_tblheader_General_Right" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_tblheader_General_Centre" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_9_Italic_Bold" fontName="Helvetica-BoldOblique" fontSize="9.0" leading="9.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_9" fontName="Helvetica" fontSize="9.0" leading="9.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_Centre_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+        <paraStyle name="terp_default_Bold_Right_8" rightIndent="0.0" leftIndent="-3.0" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+        <images/>
+    </stylesheet>
+    <template pageSize="(21.59cm, 27.94cm)" title="Max Journal Entries" author="Yanto Chen" allowSplitting="20">
+        <pageTemplate id="first">
+            <frame id="first" x1="0.3cm" y1="2.8cm" width="20.0cm" height="23.0cm"/>
+            <pageGraphics>
+            <image x="0.8cm" y="26.1cm" height="25.0">[[ company.logo or removeParentNode('image') ]]</image>
+			<!--setFont name="Helvetica-Bold" size="15" leading="17"/>
+			<drawString x="1.3cm" y="26.0cm">TAX INVOICE</drawString-->
+			<setFont name="DejaVu Sans" size="7"/>
+			<fill color="black"/>
+			<stroke color="black"/>
+			<drawRightString x="20cm" y="26.3cm">[[ company.rml_header1 ]]</drawRightString>
+			<drawString x="9.3cm" y="26.7cm">[[ company.partner_id.name ]]</drawString>
+			<drawString x="9.3cm" y="26.3cm">[[ company.partner_id.address and company.partner_id.address[0].street or  '' ]]</drawString>
+			<drawString x="9.3cm" y="25.9cm">[[ company.partner_id.address and company.partner_id.address[0].zip or '' ]] [[ company.partner_id.address and company.partner_id.address[0].city or '' ]] - [[ company.partner_id.address and company.partner_id.address[0].country_id and company.partner_id.address[0].country_id.name  or '']]</drawString>
+			<drawString x="9.3cm" y="25.5cm">Phone:</drawString>
+			<drawRightString x="13.0cm" y="25.5cm">[[ company.partner_id.address and company.partner_id.address[0].phone or '' ]]</drawRightString>
+			<drawString x="14.0cm" y="25.5cm">Mail:</drawString>
+			<drawRightString x="18.0cm" y="25.5cm">[[ company.partner_id.address and company.partner_id.address[0].email or '' ]]</drawRightString>
+
+			<!--page bottom-->
+			<lines>0.5cm 1.95cm 20.2cm 1.95cm</lines>
+			<drawCentredString x="10.5cm" y="1.6cm">[[ company.rml_footer1  ]]</drawCentredString>"""
+			<drawCentredString x="10.5cm" y="1.15cm">[[ company.rml_footer2 ]]</drawCentredString>"""
+			<drawCentredString x="10.5cm" y="0.7cm">Contact : [[ user.name ]] - Page: <pageNumber/> </drawCentredString>
+        </pageGraphics>
+    </pageTemplate>
+	</template>
+  <story>
+  <pto>
+    <para style="terp_default_8">[[ repeatIn(objects,'o') ]]</para>
+    <!--para style="terp_default_8">[[ setLang(o.partner_id.lang) ]]</para-->
+    <pto_header>
+   		<!--blockTable colWidths="20.0,155.0,100.0,80.0,65.0,100.0" rowHeights="24.0" repeatRows="1" style="Tableau1">
+			<tr>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+			</tr>
+		</blockTable-->
+		<blockTable colWidths="250.0,30.0,240.0" style="Tableau1">
+			<tr>
+				<td>
+					<blockTable colWidths="250.0" style="Tableau2">
+						<tr>
+							<td>
+								<para style="terp_default_8"><font color="white"> </font></para>
+							</td>
+						</tr>
+						<tr><td><para style="terp_default_8"><font color="white"> </font></para></td></tr>
+					</blockTable>
+				</td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td>
+					<blockTable colWidths="120.0,125.0" style="Tableau2">
+						<tr>
+							<td><para style="terp_default_9_Italic_Bold">JOURNAL ENTRIES</para></td>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+						</tr>
+						<tr>
+							<td>
+								<para style="terp_default_Bold_8">NO</para>
+								<para style="terp_default_Bold_8">PERIOD</para>
+								<para style="terp_default_Bold_8">DATE</para>
+								<para style="terp_default_Bold_8">REFERENCE NO</para>
+								<para style="terp_default_Bold_8">JOURNAL</para>
+							</td>
+							<td>
+								<para style="terp_default_8"><font> : [[ o.name or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ (o.period_id and o.period_id.name) or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ formatLang(o.date,date= True) or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ o.ref or '  ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ (o.journal_id and o.journal_id.name) or '  ' ]] </font></para>
+							</td>
+						</tr>
+						<tr>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+						</tr>
+						<tr>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+							<td>
+								<illustration width="15" height="1">
+									<setFont name="Helvetica" size="8"/>
+									<drawRightString x="4.0cm" y="0.01cm">Page <pageNumber/> of <pageCount/> </drawRightString>
+								</illustration>
+							</td>
+						</tr>
+					</blockTable>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" repeatRows="1"  style="Table_Header_Pur_ord_Line">
+			<tr>
+				<td><para style="terp_tblheader_General_Centre">No</para></td>
+				<td><para style="terp_tblheader_General">ACCOUNT</para></td>
+				<td><para style="terp_tblheader_General">ITEM DESCRIPTION</para></td>
+				<td><para style="terp_tblheader_General_Centre">CCY</para></td>
+				<td><para style="terp_tblheader_General_Centre">DEBIT</para></td>
+				<td><para style="terp_tblheader_General_Centre">CREDIT</para></td>
+				<td><para style="terp_tblheader_General_Centre">CCY RATE</para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_tblheader_General_Centre"></para></td>
+				<td><para style="terp_tblheader_General"></para></td>
+				<td><para style="terp_tblheader_General"></para></td>
+				<td><para style="terp_tblheader_General_Centre"></para></td>
+				<td><para style="terp_tblheader_General_Centre">DEBIT HOME</para></td>
+				<td><para style="terp_tblheader_General_Centre">CREDIT HOME</para></td>
+				<td><para style="terp_tblheader_General_Centre"></para></td>
+			</tr>
+		</blockTable>
+    </pto_header>
+    <para style="terp_default_8"><seqReset/></para>	
+		<blockTable colWidths="250.0,30.0,240.0" style="Tableau1">
+			<tr>
+				<td>
+					<blockTable colWidths="250.0" style="Tableau2">
+						<tr>
+							<td>
+								<para style="terp_default_8"><font color="white"> </font></para>
+							</td>
+						</tr>
+						<tr><td><para style="terp_default_8"><font color="white"> </font></para></td></tr>
+					</blockTable>
+				</td>
+				<td><para style="terp_default_9"><font color="white"> </font></para></td>
+				<td>
+					<blockTable colWidths="120.0,125.0" style="Tableau2">
+						<tr>
+							<td><para style="terp_default_9_Italic_Bold">JOURNAL ENTRIES</para></td>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+						</tr>
+						<tr>
+							<td>
+								<para style="terp_default_Bold_8">NO</para>
+								<para style="terp_default_Bold_8">PERIOD</para>
+								<para style="terp_default_Bold_8">DATE</para>
+								<para style="terp_default_Bold_8">REFERENCE NO</para>
+								<para style="terp_default_Bold_8">JOURNAL</para>
+							</td>
+							<td>
+								<para style="terp_default_8"><font> : [[ o.name or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ (o.period_id and o.period_id.name) or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ formatLang(o.date,date= True) or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ o.ref or ' ' ]]</font></para>
+								<para style="terp_default_8"><font> : [[ (o.journal_id and o.journal_id.name) or '  ' ]] </font></para>
+							</td>
+						</tr>
+						<tr>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+						</tr>
+						<tr>
+							<td><para style="terp_default_8"><font color="white"> </font></para></td>
+							<td>
+								<illustration width="15" height="1">
+									<setFont name="Helvetica" size="8"/>
+									<drawRightString x="4.0cm" y="0.01cm">Page <pageNumber/> of <pageCount/> </drawRightString>
+								</illustration>
+							</td>
+						</tr>
+					</blockTable>
+				</td>
+			</tr>
+		</blockTable>
+		<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" repeatRows="1" style="Table_Header_Pur_ord_Line">
+			<tr>
+				<td><para style="terp_tblheader_General_Centre">No</para></td>
+				<td><para style="terp_tblheader_General">ACCOUNT</para></td>
+				<td><para style="terp_tblheader_General">ITEM DESCRIPTION</para></td>
+				<td><para style="terp_tblheader_General_Centre">CCY</para></td>
+				<td><para style="terp_tblheader_General_Centre">DEBIT</para></td>
+				<td><para style="terp_tblheader_General_Centre">CREDIT</para></td>
+				<td><para style="terp_tblheader_General_Centre">CCY RATE</para></td>
+			</tr>
+			<tr>
+				<td><para style="terp_tblheader_General_Centre"></para></td>
+				<td><para style="terp_tblheader_General"></para></td>
+				<td><para style="terp_tblheader_General_Centre"></para></td>
+				<td><para style="terp_tblheader_General_Centre">DEBIT HOME</para></td>
+				<td><para style="terp_tblheader_General_Centre">CREDIT HOME</para></td>
+				<td><para style="terp_tblheader_General_Centre"></para></td>
+			</tr>
+		</blockTable>
+		<section>
+			<para style="terp_default_8">[[ repeatIn(o.line_id,'l') ]]</para>
+			<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" style="Table_Content">
+				<tr>
+					<td><para style="terp_default_Centre_8"><seq/></para></td>
+					<td><para style="terp_default_8">[[ (l.account_id and l.account_id.name) or ' ' ]]</para></td>
+					<td><para style="terp_default_8">[[ (l.name) or ' ' ]]</para></td>
+					<td><para style="terp_default_Centre_8">[[ get_currency_name(l) ]]</para></td>
+					<td><para style="terp_default_Right_8">[[ formatLang(l.debit, digits=2) ]] </para></td>
+					<td><para style="terp_default_Right_8">[[ formatLang(l.credit, digits=2) ]]</para></td>
+					<td><para style="terp_default_Right_8">[[ formatLang(((l.ex_rate_other > 0 and l.ex_rate_other) or l.ex_rate) or 0, digits=6)]] </para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_default_Centre_8"></para></td>
+					<td><para style="terp_default_8"></para></td>
+					<td><para style="terp_default_8"></para></td>
+					<td><para style="terp_default_Centre_8">[[ get_home_curr_name(l) ]]</para></td>
+					<td><para style="terp_default_Right_8">[[ formatLang(l.debit_home, digits=2)]] </para></td>
+					<td><para style="terp_default_Right_8">[[ formatLang(l.credit_home, digits=2) ]]</para></td>
+					<td><para style="terp_default_Right_8"></para></td>
+				</tr>
+			</blockTable>
+		</section>
+		<blockTable colWidths="26.0,120.0,120.0,50.0,76.0,76.0,76.0" style="Table_Header_Pur_ord_Line">
+				<tr>
+					<td><para style="terp_tblheader_General"><font></font></para></td>
+					<td><para style="terp_tblheader_General"><font></font></para></td>
+					<td><para style="terp_tblheader_General">Total<font></font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font></font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['debit']), o.line_id, 0 ), digits=2) ]]</font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['credit']), o.line_id, 0 ), digits=2) ]]</font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font></font></para></td>
+				</tr>
+				<tr>
+					<td><para style="terp_tblheader_General"><font></font></para></td>
+					<td><para style="terp_tblheader_General"><font></font></para></td>
+					<td><para style="terp_tblheader_General">Total Home<font></font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font></font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['debit_home']), o.line_id, 0 ), digits=2) ]]</font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font>[[ formatLang(reduce(lambda x, obj: x + (obj['credit_home']), o.line_id, 0 ), digits=2) ]]</font></para></td>
+					<td><para style="terp_tblheader_General_Right"><font></font></para></td>
+				</tr>
+			</blockTable>
+  </pto>
+  </story>
+</document>

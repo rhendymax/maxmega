@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!--  =========== VIEWS =========== -->    
+    
+        <record model="ir.ui.view" id="view_wizard">
+            <field name="name">csv.report.form</field>
+            <field name="model">csv.report</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form col="3" string="Custom Report">
+                    <group col="2" fill="0" height="2500" states="choose">
+                        <separator string="Report" colspan="2"/>
+                        <group colspan="2">
+                            <button special="cancel" icon="gtk-cancel" string="Cancel"/>
+                            <button type="object" name="create_report" icon="gtk-go-forward" string="Create"/>
+                        </group>
+                        <field invisible="1" name="state"/>
+                    </group>
+                    <group col="3" fill="0" states="get">
+                        <separator colspan="3" string="Export done"/>
+                        <field name="name" invisible="1" width="100"/>
+                        <field name="data" nolabel="1" readonly="1" width="100" filename="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <!--  =========== ACTIONS =========== -->    
+        
+        <record model="ir.actions.act_window" id="action_report">
+            <field name="name">Custom Report</field>
+            <field name="res_model">csv.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+        <!--  =========== MENU ITEMS =========== -->
+        <!--menuitem id="menu_report" name="Report"
+                    action="action_report"
+                    parent="menu_custom_export" 
+                    sequence="40"/-->
+        
+        
+    </data>
+</openerp>

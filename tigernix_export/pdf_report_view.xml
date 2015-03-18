@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="max_export_pdf_menu" model="tigernix.export"
+                name="max.export.report"
+                usage="default" string="PDF Export" header="False"/>
+    </data>
+</openerp>

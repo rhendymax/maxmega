@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record id="inh_purchase_form_r" model="ir.ui.view">
+			<field name="name">inh.purchase.form.r</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form"/>
+			<field name="arch" type="xml">
+				<button name="%(purchase.report_purchase_order)d" position="replace">
+					<button name="%(action_purchase_order_document)d" string="Print PO" states="approved" type="action" icon="gtk-print"/>
+				</button>
+			</field>
+		</record>
+
+	</data>
+</openerp>

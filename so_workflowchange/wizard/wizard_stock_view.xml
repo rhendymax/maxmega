@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="stock_view_tree" model="ir.ui.view">
+			<field name="name">stock.view.tree</field>
+			<field name="model">wizard.stock.view</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Product Detail View" editable="bottom">
+					<field name="product_id"/>
+					<field name="product_supplier_id" invisible="1"/>
+					<field name="spq" readonly="True"/>
+					<field name="qty_order"/>
+					<field name="onhand_allocated_qty" on_change="onchange_onhand_allocated_qty(onhand_allocated_qty,spq)"/>
+					<field name="allocated_qty" on_change="onchange_allocated_qty(allocated_qty,spq)"/>
+					<field name="uom_id"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="stock_view_form" model="ir.ui.view">
+			<field name="name">stock.view.form</field>
+			<field name="model">wizard.stock.view</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<field name="product_id"/>
+					<field name="product_supplier_id"/>
+					<field name="spq" readonly="True"/>
+					<field name="qty_order"/>
+					<field name="onhand_allocated_qty"/>
+					<field name="allocated_qty"/>
+					<field name="move_id"/>
+					<field name="uom_id"/>
+				 </form>
+			</field>
+		</record>
+
+		<record id="product_detail_tree" model="ir.ui.view">
+			<field name="name">product.detail.tree</field>
+			<field name="model">product.detail</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Product Detail View">
+					<field name="product_id"/>
+					<field name="uom_id"/>
+					<field name="location_id"/>
+					<field name="qty_available"/>
+					<field name="qty_incoming_booked"/>
+					<field name="qty_incoming_non_booked"/>
+					<field name="qty_booked"/>
+					<field name="qty_free"/>
+					<field name="qty_allocated"/>
+					<field name="qty_free_balance"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="product_detail_form" model="ir.ui.view">
+			<field name="name">product.detail.form</field>
+			<field name="model">product.detail</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<field name="product_id"/>
+					<field name="uom_id"/>
+					<field name="location_id"/>
+					<field name="qty_available"/>
+					<field name="qty_incoming_booked"/>
+					<field name="qty_incoming_non_booked"/>
+					<field name="qty_booked"/>
+					<field name="qty_free"/>
+					<field name="qty_allocated"/>
+					<field name="qty_free_balance"/>
+				 </form>
+			</field>
+		</record>
+	</data>
+</openerp>

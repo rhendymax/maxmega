@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+<!--1.0-->
+		<menuitem
+			icon="terp-stock"
+			id="menu_warehouse_root"
+			name="Warehouse"
+			web_icon="data/warehouse.png"
+			web_icon_hover="data/warehouse-hover.png"
+			sequence="30"/>
+
+<!--1.1-->
+		<menuitem
+			name="Warehouse Management"
+			id="menu_warehouse_warehouse_management"
+			parent="menu_warehouse_root"
+			sequence="10"/>
+
+		<menuitem
+			name="Inventory Control"
+			id="menu_warehouse_inventory_control"
+			parent="menu_warehouse_root"
+			sequence="20"/>
+
+		<menuitem
+			name="Products"
+			id="menu_warehouse_product"
+			parent="menu_warehouse_root"
+			sequence="30"/>
+
+		<menuitem
+			name="Enquiry"
+			id="menu_warehouse_enquiry"
+			parent="menu_warehouse_root"
+			sequence="40"/>
+
+		<menuitem
+			name="Configuration"
+			id="menu_warehouse_config"
+			parent="menu_warehouse_root"
+			sequence="50"/>
+
+<!--1.1.1-->
+
+<!-- -->
+		<menuitem
+			name="Incoming Shipments"
+			id="menu_warehouse_warehouse_management_incoming"
+			parent="menu_warehouse_warehouse_management"
+			action="stock.action_picking_tree4"
+			sequence="10"/>
+
+		<menuitem
+			name="Internal Moves"
+			id="menu_warehouse_warehouse_management_internal"
+			parent="menu_warehouse_warehouse_management"
+			action="stock.action_picking_tree6"
+			sequence="20"/>
+
+		<menuitem
+			name="Delivery Orders"
+			id="menu_warehouse_warehouse_management_do"
+			parent="menu_warehouse_warehouse_management"
+			action="stock.action_picking_tree"
+			sequence="30"/>
+
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Physical Inventories"
+			id="menu_warehouse_inventory_control_pi"
+			parent="menu_warehouse_inventory_control"
+			action="stock.action_inventory_form"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Products"
+			id="menu_warehouse_product_product"
+			parent="menu_warehouse_product"
+			action="product.product_normal_action"
+			sequence="10"/>
+
+		<menuitem action="price_methodology.action_product_customer"
+			id="menu_warehouse_enquiry_product_customer"
+			parent="menu_warehouse_product"
+			sequence="30"/>
+		
+		<menuitem action="price_methodology.action_product_supplier"
+			id="menu_warehouse_enquiry_product_supplier"
+			parent="menu_warehouse_product" sequence="20"/>
+<!-- -->
+
+<!-- -->
+		<menuitem action="so_workflowchange.product_normal_action2"
+			id="menu_warehouse_enquiry_product_product"
+			parent="menu_warehouse_enquiry"
+			sequence="10"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Warehouse Management"
+			id="menu_warehouse_config_warehouse"
+			parent="menu_warehouse_config"
+			sequence="10"/>
+
+		<menuitem
+			name="Products"
+			id="menu_warehouse_config_prod"
+			parent="menu_warehouse_config"
+			sequence="20"/>
+
+		<menuitem
+			name="Automatic Procurements"
+			id="menu_warehouse_config_auto"
+			parent="menu_warehouse_config"
+			sequence="30"/>
+
+		<menuitem
+			name="Physical Inventories Type"
+			id="menu_warehouse_config_pi_type"
+			parent="menu_warehouse_config"
+			action="so_workflowchange.action_int_type"
+			sequence="40"/>
+<!-- -->
+
+<!--1.1.1.1-->
+
+<!-- -->
+		<menuitem
+			name="Incoterms"
+			id="menu_warehouse_config_warehouse_incoterms"
+			parent="menu_warehouse_config_warehouse"
+			action="stock.action_incoterms_tree"
+			sequence="10"/>
+
+		<menuitem
+			name="Locations"
+			id="menu_warehouse_config_warehouse_loc"
+			parent="menu_warehouse_config_warehouse"
+			action="stock.action_location_form"
+			sequence="20"/>
+
+		<menuitem
+			name="Warehouses"
+			id="menu_warehouse_config_warehouse_warehouses"
+			parent="menu_warehouse_config_warehouse"
+			action="stock.action_warehouse_form"
+			sequence="30"/>
+
+		<menuitem
+			name="Stock Journals"
+			id="menu_warehouse_config_warehouse_stock_journal"
+			parent="menu_warehouse_config_warehouse"
+			action="stock.action_stock_journal_form"
+			sequence="40"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Product Categories"
+			id="menu_warehouse_config_prod_prod_categories"
+			parent="menu_warehouse_config_prod"
+			action="product.product_category_action_form"
+			sequence="10"/>
+
+		<menuitem
+			name="Packaging"
+			id="menu_warehouse_config_prod_packaging"
+			parent="menu_warehouse_config_prod"
+			action="product.product_ul_form_action"
+			sequence="20"/>
+
+		<menuitem
+			name="Units of Measure"
+			id="menu_warehouse_config_prod_uom"
+			parent="menu_warehouse_config_prod"
+			sequence="30"/>
+<!-- -->
+
+<!-- -->
+		<menuitem
+			name="Minimum Stock Rules"
+			id="menu_warehouse_config_auto_min"
+			parent="menu_warehouse_config_auto"
+			action="procurement.action_orderpoint_form"
+			sequence="10"/>
+<!-- -->
+
+<!--1.1.1.1.1-->
+
+<!-- -->
+		<menuitem
+			name="UoM Categories"
+			id="menu_warehouse_config_prod_uom_categ"
+			parent="menu_warehouse_config_prod_uom"
+			action="product.product_uom_categ_form_action"
+			sequence="10"/>
+
+		<menuitem
+			name="Units of Measure"
+			id="menu_warehouse_config_prod_uom_uom"
+			parent="menu_warehouse_config_prod_uom"
+			action="product.product_uom_form_action"
+			sequence="20"/>
+<!-- -->
+
+
+	</data>
+</openerp>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<report auto="False" 
+				id="stock.report_picking_list" 
+				model="stock.picking"
+				name="max.stock.picking.list" 
+				rml="max_report_addons/report/picking.rml"
+				string="Packing list" 
+				usage="default"
+				header="False"/>
+
+		<report auto="False" 
+				id="stock.report_picking_do"
+				model="stock.picking"
+				name="max.stock.picking.do"
+				rml="max_report_addons/report/picking_do.rml"
+				string="Delivery Order"
+				usage="default"
+				header="False"/>
+
+		<record id="view_internal_picking_inherit_rp" model="ir.ui.view">
+			<field name="name">view.internal.picking.inherit.rp</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="stock.view_picking_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="/form/notebook/page/group/field[@name='state']" position="before">
+					<group col='8' colspan='4'>
+						<button name="create_vat" string="Print" colspan="1" type="object" icon="gtk-ok"/>
+						<label colspan='7'/>
+					</group>
+					<newline/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>

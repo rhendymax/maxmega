@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_param_po_oustanding_report" model="ir.ui.view">
+			<field name="name">PO Oustanding Report</field>
+			<field name="model">param.po.oustanding.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="PO Oustanding Report">
+					<separator string="PO Oustanding Report" colspan="4"/>
+					<label colspan="4" nolabel="1" string="This menu prints PO Oustanding Report"/>
+					<newline/>
+					<notebook colspan="4">
+						<page string="Supplier">
+							<field name="supp_selection"
+								on_change="onchange_supp_selection(supp_selection)"
+								colspan="4"/>
+							<field name="supplier_search_vals"
+								colspan="4"/>
+							<field name="filter_selection" colspan="4"/>
+							<field name="partner_default_from" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'
+								domain="[('supplier','=',True)]" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"/>
+							<field name="partner_default_to" attrs="{'invisible': [('filter_selection','!=','def')], 'required': [('filter_selection','=','def')]}"
+								options='{"quick_create": false}'
+								domain="[('supplier','=',True)]" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}"/>
+							<field name="partner_input_from"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="partner_input_to"
+								attrs="{'invisible': [('filter_selection','!=','input')], 'required': [('filter_selection','=','input')]}"/>
+							<field name="partner_ids" domain="[('supplier','=',True)]"
+								attrs="{'invisible': [('filter_selection','!=','selection')], 'required': [('filter_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+									<field name="ref"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Date">
+							<field name="date_selection" colspan="4"/>
+							<field name="date_from" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+							<field name="date_to" attrs="{'invisible': [('date_selection','!=','date_sel')], 'required': [('date_selection','=','date_sel')]}"/>
+						</page>
+						<page string="Purchase Order">
+							<field name="po_selection" colspan="4"/>
+							<field name="po_default_from" attrs="{'invisible': [('po_selection','!=','def')], 'required': [('po_selection','=','def')]}"/>
+							<field name="po_default_to" attrs="{'invisible': [('po_selection','!=','def')], 'required': [('po_selection','=','def')]}"/>
+							<field name="po_input_from"
+								attrs="{'invisible': [('po_selection','!=','input')], 'required': [('po_selection','=','input')]}"/>
+							<field name="po_input_to"
+								attrs="{'invisible': [('po_selection','!=','input')], 'required': [('po_selection','=','input')]}"/>
+							<field name="po_ids"
+								attrs="{'invisible': [('po_selection','!=','selection')], 'required': [('po_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Supplier Part No">
+							<field name="product_selection" colspan="4"/>
+							<field name="product_default_from" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_default_to" attrs="{'invisible': [('product_selection','!=','def')], 'required': [('product_selection','=','def')]}"/>
+							<field name="product_input_from"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_input_to"
+								attrs="{'invisible': [('product_selection','!=','input')], 'required': [('product_selection','=','input')]}"/>
+							<field name="product_ids"
+								attrs="{'invisible': [('product_selection','!=','selection')], 'required': [('product_selection','=','selection')]}" nolabel="1" colspan="4">
+								<tree>
+									<field name="name"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+					<group col="8" colspan="4">
+						<button icon='gtk-cancel' special="cancel" string="Cancel" colspan="2"/>
+						<label colspan="2" nolabel="1" string=" "/>
+						<button icon="gtk-print" name="check_report" string="Print as CSV" type="object" colspan="2" default_focus="1" />
+						<button name="create_vat" string="Print as PDF" colspan="2" type="object" icon="gtk-ok"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="po_outstanding_result_csv_view" model="ir.ui.view">
+			<field name="name">PO Outstanding Report</field>
+			<field name="model">param.po.oustanding.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Report Options">
+					<field name="data" filename="filename" colspan="4" readonly="1"/>
+					<field name="filename" invisible="1"/>
+					<separator colspan="4"/>
+					<group col="4" colspan="4">
+						<button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_param_po_oustanding_report" model="ir.actions.act_window">
+			<field name="name">PO Oustanding Report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">param.po.oustanding.report</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_param_po_oustanding_report"/>
+			<field name="target">new</field>
+			<field name="help">This menu print PO Oustanding Report.</field>
+		</record>
+
+		<menuitem
+			id="menu_po_oustanding_report"
+			name="PO Oustanding Report"
+			action="action_param_po_oustanding_report"
+			parent="menu_custom_purchase" sequence="1"/>
+	</data>
+</openerp>

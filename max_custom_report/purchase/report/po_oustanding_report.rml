@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<document filename="PO Oustanding Report.pdf">
+	<template pageSize="(842.0,595.0)" title="PO Oustanding Report" author="Yanto Chen (yanto@maxmega.com)" allowSplitting="20">
+		<pageTemplate id="first">
+			<frame id="first" x1="42.0" y1="62.0" width="728" height="511"/>
+		</pageTemplate>
+	</template>
+
+  <stylesheet>
+    <blockTableStyle id="TableMiddle">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="8,-1" stop="8,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="TableEnd">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="1,-1" stop="1,-1"/>
+    </blockTableStyle>
+    
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+	<paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="8.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_ItalicBold_7" fontName="Helvetica-BoldOblique" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_7" fontName="Helvetica" fontSize="7.0" leading="7.0" alignment="Right" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_Bold_7" fontName="Helvetica-Bold" fontSize="7.0" leading="7.0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+	<paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="12.0" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+
+    <images/>
+  </stylesheet>
+	<story>
+		<para><font color="white"> </font></para>
+		<para style="terp_header_Centre">Supplier Delivery Outstanding Purchase Order</para>
+		<para><font color="white"> </font></para>
+<!--		<blockTable colWidths="800.0" >
+			<tr>
+				<td>
+					<blockTable colWidths="250,250,300">
+						<tr>
+							<td>
+								<para style="terp_default_ItalicBold_7">Supplier Selection</para>
+								<para style="terp_default_ItalicBold_7">Supplier Search</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">:</para>
+								<para style="terp_default_ItalicBold_7">:</para>
+							</td>
+							<td>
+								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['supp_selection'] or '') ]]</para>
+								<para style="terp_default_ItalicBold_7">[[ formatLang(data['form']['supplier_search_vals'] or '') ]]</para>
+							</td>
+						</tr>
+					</blockTable>
+				</td>
+			</tr>
+		</blockTable!-->
+
+	<blockTable colWidths="70.0,220.0,70.0,140.0,60.0,80.0,80.0,80.0" style="TableMiddle">
+		<tr>
+			<td><para style="terp_default_8">Supplier Key</para></td>
+			<td><para style="terp_default_8">Supplier Name</para></td>
+			<td><para style="terp_default_8">PO Number</para></td>
+			<td><para style="terp_default_8">Item Description</para></td>
+			<td><para style="terp_default_8">ETD Date</para></td>
+			<td><para style="terp_default_8">Order Qty(PCS)</para></td>
+			<td><para style="terp_default_8">Unit Price</para></td>
+			<td><para style="terp_default_8">Oustanding Qty</para></td>
+		</tr>
+	</blockTable>
+	<section>
+		<para style="terp_default_7">
+			<font>[[repeatIn(get_lines(),'ln') ]]</font>
+		</para>
+		<blockTable colWidths="70.0,220.0,70.0,140.0,60.0,80.0,80.0,80.0">
+			<tr>
+				<td><para style="terp_default_7"><font>[[ln['s_ref'] ]] </font></para></td>
+				<td><para style="terp_default_7"><font>[[ln['s_name'] ]] </font></para></td>
+				<td><para style="terp_default_7"><font>[[ln['order_name'] ]]</font></para></td>
+				<td><para style="terp_default_7"><font>[[ln['part_name'] ]]</font></para></td>
+				<td><para style="terp_default_7"><font>[[formatLang(ln['etd'],date=True) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[formatLang(ln['order_qty'], digits=0) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[formatLang(ln['unit_price'], digits=5) ]]</font></para></td>
+				<td><para style="terp_default_Right_7"><font>[[formatLang(ln['oustanding'], digits=0) ]]</font></para></td>
+			</tr>
+		</blockTable>
+	</section>
+	<blockTable colWidths="280.0,280.0,80.0,80.0,80.0">
+		<tr>
+			<td><para style="terp_default_7"></para></td>
+			<td><para style="terp_default_ItalicBold_7"><font>Grand Total:</font></para></td>
+			<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(total_qty(), digits=0) ]]</font></para></td>
+			<td><para style="terp_default_Right_Bold_7"></para></td>
+			<td><para style="terp_default_Right_Bold_7"><font>[[ formatLang(total_oustanding(), digits=0) ]]</font></para></td>
+		</tr>
+	</blockTable>
+	<blockTable colWidths="720.0, 80.0" style="TableEnd">
+		<tr>
+			<td>
+				<para style="terp_default_ItalicBold_7">Report Total</para>
+			</td>
+			<td>
+				<para style="terp_default_Right_Bold_7">[[formatLang(total_oustanding(), digits=0) ]]</para>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<para style="terp_default_ItalicBold_7">End of Report</para>
+			</td>
+			<td>
+				<para style="terp_default_ItalicBold_7"> </para>
+			</td>
+			
+		</tr>
+	</blockTable>
+	</story>
+</document>
