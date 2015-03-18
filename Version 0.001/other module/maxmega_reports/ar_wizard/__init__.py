@@ -1,3 +1,0 @@
-import payment_register_by_customer_report
-import ar_payment_register_report
-import ar_posted_checklist_report
