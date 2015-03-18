@@ -892,7 +892,7 @@ class stock_picking(osv.osv):
         res = {}
         credit_type = ''
         for st in self.browse(cr, uid, ids, context=context):
-            credit_type = (st.do_amt > st.credit_balance and st.credit_limit > 0 and "Credit Limit") or (st.overdue_days > 0 and "Payment Terms") or False
+            credit_type = (st.do_amt > st.credit_balance and "Credit Limit") or (st.overdue_days > 0 and "Payment Terms") or False
 #            credit_type = 'testing'
             res[st.id] = credit_type
         return res

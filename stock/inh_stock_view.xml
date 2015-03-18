@@ -122,10 +122,36 @@
 					<field name="partner_invoice_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
 					<field name="pricelist_id" colspan="4"/>
 				</field>
+				
 				<field name="date" position="replace">
 					<field name="date" string="Prepared Date" readonly="1"/>
 					<field name="do_date" required="1" string="GRN Date"/>
 				</field>
+				<field name="partner_id" position="replace"/>
+				<field name="invoice_state" position="after">
+					<field name="partner_id" string="Supplier" colspan="4"/>
+				</field>
+				<field name="partner_child_id" position="replace"/>
+				<field name="partner_id" position="after">
+					<field name="partner_child_id" options='{"quick_create": false}' colspan ="4"/>
+				</field>
+				<field name="partner_order_id" position="replace"/>
+				<field name="partner_child_id" position="after">
+					<field name="partner_order_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
+				</field>
+				<field name="partner_shipping_id" position="replace"/>
+				<field name="partner_order_id" position="after">
+					<field name="partner_shipping_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
+				</field>
+				<field name="partner_invoice_id" position="replace"/>
+				<field name="partner_shipping_id" position="after">
+					<field name="partner_invoice_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
+				</field>
+				<field name="pricelist_id" position="replace"/>
+				<field name="partner_invoice_id" position="after">
+					<field name="pricelist_id" colspan="4"/>
+				</field>
+				
 				<xpath expr="/form/notebook/page[@string='Notes']/field[@name='note']" position="before">
 					<separator colspan="4" string="Header"/>
 					<field colspan="4" name="header_picking" nolabel="1"/>
@@ -303,17 +329,21 @@
 					<separator colspan="4" string="Notes"/>
 				</xpath>
 
-				<field name="move_lines" position="before">
+				<!-- <field name="move_lines" position="before">
 					<field name="partner_id" string="Customer" colspan="4"/>
 					<field name="partner_order_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
 					<field name="partner_shipping_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
 					<field name="partner_invoice_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
 					<field name="pricelist_id" colspan="4"/>
-					
-				</field>
+				</field> -->
 
 				<field name="invoice_state" position="after">
-					<field name="invoiced"/>
+					<field name="invoiced" colspan="2"/>
+					<field name="partner_id" string="Customer" colspan="4"/>
+					<field name="partner_order_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
+					<field name="partner_shipping_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
+					<field name="partner_invoice_id" options='{"quick_create": false}' domain="[('partner_id','=',partner_id)]" colspan="4"/>
+					<field name="pricelist_id" colspan="4"/>
 					<button name="%(act_change_shipping_address)d" string="Change Shipping Address" type="action" icon="gtk-go-forward" colspan="2"/>
 				</field>
 
@@ -331,7 +361,7 @@
 					<button name="revert_invoice" attrs="{'invisible':[('invoice_state','!=','invoiced')]}" string="Revert To non Invoiced" type="object" icon="gtk-go-back"/>
 				</button>
 				<page string="Notes" position="after">
-					<page string="Credit Limit / Payment Term">
+					<page string="Credit Limit / Payment Term" groups="so_workflowchange.group_non_account">
 
 						<group col="2" colspan="2">
 							<field name="credit_limit"/>
@@ -362,9 +392,10 @@
 							<button name="action_undo_paymentterm" attrs="{'invisible': [('term_approver', '!=', True)]}" string="Undo Payment Terms Approved" type="object" icon="gtk-go-back" colspan="1"/>
 						</group>
 					</page>
-					<page string="Credit Limit / Payment Term (2)">
+					<page string="Credit Limit / Payment Term (2)" groups="so_workflowchange.group_non_account">
 					</page>
 				</page>
+
 				<field name="move_lines" position="after">
 
 					<group col="6" colspan="4">

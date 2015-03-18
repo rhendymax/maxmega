@@ -54,7 +54,7 @@ class change_effective(osv.osv_memory):
             qty_overall = product_uom_obj._compute_qty(cr, uid, uom, qty, default_uom)
             effective_date = obj.change_date
             product_customer_id = obj.sale_order_line_id.product_customer_id
-            product_customer_price_ids = product_customer_price.search(cr, uid, [('product_customer_id','=',product_customer_id.id),('effective_date','<=',effective_date)], order='effective_date ASC')
+            product_customer_price_ids = product_customer_price.search(cr, uid, [('product_customer_id','=',product_customer_id.id),('effective_date','<=',effective_date)], order='effective_date Desc')
             price = 0.00
             if product_customer_price_ids:
                 product_customer_price_id = product_customer_price.browse(cr, uid, product_customer_price_ids[0], context=context)

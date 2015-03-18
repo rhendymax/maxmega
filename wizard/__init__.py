@@ -21,5 +21,6 @@
 
 import po_value
 import so_to_po
-
+import total_qty_so
+import product_to_po
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

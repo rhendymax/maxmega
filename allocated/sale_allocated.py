@@ -24,7 +24,7 @@ from osv import osv, fields
 from tools.translate import _
 import decimal_precision as dp
 
-class sale_allocated(osv.osv_memory):
+class sale_allocated(osv.osv):
     _name = 'sale.allocated'
     _description = 'Sale Allocated'
     _rec_name = 'sale_line_id'

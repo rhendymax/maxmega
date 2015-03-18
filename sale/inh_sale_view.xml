@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
+	<data>aa
 
 		<record id="view_sale_order_form2" model="ir.ui.view">
 			<field name="name">view.sale.order.form2</field>
@@ -14,19 +14,34 @@
 							<field name="date_order" readonly="1"/>
 							<field name="shop_id" widget="selection" readonly="1"/>
 							<field name="client_order_ref" readonly="1"/>
+<!-- START New Code -->
+							<newline/>
+							<field name="partner_id" required="1"/>
+							<newline/>
+							<field name="partner_order_id"/>
+							<newline/>
+							<field name="partner_invoice_id"/>
+							<newline/>
+							<field name="partner_shipping_id"/>
+							<newline/>
+							<field name="pricelist_id"/>
+							<newline/>
+							<field name="project_id"/>
+<!-- END New Code -->
 						</group>
 						<group col="2" colspan="2">
 							<field name="shipped" readonly="1"/>
 						</group>
+
 					</group>
 					<notebook colspan="5">
 						<page string="Sales Order">
-							<field name="partner_id" required="1"/>
+							<!-- <field name="partner_id" required="1"/>
 							<field name="partner_order_id"/>
 							<field name="partner_invoice_id"/>
 							<field name="partner_shipping_id"/>
 							<field name="pricelist_id"/>
-							<field name="project_id"/>
+							<field name="project_id"/> -->
 							<newline/>
 							<field colspan="4" name="order_line" nolabel="1" widget="one2many_list" readonly="1">
 								<form string="Sales Order Lines">
@@ -249,7 +264,8 @@
 						<field colspan="4" name="note" nolabel="1"/>
 					</page>
 				</xpath>
-				<field name="client_order_ref" position="after">
+				<field domain="[('type','=','sale')]" name="pricelist_id" position="after">
+					<newline/>
 					<button name="%(act_adding_lines_so)d" string="Add Lines" type="action" icon="gtk-go-forward" states="progress"/>
 				</field>
 				<field name="pricelist_id" position="replace">
@@ -309,10 +325,15 @@
 					</page>
 				</xpath>
 				<xpath expr="/form/notebook/page/field[@name='order_line']/form/notebook/page/group/group/field[@name='discount']" position="after">
+<!-- START New COde -->
+					<!-- NOT PRINTED, IN FORM, NOT TREE -->
+					<!-- <field name="line_number"/> -->
+<!-- END New COde -->
 					<field name="location_id" domain="[('usage','=','internal')]"
 						on_change="location_onchange(product_id,location_id)"
 						colspan="10"/>
 					<field name="balance_qty" string ="Balance Qty"/>
+					<newline/>
 					<button name="%(act_change_price)d" string="Change Price Unit" type="action" icon="gtk-go-forward" states="draft,confirmed" invisible="1"/>
 					<button name="%(act_change_qty)d" string="Change Qty" type="action" icon="gtk-go-forward" states="confirmed"/>
 				</xpath>
@@ -369,7 +390,11 @@
 				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
 					<button name="%(act_delete_so_line_wizard)d" string="Delete Line" type="action" icon="gtk-cancel"/>
 				</xpath>
-				
+<!-- START -->
+				<!-- xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="before">
+					<field name="line_number"/>
+				</xpath -->
+<!-- END -->
 			</field>
 		</record>
 	</data>

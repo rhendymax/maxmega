@@ -65,6 +65,8 @@
 									<button name="%(product_location_wizard_action)d" string="Show Location Qty" type="action" icon="terp-gtk-go-back-rtl" />
 									<button name="%(cost_price_fifo_action)d" string="Show Fifo Cost Price" type="action" icon="terp-gtk-go-back-rtl" />
 									<newline/>
+									<button name="%(total_qty_so_action)d" string="Show SO" type="action" icon="terp-gtk-go-back-rtl"/>
+									<button name="%(total_qty_po_action)d" string="Show PO" type="action" icon="terp-gtk-go-back-rtl"/>
 							</group>
 						</page>
 
@@ -362,6 +364,8 @@
 					<button name="%(product_location_wizard_action)d" string="Show Location Qty" type="action" icon="terp-gtk-go-back-rtl" />
 					<button name="%(cost_price_fifo_action)d" string="Show Fifo Cost Price" type="action" icon="terp-gtk-go-back-rtl" />
 					<newline/>
+					<button name="%(total_qty_so_action)d" string="Show SO" type="action" icon="terp-gtk-go-back-rtl"/>
+					<button name="%(total_qty_po_action)d" string="Show PO" type="action" icon="terp-gtk-go-back-rtl"/>
 				</field>
 			</field>
 		</record>

@@ -93,8 +93,7 @@
 							attrs="{'readonly': [('invoice_line','!=',False)]}"
 							domain="[('customer', '=', True)]"/>
 						<field name="partner_id2"/>
-						<field domain="[('partner_id','=',partner_id)]" name="address_contact_id" groups="base.group_extended" readonly="1"/>
-						<field domain="[('partner_id','=',partner_id)]" name="address_invoice_id" context="{'default_partner_id': partner_id}" options='{"quick_create": false}' readonly="1"/>
+						
 					</group>
 					<field domain="[('company_id', '=', company_id),('type','=', 'receivable')]" name="account_id" groups="account.group_account_user" readonly="1"/>
 					<field name="name" groups="base.group_extended"/>
@@ -122,9 +121,31 @@
 				<field name="move_id" position="after">
 					<field name="inv_rate"/>
 				</field>
+				<field name="partner_id" position="replace"/>
 				<field name="period_id" position="after">
 					<field name="period_id" domain="[('state', '=', 'draft')]" widget="selection"/>
+					<newline/>
+					<field string="Customer"
+							name="partner_id"
+							on_change="onchange_partner_id(type,partner_id,partner_id2,date_invoice,payment_term, partner_bank_id,company_id, invoice_line)"
+							groups="base.group_user"
+							context="{'search_default_customer': 1}"
+							options='{"quick_create": false}'
+							attrs="{'readonly': [('invoice_line','!=',False)]}"
+							domain="[('customer', '=', True)]" colspan="4"/>
+					<newline/>
+					<field domain="[('partner_id','=',partner_id)]" name="address_contact_id" groups="base.group_extended" readonly="1" colspan="4"/>
+					<newline/>
+					<field domain="[('partner_id','=',partner_id)]" name="address_invoice_id" context="{'default_partner_id': partner_id}" options='{"quick_create": false}' readonly="1" colspan="4"/>
 				</field>
+				<xpath expr="/form/notebook/page[@string='Payments']" position="before">
+					<page string="Notes">
+						<separator colspan="4" string="Header"/>
+						<field colspan="4" name="header_invoice" nolabel="1"/>
+						<separator colspan="4" string="Footer"/>
+						<field colspan="4" name="footer_invoice" nolabel="1"/>
+					</page>
+				</xpath>
 			</field>
 		</record>
 
@@ -161,18 +182,6 @@
 				<field name="address_invoice_id" position="replace"/>
 				<field name="address_contact_id" position="replace"/>
 				<field name="account_id" position="replace">
-					<group colspan="4" col="2" >
-						<field string="Supplier" 
-							name="partner_id" 
-							on_change="onchange_partner_id(type,partner_id,partner_id2,date_invoice,payment_term, partner_bank_id,company_id, invoice_line)" 
-							context="{'default_customer': 0, 'search_default_supplier': 1, 'default_supplier': 1}"
-							options='{"quick_create": false}'
-							attrs="{'readonly': [('invoice_line','!=',False)]}"
-							domain="[('supplier', '=', True)]"/>
-						<field name="partner_id2"/>
-						<field domain="[('partner_id','=',partner_id)]" name="address_contact_id" groups="base.group_extended" readonly="1"/>
-						<field domain="[('partner_id','=',partner_id)]" name="address_invoice_id" context="{'default_partner_id': partner_id}" options='{"quick_create": false}' readonly="1"/>
-					</group>
 					<field domain="[('company_id', '=', company_id), ('type', '=', 'payable')]" name="account_id" groups="account.group_account_user" readonly="1"/>
 				</field>
 				<field name="currency_id" position="replace"/>
@@ -189,6 +198,21 @@
 					<field name="ref_no"/>
 					<field name="invoice_date"/>
 					<field name="invoice_no"/>
+				</field>
+				<field name="period_id" position="after">
+					<newline/>
+					<group colspan="4" col="2" >
+						<field string="Supplier" 
+							name="partner_id" 
+							on_change="onchange_partner_id(type,partner_id,partner_id2,date_invoice,payment_term, partner_bank_id,company_id, invoice_line)" 
+							context="{'default_customer': 0, 'search_default_supplier': 1, 'default_supplier': 1}"
+							options='{"quick_create": false}'
+							attrs="{'readonly': [('invoice_line','!=',False)]}"
+							domain="[('supplier', '=', True)]"/>
+						<field name="partner_id2"/>
+						<field domain="[('partner_id','=',partner_id)]" name="address_contact_id" groups="base.group_extended" readonly="1"/>
+						<field domain="[('partner_id','=',partner_id)]" name="address_invoice_id" context="{'default_partner_id': partner_id}" options='{"quick_create": false}' readonly="1"/>
+					</group>
 				</field>
 				<xpath expr="/form/notebook/page[@string='Payments']" position="before">
 					<page string="Notes">

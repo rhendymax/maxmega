@@ -68,10 +68,13 @@ class change_qty(osv.osv_memory):
     def onchange_qty(self, cr, uid, ids ,product_uom_qty, qty_remaining, qty_allocated_onorder, qty_allocated_onhand,qty_received,moq,spq):
         total_all = qty_allocated_onorder + qty_allocated_onhand
         res = {}
-        if product_uom_qty < moq:
-            warning = {'title': _('Warning'), 'message': _("the Qty cannot less than moq.")}
-            return {'value':{'product_uom_qty': 0}, 'warning':warning}
-
+#####################
+#     START
+#####################
+#         if product_uom_qty < moq:
+#             warning = {'title': _('Warning'), 'message': _("the Qty cannot less than moq.")}
+#             return {'value':{'product_uom_qty': 0}, 'warning':warning}
+# END
         if product_uom_qty < spq:
             product_uom_qty = 0
         if product_uom_qty%spq != 0:

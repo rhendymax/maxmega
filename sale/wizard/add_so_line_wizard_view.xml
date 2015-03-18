@@ -19,12 +19,19 @@
 							<field name="pricelist_id_parent" invisible="1"/>
 							<field name="date_order_parent" invisible="1"/>
 							<field name="fiscal_position_id_parent" invisible="1"/>
+							<field name="date_so_line_parent" invisible="1"/>
 							<field name="order_id" invisible="1"/>
+							
 							<field name="product_customer_id" colspan="6"
-								context="{'date_on_so':parent.date_so_line, 'eff_date':effective_date, 'etd':confirmation_date, 'cod':customer_original_date, 'crd':customer_rescheduled_date}"
+								context="{'date_on_so':date_so_line_parent, 'eff_date':effective_date, 'etd':confirmation_date, 'cod':customer_original_date, 'crd':customer_rescheduled_date}"
 								on_change="onchange_product_customer_id(company_id_parent,product_customer_id,effective_date,pricelist_id_parent,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,partner_id_parent,False,True,date_order_parent,product_packaging,fiscal_position_id_parent,False,context)"
 								domain="[('partner_id','=',partner_id_parent), ('sale_ok','=',True)]"
 								/>
+							<!-- <field name="product_customer_id" colspan="6"
+								context="{'date_on_so':date_so_line_parent, 'eff_date':effective_date, 'etd':confirmation_date, 'cod':customer_original_date, 'crd':customer_rescheduled_date}"
+								on_change="onchange_product_customer_id(company_id_parent,product_customer_id,effective_date,pricelist_id_parent,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,partner_id_parent,False,True,date_order_parent,product_packaging,fiscal_position_id_parent,False,context)"
+								domain="[('partner_id','=',partner_id_parent), ('sale_ok','=',True)]"
+								/> -->
 							<field name="name" invisible="1"/>
 							<field name="spq" on_change="spq_onchange(product_id,context)"/>
 							<field name="moq" on_change="moq_onchange(product_customer_id,context)"/>
@@ -73,7 +80,8 @@
 							<field name="effective_date" string="Sale Price Effective Date"
 								on_change="product_id_change3(location_id,company_id_parent,product_customer_id,effective_date,pricelist_id_parent,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,partner_id_parent,False,True,date_order_parent,product_packaging,fiscal_position_id_parent,False,context)"
 								/>
-							<button name="%(act_change_effective)d" string="Change Effective Date" type="action" icon="gtk-go-forward" states="confirmed"/>
+							<newline/>
+							<field name="confirmation_date"/>
 							<newline/>
 							<field name="customer_original_date"
 							attrs="{'readonly': [('save_done','=',True)]}"

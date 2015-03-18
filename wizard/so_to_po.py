@@ -276,6 +276,7 @@ class so_to_po(osv.osv_memory):
         account_fiscal_position = self.pool.get('account.fiscal.position')
         account_tax = self.pool.get('account.tax')
 #############################################
+
         if sale_order_obj.browse(cr, uid, context['active_id'], context=None).state != 'draft':
             return {'type': 'ir.actions.act_window_close'}
 
@@ -311,6 +312,7 @@ class so_to_po(osv.osv_memory):
 
 ##############################################
         for wizard in wizard_ids:
+#             print wizard.product_supplier_id.id
             partner_child_id_vals.append(wizard.product_supplier_id.partner_child_id.id)
             sale_order_line_obj.button_confirm(cr, uid, wizard.move_id.id, context)
             inputplori = 'p' + str(wizard.product_id.id) + 'l' + str(wizard.move_id.location_id.id)
@@ -410,7 +412,7 @@ class so_to_po(osv.osv_memory):
             else:
                 fifo_qty = 0.00
                 allocated_qty = 0.00
-#            raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %(fifo_qty, allocated_qty))
+#            
             
             for fifo_prod in fifo_product:
                 if fifo_prod.location_id.id == wizard2.move_id.location_id.id and fifo_prod.product_id.id == wizard2.product_id.id:
@@ -500,15 +502,34 @@ class so_to_po(osv.osv_memory):
 ##########################################
 
 ##########################################
+#         print partner_child_id_vals
+#         print wizard_ids
+#         print line_vals_qty_order
         if partner_child_id_vals:
+            number = 0
             for pc in sorted(set(partner_child_id_vals)):
+#                 print 'holyshit'
+#                 print pc
+                number += 1
+                
+#                 print 'numb ' + str(number)
+                numb2 = 0
                 for wizard3 in wizard_ids:
+                    numb2 += 1
+#                     print 'numb2 ' + str(numb2)
+#                     print 'bloody idiot'
+#                     print wizard3.product_supplier_id.partner_child_id.id
+                    
                     if wizard3.product_supplier_id.partner_child_id.id != pc:
+#                         print 'why'
+#                         print 'because (' + str(pc) + ') and (' + str (pc) +  ')' 
                         continue
                     if wizard3.move_id.id in line_vals:
                         qty_order = line_vals_qty_order[wizard3.move_id.id]
                     else:
                         qty_order = 0.00
+#                     print 'find'
+#                     print qty_order
                     if not qty_order > 0:
                         continue
                     if wizard3.product_supplier_id.partner_child_id.id not in po_vals:
@@ -532,8 +553,8 @@ class so_to_po(osv.osv_memory):
                         sale_term_id =  (wizard3.product_supplier_id.partner_child_id.partner_id.sale_term_id and wizard3.product_supplier_id.partner_child_id.partner_id.sale_term_id.id) or False
             
                         contact_person_ids = []
-                        for pc in wizard3.product_supplier_id.partner_child_id.partner_id.contact_person_ids:
-                            contact_person_ids.append(pc.id)
+                        for pc2 in wizard3.product_supplier_id.partner_child_id.partner_id.contact_person_ids:
+                            contact_person_ids.append(pc2.id)
                         contact_person_id = (contact_person_ids and contact_person_ids[0]) or False
 
                         order_val2 = {
@@ -594,7 +615,7 @@ class so_to_po(osv.osv_memory):
 #                    raise osv.except_osv(_('Invalid action !'), _(str(taxes_ids)))
                     order_line_vals2 = {
                         'done_savedrecords' : True,
-                        'sale_line_id' : wizard3.move_id.id,
+#                         'sale_line_id' : wizard3.move_id.id,
                         'name': wizard3.product_id.name,
                         'product_qty': qty_in_line_uom,
                         'date_planned': time.strftime('%Y-%m-%d'),
@@ -606,6 +627,9 @@ class so_to_po(osv.osv_memory):
                         'state': 'draft',
                         'location_dest_id': wizard3.move_id.location_id.id,
                         'invoiced' : 0,
+                        #RT
+                        'cust_request_date' : wizard3.move_id.customer_original_date,
+                        #
                         'estimated_time_arrive' : time.strftime('%Y-%m-%d'),
                         'original_request_date2' : time.strftime('%Y-%m-%d'),
                         'original_request_date' : time.strftime('%Y-%m-%d'),
@@ -625,7 +649,7 @@ class so_to_po(osv.osv_memory):
                     sale_allocated_obj.create(cr, uid, allocated_vals, context=context)
 
 #############################################
-
+#         raise osv.except_osv(_('Debug !'), _(' \'%s\' \'%s\'!') %('test', 'allocated_qty'))
         sale_order_obj.write(cr, uid, context['active_id'], {'state': 'progress', 'date_confirm': fields.date.context_today(self, cr, uid, context=context)})
         return {'type': 'ir.actions.act_window_close'}
 

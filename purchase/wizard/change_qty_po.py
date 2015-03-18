@@ -68,9 +68,13 @@ class change_qty_po(osv.osv_memory):
         res = {}
 #        print product_uom_qty
 #        print moq
-        if product_uom_qty < moq:
-            warning = {'title': _('Warning'), 'message': _("the Qty cannot less than moq.")}
-            return {'value':{'product_uom_qty': 0}, 'warning':warning}
+#####################
+#     START
+#####################
+#         if product_uom_qty < moq:
+#             warning = {'title': _('Warning'), 'message': _("the Qty cannot less than moq.")}
+#             return {'value':{'product_uom_qty': 0}, 'warning':warning}
+# END
         if product_uom_qty < spq:
             product_uom_qty = 0
         if product_uom_qty%spq != 0:

@@ -247,6 +247,7 @@ class res_partner_address(osv.osv):
     _description = "Partner Addresses"
 
     _columns = {
+        'partner_id_dummy': fields.many2one('res.partner', 'Print Supplier Name', ondelete='set null'),
         'loc_address' : fields.boolean('Location Address'),
         'default_key' : fields.boolean('Default Use'),
         'type': fields.selection( [ ('default','Default'),('invoice','Invoice'), ('delivery','Delivery'), ('contact','Mail'), ('other','Other') ],'Address Type', help="Used to select automatically the right address according to the context in sales and purchases documents."),

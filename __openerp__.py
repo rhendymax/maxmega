@@ -46,6 +46,8 @@
         'wizard/fifo_stock_view.xml',
         'wizard/po_value_view.xml',
         'wizard/wizard_stock_view.xml',
+        'wizard/total_qty_so_view.xml',
+        'wizard/product_to_po_view.xml',
         'allocated/wizard/reallocated_qty_view.xml',
         'allocated/sale_allocated_view.xml',
         'product/wizard/location_wizard_view.xml',

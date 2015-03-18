@@ -98,6 +98,7 @@ class add_so_line_wzd(osv.osv_memory):
         'customer_rescheduled_date': fields.date('Customer Rescheduled Date (CRD) (*)', required=True, select=True),
         'notes': fields.text('Notes'),
         'price_unit': fields.float('Unit Price', required=True, digits_compute= dp.get_precision('Sale Price')),
+        'confirmation_date': fields.date('Confirmation Date (ETD)', required=True, ),
 #        'tax_id': fields.one2many('account.tax', 'sale_order_tax', 'order_line_id', 'tax_id', 'Taxes'),
     }
 

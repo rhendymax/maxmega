@@ -19,15 +19,23 @@
 						<field name="partner_ref" readonly="1"/>
 						<field name="shipped" readonly="1"/>
 						<field name="company_id" groups="base.group_multi_company" widget="selection" readonly="1"/>
+<!-- START New Code -->
+						<field name="partner_id" readonly="1" colspan ="4"/>
+						<field name="partner_child_id" readonly="1" colspan ="4"/>
+						<field name="partner_order_id" colspan ="4"/>
+						<field name="partner_invoice_id" groups="base.group_extended" colspan ="4"/>
+						<field name="partner_shipping_id" groups="base.group_extended" colspan ="4"/>
+						<field name="pricelist_id" groups="base.group_extended" readonly="1" colspan ="4"/>
+<!-- END New Code -->
 					</group>
 					<notebook colspan="4">
 						<page string="Purchase Order">
-							<field name="partner_id" readonly="1" colspan ="4"/>
+							<!-- <field name="partner_id" readonly="1" colspan ="4"/>
 							<field name="partner_child_id" readonly="1" colspan ="4"/>
 							<field name="partner_order_id" colspan ="4"/>
 							<field name="partner_invoice_id" groups="base.group_extended" colspan ="4"/>
 							<field name="partner_shipping_id" groups="base.group_extended" colspan ="4"/>
-							<field name="pricelist_id" groups="base.group_extended" readonly="1"/>
+							<field name="pricelist_id" groups="base.group_extended" readonly="1"/> -->
 							<newline/>
 							<field colspan="4" name="order_line" readonly="1" nolabel="1" mode="tree,form">
 								<tree string="Purchase Order Lines">
@@ -43,10 +51,10 @@
 										<page string="Order Line">
 											<group colspan="4" col="10">
 												<field name="product_id" string = "Part Number" colspan="6" required="1"/>
-													<field name="spq"/>
-													<field name="moq"/>
-												</group>
-												<newline/>
+												<field name="spq"/>
+												<field name="moq"/>
+											</group>
+											<newline/>
 											<field name="product_qty"/>
 											<field name="product_uom" string="Product UOM (*)"/>
 											<field name="name" readonly="1"/>
@@ -160,7 +168,30 @@
 						<page string="History">
 							<separator string="Incomings" colspan="4"/>
 							<newline/>
-							<field name="picking_ids2" nolabel="1" colspan="4" readonly="1"/>
+							<field name="picking_ids2" nolabel="1" colspan="4" readonly="1">
+								<tree string="Incomings">
+									<field name="name"/>
+									<field name="invoice_no"/>
+									<field name="backorder_id"/>
+									<field name="origin"/>
+									<field name="date"/>
+									<field name="min_date"/>
+									<field name="invoice_state"/>
+									<field name="stock_journal_id"/>
+									<field name="state"/>
+								</tree>
+								<form string="Incomings">
+									<field name="name"/>
+									<field name="invoice_no"/>
+									<field name="backorder_id"/>
+									<field name="origin"/>
+									<field name="date"/>
+									<field name="min_date"/>
+									<field name="invoice_state"/>
+									<field name="stock_journal_id"/>
+									<field name="state"/>
+								</form>
+							</field>
 						</page>
 					</notebook>
 				</form>
@@ -199,6 +230,7 @@
 				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='product_qty']" position="before">
 					<field name="product_id"/>
 					<field name="location_dest_id"/>
+					<field name="balance_qty" string ="Balance Qty"/>
 				</xpath>
 				<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
 					<button name="%(act_delete_po_line_wizard)d" string="Delete Line" type="action" icon="gtk-cancel"/>
@@ -249,6 +281,7 @@
 					<group colspan="2" col="2">
 						<separator string="Person" colspan="2"/>
 						<field name="contact_person_id"/>
+						<!--field name="contact_person"/ -->
 						<field name="requisitor_id" widget="selection"/>
 						<field name="buyer_id" widget="selection"/>
 					</group>
@@ -277,9 +310,32 @@
 
 				<notebook position="inside">
 					<page string="History">
-					<separator string="Incomings" colspan="4"/>
-					<newline/>
-					<field name="picking_ids2" nolabel="1" colspan="4"/>
+						<separator string="Incomings" colspan="4"/>
+						<newline/>
+						<field name="picking_ids2" nolabel="1" colspan="4">
+							<tree string="Incomings">
+								<field name="name"/>
+								<field name="invoice_no"/>
+								<field name="backorder_id"/>
+								<field name="origin"/>
+								<field name="date"/>
+								<field name="min_date"/>
+								<field name="invoice_state"/>
+								<field name="stock_journal_id"/>
+								<field name="state"/>
+							</tree>
+							<form string="Incomings">
+								<field name="name"/>
+								<field name="invoice_no"/>
+								<field name="backorder_id"/>
+								<field name="origin"/>
+								<field name="date"/>
+								<field name="min_date"/>
+								<field name="invoice_state"/>
+								<field name="stock_journal_id"/>
+								<field name="state"/>
+							</form>
+						</field>
 					</page>
 				</notebook>
 			</field>
@@ -311,6 +367,7 @@
 				<field name="price_unit" position="replace">
 					<field name="price_unit" string="Unit Price (*)" on_change="onchange_product_id3(location_dest_id, qty_allocated_onorder,parent.company_id,parent.partner_child_id,parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, original_request_date, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,notes,context)"/>	
 					<field name="location_dest_id" domain="[('usage','=','internal')]" colspan="4" attrs="{'readonly': [('qty_allocated_onorder','>',0)]}"/>
+					<field name="balance_qty" string ="Balance Qty"/>
 					<button name="%(act_change_price_po)d" string="Change Price Unit" type="action" icon="gtk-go-forward" states="draft,confirmed" colspan="2" invisible="1"/>
 					<button name="%(act_change_qty_po)d" string="Change Qty" type="action" icon="gtk-go-forward" states="confirmed" colspan="2"/>
 				</field>

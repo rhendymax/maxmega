@@ -54,11 +54,15 @@ class sale_order(osv.osv):
 
     def create(self, cr, user, vals, context=None):
 #        raise osv.except_osv(_('Debug!'), _(' \'%s\' \'%s\'!') %(vals, ''))
+        cpn = ('client_order_ref' in vals and vals['client_order_ref']) or False
         if 'partner_shipping_id' in vals:
             shipping_addr = self.pool.get('res.partner.address').browse(cr, user, vals['partner_shipping_id'], context=None)
             partner_id2 = vals['partner_id2'] or False
             if ((shipping_addr.partner_id and shipping_addr.partner_id.id) or False) != partner_id2:
                 raise osv.except_osv(_('Invalid action !'), _('Cannot process because the Shipping Address Selected is not matches with the Customer!'))
+        if (' ' in cpn[-1]) or (' ' in cpn[0]):
+            raise osv.except_osv(_('Error!'), _("No Space Allowed at Customer PO No!"))
+        
         if 'order_line' in vals:
             product_customer_name = ''
             qty_name = ''
@@ -232,11 +236,18 @@ class sale_order(osv.osv):
             if duplicate_ids:
                 return False
         return True
+#RT
+#     def _check_name(self, cr, uid, ids, context=None):
+#         for record in self.browse(cr, uid, ids, context=context):
+#             if self.search(cr, uid, [('client_order_ref', '=', record.client_order_ref),('id', '!=', record.id)]):
+#                 return False
+#         return True
 
     _constraints = [
         (_check_name_partner,
             'Duplicate Sale Order that have same Customer or Customer PO',
             ['partner_id','client_order_ref']),
+#         (_check_name, 'Error: Customer PO No must be unique per Sale Order!', ['client_order_ref']),
     ]
 
 #    def copy(self, cr, uid, id, default=None, context=None):
@@ -266,6 +277,7 @@ class sale_order(osv.osv):
     }
 
     def unlink(self, cr, uid, ids, context=None):
+        print "UNLINK SO"
         if context is None:
             context = {}
         sale_allocated_obj = self.pool.get("sale.allocated")
@@ -2456,6 +2468,8 @@ class sale_order_line(osv.osv):
                     res.update({'fiscal_position_id_parent': lines.fiscal_position.id})
                 if 'order_id' in fields:
                     res.update({'order_id': lines.id})
+                if 'date_so_line_parent' in fields:
+                    res.update({'date_so_line_parent': lines.date_so_line})
         return res
 
 
@@ -2575,6 +2589,7 @@ class sale_order_line(osv.osv):
         return super(sale_order_line, self).copy_data(cr, uid, id, default, context)
 
     def unlink(self, cr, uid, ids, context=None):
+        print "UNLINK SO-LINE"
         if context is None:
             context = {}
         sale_allocated_obj = self.pool.get("sale.allocated")
@@ -2624,6 +2639,8 @@ class sale_order_line(osv.osv):
             lang=False, update_tax=True, date_order=False,
             packaging=False, fiscal_position=False,
             flag=False, context=None):
+#         print 'test'
+#         raise osv.except_osv(_('Invalid action !'), _('test'))
         currency_obj = self.pool.get('res.currency')
         product_uom_obj = self.pool.get('product.uom')
         product_product_obj = self.pool.get('product.product')
@@ -2655,27 +2672,28 @@ class sale_order_line(osv.osv):
                 qty_overall = product_uom_obj._compute_qty(cr, uid, uom, qty, default_uom)
     #            raise osv.except_osv(_('Debug !'), _(' \'%s\'!') %(qty_overall,))
 
-
-                if qty_overall < moq:
-                    if 'warning' in res:
-                        if 'message' in res['warning']:
-                            message = res['warning']['message']
-                            message = message + '\n & \n the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
-                            res['warning'].update({
-                                             'message': message,
-                                             })
-                        else:
-                            message = 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
-                            res['warning'].update({
-                                            'title': _('Configuration Error !'),
-                                            'message': message,
-                                            })
-                    else:
-                        warning = {
-                                   'title': _('Configuration Error !'),
-                                   'message' : 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
-                                   }
-                        res['warning'] = warning
+                # Remove Checking MOQ Validation
+#                 if qty_overall < moq:
+#                     if 'warning' in res:
+#                         if 'message' in res['warning']:
+#                             message = res['warning']['message']
+#                             message = message + '\n & \n the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
+#                             res['warning'].update({
+#                                              'message': message,
+#                                              })
+#                         else:
+#                             message = 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
+#                             res['warning'].update({
+#                                             'title': _('Configuration Error !'),
+#                                             'message': message,
+#                                             })
+#                     else:
+#                         warning = {
+#                                    'title': _('Configuration Error !'),
+#                                    'message' : 'the input quantity is below from moq. \n (moq = ' + str(moq) + ')'
+#                                    }
+#                         res['warning'] = warning
+                # End Of Remove
 
                 if qty_overall < spq:
                     qty_overall = 0
@@ -2707,10 +2725,11 @@ class sale_order_line(osv.osv):
                 product_customer_val = product_customer_obj.browse(cr, uid, product_customer_id, context=context)
                 company = self.pool.get('res.company').browse(cr, uid, company_id, context=context)
                 ptype_src = company.currency_id.id
-                product_customer_price_ids = product_customer_price.search(cr, uid, [('product_customer_id','=',product_customer_id),('effective_date','<=',effective_date)], order='effective_date ASC')
+                product_customer_price_ids = product_customer_price.search(cr, uid, [('product_customer_id','=',product_customer_id),('effective_date','<=',effective_date)], order='effective_date DESC')
                 price = 0.00
                 if product_customer_price_ids:
                     product_customer_price_id = product_customer_price.browse(cr, uid, product_customer_price_ids[0], context=context)
+
                     product_customer_upper_limit_ids = product_customer_upper_limit_obj.search(cr, uid, [('product_customer_price_id','=',product_customer_price_id.id),('qty','<=',qty_overall)], order='qty DESC')
                     currency_id = product_pricelist.browse(cr, uid, pricelist, context=context).currency_id.id
                     if product_customer_upper_limit_ids:
@@ -2822,12 +2841,8 @@ class sale_order_line(osv.osv):
 
             qry = cr.dictfetchall()
             if qry:
-                print "test1"
                 for t in qry:
-                    print "test2"
                     res[record.id] = t['oustanding']
-                    print "test3"
-                    print t['oustanding']
 #             res[record.id] = 0.00
         return res
 
@@ -2848,6 +2863,7 @@ class sale_order_line(osv.osv):
         'balance_qty': fields.function(_qty_balance,
                     type='float', string='Quantity Balance',
                     help='the summary of Balance Quantity'),
+        'date_so_line_parent': fields.date('Date For So Lines'),
     }
 
     def copy_data(self, cr, uid, id, default=None, context=None):

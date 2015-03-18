@@ -74,17 +74,17 @@ class product_product(osv.osv):
         default_code = ('default_code' in vals and vals['default_code']) or False
         spq = ('spq' in vals and vals['spq']) or False
         
-        if ' ' in name:
+        if (' ' in name[-1]) or (' ' in name[0]):
             raise osv.except_osv(_('Error!'), _("No Space Allowed at Supplier Part No!"))
-        if ' ' in default_code:
+        if (' ' in default_code[-1]) or (' ' in default_code[0]):
             raise osv.except_osv(_('Error!'), _("No Space Allowed at Internal Part No!"))
         
-        last_char_name = name[-1]
-        last_char_code = default_code[-1]
-        if not last_char_name.isalnum():
-            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Supplier Part No!"))
-        if not last_char_code.isalnum():
-            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
+#         last_char_name = name[-1]
+#         last_char_code = default_code[-1]
+#         if not last_char_name.isalnum():
+#             raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Supplier Part No!"))
+#         if not last_char_code.isalnum():
+#             raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
 
         vals.update({'name':name.upper()})
         vals.update({'default_code':default_code.upper()})
@@ -106,17 +106,17 @@ class product_product(osv.osv):
         if not 'default_code' in vals:
             default_code = (self.pool.get('product.product').browse(cr, uid, product_id, context=None).default_code)
         #RT
-        if ' ' in name:
+        if (' ' in name[-1]) or (' ' in name[0]):
             raise osv.except_osv(_('Error!'), _("No Space Allowed at Supplier Part No!"))
-        if ' ' in default_code:
+        if (' ' in default_code[-1]) or (' ' in default_code[0]):
             raise osv.except_osv(_('Error!'), _("No Space Allowed at Internal Part No!"))
         
-        last_char_name = name[-1]
-        last_char_code = default_code[-1]
-        if not last_char_name.isalnum():
-            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Supplier Part No!"))
-        if not last_char_code.isalnum():
-            raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
+#         last_char_name = name[-1]
+#         last_char_code = default_code[-1]
+#         if not last_char_name.isalnum():
+#             raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Supplier Part No!"))
+#         if not last_char_code.isalnum():
+#             raise osv.except_osv(_('Error!'), _("You Can't Input Special Character at Last Character of Internal Part No!"))
         vals.update({'name':name.upper()})
         vals.update({'default_code':default_code.upper()})
 
@@ -701,14 +701,14 @@ class product_product(osv.osv):
 
         results = []
         cr.execute("select coalesce((select sum(sm.product_qty) from stock_move sm inner join " \
-            "stock_picking sp on sp.id = sm.picking_id where sm.picking_id is not null and sp.type='out' and sp.state <> 'done' " \
+            "stock_picking sp on sp.id = sm.picking_id where sm.picking_id is not null and sp.type='out' and sp.state <> 'done' and sm.product_id = pp_o.id " \
             "),0) as qty_do, " \
             "pp_o.id as prod_id from product_product pp_o " \
             "inner join product_template pt_o on pp_o.id = pt_o.id where " \
             + pp_qry + "order by pt_o.name")
+        
 
         results = cr.fetchall()
-
         for amount, prod_id in results:
              res[prod_id] += amount
         return res
@@ -762,7 +762,6 @@ class product_product(osv.osv):
                 stock = self.get_product_available5(cr, uid, ids, context=None)
             for id in ids:
                 res[id][f] = stock.get(id, 0.0)
-            
         return res
 
 #     def _product_available(self, cr, uid, ids, field_names=None, arg=False, context=None):
@@ -1229,7 +1228,7 @@ class product_product(osv.osv):
         'spq': fields.float('Standard Packaging Qty', required=True),
         'inventory_price': fields.float('Inventory Cost', digits_compute=dp.get_precision('Purchase Price')),
         'lead_time': fields.float('Lead Time',),
-        'qty_available': fields.function(_product_available, multi='qty_available',
+        'qty_available': fields.function(_product_available, multi='maxmega',
             type='float',  digits_compute=dp.get_precision('Product UoM'),
             string='Quantity On Hand',
             help="Current quantity of products.\n"
@@ -1243,10 +1242,10 @@ class product_product(osv.osv):
                  "or any of its children.\n"
                  "Otherwise, this includes goods stored in any Stock Location "
                  "typed as 'internal'."),
-        'qty_incoming_booked': fields.function(_product_available, multi='qty_available',
+        'qty_incoming_booked': fields.function(_product_available, multi='maxmega',
             type='float', string='Quantity PO Allocated',
             help='the incoming quantity which not arrived at warehouse and has been allocated by sales order'),
-        'virtual_available': fields.function(_product_available, multi='qty_available',
+        'virtual_available': fields.function(_product_available, multi='maxmega',
             type='float',  digits_compute=dp.get_precision('Product UoM'),
             string='Quantity Available',
             help="Forecast quantity (computed as Quantity On Hand "
@@ -1261,7 +1260,7 @@ class product_product(osv.osv):
                  "or any of its children.\n"
                  "Otherwise, this includes goods stored in any Stock Location "
                  "typed as 'internal'."),
-        'incoming_qty': fields.function(_product_available, multi='qty_available',
+        'incoming_qty': fields.function(_product_available, multi='maxmega',
             type='float',  digits_compute=dp.get_precision('Product UoM'),
             string='Incoming',
             help="Quantity of products that are planned to arrive.\n"
@@ -1275,7 +1274,7 @@ class product_product(osv.osv):
                  "Shop, or any of its children.\n"
                  "Otherwise, this includes goods arriving to any Stock "
                  "Location typed as 'internal'."),
-        'outgoing_qty': fields.function(_product_available, multi='qty_available',
+        'outgoing_qty': fields.function(_product_available, multi='maxmega',
             type='float',  digits_compute=dp.get_precision('Product UoM'),
             string='Outgoing',
             help="Quantity of products that are planned to leave.\n"
@@ -1289,23 +1288,23 @@ class product_product(osv.osv):
                  "Shop, or any of its children.\n"
                  "Otherwise, this includes goods leaving from any Stock "
                  "Location typed as 'internal'."),
-        'qty_incoming_non_booked': fields.function(_product_available, multi='qty_available',
+        'qty_incoming_non_booked': fields.function(_product_available, multi='maxmega',
             type='float', string='Quantity PO Un-Allocated',
             help='the incoming quantity which not arrived at warehouse and not been allocated by sales order'),
-        'qty_booked': fields.function(_product_available, multi='qty_available',
+        'qty_booked': fields.function(_product_available, multi='maxmega',
             type='float', string='Total SO Quantity',
             help='the quantity which allocated by sales order'),
-        'qty_free': fields.function(_product_available, multi='qty_available',
+        'qty_free': fields.function(_product_available, multi='maxmega',
             type='float', string='Quantity On Hand Free',
             help='the quantity in warehouse which not been allocated by sales order'),
-        'qty_allocated': fields.function(_product_available, multi='qty_available',
+        'qty_allocated': fields.function(_product_available, multi='maxmega',
             type='float', string='Quantity On Hand Allocated',
             help='the quantity in warehouse which has been allocated by sales order'),
-        'qty_free_balance': fields.function(_product_available, multi='qty_available',
+        'qty_free_balance': fields.function(_product_available, multi='maxmega',
             type='float', string='Quantity Free Balance',
             help='the summary of quantity Incoming Un-Allocated plus Quantity on Hand Free'),
         # RT
-        'qty_do': fields.function(_product_available, multi='qty_available',
+        'qty_do': fields.function(_product_available, multi='maxmega',
             type='float', string='Do Quantity',
             help='the summary of Do Quantity'),
         'location_ids' : fields.one2many('product.location', 'product_id', 'Location Detail'),

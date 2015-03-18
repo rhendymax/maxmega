@@ -246,6 +246,24 @@ class purchase_order_line(osv.osv):
             res[obj.id] = qty_allocated
         return res
 
+    def _qty_balance(self, cr, uid, ids, field_names=None, arg=False, context=None):
+        if not ids: return {}
+        res = {}
+        for record in self.browse(cr, uid, ids, context=context):
+            cr.execute(
+                    "SELECT (pol.product_qty - coalesce((select sum(sm.product_qty) from stock_move sm where sm.state = 'done' And sm.purchase_line_id = pol.id group by sm.product_id),0)) as oustanding " \
+                    "FROM purchase_order_line pol " \
+                    "INNER JOIN purchase_order po on pol.order_id = po.id " \
+                    "WHERE pol.id = " + str(record.id) + \
+                    " order by po.name")
+
+            qry = cr.dictfetchall()
+            if qry:
+                for t in qry:
+                    res[record.id] = t['oustanding']
+#             res[record.id] = 0.00
+        return res
+
     _columns = {
         'partner_child_id_parent': fields.many2one('res.partner.child', 'Partner Child'),
         'partner_id_parent': fields.many2one('res.partner', 'Customer'),
@@ -256,6 +274,11 @@ class purchase_order_line(osv.osv):
         'qty_allocated_onorder': fields.function(_qty_allocated_onorder, type='float', string='Total Quantity Allocated to Sales Order'),
         'location_dest_id': fields.many2one('stock.location', 'Destination Location', ondelete='cascade', required=True, help="Location where the system will stock the finished products."),
         'allocated_ids': fields.one2many('sale.allocated', 'purchase_line_id', 'Purchase Allocated', readonly=True, ondelete='set null'),
+        #RT
+        'balance_qty': fields.function(_qty_balance,
+                    type='float', string='Quantity Balance',
+                    help='the summary of Balance Quantity'),
+        #
     }
 
 purchase_order_line()
@@ -299,6 +322,26 @@ class purchase_order(osv.osv):
         self.write(cr, uid, ids, {'spq_approve': False, 'spq_approve_user': False, 'spq_date':False})
         return True
 
+#     def _invoice_no(self, cursor, user, ids, name, arg, context=None):
+#         res = {}
+#         for purchase in self.browse(cursor, user, ids, context=context):
+#             tot = 0.0
+#             for po_line in purchase.picking_ids:
+#                 
+#                 print po_line.picking_ids.invoice_no
+#                 raise osv.except_osv(_('Invalid action !'), _(str(po_line.picking_ids) + '" Invoice No.'))
+# #                 for sm in po_line.stock_move_id:
+# #                     for picking in sm.picking_id:
+#                         
+# #                 if invoice.state not in ('draft','cancel'):
+# #                     tot += invoice.amount_untaxed
+# #             if purchase.amount_untaxed:
+# #                 res[purchase.id] = tot * 100.0 / purchase.amount_untaxed
+# #             else:
+# #                 res[purchase.id] = 0.0
+#                 res[purchase.id] = po_line.picking_ids.id.invoice_no
+#         return res
+
     _columns = {
         'spq_approve': fields.boolean('approved SPQ', invisible=True),
         'spq_approve_user':fields.many2one('res.users', 'SPQ Approved By'),
@@ -309,8 +352,9 @@ class purchase_order(osv.osv):
         'res_note_user_id': fields.many2one('res.note.user', 'Note User'),
         'fiscal_position': fields.many2one('account.fiscal.position', 'Fiscal Position', readonly=True),
         'purchase_sequences_id': fields.many2one('purchase.sequences', 'Sequence', required=True),
-        'name': fields.char('Order Reference', size=64, help="unique number of the purchase order,computed automatically when the purchase order is created"),
+        'name': fields.char('Order Reference', readonly=True, size=64, help="unique number of the purchase order,computed automatically when the purchase order is created"),
         'contact_person_id': fields.many2one('contact.person', 'Contact Person'),
+#         'contact_person': fields.char('Contact Person',size=64),
         'picking_ids2': fields.many2many('stock.picking', 'purchase_order_picking_rel', 'order_id', 'picking_id', 'Related Picking', readonly=True, help="This is the list of incoming that have been generated for this purchase order. The same purchase order may have been invoiced in several times (by line for example)."),
         'shipped_rate': fields.function(_shipped_rate2, string='Received', type='float'),
         'ship_method_id': fields.many2one('shipping.method','Ship Method', readonly=True),
@@ -318,6 +362,7 @@ class purchase_order(osv.osv):
         'requisitor_id': fields.many2one('res.users', 'Requisitor', states={'draft': [('readonly', False)]}, select=True, readonly=True),
         'buyer_id': fields.many2one('res.users', 'Buyer', states={'draft': [('readonly', False)]}, select=True, readonly=True),
         'sale_term_id': fields.many2one('sale.payment.term', 'Payment Term', select=True, readonly=True,),
+#         'invoice_no': fields.function(_invoice_no, string='Supplier Invoice No', type='char'),
     }
 
     def onchange_pricelist_id(self, cr, uid, ids, partner_id):
@@ -621,6 +666,22 @@ class purchase_order(osv.osv):
         if res_note_user_id:
             footer_po = res_note_user_obj.browse(cursor, user, res_note_user_id, context=context).note
         return {'value': {'footer_po': footer_po}}
+#RT
+
+    def _check_name_partner(self, cr, uid, ids, context=None):
+        for record in self.browse(cr, uid, ids, context=context):
+            duplicate_ids = self.search(cr, uid, [('partner_id','=',record.partner_id.id),
+                  ('partner_ref','=',record.partner_ref),
+                  ('id','!=',record.id)])
+            if duplicate_ids:
+                return False
+        return True
+
+#     _constraints = [
+#         (_check_name_partner,
+#             'Duplicate Purchase Order that have same Supplier or Supplier Reference',
+#             ['partner_id','partner_ref']),
+#     ]
 
 purchase_order()
 
