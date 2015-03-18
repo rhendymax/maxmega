@@ -36,6 +36,7 @@ Maxmega Finance Module
         'account_voucher/account_voucher_view.xml',
         'account_voucher/simple_voucher_view.xml',
         'journal_entries/journal_entries_view.xml',
+#         'account_balance/wizard/account_validate_account_balance_view.xml',
     ],
 
     'demo_xml': [],

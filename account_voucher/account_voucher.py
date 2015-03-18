@@ -84,8 +84,45 @@ class account_voucher(osv.osv):
         return res
 
 #        return [(r['id'], (str("%.2f" % r['amount']) or '')) for r in self.read(cr, uid, ids, ['amount'], context, load='_classic_write')]
+#     Add By RT
+    def onchange_date2(self, cr, uid, ids, date, currency_id, payment_rate_currency_id, amount, company_id, context=None):
+        """
+        @param date: latest value from user input for field date
+        @param args: other arguments
+        @param context: context arguments, like lang, time zone
+        @return: Returns a dict which contains new values, and context
+        """
+        if context is None:
+            context ={}
+        res = {'value': {}}
+        #set the period of the voucher
+        period_pool = self.pool.get('account.period')
+        currency_obj = self.pool.get('res.currency')
+        ctx = context.copy()
+        ctx.update({'company_id': company_id})
+        pids = period_pool.find(cr, uid, date, context=ctx)
+        if pids:
+            res['value'].update({'period_id':pids[0]})
+        if payment_rate_currency_id:
+            ctx.update({'date': date})
+            payment_rate = 1.0
+            if payment_rate_currency_id != currency_id:
+                tmp = currency_obj.browse(cr, uid, payment_rate_currency_id, context=ctx).rate
+                voucher_currency_id = currency_id or self.pool.get('res.company').browse(cr, uid, company_id, context=ctx).currency_id.id
+                payment_rate = tmp / currency_obj.browse(cr, uid, voucher_currency_id, context=ctx).rate
+            vals = self.onchange_payment_rate_currency(cr, uid, ids, currency_id, payment_rate, payment_rate_currency_id, date, amount, company_id, context=context)
+            vals['value'].update({'payment_rate': payment_rate})
+            for key in vals.keys():
+                res[key].update(vals[key])
+            res['value']['line_cr_ids'] = []
+            res['value']['line_dr_ids'] = []
+#             res['value']['account_move_line_ids'] = []
+#             res['value']['move_line_cr_ids'] = []
+#             res['value']['other_move_line_cr_ids'] = []
+#             res['value']['other_move_line_db_ids'] = []
+        return res
 
-    def onchange_journal2(self, cr, uid, ids, partner_id, journal_id, ttype, context=None):
+    def onchange_journal2(self, cr, uid, ids, partner_id, journal_id, ttype, checking, context=None):
         """price
         Returns a dict that contains new values and context
 
@@ -101,7 +138,7 @@ class account_voucher(osv.osv):
 
         if not journal_id:
             return default
-
+        print checking
         partner_pool = self.pool.get('res.partner')
         journal_pool = self.pool.get('account.journal')
 
@@ -126,6 +163,14 @@ class account_voucher(osv.osv):
             account_id = journal.default_credit_account_id.id or journal.default_debit_account_id.id
         default['value']['account_id'] = account_id
         default['value']['type'] = ttype or tr_type
+        default['value']['line_cr_ids'] = []
+        default['value']['line_dr_ids'] = []
+        if checking == '1':
+            default['value']['account_move_line_ids'] = []
+            default['value']['move_line_cr_ids'] = []
+            default['value']['other_move_line_cr_ids'] = []
+            default['value']['other_move_line_db_ids'] = []
+
 
         return default
 
@@ -1120,7 +1165,7 @@ class account_voucher(osv.osv):
         move_pool = self.pool.get('account.move')
         move_line_pool = self.pool.get('account.move.line')
         for voucher in self.browse(cr, uid, ids, context=context):
-            if voucher.writeoff_amount < 0:
+            if (voucher.payment_option != 'with_writeoff') and voucher.writeoff_amount < 0:
                 raise osv.except_osv(_('Error'), _('cannot process if the Different Amount In Negatif Value'))
             if voucher.move_id:
                 continue

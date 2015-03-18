@@ -39,17 +39,17 @@
 				<field name="date" position="replace"/>
 				<field name="partner_id" position="replace">
 					<field name="partner_id" required="1" invisible="context.get('line_type', False)"
-						on_change="onchange_journal2(partner_id, journal_id, type, context)" 
+						on_change="onchange_journal2(partner_id, journal_id, type, '1', context)" 
 						context="{'invoice_currency':currency_id, 'default_customer': 0, 'search_default_supplier': 1, 'default_supplier': 1}"
 						string="Supplier" colspan="6"/>
 					<field name="journal_id"
 						domain="[('type','in',['bank', 'cash'])]"
 						invisible="context.get('line_type', False)"
 						widget="selection" select="1"
-						on_change="onchange_journal2(partner_id, journal_id, type, context)"
+						on_change="onchange_journal2(partner_id, journal_id, type, '2', context)"
 						string="Payment Method"/>
 					<field name="ex_rate" colspan="2"/>
-					<field name="date" select="1" invisible="context.get('line_type', False)" on_change="onchange_date(date, currency_id, payment_rate_currency_id, amount, company_id, context)"/>
+					<field name="date" select="1" invisible="context.get('line_type', False)" on_change="onchange_date2(date, currency_id, payment_rate_currency_id, amount, company_id, context)"/>
 					<button name="action_compute" string="Compute" type="object" states="draft" colspan="2"/>
 				</field>
 				<!-- Remove Onchange End -->
@@ -147,7 +147,8 @@
 						<field name="move_line_cr_ids" nolabel="1" colspan="4" context="{'multi_partner': partner_id, 'type': type, 'status':'credit'}">
 							<tree editable="bottom">
 								<field name="move_name" readonly="1"/>
-								<field name="invoice"/>
+								<field name="invoice_no" readonly="1"/>
+								<!-- field name="invoice"/ -->
 								<field name="currency"/>
 								<field name="amount_original"/>
 								<field name="amount_res"/>
@@ -158,7 +159,8 @@
 						<field name="account_move_line_ids" nolabel="1" colspan="4" context="{'multi_partner': partner_id, 'type': type, 'status':'debit'}">
 							<tree editable="bottom">
 								<field name="move_name" readonly="1"/>
-								<field name="invoice"/>
+								<field name="invoice_no" readonly="1"/>
+								<!-- field name="invoice"/ -->
 								<field name="currency"/>
 								<field name="amount_original"/>
 								<field name="amount_res"/>
@@ -169,7 +171,8 @@
 						<field name="other_move_line_db_ids" nolabel="1" colspan="4" context="{'type': type, 'status':'debit'}">
 							<tree editable="bottom">
 								<field name="move_name" readonly="1"/>
-								<field name="invoice"/>
+								<field name="invoice_no" readonly="1"/>
+								<!-- field name="invoice"/ -->
 								<field name="currency"/>
 								<field name="amount_original"/>
 								<field name="amount_res"/>
@@ -215,15 +218,15 @@
 				<field name="partner_id" position="replace">
 					<field name="partner_id" required="1" invisible="context.get('line_type', False)"
 						domain="[('customer','=',True)]"
-						string="Customer" on_change="onchange_journal2(partner_id, journal_id, type, context)" context="{'invoice_currency':currency_id,'search_default_customer': 1, 'default_customer': 1, 'default_supplier': 0}" colspan="6"/>
+						string="Customer" on_change="onchange_journal2(partner_id, journal_id, type, '1', context)" context="{'invoice_currency':currency_id,'search_default_customer': 1, 'default_customer': 1, 'default_supplier': 0}" colspan="6"/>
 					<field name="journal_id"
 						domain="[('type','in',['bank', 'cash'])]"
 						invisible="context.get('line_type', False)"
 						widget="selection" select="1"
-						on_change="onchange_journal2(partner_id, journal_id, type, context)"
+						on_change="onchange_journal2(partner_id, journal_id, type, '2', context)"
 						string="Payment Method"/>
 					<field name="ex_rate" colspan="2"/>
- 					<field name="date" select="1" invisible="context.get('line_type', False)" on_change="onchange_date(date, currency_id, payment_rate_currency_id, amount, company_id, context)"/>
+ 					<field name="date" select="1" invisible="context.get('line_type', False)" on_change="onchange_date2(date, currency_id, payment_rate_currency_id, amount, company_id, context)"/>
 					<button name="action_compute" string="Compute" type="object" states="draft" colspan="2"/>
 				</field>
 
@@ -327,7 +330,8 @@
 						<field name="account_move_line_ids" nolabel="1" colspan="4" context="{'multi_partner': partner_id, 'type': type, 'status':'debit'}">
 							<tree editable="bottom">
 								<field name="move_name" readonly="1"/>
-								<field name="invoice"/>
+								<field name="invoice_no" readonly="1"/>
+								<!-- field name="invoice"/ -->
 								<field name="currency"/>
 								<field name="amount_original"/>
 								<field name="amount_res"/>
@@ -338,7 +342,8 @@
 						<field name="move_line_cr_ids" nolabel="1" colspan="4" context="{'multi_partner': partner_id, 'type': type, 'status':'credit'}">
 							<tree editable="bottom">
 								<field name="move_name" readonly="1"/>
-								<field name="invoice"/>
+								<field name="invoice_no" readonly="1"/>
+								<!-- field name="invoice"/ -->
 								<field name="currency"/>
 								<field name="amount_original"/>
 								<field name="amount_res"/>
@@ -349,7 +354,8 @@
 						<field name="other_move_line_cr_ids" nolabel="1" colspan="4" context="{'type': type, 'status':'credit'}">
 							<tree editable="bottom">
 								<field name="move_name" readonly="1"/>
-								<field name="invoice"/>
+								<field name="invoice_no" readonly="1"/>
+								<!-- field name="invoice"/ -->
 								<field name="currency"/>
 								<field name="amount_original"/>
 								<field name="amount_res"/>
